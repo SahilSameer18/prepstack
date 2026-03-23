@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+
+/* ---------------- GLOBAL RESET ---------------- */
+
+/* Removed universal margin/padding reset to allow Tailwind preflight to work correctly */
+
+/* ---------------- LEETCODE THEME ---------------- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --lc-bg: #0f0f0f;
+  --lc-card: #1a1a1a;
+  --lc-border: #2a2a2a;
+
+  --lc-primary: #ffa116;
+  /* leetcode yellow */
+  --lc-primary-hover: #ffb84d;
+
+  --lc-text: #e5e7eb;
+  --lc-muted: #9ca3af;
+}
+
+/* ---------------- BODY ---------------- */
+
+body {
+  background-color: var(--lc-bg);
+  color: var(--lc-text);
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+/* ---------------- SCROLLBAR ---------------- */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--lc-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--lc-border);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--lc-primary);
+}
+
+/* ---------------- GLASS EFFECT ---------------- */
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--lc-border);
+}
+
+/* ---------------- CARD ---------------- */
+
+.card {
+  background: var(--lc-card);
+  border: 1px solid var(--lc-border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* ---------------- BUTTON ---------------- */
+
+.btn-primary {
+  background: var(--lc-primary);
+  color: black;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--lc-primary-hover);
+}
+
+/* testimonials */
+
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
