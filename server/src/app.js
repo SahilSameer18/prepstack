@@ -14,10 +14,12 @@ app.get('/', (req, res) => {
 
 // require all the routes here
 const authRouter = require('./routes/auth.routes')
+const sheetsRouter = require('./routes/sheets.routes')
 
 
 // use all the routes here
 app.use('/api/auth', authRouter)
+app.use('/api/sheets', sheetsRouter)
 
 app.use((err, req, res, next) => {
   console.log(err)

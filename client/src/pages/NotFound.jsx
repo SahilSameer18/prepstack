@@ -8,6 +8,7 @@ import {
   FaServer,
   FaDatabase
 } from "react-icons/fa";
+import Logo from "../components/layout/Logo";
 
 const NotFound = () => {
   return (
@@ -27,9 +28,9 @@ const NotFound = () => {
       {/* Logo */}
       <Link
         to="/"
-        className="flex items-center gap-2 text-[#ffa116] font-semibold text-xl mb-16"
+        className="flex items-center gap-2 mb-16 transition-transform hover:scale-105"
       >
-        <FaCode /> DevPrep
+        <Logo />
       </Link>
 
       {/* Animated 404 */}

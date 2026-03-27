@@ -1,10 +1,8 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
-const LoginRegister = () => {
-  const [mode, setMode] = useState("login");
-
+const Login = () => {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
@@ -19,49 +17,22 @@ const LoginRegister = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (mode === "login") {
-      console.log("Login:", {
-        email: formData.email,
-        password: formData.password,
-      });
-    } else {
-      console.log("Register:", formData);
-    }
+    console.log("Login:", formData);
+    // Add login logic here
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0f0f0f] relative overflow-hidden px-4">
-
       {/* Form */}
       <form
-  onSubmit={handleSubmit}
-  className="w-full max-w-[380px] text-center bg-[#1a1a1a]/70 border border-[#2a2a2a] rounded-2xl px-8 py-10 backdrop-blur-lg shadow-xl"
->
-        <h1 className="text-white text-3xl font-semibold tracking-wide">
-          {mode === "login" ? "Login" : "Sign Up"}
-        </h1>
+        onSubmit={handleSubmit}
+        className="w-full max-w-[380px] text-center bg-[#1a1a1a]/70 border border-[#2a2a2a] rounded-2xl px-8 py-10 backdrop-blur-lg shadow-xl"
+      >
+        <h1 className="text-white text-3xl font-semibold tracking-wide">Login</h1>
 
         <p className="text-gray-400 text-sm mt-2 mb-6">
-          {mode === "login"
-            ? "Login to continue your preparation"
-            : "Create your account"}
+          Login to continue your preparation
         </p>
-
-        {/* Name field */}
-        {mode === "register" && (
-          <div className="flex items-center mt-6 w-full bg-[#0f0f0f] border border-[#2a2a2a] focus-within:border-[#ffa116] h-12 rounded-full px-4 gap-3 transition">
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              className="w-full bg-transparent text-white placeholder-gray-400 outline-none"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        )}
 
         {/* Email */}
         <div className="flex items-center mt-4 w-full bg-[#0f0f0f] border border-[#2a2a2a] focus-within:border-[#ffa116] h-12 rounded-full px-4 gap-3 transition">
@@ -90,38 +61,29 @@ const LoginRegister = () => {
         </div>
 
         {/* Forgot password */}
-        {mode === "login" && (
-          <div className="mt-4 text-right">
-            <button
-              type="button"
-              className="text-sm text-[#ffa116] hover:underline"
-            >
-              Forgot password?
-            </button>
-          </div>
-        )}
+        <div className="mt-4 text-right">
+          <button
+            type="button"
+            className="text-sm text-[#ffa116] hover:underline"
+          >
+            Forgot password?
+          </button>
+        </div>
 
         {/* Submit */}
         <button
           type="submit"
           className="mt-6 w-full h-11 rounded-full text-black bg-[#ffa116] hover:bg-[#ffb84d] font-medium transition"
         >
-          {mode === "login" ? "Login" : "Create Account"}
+          Login
         </button>
 
         {/* Switch mode */}
-        <p
-          onClick={() =>
-            setMode((prev) => (prev === "login" ? "register" : "login"))
-          }
-          className="text-gray-400 text-sm mt-4 cursor-pointer"
-        >
-          {mode === "login"
-            ? "Don't have an account?"
-            : "Already have an account?"}
-          <span className="text-[#ffa116] hover:underline ml-1">
+        <p className="text-gray-400 text-sm mt-4">
+          Don't have an account?
+          <Link to="/register" className="text-[#ffa116] hover:underline ml-1">
             Click here
-          </span>
+          </Link>
         </p>
       </form>
 
@@ -134,4 +96,4 @@ const LoginRegister = () => {
   );
 };
 
-export default LoginRegister;
+export default Login;

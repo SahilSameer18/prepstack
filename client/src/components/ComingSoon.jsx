@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaCode, FaRocket, FaHome, FaLaptopCode, FaServer, FaDatabase } from "react-icons/fa";
+import Logo from "./layout/Logo";
 
 const ComingSoon = () => {
   return (
@@ -20,9 +21,9 @@ const ComingSoon = () => {
       {/* Logo */}
       <Link
         to="/"
-        className="flex items-center gap-2 text-[#ffa116] font-semibold text-xl mb-16"
+        className="flex items-center gap-2 mb-16 transition-transform hover:scale-105"
       >
-        <FaCode /> DevPrep
+        <Logo />
       </Link>
 
       {/* Animated Gradient Heading */}

@@ -35,6 +35,8 @@ const registerUser = async (req, res, next) => {
     },
       process.env.JWT_SECRET,
       { expiresIn: '1d' });
+
+
     res.cookie('token', token,
       {
         httpOnly: true,
@@ -42,6 +44,7 @@ const registerUser = async (req, res, next) => {
         sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 1000
       });
+
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
@@ -61,6 +64,7 @@ const registerUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       return res.status(400).json({ success: false, message: 'Please provide email and password' });
     }
@@ -71,7 +75,7 @@ const loginUser = async (req, res, next) => {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ success: false, message: 'Invalid password' });
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     const token = jwt.sign({

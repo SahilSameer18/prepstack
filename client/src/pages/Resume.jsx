@@ -147,9 +147,8 @@ const SectionCard = ({ section }) => {
   const [open, setOpen] = useState(false);
   return (
     <div
-      className={`border rounded-2xl overflow-hidden transition-all duration-300 ${
-        open ? "border-[#ffa116]" : "border-[#2a2a2a]"
-      } bg-[#1a1a1a]`}
+      className={`border rounded-2xl overflow-hidden transition-all duration-300 ${open ? "border-[#ffa116]" : "border-[#2a2a2a]"
+        } bg-[#1a1a1a]`}
     >
       <button
         onClick={() => setOpen(!open)}
@@ -164,9 +163,8 @@ const SectionCard = ({ section }) => {
         />
       </button>
       <div
-        className={`transition-all duration-300 overflow-hidden ${
-          open ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`transition-all duration-300 overflow-hidden ${open ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         <div className="px-5 pb-5 border-t border-[#2a2a2a] pt-4 space-y-5">
           {/* Tips */}

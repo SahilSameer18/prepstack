@@ -1,4 +1,4 @@
-import React from "react";
+import Logo from "./layout/Logo";
 
 const Footer = () => {
   const linkSections = [
@@ -33,13 +33,13 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-[#1a1a1a] text-gray-400 mt-20 border-t border-[#2a2a2a]">
+    <footer className="bg-[#0f0f0f] text-gray-400 mt-20 border-t border-[#2a2a2a]">
       <div className="max-w-7xl mx-auto px-6 md:px-16 lg:px-24 xl:px-32 py-10">
         <div className="flex flex-col md:flex-row items-start justify-between gap-10 border-b border-gray-500/30 pb-10">
           {/* Logo & Description */}
           <div className="md:w-1/3">
-            <div className="flex items-center gap-2 text-[#ffa116] font-bold text-2xl mb-4">
-              <span className="text-lg">&#60;/&#62;</span> DevPrep
+            <div className="mb-4 transform scale-90 origin-left">
+              <Logo />
             </div>
             <p className="text-gray-400 max-w-[350px]">
               The Ultimate Guide to Ace SDE Interviews. Curated resources for CSE students.
@@ -78,7 +78,7 @@ const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            PrepNova
+            PrepStack
           </a>{" "}
           All Rights Reserved.
         </p>

@@ -49,11 +49,10 @@ const Behavioral = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                selectedCategory === cat
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedCategory === cat
                   ? "bg-[#ffa116] text-black"
                   : "bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:border-[#ffa116]/50"
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -66,18 +65,16 @@ const Behavioral = () => {
         {filteredQuestions.map((q) => (
           <div
             key={q.id}
-            className={`card group border ${
-              expandedId === q.id ? "border-[#ffa116]/50 shadow-[0_0_20px_rgba(255,161,22,0.1)]" : "border-[#2a2a2a]"
-            } transition-all duration-300 overflow-hidden`}
+            className={`card group border ${expandedId === q.id ? "border-[#ffa116]/50 shadow-[0_0_20px_rgba(255,161,22,0.1)]" : "border-[#2a2a2a]"
+              } transition-all duration-300 overflow-hidden`}
           >
             <div
               className="p-6 cursor-pointer flex justify-between items-center gap-4"
               onClick={() => toggleExpand(q.id)}
             >
               <div className="flex items-center gap-4 text-left">
-                <div className={`p-3 rounded-xl transition ${
-                  expandedId === q.id ? "bg-[#ffa116]/20 text-[#ffa116]" : "bg-[#2a2a2a] text-gray-400"
-                }`}>
+                <div className={`p-3 rounded-xl transition ${expandedId === q.id ? "bg-[#ffa116]/20 text-[#ffa116]" : "bg-[#2a2a2a] text-gray-400"
+                  }`}>
                   <FaCommentDots className="text-xl" />
                 </div>
                 <div>
@@ -97,7 +94,7 @@ const Behavioral = () => {
             {expandedId === q.id && (
               <div className="px-6 pb-6 animate-in slide-in-from-top-4 duration-300">
                 <div className="h-[1px] bg-[#2a2a2a] mb-6"></div>
-                
+
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 text-[#ffa116] font-semibold">
@@ -136,8 +133,8 @@ const Behavioral = () => {
       <div className="mt-16 p-8 glass rounded-3xl border border-[#2a2a2a] text-center">
         <h3 className="text-2xl font-bold mb-4">Pro Tip: Use the <span className="text-[#ffa116]">STAR</span> Method</h3>
         <p className="text-gray-400 max-w-3xl mx-auto leading-relaxed">
-          When answering behavioral questions, always structure your response using the 
-          <strong> Situation, Task, Action, and Result</strong> format. This ensures your answers 
+          When answering behavioral questions, always structure your response using the
+          <strong> Situation, Task, Action, and Result</strong> format. This ensures your answers
           are concise, focused, and evidence-based.
         </p>
       </div>

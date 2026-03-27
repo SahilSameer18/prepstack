@@ -5,7 +5,8 @@ import Sheets from "./pages/Sheets";
 import Notes from "./pages/Notes";
 import Roadmap from "./pages/Roadmap";
 import AIProjectIdeas from "./pages/AIProjectIdeas";
-import LoginRegister from "./pages/LoginRegister";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Resume from './pages/Resume';
 import Behavioral from './pages/Behavioral';
 import NotFound from './pages/NotFound';
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
       { path: "/aptitude", element: <Aptitute /> },
     ],
   },
-  { path: '/login', element: <LoginRegister /> },
+  { path: '/login', element: <Login /> },
+  { path: '/register', element: <Register /> },
   { path: '*', element: <NotFound /> },
 ])

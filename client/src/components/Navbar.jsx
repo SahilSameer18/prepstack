@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { FaBars, FaTimes, FaCode, FaChevronDown } from "react-icons/fa";
+import { FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import Logo from "./layout/Logo";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -39,9 +40,9 @@ const Navbar = () => {
           {/* Logo */}
           <NavLink
             to="/"
-            className="flex items-center gap-2 text-[#ffa116] font-semibold text-xl"
+            className="flex items-center gap-2 group transition-transform hover:scale-105"
           >
-            <FaCode /> DevPrep
+            <Logo />
           </NavLink>
 
           {/* Desktop Menu */}
