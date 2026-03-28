@@ -9,7 +9,7 @@ app.use(cookieParser())
 
 app.get('/', (req, res) => {
   console.log('first')
-  res.send('Hii from the cluster')
+  res.send('Hii from the prepstack')
 })
 
 // require all the routes here
