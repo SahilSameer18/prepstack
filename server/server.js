@@ -11,6 +11,6 @@ dns.setServers(['1.1.1.1', '8.8.8.8'])
 connectToDB()
 
 
-app.listen(3000, ()=> {
-  console.log('server is running on port 3000')
+app.listen(process.env.PORT, () => {
+  console.log(`server is running on http://localhost:${process.env.PORT}`)
 })

@@ -50,8 +50,8 @@ const Behavioral = () => {
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedCategory === cat
-                  ? "bg-[#ffa116] text-black"
-                  : "bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:border-[#ffa116]/50"
+                ? "bg-[#ffa116] text-black"
+                : "bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:border-[#ffa116]/50"
                 }`}
             >
               {cat}
@@ -69,7 +69,7 @@ const Behavioral = () => {
               } transition-all duration-300 overflow-hidden`}
           >
             <div
-              className="p-6 cursor-pointer flex justify-between items-center gap-4"
+              className="p-2 cursor-pointer flex justify-between items-center gap-4"
               onClick={() => toggleExpand(q.id)}
             >
               <div className="flex items-center gap-4 text-left">

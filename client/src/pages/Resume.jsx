@@ -267,32 +267,71 @@ const Resume = () => {
 
       {/* Resources */}
       <div className="p-8 bg-[#141414] rounded-3xl border border-[#2a2a2a] text-center">
-        <FaFileAlt className="text-[#ffa116] text-3xl mx-auto mb-4" />
+
+        <FaFileAlt className="text-[#ffa116] text-3xl mx-auto mb-6" />
+
         <h3 className="text-2xl font-bold mb-3">
-          Recommended <span className="text-[#ffa116]">Resume Tools</span>
+          Resume <span className="text-[#ffa116]">Resources</span>
         </h3>
-        <p className="text-gray-400 max-w-lg mx-auto mb-6 text-sm">
-          Use these tools to create a clean, professional, and ATS-friendly resume.
+
+        <p className="text-gray-400 max-w-lg mx-auto mb-10 text-sm">
+          Build your resume and test it with ATS tools to maximize your chances.
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          {[
-            { name: "Overleaf (LaTeX)", url: "https://www.overleaf.com/gallery/tagged/cv" },
-            { name: "Resume.io", url: "https://resume.io" },
-            { name: "Jake's Template", url: "https://www.overleaf.com/latex/templates/jakes-resume/syzfjbzwjncs" },
-            { name: "Flowcv", url: "https://flowcv.io" },
-          ].map((tool) => (
-            <a
-              key={tool.name}
-              href={tool.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 rounded-lg bg-[#2a2a2a] text-gray-300 text-sm hover:bg-[#ffa116] hover:text-black font-medium transition"
-            >
-              {tool.name}
-            </a>
-          ))}
+
+        <div className="grid md:grid-cols-2 gap-10 text-left">
+
+          {/* Resume Builders */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4 text-[#ffa116] text-center">
+              Resume Building
+            </h4>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { name: "Overleaf", url: "https://www.overleaf.com/gallery/tagged/cv" },
+                { name: "Flowcv", url: "https://flowcv.io" },
+              ].map((tool) => (
+                <a
+                  key={tool.name}
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-4 rounded-lg bg-[#2a2a2a] text-gray-300 text-sm text-center hover:bg-[#ffa116] hover:text-black font-medium transition"
+                >
+                  {tool.name}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* ATS Checkers */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4 text-[#ffa116] text-center">
+              ATS Check
+            </h4>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { name: "SkillBridge AI", url: "https://skillbridgeai-s.vercel.app/" },
+                { name: "Resume Worded", url: "https://resumeworded.com" },
+              ].map((tool) => (
+                <a
+                  key={tool.name}
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-4 rounded-lg bg-[#2a2a2a] text-gray-300 text-sm text-center hover:bg-[#ffa116] hover:text-black font-medium transition"
+                >
+                  {tool.name}
+                </a>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
+
+
     </div>
   );
 };
