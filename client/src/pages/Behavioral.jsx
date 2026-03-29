@@ -38,7 +38,7 @@ const Behavioral = () => {
           <input
             type="text"
             placeholder="Search questions..."
-            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl py-3 pl-12 pr-4 focus:border-[#ffa116] outline-none transition"
+            className="w-full bg-[#111] border border-white/[0.08] rounded-xl py-3 pl-12 pr-4 focus:border-[#ffa116] focus:shadow-[0_0_0_3px_rgba(255,161,22,0.1)] outline-none transition-all text-sm text-white placeholder-gray-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -51,7 +51,7 @@ const Behavioral = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedCategory === cat
                 ? "bg-[#ffa116] text-black"
-                : "bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 hover:border-[#ffa116]/50"
+                : "bg-[#111] border border-white/[0.08] text-gray-400 hover:text-white hover:border-white/[0.2]"
                 }`}
             >
               {cat}
@@ -65,7 +65,7 @@ const Behavioral = () => {
         {filteredQuestions.map((q) => (
           <div
             key={q.id}
-            className={`card group border ${expandedId === q.id ? "border-[#ffa116]/50 shadow-[0_0_20px_rgba(255,161,22,0.1)]" : "border-[#2a2a2a]"
+            className={`bg-[#111] group border rounded-lg ${expandedId === q.id ? "border-[#ffa116]/50 shadow-[0_0_20px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"
               } transition-all duration-300 overflow-hidden`}
           >
             <div
@@ -73,7 +73,7 @@ const Behavioral = () => {
               onClick={() => toggleExpand(q.id)}
             >
               <div className="flex items-center gap-4 text-left">
-                <div className={`p-3 rounded-xl transition ${expandedId === q.id ? "bg-[#ffa116]/20 text-[#ffa116]" : "bg-[#2a2a2a] text-gray-400"
+                <div className={`p-3 rounded-xl transition-colors ${expandedId === q.id ? "bg-[#ffa116]/20 text-[#ffa116]" : "bg-white/[0.05] text-gray-400 group-hover:bg-white/[0.08]"
                   }`}>
                   <FaCommentDots className="text-xl" />
                 </div>
@@ -93,7 +93,7 @@ const Behavioral = () => {
 
             {expandedId === q.id && (
               <div className="px-6 pb-6 animate-in slide-in-from-top-4 duration-300">
-                <div className="h-[1px] bg-[#2a2a2a] mb-6"></div>
+                <div className="h-px bg-white/[0.08] mb-6"></div>
 
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-4">
@@ -101,7 +101,7 @@ const Behavioral = () => {
                       <FaLightbulb />
                       <span>The Strategy (Tip)</span>
                     </div>
-                    <p className="text-gray-400 leading-relaxed bg-[#1a1a1a] p-4 rounded-xl border border-[#2a2a2a]">
+                    <p className="text-gray-400 text-sm leading-relaxed bg-[#0a0a0a] p-5 rounded-2xl border border-white/[0.05]">
                       {q.tip}
                     </p>
                   </div>
@@ -111,7 +111,7 @@ const Behavioral = () => {
                       <FaCommentDots />
                       <span>Example Answer</span>
                     </div>
-                    <div className="text-gray-300 leading-relaxed italic bg-[#1a1a1a] p-4 rounded-xl border border-[#2a2a2a]">
+                    <div className="text-gray-300 text-sm leading-relaxed italic bg-[#0a0a0a] p-5 rounded-2xl border border-white/[0.05]">
                       "{q.exampleAnswer}"
                     </div>
                   </div>
@@ -122,7 +122,7 @@ const Behavioral = () => {
         ))}
 
         {filteredQuestions.length === 0 && (
-          <div className="py-20 text-center text-gray-500 border border-dashed border-[#2a2a2a] rounded-3xl">
+          <div className="py-20 text-center text-gray-500 border border-dashed border-white/[0.08] rounded-3xl bg-[#111]">
             <p className="text-xl mb-2">No questions found</p>
             <p className="text-sm">Try adjusting your search or category filter</p>
           </div>
@@ -130,7 +130,8 @@ const Behavioral = () => {
       </div>
 
       {/* Footer Note */}
-      <div className="mt-16 p-8 glass rounded-3xl border border-[#2a2a2a] text-center">
+      <div className="mt-16 p-8 bg-gradient-to-br from-[#111] to-[#0a0a0a] rounded-3xl border border-white/[0.08] text-center shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#ffa116]/5 rounded-full blur-3xl -z-10" />
         <h3 className="text-2xl font-bold mb-4">Pro Tip: Use the <span className="text-[#ffa116]">STAR</span> Method</h3>
         <p className="text-gray-400 max-w-3xl mx-auto leading-relaxed">
           When answering behavioral questions, always structure your response using the

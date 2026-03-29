@@ -147,8 +147,8 @@ const SectionCard = ({ section }) => {
   const [open, setOpen] = useState(false);
   return (
     <div
-      className={`border rounded-2xl overflow-hidden transition-all duration-300 ${open ? "border-[#ffa116]" : "border-[#2a2a2a]"
-        } bg-[#1a1a1a]`}
+      className={`border rounded-2xl overflow-hidden transition-all duration-300 ${open ? "border-[#ffa116]" : "border-white/[0.08]"
+        } bg-[#111]`}
     >
       <button
         onClick={() => setOpen(!open)}
@@ -166,7 +166,7 @@ const SectionCard = ({ section }) => {
         className={`transition-all duration-300 overflow-hidden ${open ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
           }`}
       >
-        <div className="px-5 pb-5 border-t border-[#2a2a2a] pt-4 space-y-5">
+        <div className="px-5 pb-5 border-t border-white/[0.08] pt-4 space-y-5">
           {/* Tips */}
           <ul className="space-y-2">
             {section.tips.map((tip, i) => (
@@ -182,7 +182,7 @@ const SectionCard = ({ section }) => {
             <p className="text-xs uppercase tracking-widest text-[#ffa116] font-semibold mb-2">
               Example
             </p>
-            <pre className="bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl p-4 text-gray-300 text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap font-mono">
+            <pre className="bg-[#0a0a0a] border border-white/[0.08] rounded-xl p-4 text-gray-300 text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap font-mono">
               {section.example}
             </pre>
           </div>
@@ -236,7 +236,7 @@ const Resume = () => {
           The <span className="text-[#ffa116]">Do's</span> &amp; Don'ts
         </h2>
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-[#1a1a1a] border border-green-500/20 rounded-2xl p-6">
+          <div className="bg-[#111] border border-green-500/20 rounded-2xl p-6 shadow-lg shadow-black/20">
             <h3 className="text-lg font-semibold text-green-400 mb-4 flex items-center gap-2">
               <FaCheckCircle /> Do's
             </h3>
@@ -249,7 +249,7 @@ const Resume = () => {
               ))}
             </ul>
           </div>
-          <div className="bg-[#1a1a1a] border border-red-500/20 rounded-2xl p-6">
+          <div className="bg-[#111] border border-red-500/20 rounded-2xl p-6 shadow-lg shadow-black/20">
             <h3 className="text-lg font-semibold text-red-400 mb-4 flex items-center gap-2">
               <FaTimesCircle /> Don'ts
             </h3>
@@ -266,7 +266,8 @@ const Resume = () => {
       </div>
 
       {/* Resources */}
-      <div className="p-8 bg-[#141414] rounded-3xl border border-[#2a2a2a] text-center">
+      <div className="p-8 bg-gradient-to-b from-[#111] to-[#0a0a0a] rounded-3xl border border-white/[0.08] shadow-2xl text-center relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#ffa116]/5 rounded-full blur-[100px] pointer-events-none" />
 
         <FaFileAlt className="text-[#ffa116] text-3xl mx-auto mb-6" />
 
@@ -296,7 +297,7 @@ const Resume = () => {
                   href={tool.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-4 rounded-lg bg-[#2a2a2a] text-gray-300 text-sm text-center hover:bg-[#ffa116] hover:text-black font-medium transition"
+                  className="px-4 py-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-300 text-sm text-center hover:bg-[#ffa116] hover:text-black hover:border-[#ffa116] font-semibold transition-all shadow-lg hover:-translate-y-0.5"
                 >
                   {tool.name}
                 </a>
@@ -320,7 +321,7 @@ const Resume = () => {
                   href={tool.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-4 rounded-lg bg-[#2a2a2a] text-gray-300 text-sm text-center hover:bg-[#ffa116] hover:text-black font-medium transition"
+                  className="px-3 py-4 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-300 text-sm text-center hover:bg-[#ffa116] hover:text-black hover:border-[#ffa116] font-semibold transition-all shadow-lg hover:-translate-y-0.5"
                 >
                   {tool.name}
                 </a>

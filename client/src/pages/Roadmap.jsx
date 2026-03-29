@@ -1,47 +1,76 @@
 import React from "react";
-import { FaMap, FaLaptopCode, FaMobileAlt, FaDatabase, FaServer } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { FiArrowRight, FiStar } from "react-icons/fi";
+import { FaRobot, FaLaptopCode, FaMobileAlt, FaDatabase, FaServer, FaBrain } from "react-icons/fa";
+import { roadmaps } from "../data/roadmaps.js";
+
+const iconMap = {
+  FaLaptopCode: <FaLaptopCode />,
+  FaMobileAlt: <FaMobileAlt />,
+  FaDatabase: <FaDatabase />,
+  FaServer: <FaServer />,
+  FaBrain: <FaBrain />
+};
+
+
 
 const Roadmap = () => {
-  const roadmaps = [
-    { title: "Frontend Development", icon: <FaLaptopCode />, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { title: "Backend Development", icon: <FaServer />, color: "text-green-500", bg: "bg-green-500/10" },
-    { title: "Android Development", icon: <FaMobileAlt />, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { title: "Full Stack MERN", icon: <FaDatabase />, color: "text-purple-500", bg: "bg-purple-500/10" },
-  ];
-
   return (
-    <div className="px-6 pb-4">
-      <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-4">Curated <span className="text-[#ffa116]">Roadmaps</span></h1>
-        <p className="text-gray-400 max-w-2xl">
-          Follow these step-by-step guides to master any technology from scratch.
-          Built by industry experts.
+    <div className="px-6 pb-4 max-w-7xl mx-auto">
+
+      {/* Header */}
+      <div className="mb-10 pt-2">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded-full px-3 py-1 mb-4">
+          <FiStar /> 6 Learning Paths
+        </div>
+        <h1 className="text-4xl md:text-5xl font-black mb-3">
+          Curated <span className="text-[#ffa116]">Roadmaps</span>
+        </h1>
+        <p className="text-gray-400 max-w-2xl text-base leading-relaxed">
+          Step-by-step guides to master any technology from scratch. Built from real interview requirements and industry standards.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      {/* Grid */}
+      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5 mb-16">
         {roadmaps.map((r, i) => (
-          <div key={i} className="card p-8 group flex items-start gap-6 hover:bg-[#1f1f1f] transition">
-            <div className={`p-5 rounded-2xl ${r.bg} ${r.color} text-3xl group-hover:scale-110 transition duration-500`}>
-              {r.icon}
+          <div
+            key={i}
+            className={`group bg-[#111] border ${r.border} hover:border-opacity-60 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:${r.glow} relative overflow-hidden`}
+          >
+            {/* Recommended / New badges */}
+            <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
+              {r.recommended && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#ffa116]/15 border border-[#ffa116]/30 text-[#ffa116]">⭐ Recommended</span>
+              )}
+              {r.isNew && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-green-500/15 border border-green-500/20 text-green-400">New</span>
+              )}
             </div>
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold mb-3">{r.title}</h3>
-              <p className="text-gray-400 text-sm mb-6">
-                Complete path from absolute beginner to production ready developer. Includes projects and interview prep.
-              </p>
-              <button className="flex items-center gap-2 text-[#ffa116] font-semibold group/btn">
-                Start Learning <span className="group-hover/btn:translate-x-1 transition">→</span>
-              </button>
+
+            {/* Icon */}
+            <div className={`w-12 h-12 rounded-2xl ${r.bg} ${r.color} text-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
+              {iconMap[r.icon]}
             </div>
+
+            {/* Title & meta */}
+            <h3 className={`text-xl font-bold mb-1 transition-colors ${r.color}`}>{r.title}</h3>
+            <div className="flex items-center gap-3 text-[11px] text-gray-500 mb-3">
+              <span>⏱ {r.duration}</span>
+              <span>·</span>
+              <span>{r.level}</span>
+            </div>
+            <p className="text-gray-400 text-sm leading-relaxed mb-5">{r.desc}</p>
+
+            {/* CTA */}
+            <Link to={`/roadmaps/${i}`} className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${r.bg} ${r.color} border ${r.border} group-hover:opacity-90`}>
+              Open Roadmap <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         ))}
       </div>
 
-      <div className="mt-20 p-10 glass rounded-3xl border-dashed border-2 border-[#2a2a2a] text-center">
-        <h2 className="text-2xl font-bold mb-2 text-gray-300">Coming Soon: Personalized Roadmap</h2>
-        <p className="text-gray-500 text-sm">Specialized guides with the help of AI for CSE students.</p>
-      </div>
+
     </div>
   );
 };

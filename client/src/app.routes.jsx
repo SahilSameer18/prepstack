@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Sheets from "./pages/Sheets";
 import Notes from "./pages/Notes";
 import Roadmap from "./pages/Roadmap";
+import RoadmapDetail from "./pages/RoadmapDetail";
 import AIProjectIdeas from "./pages/AIProjectIdeas";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
       { path: "/dsa", element: <Sheets /> },
       { path: "/notes", element: <Notes /> },
       { path: "/roadmaps", element: <Roadmap /> },
+      { path: "/roadmaps/:id", element: <RoadmapDetail /> },
       { path: "/ai-projects", element: <AIProjectIdeas /> },
       { path: "/resume", element: <Resume /> },
       { path: "/behavioral", element: <Behavioral /> },
