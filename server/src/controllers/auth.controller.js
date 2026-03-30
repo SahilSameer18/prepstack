@@ -1,4 +1,4 @@
-const userModel = require('../models/user.model')
+const userModel = require('../models/auth.model')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const blacklistTokenModel = require('../models/blacklist.model');
@@ -127,8 +127,27 @@ const logoutUser = async (req, res, next) => {
   }
 }
 
+// get current user
+
+const getCurrentUser = async (req, res, next) => {
+  try {
+    const user = await userModel.findById(req.user.id);
+    res.status(200).json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    next(error)
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
-  logoutUser
+  logoutUser,
+  getCurrentUser
 }

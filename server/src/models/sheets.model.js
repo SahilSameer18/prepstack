@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// schema for dsa problem
 const dsaProblemSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -18,6 +19,7 @@ const dsaProblemSchema = new mongoose.Schema({
   }
 });
 
+// schema for dsa topic
 const dsaTopicSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -27,6 +29,7 @@ const dsaTopicSchema = new mongoose.Schema({
   problems: [dsaProblemSchema]
 });
 
+// schema for dsa sheet
 const dsaSheetSchema = new mongoose.Schema({
   name: {
     type: String,

@@ -6,7 +6,7 @@ const blacklistTokenSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Token is required'],
   },
-  createdAt: { type: Date, default: Date.now, index: { expires: '1d' } } // expires after 1 day
+  createdAt: { type: Date, default: Date.now, index: { expires: '1d' } }  // expires after 1 day
 }, {
   timestamps: true
 });

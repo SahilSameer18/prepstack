@@ -1,5 +1,6 @@
 const DSASheet = require('../models/sheets.model');
 
+// controller to get all the sheets
 exports.getSheets = async (req, res) => {
   try {
     const sheets = await DSASheet.find({}, 'name slug description');
@@ -15,6 +16,7 @@ exports.getSheets = async (req, res) => {
   }
 };
 
+// controller to get sheet by slug
 exports.getSheetBySlug = async (req, res) => {
   try {
     const sheet = await DSASheet.findOne({ slug: req.params.slug });
@@ -35,4 +37,3 @@ exports.getSheetBySlug = async (req, res) => {
     });
   }
 };
-

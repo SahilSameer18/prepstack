@@ -17,7 +17,7 @@ const projectSchema = z.object({
   resumeValue: z.string(),
 });
 
-const generateProjectIdea = async ({ techStack, complexity, domain }) => {
+const generateProjectIdea = async ({ techStack, complexity, domain, notes }) => {
 
   const prompt = `
   You are an expert career coach and a senior software engineer.

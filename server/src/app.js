@@ -2,11 +2,14 @@ const express = require('express');
 const cookieParser = require('cookie-parser')
 
 
+// initialize the express app
 const app = express()
 
+// use the middleware
 app.use(express.json())
 app.use(cookieParser())
 
+// test route
 app.get('/', (req, res) => {
   console.log('first')
   res.send('Hii from the prepstack')
@@ -15,12 +18,18 @@ app.get('/', (req, res) => {
 // require all the routes here
 const authRouter = require('./routes/auth.routes')
 const sheetsRouter = require('./routes/sheets.routes')
+const projectRouter = require('./routes/project.routes')
+const notesRouter = require('./routes/notes.routes')
 
 
 // use all the routes here
 app.use('/api/auth', authRouter)
 app.use('/api/sheets', sheetsRouter)
+app.use('/api/projects', projectRouter)
+app.use('/api/notes', notesRouter)
 
+
+// error handling middleware
 app.use((err, req, res, next) => {
   console.log(err)
   res.status(err.statusCode || 500).json({
