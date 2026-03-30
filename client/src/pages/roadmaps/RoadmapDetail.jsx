@@ -1,15 +1,16 @@
 import React from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { FiArrowLeft, FiClock, FiCheckCircle } from "react-icons/fi";
-import { roadmaps } from "../data/roadmaps.js";
-import { FaLaptopCode, FaMobileAlt, FaDatabase, FaServer, FaBrain } from "react-icons/fa";
+import { roadmaps } from "../../data/roadmaps.js";
+import { FaLaptopCode, FaMobileAlt, FaDatabase, FaServer, FaBrain, FaChartLine } from "react-icons/fa";
 
 const iconMap = {
   FaLaptopCode: <FaLaptopCode />,
   FaMobileAlt: <FaMobileAlt />,
   FaDatabase: <FaDatabase />,
   FaServer: <FaServer />,
-  FaBrain: <FaBrain />
+  FaBrain: <FaBrain />,
+  FaChartLine: <FaChartLine />
 };
 
 const RoadmapDetail = () => {

@@ -7,10 +7,10 @@ const generateProject = async (req, res) => {
   try {
     const { techStack, complexity, domain, notes } = req.body;
 
-    if (!techStack || !complexity || !domain || !notes) {
+    if (!techStack || !complexity) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required"
+        message: "Tech stack and complexity are required"
       })
     }
 
@@ -35,7 +35,7 @@ const generateProject = async (req, res) => {
     })
   } catch (error) {
     console.error("Error generating project idea:", error);
-    res.status(500).json({ error: "Failed to generate project idea" });
+    res.status(500).json({ message: "Failed to generate project idea" });
   }
 }
 
@@ -44,7 +44,7 @@ const generateProject = async (req, res) => {
 
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await projectSchema.find({ user: req.user._id }).sort({ createdAt: -1 }).select('-title -description -__v -features -techStack -difficulty -estimatedTime -resumeValue')
+    const projects = await projectModel.find({ user: req.user._id }).sort({ createdAt: -1 }).select('-title -description -__v -features -techStack -difficulty -estimatedTime -resumeValue')
     return res.status(200).json({
       success: true,
       message: "Projects fetched successfully",
@@ -52,7 +52,7 @@ const getAllProjects = async (req, res) => {
     })
   } catch (error) {
     console.error("Error fetching projects:", error);
-    res.status(500).json({ error: "Failed to fetch projects" });
+    res.status(500).json({ message: "Failed to fetch projects" });
   }
 }
 
@@ -61,7 +61,7 @@ const getAllProjects = async (req, res) => {
 const getProjectById = async (req, res) => {
   try {
     const { projectId } = req.params;
-    const project = await projectSchema.findOne({ _id: projectId, user: req.user._id });
+    const project = await projectModel.findOne({ _id: projectId, user: req.user._id });
     if (!project) {
       return res.status(404).json({
         success: false,
@@ -75,7 +75,7 @@ const getProjectById = async (req, res) => {
     })
   } catch (error) {
     console.error("Error fetching project:", error);
-    res.status(500).json({ error: "Failed to fetch project" });
+    res.status(500).json({ message: "Failed to fetch project" });
   }
 }
 
@@ -98,7 +98,7 @@ const deleteProject = async (req, res) => {
     })
   } catch (error) {
     console.error("Error deleting project:", error);
-    res.status(500).json({ error: "Failed to delete project" });
+    res.status(500).json({ message: "Failed to delete project" });
   }
 }
 

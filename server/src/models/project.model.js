@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema({
-  title: String,
-  tagline: String,
-  description: String,
-  features: [String],
-  techStack: String,
-  difficulty: String,
+  title: { type: String, required: true },
+  tagline: { type: String, required: true },
+  description: { type: String, required: true },
+  features: { type: [String], default: [] },
+  techStack: { type: String, required: true },
+  difficulty: { type: String, required: true },
   estimatedTime: String,
   resumeValue: String,
   user: {

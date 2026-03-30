@@ -32,7 +32,7 @@ export const roadmaps = [
   {
     title: "Backend Development",
     icon: "FaServer",
-    color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20", glow: "shadow-green-500/10",
+    color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", glow: "shadow-red-500/10",
     desc: "Node.js → Express → MongoDB → REST APIs → Auth → Cloud. Build scalable backend applications.",
     steps: [
       "Computer & Networking Basics",
@@ -118,9 +118,42 @@ export const roadmaps = [
     ]
   },
   {
+  title: "Data Analytics",
+  icon: "FaChartLine",
+  color: "text-blue-400", 
+  bg: "bg-blue-500/10", 
+  border: "border-blue-500/20", 
+  glow: "shadow-blue-500/10",
+  desc: "Data collection → Cleaning → Analysis → Visualization → Insights → Decision Making. Complete path from zero to actionable analytics portfolio.",
+  steps: [
+    "Introduction to Data & Analytics Basics",
+    "Excel & Google Sheets for Data Handling",
+    "Data Cleaning & Transformation with Python/Pandas",
+    "Exploratory Data Analysis (EDA) & Statistics",
+    "Data Visualization with Matplotlib, Seaborn & Plotly",
+    "SQL for Data Extraction & Querying",
+    "Intermediate Python for Analytics & Automation",
+    "Business Analytics & KPI Dashboards",
+    "Capstone Project & Reporting"
+  ],
+  duration: "4–6 months",
+  level: "Beginner to Professional Analytics",
+  details: [
+    { title: "Data Fundamentals", desc: "Types of data, Structured vs Unstructured, Data Life Cycle, Data Ethics & Privacy." },
+    { title: "Spreadsheet Skills (Excel)", desc: "Formulas, Pivot Tables, Charts, Conditional Formatting, Data Validation." },
+    { title: "Data Cleaning & Preprocessing", desc: "Handling missing data, Duplicates, Normalization, Encoding categorical variables, Outlier detection." },
+    { title: "Statistics & Probability", desc: "Descriptive stats, Inferential stats, Probability distributions, Hypothesis testing, Correlation & Regression." },
+    { title: "Python for Data Analytics", desc: "NumPy, Pandas, DataFrames, Filtering, Aggregation, Grouping, Merging datasets." },
+    { title: "Data Visualization", desc: "Matplotlib, Seaborn, Plotly, Interactive dashboards, Storytelling with data." },
+    { title: "SQL & Databases", desc: "Basic & Advanced Queries, Joins, Aggregations, Subqueries, Views." },
+    { title: "Business Analytics", desc: "KPIs, Metrics, Decision-making insights, Reporting & Presentation skills." },
+    { title: "Capstone & Portfolio", desc: "End-to-end analytics project: Data collection → Cleaning → Analysis → Visualization → Insights → Dashboard." }
+  ]
+},
+  {
     title: "Machine Learning",
     icon: "FaBrain",
-    color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", glow: "shadow-red-500/10",
+    color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", glow: "shadow-purple-500/10",
     desc: "Python → NumPy → Pandas → Scikit-Learn → Deep Learning. Build and deploy ML models.",
     steps: [
       "Python Programming Fundamentals",

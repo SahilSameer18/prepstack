@@ -9,7 +9,7 @@ const projectRouter = express.Router();
 projectRouter.post('/generate', authMiddleware, generateProject);
 
 // get all project ideas of the logged in user
-projectRouter.get('/all', authMiddleware, getAllProjects);
+projectRouter.get('/', authMiddleware, getAllProjects);
 
 // get project idea from projectId
 projectRouter.get('/:projectId', authMiddleware, getProjectById);
