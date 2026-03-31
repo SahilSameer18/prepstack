@@ -1,21 +1,32 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft, FiCheck } from "react-icons/fi";
+import { useAuth } from "../../hooks/useAuth";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { handleRegister, loading } = useAuth();
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register:", formData);
+    setError(null);
+    try {
+      await handleRegister(formData.username, formData.email, formData.password);
+      navigate("/");
+    } catch (error) {
+      const msg =
+        error?.response?.data?.message || "Registration failed. Please try again.";
+      setError(msg);
+    }
   };
 
   const passwordStrength = () => {

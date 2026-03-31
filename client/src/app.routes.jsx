@@ -13,6 +13,7 @@ import Behavioral from './pages/Behavioral';
 import NotFound from './pages/NotFound';
 import Quiz from './pages/Quiz';
 import Aptitute from './pages/Aptitute';
+import { useAuth } from "./hooks/useAuth";
 
 
 

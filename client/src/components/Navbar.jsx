@@ -1,22 +1,28 @@
 import { useState, useRef, useEffect } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import {
   FiCode, FiMap, FiCpu, FiBook, FiMessageSquare, FiFileText,
   FiHelpCircle, FiActivity, FiArrowRight, FiZap, FiLogOut
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../hooks/useAuth";
 
 const Navbar = () => {
+
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
   const exploreRef = useRef();
   const userRef = useRef();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const user = null; // Mock user
-  const logout = () => {}; // Mock logout
+  const { user, handleLogout } = useAuth();
 
+  const logout = () => {
+    handleLogout();
+    navigate('/')
+  }
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10);
@@ -152,7 +158,7 @@ const Navbar = () => {
                     >
                       <div className="px-4 py-2.5 border-b border-white/[0.06]">
                         <p className="text-xs text-gray-500">Signed in as</p>
-                        <p className="text-sm font-medium text-white truncate">{user.email}</p>
+                        <p className="text-sm font-medium text-white truncate">{user.username}</p>
                       </div>
                       <button
                         onClick={logout}

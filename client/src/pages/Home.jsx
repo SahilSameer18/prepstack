@@ -9,10 +9,10 @@ import { FiZap, FiTarget, FiCheck } from "react-icons/fi";
 import about2 from "../assets/about2.png";
 import Testimonial from "../components/homePage/Testimonial";
 import FAQ from "../components/homePage/FAQ";
+import { useAuth } from "../hooks/useAuth";
 
 const Home = () => {
-  const user = null; // Simulated auth state
-
+  const { user } = useAuth();
   const scrollToCards = () => {
     const section = document.getElementById("cards");
     if (section) section.scrollIntoView({ behavior: "smooth" });
