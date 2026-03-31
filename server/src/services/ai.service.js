@@ -68,4 +68,5 @@ const generateProjectIdea = async ({ techStack, complexity, domain, notes }) => 
   return data;
 }
 
+
 module.exports = { generateProjectIdea }

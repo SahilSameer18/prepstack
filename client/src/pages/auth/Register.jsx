@@ -74,7 +74,7 @@ const Register = () => {
         </div>
 
         {/* Main content — vertically centered */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center gap-6 py-4">
+        <div className="relative z-10 flex-1 flex flex-col justify-center gap-6 py-2">
 
           {/* Badge + Headline */}
           <div>

@@ -44,7 +44,7 @@ const generateProject = async (req, res) => {
 
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await projectModel.find({ user: req.user._id }).sort({ createdAt: -1 }).select('-title -description -__v -features -techStack -difficulty -estimatedTime -resumeValue')
+    const projects = await projectModel.find({ user: req.user._id }).sort({ createdAt: -1 }).select('title tagline difficulty createdAt')
     return res.status(200).json({
       success: true,
       message: "Projects fetched successfully",

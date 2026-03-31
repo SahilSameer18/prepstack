@@ -145,6 +145,45 @@ const getCurrentUser = async (req, res, next) => {
   }
 }
 
+// update user
+
+// const updateUser = async (req, res, next) => {
+//   try {
+//     const { username, email } = req.body;
+//     const user = await userModel.findByIdAndUpdate(req.user.id, { username, email }, { new: true });
+//     res.status(200).json({
+//       success: true,
+//       user: {
+//         id: user._id,
+//         username: user.username,
+//         email: user.email,
+//       },
+//     });
+//   } catch (error) {
+//     next(error)
+//   }
+// }
+
+// update password
+
+// const updatePassword = async (req, res, next) => {
+//   try {
+//     const { password } = req.body;
+//     const user = await userModel.findByIdAndUpdate(req.user.id, { password }, { new: true });
+//     res.status(200).json({
+//       success: true,
+//       user: {
+//         id: user._id,
+//         username: user.username,
+//         email: user.email,
+//       },
+//     });
+//   } catch (error) {
+//     next(error)
+//   }
+// }
+
+
 module.exports = {
   registerUser,
   loginUser,

@@ -172,7 +172,7 @@ const Navbar = () => {
               </div>
             ) : (
               <NavLink
-                to="/register"
+                to="/login"
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-black bg-gradient-to-r from-[#ffa116] to-[#ff8c00] hover:from-[#ffb84d] hover:to-[#ffa116] shadow-md shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-300 hover:-translate-y-0.5"
               >
                 Get Started <FiArrowRight className="text-xs" />
@@ -234,7 +234,7 @@ const Navbar = () => {
                   </button>
                 ) : (
                   <Link
-                    to="/register"
+                    to="/login"
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-[#ffa116] to-[#ff8c00]"
                   >
@@ -249,5 +249,6 @@ const Navbar = () => {
     </nav>
   );
 };
+
 
 export default Navbar;
