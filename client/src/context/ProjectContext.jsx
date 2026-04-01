@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { createContext, useState } from 'react'
 
-const ProjectContext = () => {
+export const ProjectContext = createContext();
+
+export const ProjectProvider = ({ children }) => {
+  const [project, setProject] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   return (
-    <div>
-      ProjectContext
-    </div>
+    <ProjectContext.Provider value={{ project, setProject, projects, setProjects, loading, setLoading }}>
+      {children}
+    </ProjectContext.Provider>
   )
 }
 

@@ -13,15 +13,8 @@ import Behavioral from './pages/Behavioral';
 import NotFound from './pages/NotFound';
 import Quiz from './pages/Quiz';
 import Aptitute from './pages/Aptitute';
-import { useAuth } from "./hooks/useAuth";
-
-
-
-// Protected route wrapper
-// const ProtectedRoute = ({ children }) => {
-//   const { user } = useAuth();
-//   return user ? children : <Navigate to="/login" replace />;
-// };
+import ProjectDashboard from "./pages/project/ProjectDashboard";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 
 export const router = createBrowserRouter([
@@ -31,13 +24,15 @@ export const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/dsa", element: <Sheets /> },
       { path: "/notes", element: <Notes /> },
-      { path: "/roadmaps", element: <Roadmap /> },
-      { path: "/roadmaps/:id", element: <RoadmapDetail /> },
-      { path: "/ai-projects", element: <AIProjectIdeas /> },
-      { path: "/resume", element: <Resume /> },
-      { path: "/behavioral", element: <Behavioral /> },
-      { path: "/quiz", element: <Quiz /> },
-      { path: "/aptitude", element: <Aptitute /> },
+      { path: "/roadmaps", element: <ProtectedRoute><Roadmap /></ProtectedRoute> },
+      { path: "/roadmaps/:id", element: <ProtectedRoute><RoadmapDetail /></ProtectedRoute> },
+      { path: "/ai-projects", element: <ProtectedRoute><AIProjectIdeas /></ProtectedRoute> },
+      { path: "/ai-projects/:projectId", element: <ProtectedRoute><AIProjectIdeas /></ProtectedRoute> },
+      { path: "/project-dashboard", element: <ProtectedRoute><ProjectDashboard /></ProtectedRoute> },
+      { path: "/resume", element: <ProtectedRoute><Resume /></ProtectedRoute> },
+      { path: "/behavioral", element: <ProtectedRoute><Behavioral /></ProtectedRoute> },
+      { path: "/quiz", element: <ProtectedRoute><Quiz /></ProtectedRoute> },
+      { path: "/aptitude", element: <ProtectedRoute><Aptitute /></ProtectedRoute> },
     ],
   },
   { path: '/login', element: <Login /> },

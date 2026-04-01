@@ -3,7 +3,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import {
   FiCode, FiMap, FiCpu, FiBook, FiMessageSquare, FiFileText,
-  FiHelpCircle, FiActivity, FiArrowRight, FiZap, FiLogOut
+  FiHelpCircle, FiActivity, FiArrowRight, FiZap, FiLogOut, FiGrid
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
@@ -160,6 +160,13 @@ const Navbar = () => {
                         <p className="text-xs text-gray-500">Signed in as</p>
                         <p className="text-sm font-medium text-white truncate">{user.username}</p>
                       </div>
+                      <Link
+                        to="/project-dashboard"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.04] transition-colors"
+                      >
+                        <FiGrid className="text-xs" /> Saved Projects
+                      </Link>
                       <button
                         onClick={logout}
                         className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
@@ -224,14 +231,24 @@ const Navbar = () => {
                   {link.name}
                 </NavLink>
               ))}
-              <div className="pt-3 pb-1">
+              <div className="pt-3 pb-1 border-t border-white/[0.05] mt-2">
                 {user ? (
-                  <button
-                    onClick={() => { logout(); setMobileOpen(false); }}
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-all"
-                  >
-                    <FiLogOut /> Sign out
-                  </button>
+                  <div className="space-y-2">
+                    <Link
+                      to="/project-dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] transition-all"
+                    >
+                      <FiGrid className="text-base text-gray-500" />
+                      Saved Projects
+                    </Link>
+                    <button
+                      onClick={() => { logout(); setMobileOpen(false); }}
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-all"
+                    >
+                      <FiLogOut /> Sign out
+                    </button>
+                  </div>
                 ) : (
                   <Link
                     to="/login"

@@ -29,7 +29,7 @@ const notesRouter = require('./routes/notes.routes')
 // use all the routes here
 app.use('/api/auth', authRouter)
 app.use('/api/sheets', sheetsRouter)
-app.use('/api/projects', projectRouter)
+app.use('/api/project', projectRouter)
 app.use('/api/notes', notesRouter)
 
 

@@ -1,85 +1,71 @@
 import React, { useState } from "react";
-import { FiCpu, FiSave, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiLoader } from "react-icons/fi";
+import { FiCpu, FiSave, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiLoader, FiList } from "react-icons/fi";
 import { FaRobot, FaBookmark, FaLightbulb } from "react-icons/fa";
+import { useProject } from '../../hooks/useProject'
+import { useNavigate } from "react-router-dom";
 
 const techStacks = ["MERN Stack", "Python / Django", "React Native", "Next.js", "Flutter", "Spring Boot", "FastAPI", "Vue.js", "MEAN Stack"];
 const complexities = ["Beginner", "Intermediate", "Advanced"];
 const domains = ["FinTech", "HealthTech", "EdTech", "E-Commerce", "SaaS", "Web3", "Open Source", "Social Media", "Productivity", "AI / ML"];
 
-const placeholderIdea = {
-  title: "AI-Powered Study Planner",
-  tagline: "Smart scheduling meets intelligent learning",
-  description:
-    "A full-stack web application that uses AI to generate personalised weekly study plans based on the topics a student selects, their current skill level, and the number of hours they can dedicate per day. The AI adapts the plan dynamically each week based on progress.",
-  features: [
-    "AI-generated weekly study schedule using Gemini API",
-    "Progress tracker with streak calendar",
-    "Topic-wise resource recommendation",
-    "Smart reminders via email or browser notifications",
-    "Mobile-responsive dashboard with dark mode",
-  ],
-  techStack: "MERN Stack + Gemini AI + Tailwind CSS",
-  difficulty: "Intermediate",
-  estimatedTime: "3–4 weeks",
-  resumeValue: "High — demonstrates AI integration, full-stack skills, and product thinking",
-};
-
 const AIProjectIdeas = () => {
-  const [form, setForm] = useState({ stack: "", complexity: "", domain: "", notes: "" });
-  const [generated, setGenerated] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ techStack: "", complexity: "", domain: "", notes: "" });
+  const { generateProject, loading, project, setProject } = useProject();
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleChange = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleGenerate = async () => {
-    if (!form.stack || !form.complexity) return;
-    setLoading(true);
-    setSaved(false);
-    
-    // Simulate backend connection delay
-    await new Promise((r) => setTimeout(r, 1000));
-    
-    // TODO: Connect to your backend route that calls Gemini API
-    console.log("Form payload to send to backend:", form);
-    alert("Backend connection required. Please connect the Gemini API endpoint to receive ideas.");
-    
-    setLoading(false);
-    // When backend is ready, set the response here:
-    // setGenerated(response.data);
+    if (!form.techStack || !form.complexity) return;
+    try {
+      await generateProject(form);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error) {
+      console.error("Failed to generate idea", error);
+    }    
   };
 
-  const handleSave = async () => {
-    // Will POST to /api/ai/save-idea when backend is connected
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  const handleReset = () => {
+    setForm({ techStack: "", complexity: "", domain: "", notes: "" });
+    setProject(null);
   };
 
   const handleCopy = () => {
-    if (!generated) return;
-    const text = `${generated.title}\n\n${generated.description}\n\nFeatures:\n${generated.features.map((f) => `- ${f}`).join("\n")}\n\nStack: ${generated.techStack}`;
+    if (!project) return;
+    const text = `${project.title}\n\n${project.description}\n\nFeatures:\n${project.features?.map((f) => `- ${f}`).join("\n")}\n\nStack: ${project.techStack}`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid = form.stack && form.complexity;
+  const isFormValid = form.techStack && form.complexity;
 
   return (
     <div className="px-6 pb-4 max-w-7xl mx-auto">
 
       {/* Header */}
-      <div className="mb-8 pt-2">
-        <div className="inline-flex items-center gap-2 text-xs font-semibold text-green-400 bg-green-500/10 border border-green-500/20 rounded-full px-3 py-1 mb-4">
-          <FaRobot /> Powered by Gemini AI
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pt-2">
+        <div>
+          <div className="inline-flex items-center gap-2 text-xs font-semibold text-green-400 bg-green-500/10 border border-green-500/20 rounded-full px-3 py-1 mb-4">
+            <FaRobot /> Powered by AI
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black mb-3">
+            AI Project <span className="text-[#ffa116]">Generator</span>
+          </h1>
+          <p className="text-gray-400 max-w-2xl text-base leading-relaxed">
+            Stop building another To-Do app. Generate unique, resume-worthy project ideas tailored to your tech stack and goals.
+          </p>
         </div>
-        <h1 className="text-4xl md:text-5xl font-black mb-3">
-          AI Project <span className="text-[#ffa116]">Generator</span>
-        </h1>
-        <p className="text-gray-400 max-w-2xl text-base leading-relaxed">
-          Stop building another To-Do app. Generate unique, resume-worthy project ideas tailored to your tech stack and goals.
-        </p>
+        
+        <button
+          onClick={() => navigate('/project-dashboard')}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.1] transition-all font-medium text-sm self-start md:self-auto"
+        >
+          <FiList className="text-[#ffa116]" /> View Saved Projects
+        </button>
       </div>
 
       {/* Two-Panel Layout */}
@@ -102,8 +88,8 @@ const AIProjectIdeas = () => {
               {techStacks.map((s) => (
                 <button
                   key={s}
-                  onClick={() => handleChange("stack", s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${form.stack === s ? "bg-[#ffa116]/15 border-[#ffa116]/40 text-[#ffa116]" : "bg-white/[0.03] border-white/[0.07] text-gray-400 hover:text-white hover:border-white/[0.2]"}`}
+                  onClick={() => handleChange("techStack", s)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${form.techStack === s ? "bg-[#ffa116]/15 border-[#ffa116]/40 text-[#ffa116]" : "bg-white/[0.03] border-white/[0.07] text-gray-400 hover:text-white hover:border-white/[0.2]"}`}
                 >
                   {s}
                 </button>
@@ -158,18 +144,27 @@ const AIProjectIdeas = () => {
             />
           </div>
 
-          {/* Generate Button */}
-          <button
-            onClick={handleGenerate}
-            disabled={!isFormValid || loading}
-            className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${isFormValid && !loading ? "bg-gradient-to-r from-[#ffa116] to-[#ff8c00] text-black hover:from-[#ffb84d] hover:to-[#ffa116] shadow-lg shadow-orange-500/20 hover:-translate-y-0.5" : "bg-white/[0.05] text-gray-500 cursor-not-allowed"}`}
-          >
-            {loading ? (
-              <><FiLoader className="animate-spin" /> Generating Idea...</>
-            ) : (
-              <><FiZap /> Generate Project Idea</>
-            )}
-          </button>
+          {/* Actions */}
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={handleGenerate}
+              disabled={!isFormValid || loading}
+              className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${isFormValid && !loading ? "bg-gradient-to-r from-[#ffa116] to-[#ff8c00] text-black hover:from-[#ffb84d] hover:to-[#ffa116] shadow-lg shadow-orange-500/20 hover:-translate-y-0.5" : "bg-white/[0.05] text-gray-500 cursor-not-allowed"}`}
+            >
+              {loading ? (
+                <><FiLoader className="animate-spin" /> Generating Idea...</>
+              ) : (
+                <><FiZap /> Generate Project Idea</>
+              )}
+            </button>
+            {/* <button
+               onClick={handleReset}
+               title="Clear all fields and start fresh"
+               className="w-full py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center gap-2 text-gray-500 hover:text-white hover:bg-white/[0.08] transition-all font-medium text-sm"
+            >
+              <FiRefreshCw /> Start New Idea
+            </button> */}
+          </div>
 
           {!isFormValid && (
             <p className="text-center text-xs text-gray-600">Select Tech Stack and Complexity to continue</p>
@@ -178,7 +173,7 @@ const AIProjectIdeas = () => {
 
         {/* ─── RIGHT PANEL: Generated Idea ─── */}
         <div className="min-h-[500px]">
-          {!generated && !loading && (
+          {!project && !loading && (
             <div className="h-full min-h-[500px] flex flex-col items-center justify-center bg-[#111] border border-dashed border-white/[0.08] rounded-2xl p-10 text-center">
               <div className="w-16 h-16 rounded-2xl bg-[#ffa116]/10 border border-[#ffa116]/20 flex items-center justify-center mb-4">
                 <FaRobot className="text-3xl text-[#ffa116]/60" />
@@ -205,21 +200,21 @@ const AIProjectIdeas = () => {
                 </div>
               </div>
               <p className="text-white font-semibold mb-1">Generating your idea...</p>
-              <p className="text-gray-500 text-sm">Gemini AI is crafting something unique for you</p>
+              <p className="text-gray-500 text-sm">AI is crafting something unique for you</p>
             </div>
           )}
 
-          {generated && !loading && (
+          {project && !loading && (
             <div className="bg-[#111] border border-white/[0.08] rounded-2xl overflow-hidden">
               {/* Card Header */}
               <div className="bg-gradient-to-r from-[#ffa116]/10 to-transparent border-b border-white/[0.06] px-6 py-4 flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-semibold text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-2 py-0.5">AI Generated</span>
-                    <span className="text-xs text-gray-500">{form.stack} · {form.complexity}</span>
+                    <span className="text-xs text-gray-500">{project.techStack || form.techStack} · {project.difficulty || form.complexity}</span>
                   </div>
-                  <h2 className="text-2xl font-black text-white">{generated.title}</h2>
-                  <p className="text-gray-400 text-sm mt-1 italic">{generated.tagline}</p>
+                  <h2 className="text-2xl font-black text-white">{project.title}</h2>
+                  <p className="text-gray-400 text-sm mt-1 italic">{project.tagline}</p>
                 </div>
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -231,17 +226,11 @@ const AIProjectIdeas = () => {
                     {copied ? <FiCheck className="text-green-400" /> : <FiCopy />}
                   </button>
                   <button
-                    onClick={handleGenerate}
-                    title="Regenerate"
+                    onClick={handleReset}
+                    title="Clear current idea and start over"
                     className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.1] transition-all"
                   >
                     <FiRefreshCw className={loading ? "animate-spin" : ""} />
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${saved ? "bg-green-500/15 border border-green-500/30 text-green-400" : "bg-[#ffa116] text-black hover:bg-[#ffb84d]"}`}
-                  >
-                    {saved ? <><FiCheck /> Saved!</> : <><FaBookmark /> Save Idea</>}
                   </button>
                 </div>
               </div>
@@ -251,14 +240,14 @@ const AIProjectIdeas = () => {
                 {/* Description */}
                 <div>
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Project Overview</h3>
-                  <p className="text-gray-300 leading-relaxed text-sm">{generated.description}</p>
+                  <p className="text-gray-300 leading-relaxed text-sm">{project.description}</p>
                 </div>
 
                 {/* Features */}
                 <div>
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Key Features</h3>
                   <ul className="space-y-2">
-                    {generated.features.map((f, i) => (
+                    {project.features?.map((f, i) => (
                       <li key={i} className="flex items-start gap-2.5 text-sm text-gray-300">
                         <span className="w-5 h-5 rounded-full bg-[#ffa116]/15 border border-[#ffa116]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <FiCheck className="text-[#ffa116] text-[10px]" />
@@ -269,19 +258,30 @@ const AIProjectIdeas = () => {
                   </ul>
                 </div>
 
-                {/* Meta badges */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {[
-                    { label: "Tech Stack", value: generated.techStack },
-                    { label: "Difficulty", value: generated.difficulty },
-                    { label: "Time Estimate", value: generated.estimatedTime },
-                    { label: "Resume Value", value: generated.resumeValue },
-                  ].map((m) => (
-                    <div key={m.label} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3">
-                      <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{m.label}</p>
-                      <p className="text-xs text-white font-medium leading-snug">{m.value}</p>
-                    </div>
-                  ))}
+                {/* Meta details */}
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {[
+                      { label: "Tech Stack", value: project.techStack },
+                      { label: "Difficulty", value: project.difficulty },
+                      { label: "Time Estimate", value: project.estimatedTime },
+                    ].map((m) => (
+                      <div key={m.label} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3">
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{m.label}</p>
+                        <p className="text-xs text-white font-medium leading-snug">{m.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Resume Value - Full Width and Highlighted */}
+                  <div className="bg-[#ffa116]/5 border border-[#ffa116]/10 rounded-xl p-4">
+                    <p className="text-[10px] text-[#ffa116] uppercase tracking-wider mb-2 font-bold flex items-center gap-1.5">
+                      <FiZap className="text-xs" /> Resume Impact & Implementation Value
+                    </p>
+                    <p className="text-xs text-gray-300 leading-relaxed italic">
+                      {project.resumeValue}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
