@@ -20,7 +20,7 @@ const Behavioral = () => {
   };
 
   return (
-    <div className="px-6 pb-4 max-w-7xl mx-auto">
+    <div className="px-6 pb-4 max-w-7xl mx-auto page-enter">
       {/* Header Section */}
       <div className="mb-12 text-center md:text-left">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">

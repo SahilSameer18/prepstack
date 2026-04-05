@@ -17,3 +17,5 @@ authRouter.post('/logout', authMiddleware, authController.logoutUser);
 authRouter.get('/current-user', authMiddleware, authController.getCurrentUser);
 
 module.exports = authRouter;
+
+

@@ -194,7 +194,7 @@ const SectionCard = ({ section }) => {
 
 const Resume = () => {
   return (
-    <div className="px-6 pb-4 max-w-5xl mx-auto">
+    <div className="px-6 pb-4 max-w-5xl mx-auto page-enter">
       {/* Header */}
       <div className="mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">

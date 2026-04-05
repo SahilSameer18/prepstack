@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiCpu, FiSave, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiLoader, FiList } from "react-icons/fi";
 import { FaRobot, FaBookmark, FaLightbulb } from "react-icons/fa";
 import { useProject } from '../../hooks/useProject'
@@ -14,6 +14,13 @@ const AIProjectIdeas = () => {
   const { generateProject, loading, project, setProject } = useProject();
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    // Clear generated project data when user leaves/unmounts the component
+    return () => {
+      setProject(null);
+    };
+  }, [setProject]);
 
   const handleChange = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -44,7 +51,7 @@ const AIProjectIdeas = () => {
   const isFormValid = form.techStack && form.complexity;
 
   return (
-    <div className="px-6 pb-4 max-w-7xl mx-auto">
+    <div className="px-6 pb-4 max-w-7xl mx-auto page-enter">
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pt-2">

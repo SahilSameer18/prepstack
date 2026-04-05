@@ -24,7 +24,7 @@ const RoadmapDetail = () => {
   const roadmap = roadmaps[roadmapIndex];
 
   return (
-    <div className="px-6 pb-20 max-w-4xl mx-auto">
+    <div className="px-6 pb-20 max-w-4xl mx-auto page-enter">
       {/* Back Button */}
       <div className="pt-6 mb-8">
         <Link 

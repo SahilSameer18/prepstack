@@ -24,7 +24,7 @@ const Footer = () => {
   return (
     <footer className="mt-24 border-t border-white/[0.06] bg-[#0a0a0a]">
 
-      {/* CTA Strip */}
+      {/* CTA Strip
       <div className="border-b border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
@@ -38,7 +38,7 @@ const Footer = () => {
             Get Started Free <FiArrowRight />
           </Link>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-6 py-12">

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FiTrash2, FiExternalLink, FiCpu, FiPlus, FiLoader, FiAlertCircle, FiX, FiCheck } from "react-icons/fi";
 import { useProject } from "../../hooks/useProject";
 import { motion, AnimatePresence } from "framer-motion";
+import { SkeletonProjectCard } from "../../components/ui/Skeletons";
 
 const ProjectDashboard = () => {
   const { projects, getProjects, deleteProjectById, loading } = useProject();
@@ -40,7 +41,7 @@ const ProjectDashboard = () => {
   const projectToDelete = projects.find(p => p._id === deletingId);
 
   return (
-    <div className="px-6 pb-12 max-w-7xl mx-auto relative min-h-[60vh]">
+    <div className="px-6 pb-12 max-w-7xl mx-auto relative min-h-[60vh] page-enter">
       
       {/* Delete Confirmation Modal Overlay */}
       <AnimatePresence>
@@ -108,9 +109,10 @@ const ProjectDashboard = () => {
 
       {/* Projects Grid */}
       {loading && projects.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-[#111] border border-white/[0.08] rounded-3xl">
-          <FiLoader className="text-4xl text-[#ffa116] animate-spin mb-4" />
-          <p className="text-gray-400">Loading your ideas...</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <SkeletonProjectCard key={i} />
+          ))}
         </div>
       ) : projects.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 bg-[#111] border border-dashed border-white/[0.08] rounded-3xl text-center">

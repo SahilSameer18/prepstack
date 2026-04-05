@@ -17,7 +17,7 @@ const iconMap = {
 
 const Roadmap = () => {
   return (
-    <div className="px-6 pb-4 max-w-7xl mx-auto">
+    <div className="px-6 pb-4 max-w-7xl mx-auto page-enter">
 
       {/* Header */}
       <div className="mb-10 pt-2">
@@ -38,6 +38,7 @@ const Roadmap = () => {
           <div
             key={i}
             className={`group bg-[#111] border ${r.border} hover:border-opacity-60 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:${r.glow} relative overflow-hidden`}
+            style={{ animation: `pageIn 0.4s ease forwards`, animationDelay: `${i * 0.07}s`, opacity: 0 }}
           >
             {/* Recommended / New badges */}
             <div className="absolute top-4 right-4 flex flex-col items-end gap-1">

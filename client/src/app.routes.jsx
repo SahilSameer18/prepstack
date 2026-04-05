@@ -21,18 +21,87 @@ export const router = createBrowserRouter([
   {
     element: <MainLayout />,
     children: [
+
       { path: "/", element: <Home /> },
-      { path: "/dsa", element: <Sheets /> },
-      { path: "/notes", element: <Notes /> },
-      { path: "/roadmaps", element: <ProtectedRoute><Roadmap /></ProtectedRoute> },
-      { path: "/roadmaps/:id", element: <ProtectedRoute><RoadmapDetail /></ProtectedRoute> },
-      { path: "/ai-projects", element: <ProtectedRoute><AIProjectIdeas /></ProtectedRoute> },
-      { path: "/ai-projects/:projectId", element: <ProtectedRoute><AIProjectIdeas /></ProtectedRoute> },
-      { path: "/project-dashboard", element: <ProtectedRoute><ProjectDashboard /></ProtectedRoute> },
-      { path: "/resume", element: <ProtectedRoute><Resume /></ProtectedRoute> },
-      { path: "/behavioral", element: <ProtectedRoute><Behavioral /></ProtectedRoute> },
-      { path: "/quiz", element: <ProtectedRoute><Quiz /></ProtectedRoute> },
-      { path: "/aptitude", element: <ProtectedRoute><Aptitute /></ProtectedRoute> },
+
+      {
+        path: "/dsa",
+        element:
+          <ProtectedRoute>
+            <Sheets />
+          </ProtectedRoute>
+      },
+      {
+        path: "/notes",
+        element:
+          <ProtectedRoute>
+            <Notes />
+          </ProtectedRoute>
+      },
+
+      {
+        path: "/roadmaps",
+        element:
+          <ProtectedRoute>
+            <Roadmap />
+          </ProtectedRoute>
+      },
+      {
+        path: "/roadmaps/:id",
+        element:
+          <ProtectedRoute>
+            <RoadmapDetail />
+          </ProtectedRoute>
+      },
+      {
+        path: "/ai-projects",
+        element:
+          <ProtectedRoute>
+            <AIProjectIdeas />
+          </ProtectedRoute>
+      },
+      {
+        path: "/ai-projects/:projectId",
+        element:
+          <ProtectedRoute>
+            <AIProjectIdeas />
+          </ProtectedRoute>
+      },
+      {
+        path: "/project-dashboard",
+        element:
+          <ProtectedRoute>
+            <ProjectDashboard />
+          </ProtectedRoute>
+      },
+      {
+        path: "/resume",
+        element:
+          <ProtectedRoute>
+            <Resume />
+          </ProtectedRoute>
+      },
+      {
+        path: "/behavioral",
+        element:
+          <ProtectedRoute>
+            <Behavioral />
+          </ProtectedRoute>
+      },
+      {
+        path: "/quiz",
+        element:
+          <ProtectedRoute>
+            <Quiz />
+          </ProtectedRoute>
+      },
+      {
+        path: "/aptitude",
+        element:
+          <ProtectedRoute>
+            <Aptitute />
+          </ProtectedRoute>
+      },
     ],
   },
   { path: '/login', element: <Login /> },

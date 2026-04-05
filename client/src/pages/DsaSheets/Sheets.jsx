@@ -148,7 +148,7 @@ const Sheets = () => {
     : categories.filter((c) => c.id === activeCategory);
 
   return (
-    <div className="px-6 pb-4 max-w-7xl mx-auto">
+    <div className="px-6 pb-4 max-w-7xl mx-auto page-enter">
       <div className="mb-10 pt-2">
         <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-3 py-1 mb-4">
           <FaCode /> 1200+ Problems

@@ -66,7 +66,7 @@ const Notes = () => {
   );
 
   return (
-    <div className="px-6 pb-4 max-w-7xl mx-auto">
+    <div className="px-6 pb-4 max-w-7xl mx-auto page-enter">
 
       {/* Header */}
       <div className="mb-10 pt-2">

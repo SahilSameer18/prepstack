@@ -13,11 +13,14 @@ const registerUser = async (req, res, next) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const isUserAlreadyExist = await userModel.findOne({
-      $or: [{ email }, { username }],
-    });
-    if (isUserAlreadyExist) {
-      return res.status(400).json({ message: "User already exists" });
+    const existingEmail = await userModel.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "An account with this email already exists" });
+    }
+
+    const existingUsername = await userModel.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username is already taken. Please choose another." });
     }
 
 

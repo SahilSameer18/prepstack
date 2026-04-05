@@ -7,6 +7,7 @@ import {
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
+import { InlineSpinner } from "../components/ui/Skeletons";
 
 const Navbar = () => {
 
@@ -18,10 +19,16 @@ const Navbar = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user, handleLogout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const logout = () => {
-    handleLogout();
-    navigate('/')
+  const logout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await handleLogout();
+      navigate('/');
+    } finally {
+      setIsLoggingOut(false);
+    }
   }
 
   useEffect(() => {
@@ -169,9 +176,19 @@ const Navbar = () => {
                       </Link>
                       <button
                         onClick={logout}
-                        className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                        disabled={isLoggingOut}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <FiLogOut /> Sign out
+                        {isLoggingOut ? (
+                          <>
+                            <InlineSpinner size={16} color="#f87171" />
+                            <span>Signing out...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FiLogOut /> Sign out
+                          </>
+                        )}
                       </button>
                     </motion.div>
                   )}
@@ -243,10 +260,20 @@ const Navbar = () => {
                       Saved Projects
                     </Link>
                     <button
-                      onClick={() => { logout(); setMobileOpen(false); }}
-                      className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-all"
+                      onClick={() => { if(!isLoggingOut) logout(); setMobileOpen(false); }}
+                      disabled={isLoggingOut}
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <FiLogOut /> Sign out
+                      {isLoggingOut ? (
+                        <>
+                          <InlineSpinner size={16} color="#f87171" />
+                          <span>Signing out...</span>
+                        </>
+                      ) : (
+                        <>
+                          <FiLogOut /> Sign out
+                        </>
+                      )}
                     </button>
                   </div>
                 ) : (

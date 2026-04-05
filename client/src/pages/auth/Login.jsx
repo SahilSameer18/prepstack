@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft, FiCheck } from "react-icons/fi";
+import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft, FiCheck, FiAlertCircle, FiX } from "react-icons/fi";
 import { useAuth } from "../../hooks/useAuth";
+import { InlineSpinner } from "../../components/ui/Skeletons";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (error) setError(null); // clear error on input change
   };
 
   const handleSubmit = async (e) => {
@@ -135,6 +137,17 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
 
+            {/* Error Alert */}
+            {error && (
+              <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 animate-[fadeIn_0.2s_ease]">
+                <FiAlertCircle className="text-red-400 flex-shrink-0 mt-0.5 text-base" />
+                <p className="text-red-300 text-sm leading-snug flex-1">{error}</p>
+                <button type="button" onClick={() => setError(null)} className="text-red-400 hover:text-red-200 transition-colors flex-shrink-0">
+                  <FiX className="text-sm" />
+                </button>
+              </div>
+            )}
+
             {/* Email */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-300">Email address</label>
@@ -174,9 +187,17 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full h-12 rounded-xl text-black font-semibold text-sm bg-gradient-to-r from-[#ffa116] to-[#ff8c00] hover:from-[#ffb84d] hover:to-[#ffa116] transition-all duration-300 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 mt-2"
+              disabled={loading}
+              className="w-full h-12 rounded-xl text-black font-semibold text-sm bg-gradient-to-r from-[#ffa116] to-[#ff8c00] hover:from-[#ffb84d] hover:to-[#ffa116] transition-all duration-300 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 hover:-translate-y-0.5 mt-2 flex items-center justify-center gap-2.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 btn-press"
             >
-              Log In to PrepStack
+              {loading ? (
+                <>
+                  <InlineSpinner size={17} color="#000" />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                "Log In to PrepStack"
+              )}
             </button>
 
             <div className="flex items-center gap-3 py-2">
