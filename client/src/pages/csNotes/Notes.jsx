@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FiBook, FiSearch, FiArrowRight, FiClock, FiLayers } from "react-icons/fi";
 import { FaCode, FaDatabase, FaNetworkWired, FaSitemap, FaProjectDiagram } from "react-icons/fa";
 
@@ -154,9 +155,11 @@ const Notes = () => {
                   </li>
                 ))}
                 </ul>
-                <button className={`mt-4 w-full py-2 rounded-xl text-sm font-semibold ${s.color} ${s.bg} border ${s.border} transition-all hover:opacity-90`}>
-                  Start Reading →
-                </button>
+                <Link to={`/notes/${s.slug}`}>
+                  <button className={`mt-4 w-full py-2 rounded-xl text-sm font-semibold ${s.color} ${s.bg} border ${s.border} transition-all hover:opacity-90`}>
+                    Start Reading →
+                  </button>
+                </Link>
               </div>
             )}
           </div>

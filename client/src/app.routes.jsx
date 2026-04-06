@@ -3,6 +3,7 @@ import MainLayout from "./layout/MainLayout";
 import Home from "./pages/Home";
 import Sheets from "./pages/DsaSheets/Sheets";
 import Notes from "./pages/csNotes/Notes";
+import NotesDetail from "./pages/csNotes/NotesDetail";
 import Roadmap from "./pages/roadmaps/Roadmap";
 import RoadmapDetail from "./pages/roadmaps/RoadmapDetail";
 import AIProjectIdeas from "./pages/project/AIProjectIdeas";
@@ -36,6 +37,13 @@ export const router = createBrowserRouter([
         element:
           <ProtectedRoute>
             <Notes />
+          </ProtectedRoute>
+      },
+      {
+        path: "/notes/:subject",
+        element:
+          <ProtectedRoute>
+            <NotesDetail />
           </ProtectedRoute>
       },
 

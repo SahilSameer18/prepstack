@@ -423,4 +423,4 @@ const oopNotes = {
   ]
 };
 
-export default oopNotes;
+module.exports = oopNotes;

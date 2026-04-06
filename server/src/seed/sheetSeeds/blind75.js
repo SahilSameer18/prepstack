@@ -1,5 +1,5 @@
-const DSASheet = require('../models/sheets.model');
-const connectDB = require('./seedConfig');
+const DSASheet = require('../../models/sheets.model');
+const connectDB = require('../seedConfig');
 
 const blind75Data = {
   name: "Blind 75 DSA Sheet",

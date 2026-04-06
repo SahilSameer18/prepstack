@@ -1,5 +1,5 @@
-const DSASheet = require('../models/sheets.model');
-const connectDB = require('./seedConfig');
+const DSASheet = require('../../models/sheets.model');
+const connectDB = require('../seedConfig');
 
 const striverA2ZData = {
   name: "Striver A2Z DSA Sheet",

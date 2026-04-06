@@ -443,4 +443,4 @@ const dbmsNotes = {
   ]
 };
 
-export default dbmsNotes;
+module.exports = dbmsNotes;

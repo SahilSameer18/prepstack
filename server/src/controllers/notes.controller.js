@@ -1,13 +1,13 @@
 const notesModel = require('../models/notes.model');
 
-
 // controller to get all the notes
 const getNotes = async (req, res) => {
   try {
-    const notes = await notesModel.find({}, 'title content');
+    // We could return just slugs and subjects
+    const notesSummary = await notesModel.find({}, 'subject subjectSlug');
     res.status(200).json({
       success: true,
-      data: notes
+      data: notesSummary
     });
   } catch (error) {
     res.status(500).json({
@@ -16,13 +16,19 @@ const getNotes = async (req, res) => {
     });
   }
 }
-
 
 // controller to get notes by subject
 const getNotesBySubject = async (req, res) => {
   try {
     const subject = req.params.subject.toLowerCase();
-    const notes = await notesModel.find({ subject: { $regex: `^${subject}$`, $options: "i" } }, 'title content');
+    
+    // Find note by subject slug
+    const notes = await notesModel.findOne({ subjectSlug: subject });
+    
+    if (!notes) {
+      return res.status(404).json({ success: false, message: "Notes not found for this subject" });
+    }
+
     res.status(200).json({
       success: true,
       data: notes
@@ -35,4 +41,4 @@ const getNotesBySubject = async (req, res) => {
   }
 }
 
-module.exports = { getNotes, getNotesBySubject };
+module.exports = { getNotes, getNotesBySubject };

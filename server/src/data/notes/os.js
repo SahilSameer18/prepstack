@@ -468,4 +468,4 @@ const operatingSystemsNotes = {
   ]
 };
 
-export default operatingSystemsNotes;
+module.exports = operatingSystemsNotes;

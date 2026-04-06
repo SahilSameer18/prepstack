@@ -459,4 +459,4 @@ const computerNetworksNotes = {
   ]
 };
 
-export default computerNetworksNotes;
+module.exports = computerNetworksNotes;
