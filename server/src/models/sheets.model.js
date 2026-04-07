@@ -16,7 +16,11 @@ const dsaProblemSchema = new mongoose.Schema({
     type: String,
     enum: ['Easy', 'Medium', 'Hard', 'Basic'],
     default: 'Medium'
-  }
+  },
+  tags: [{
+    type: String,
+    trim: true
+  }]
 });
 
 // schema for dsa topic

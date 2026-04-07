@@ -2,6 +2,7 @@ import { RouterProvider } from "react-router-dom"
 import { router } from './app.routes.jsx'
 import { AuthProvider } from "./context/AuthContext";
 import { ProjectProvider } from "./context/ProjectContext";
+import { SheetProvider } from "./context/SheetContext";
 
 function App() {
 
@@ -9,7 +10,9 @@ function App() {
     <>
       <AuthProvider>
         <ProjectProvider>
-          <RouterProvider router={router} />
+          <SheetProvider>
+            <RouterProvider router={router} />
+          </SheetProvider>
         </ProjectProvider>
       </AuthProvider>
     </>

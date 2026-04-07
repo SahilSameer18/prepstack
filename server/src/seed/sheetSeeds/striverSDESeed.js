@@ -4,16 +4,9 @@ const connectDB = require('../seedConfig');
 const striverSDEData = {
   name: "Striver SDE Sheet",
   slug: "striver-sde",
-  description: "The famous SDE sheet by Striver for interview preparation (Placeholder).",
+  description: "The famous SDE sheet by Striver for interview preparation.",
   topics: [
-
-    {
-      "title": "Striver SDE Sheet",
-      "source": "https://takeuforward.org/interviews/strivers-sde-sheet-top-coding-interview-problems/",
-      "totalQuestions": 191,
-      "topics": [
         {
-          "day": 1,
           "topic": "Arrays - I",
           "questions": [
             { "id": 1, "title": "Set Matrix Zeros", "link": "https://takeuforward.org/data-structure/set-matrix-zero/" },
@@ -372,8 +365,6 @@ const striverSDEData = {
           ]
         }
       ]
-    }
-  ]
 };
 
 const seedStriverSDE = async () => {

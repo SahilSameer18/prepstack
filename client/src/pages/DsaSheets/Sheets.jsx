@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FaSearch, FaStar, FaCode, FaCheckCircle, FaExternalLinkAlt } from "react-icons/fa";
 import { FiBook, FiTarget, FiZap, FiLayers } from "react-icons/fi";
 
@@ -122,9 +123,9 @@ const SheetCard = ({ sheet, cat }) => (
         </span>
       ))}
     </div>
-    <button className="w-full py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-gray-300 group-hover:bg-[#ffa116] group-hover:text-black group-hover:border-[#ffa116] font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2">
+    <Link to={`/dsa/${sheet.slug}`} className="w-full py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-gray-300 group-hover:bg-[#ffa116] group-hover:text-black group-hover:border-[#ffa116] font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2">
       View Sheet <FaExternalLinkAlt className="text-[10px]" />
-    </button>
+    </Link>
   </div>
 );
 

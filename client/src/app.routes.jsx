@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
 import Home from "./pages/Home";
 import Sheets from "./pages/DsaSheets/Sheets";
+import SheetsDetail from "./pages/DsaSheets/SheetsDetail";
 import Notes from "./pages/csNotes/Notes";
 import NotesDetail from "./pages/csNotes/NotesDetail";
 import Roadmap from "./pages/roadmaps/Roadmap";
@@ -30,6 +31,13 @@ export const router = createBrowserRouter([
         element:
           <ProtectedRoute>
             <Sheets />
+          </ProtectedRoute>
+      },
+      {
+        path: "/dsa/:slug",
+        element:
+          <ProtectedRoute>
+            <SheetsDetail />
           </ProtectedRoute>
       },
       {

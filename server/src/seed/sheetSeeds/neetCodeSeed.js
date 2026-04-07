@@ -48,8 +48,8 @@ const neetcode150Data = {
         { title: "Min Stack", link: "https://leetcode.com/problems/min-stack/", difficulty: "Medium", tags: ["stack", "design"] },
         { title: "Evaluate Reverse Polish Notation", link: "https://leetcode.com/problems/evaluate-reverse-polish-notation/", difficulty: "Medium", tags: ["stack"] },
         { title: "Daily Temperatures", link: "https://leetcode.com/problems/daily-temperatures/", difficulty: "Medium", tags: ["stack"] },
-        { title: "Generate Parentheses", link: "https://leetcode.com/problems/generate-parentheses/", difficulty: "Medium", tags: ["backtracking"] },
-        { title: "Car Fleet", link: "https://leetcode.com/problems/car-fleet/", difficulty: "Medium", tags: ["stack"] }
+        { title: "Car Fleet", link: "https://leetcode.com/problems/car-fleet/", difficulty: "Medium", tags: ["stack"] },
+        { title: "Largest Rectangle in Histogram", link: "https://leetcode.com/problems/largest-rectangle-in-histogram/", difficulty: "Hard", tags: ["stack"] }
       ]
     },
     {
@@ -74,10 +74,10 @@ const neetcode150Data = {
         { title: "Reorder List", link: "https://leetcode.com/problems/reorder-list/", difficulty: "Medium", tags: ["linked-list"] },
         { title: "Copy List with Random Pointer", link: "https://leetcode.com/problems/copy-list-with-random-pointer/", difficulty: "Medium", tags: ["linked-list"] },
         { title: "Add Two Numbers", link: "https://leetcode.com/problems/add-two-numbers/", difficulty: "Medium", tags: ["linked-list"] },
-        { title: "Split Linked List in Parts", link: "https://leetcode.com/problems/split-linked-list-in-parts/", difficulty: "Medium", tags: ["linked-list"] },
-        { title: "Linked List Random Node", link: "https://leetcode.com/problems/linked-list-random-node/", difficulty: "Medium", tags: ["linked-list", "design"] },
-        { title: "Swap Nodes in Pairs", link: "https://leetcode.com/problems/swap-nodes-in-pairs/", difficulty: "Medium", tags: ["linked-list"] },
-        { title: "Remove Linked List Elements", link: "https://leetcode.com/problems/remove-linked-list-elements/", difficulty: "Easy", tags: ["linked-list"] }
+        { title: "Find The Duplicate Number", link: "https://leetcode.com/problems/find-the-duplicate-number/", difficulty: "Medium", tags: ["linked-list"] },
+        { title: "LRU Cache", link: "https://leetcode.com/problems/lru-cache/", difficulty: "Medium", tags: ["design", "linked-list"] },
+        { title: "Merge K Sorted Lists", link: "https://leetcode.com/problems/merge-k-sorted-lists/", difficulty: "Hard", tags: ["linked-list", "heap"] },
+        { title: " Reverse Nodes in K Group", link: "https://leetcode.com/problems/reverse-nodes-in-k-group/", difficulty: "Hard", tags: ["linked-list"] }
       ]
     },
     {
@@ -103,13 +103,13 @@ const neetcode150Data = {
     {
       title: "Heap / Priority Queue",
       problems: [
-        { title: "Top K Frequent Elements", link: "https://leetcode.com/problems/top-k-frequent-elements/", difficulty: "Medium", tags: ["heap"] },
-        { title: "Find Median from Data Stream", link: "https://leetcode.com/problems/find-median-from-data-stream/", difficulty: "Hard", tags: ["heap", "design"] },
+        { title: "Kth Largest Element in a Stream", link: "https://leetcode.com/problems/kth-largest-element-in-a-stream/", difficulty: "Medium", tags: ["heap"] },
+        { title: "Last Stone Weight", link: "https://leetcode.com/problems/last-stone-weight/", difficulty: "Easy", tags: ["heap"] },
         { title: "K Closest Points to Origin", link: "https://leetcode.com/problems/k-closest-points-to-origin/", difficulty: "Medium", tags: ["heap"] },
-        { title: "Meeting Rooms II", link: "https://leetcode.com/problems/meeting-rooms-ii/", difficulty: "Medium", tags: ["heap"] },
-        { title: "Task Scheduler", link: "https://leetcode.com/problems/task-scheduler/", difficulty: "Medium", tags: ["heap"] },
-        { title: "Sliding Window Median", link: "https://leetcode.com/problems/sliding-window-median/", difficulty: "Hard", tags: ["heap"] },
-        { title: "Ugly Number II", link: "https://leetcode.com/problems/ugly-number-ii/", difficulty: "Medium", tags: ["heap"] }
+        { title: "Kth Largest Element in An Array", link: "https://leetcode.com/problems/kth-largest-element-in-an-array/", difficulty: "Medium", tags: ["heap"] },
+        { title: " Task Scheduler", link: "https://leetcode.com/problems/task-scheduler/", difficulty: "Medium", tags: ["heap"] },
+        { title: "Design Twitter", link: "https://leetcode.com/problems/design-twitter/", difficulty: "Medium", tags: ["heap", "design"] },
+        { title: "Find Median from Data Stream", link: "https://leetcode.com/problems/find-median-from-data-stream/", difficulty: "Hard", tags: ["heap", "design"] }
       ]
     },
     {
@@ -131,7 +131,7 @@ const neetcode150Data = {
       title: "Trie",
       problems: [
         { title: "Implement Trie", link: "https://leetcode.com/problems/implement-trie-prefix-tree/", difficulty: "Medium", tags: ["trie"] },
-        { title: "Add and Search Word", link: "https://leetcode.com/problems/add-and-search-word-data-structure-design/", difficulty: "Medium", tags: ["trie"] },
+        { title: "Design Add and Search Words Data Structure", link: "https://leetcode.com/problems/add-and-search-word-data-structure-design/", difficulty: "Medium", tags: ["trie"] },
         { title: "Word Search II", link: "https://leetcode.com/problems/word-search-ii/", difficulty: "Hard", tags: ["trie", "backtracking"] }
       ]
     },

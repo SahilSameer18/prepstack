@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
-const seedLoveBabbar = require('./loveBabbarSeed');
-const seedStriverA2Z = require('./striverA2ZSeed');
-const seedStriverSDE = require('./striverSDESeed');
-const seedNeetCode = require('./neetCodeSeed');
+const seedLoveBabbar = require('./sheetSeeds/loveBabbarSeed');
+const seedStriverA2Z = require('./sheetSeeds/striverA2ZSeed');
+const seedStriverSDE = require('./sheetSeeds/striverSDESeed');
+const seedNeetCode = require('./sheetSeeds/neetCodeSeed');
+const seedBlind75 = require('./sheetSeeds/blind75');
 const connectDB = require('./seedConfig');
 
 const seedAll = async () => {
@@ -18,6 +19,7 @@ const seedAll = async () => {
     await seedStriverA2Z();
     await seedStriverSDE();
     await seedNeetCode();
+    await seedBlind75();
 
     console.log('All DSA Sheets seeded successfully!');
     process.exit(0);
