@@ -36,3 +36,4 @@ const seedNotes = async () => {
 };
 
 seedNotes();
+

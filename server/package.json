@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
+    "seed:notes": "node src/seed/notesSeed.js",
+    "seed:all": "node src/seed/masterSeed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -28,3 +30,4 @@
     "zod-to-json-schema": "^3.25.2"
   }
 }
+

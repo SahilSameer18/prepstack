@@ -6,169 +6,203 @@ const oopNotes = {
     // 1. BASICS
     // ===========================
     {
-      title: "Basics",
-      topics: [
+  title: "Basics",
+  topics: [
 
-        {
-          name: "OOP Overview",
+    {
+      name: "OOP Overview",
 
-          concept: [
-            "Programming paradigm based on objects and classes",
-            "Encapsulates data and behavior together"
-          ],
+      concept: [
+        "Programming paradigm based on objects and classes",
+        "Encapsulates data (state) and behavior (methods) together",
+        "Supports abstraction, encapsulation, inheritance, and polymorphism"
+      ],
 
-          why: [
-            "Improves modularity and maintainability",
-            "Enables scalable system design"
-          ],
+      why: [
+        "Improves modularity and code organization",
+        "Enhances reusability and scalability",
+        "Simplifies maintenance of large codebases"
+      ],
 
-          deepInsight: [
-            "OOP models real-world entities using abstraction",
-            "Helps manage complexity in large codebases"
-          ],
+      deepInsight: [
+        "OOP abstracts real-world entities into software models",
+        "Encapsulation hides internal implementation and exposes only necessary interfaces",
+        "OOP enables loose coupling and high cohesion in system design"
+      ],
 
-          realWorld: [
-            "Used heavily in backend systems (Java, C++)",
-            "Design patterns rely on OOP principles"
-          ],
+      realWorld: [
+        "Widely used in backend systems (Java, C++)",
+        "Design patterns like Singleton, Factory, Observer rely on OOP",
+        "Frameworks like Spring and Django are heavily OOP-driven"
+      ],
 
-          interviewAnswer: [
-            "OOP is a paradigm that organizes code using objects to improve modularity and reuse."
-          ]
-        },
-
-        {
-          name: "Class vs Object",
-
-          concept: [
-            "Class → blueprint",
-            "Object → instance"
-          ],
-
-          deepInsight: [
-            "Class defines structure, object holds actual state"
-          ],
-
-          traps: [
-            "Class does not occupy memory, object does"
-          ],
-
-          interviewAnswer: [
-            "Class defines structure, object is its runtime instance."
-          ]
-        },
-
-        {
-          name: "Memory Model",
-
-          concept: [
-            "Stack stores references",
-            "Heap stores objects"
-          ],
-
-          deepInsight: [
-            "Object lifetime depends on memory management (GC or manual)"
-          ],
-
-          traps: [
-            "Without 'new' doesn't always mean stack (language-specific)"
-          ]
-        }
-
+      interviewAnswer: [
+        "OOP is a programming paradigm that organizes code using objects and classes to achieve modularity, reusability, and abstraction."
       ]
     },
+
+    {
+      name: "Class vs Object",
+
+      concept: [
+        "Class → blueprint or template defining properties and behavior",
+        "Object → runtime instance of a class with actual values",
+        "Multiple objects can be created from a single class"
+      ],
+
+      deepInsight: [
+        "Class defines structure, object represents real data",
+        "Objects occupy memory at runtime, classes define compile-time structure",
+        "Interaction between objects forms the core of OOP systems"
+      ],
+
+      traps: [
+        "Class does not occupy memory until objects are created",
+        "Object creation involves constructor invocation",
+        "Confusing class with object leads to design issues"
+      ],
+
+      interviewAnswer: [
+        "A class is a blueprint that defines properties and behavior, while an object is an instance of that class created at runtime."
+      ]
+    },
+
+    {
+      name: "Memory Model",
+
+      concept: [
+        "Stack stores function calls, local variables, and references",
+        "Heap stores dynamically allocated objects",
+        "Memory is divided based on lifetime and scope"
+      ],
+
+      deepInsight: [
+        "Stack allocation is fast but limited in size",
+        "Heap allocation is flexible but slower and requires management",
+        "Garbage Collection (GC) automatically frees unused heap memory in languages like Java",
+        "Memory leaks occur when unused objects are not released (in manual memory management)"
+      ],
+
+      traps: [
+        "Stack vs Heap behavior is language-dependent",
+        "Using 'new' typically allocates on heap (but not always universally true)",
+        "Returning references to local stack variables can cause undefined behavior (in some languages)"
+      ]
+    }
+
+  ]
+},
 
     // ===========================
     // 2. PILLARS
     // ===========================
     {
-      title: "Pillars of OOP",
-      topics: [
+  title: "Pillars of OOP",
+  topics: [
 
-        {
-          name: "Encapsulation",
+    {
+      name: "Encapsulation",
 
-          concept: [
-            "Wrapping data + methods",
-            "Data hiding via access modifiers"
-          ],
+      concept: [
+        "Wrapping data and methods into a single unit (class)",
+        "Restricting direct access using access modifiers (private, protected, public)"
+      ],
 
-          deepInsight: [
-            "Ensures controlled access to data",
-            "Improves maintainability"
-          ],
+      deepInsight: [
+        "Ensures controlled access through well-defined interfaces (getters/setters)",
+        "Improves maintainability and flexibility by hiding internal implementation",
+        "Enables validation and security checks before modifying data"
+      ],
 
-          realWorld: [
-            "Private variables accessed via getters/setters"
-          ],
+      realWorld: [
+        "Private variables accessed via getters/setters",
+        "Bank account class controlling balance updates via methods"
+      ],
 
-          interviewAnswer: [
-            "Encapsulation bundles data and methods and restricts direct access."
-          ]
-        },
-
-        {
-          name: "Abstraction",
-
-          concept: [
-            "Hides implementation details"
-          ],
-
-          deepInsight: [
-            "Focuses on 'what' not 'how'"
-          ],
-
-          realWorld: [
-            "APIs expose functionality without revealing logic"
-          ],
-
-          traps: [
-            "Abstraction ≠ encapsulation"
-          ],
-
-          interviewAnswer: [
-            "Abstraction hides complexity and shows only essential features."
-          ]
-        },
-
-        {
-          name: "Inheritance",
-
-          concept: [
-            "Reuse properties of parent class"
-          ],
-
-          deepInsight: [
-            "Represents 'is-a' relationship"
-          ],
-
-          traps: [
-            "Overuse leads to tight coupling"
-          ],
-
-          interviewAnswer: [
-            "Inheritance allows a class to acquire properties of another."
-          ]
-        },
-
-        {
-          name: "Polymorphism",
-
-          concept: [
-            "Same interface, different behavior"
-          ],
-
-          deepInsight: [
-            "Achieved via overloading and overriding"
-          ],
-
-          interviewAnswer: [
-            "Polymorphism allows same function to behave differently."
-          ]
-        }
-
+      interviewAnswer: [
+        "Encapsulation is the bundling of data and methods into a single unit while restricting direct access using access modifiers."
       ]
     },
+
+    {
+      name: "Abstraction",
+
+      concept: [
+        "Hides implementation details and exposes only essential features",
+        "Achieved using abstract classes and interfaces"
+      ],
+
+      deepInsight: [
+        "Focuses on 'what' the system does rather than 'how' it does it",
+        "Reduces complexity by hiding unnecessary details",
+        "Improves code extensibility and design flexibility"
+      ],
+
+      realWorld: [
+        "APIs expose functionality without revealing internal logic",
+        "Driving a car without knowing engine internals"
+      ],
+
+      traps: [
+        "Abstraction ≠ Encapsulation (abstraction hides complexity, encapsulation hides data)",
+        "Interfaces provide 100% abstraction (in traditional OOP languages)"
+      ],
+
+      interviewAnswer: [
+        "Abstraction is the process of hiding implementation details and exposing only the essential functionality."
+      ]
+    },
+
+    {
+      name: "Inheritance",
+
+      concept: [
+        "Mechanism where a child class acquires properties and behavior of a parent class",
+        "Promotes code reuse and hierarchical relationships"
+      ],
+
+      deepInsight: [
+        "Represents 'is-a' relationship (e.g., Dog is an Animal)",
+        "Supports method overriding for runtime polymorphism",
+        "Can lead to tight coupling if overused"
+      ],
+
+      realWorld: [
+        "Base class Vehicle → derived classes Car, Bike",
+        "UI frameworks with base components extended by custom components"
+      ],
+
+      traps: [
+        "Overuse leads to rigid and tightly coupled design",
+        "Prefer composition over inheritance in many real-world scenarios"
+      ],
+
+      interviewAnswer: [
+        "Inheritance allows a class to reuse properties and methods of another class, forming an 'is-a' relationship."
+      ]
+    },
+
+    {
+      name: "Polymorphism",
+
+      concept: [
+        "Same interface, different implementations",
+        "Allows methods to behave differently based on context"
+      ],
+
+      deepInsight: [
+        "Achieved via method overloading (compile-time) and overriding (runtime)",
+        "Improves flexibility and scalability of code",
+        "Runtime polymorphism uses dynamic method dispatch"
+      ],
+
+      interviewAnswer: [
+        "Polymorphism allows a single interface to be used for different data types or implementations, enabling flexible and reusable code."
+      ]
+    }
+
+  ]
+},
 
     // ===========================
     // 3. POLYMORPHISM (IMPORTANT)

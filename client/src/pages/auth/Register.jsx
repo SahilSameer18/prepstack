@@ -42,9 +42,9 @@ const Register = () => {
 
   const perks = [
     "Track your DSA progress",
-    "Save custom roadmaps",
     "Access AI project generator",
-    "Bookmark important notes",
+    "Save custom projects",
+    "Interview Oriented CS notes",
   ];
 
   const avatars = ["S", "A", "R", "P"];
@@ -117,7 +117,7 @@ const Register = () => {
                   </div>
                 ))}
               </div>
-              <span className="text-gray-300 text-sm">+2,000 students joined</span>
+              <span className="text-gray-300 text-sm">Many students joined</span>
             </div>
             <p className="text-gray-500 text-xs italic">"PrepStack helped me prepare systematically and land my first SDE internship!"</p>
           </div>

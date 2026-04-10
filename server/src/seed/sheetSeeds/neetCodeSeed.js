@@ -121,10 +121,10 @@ const neetcode150Data = {
         { title: "Combination Sum", link: "https://leetcode.com/problems/combination-sum/", difficulty: "Medium", tags: ["backtracking"] },
         { title: "Word Search", link: "https://leetcode.com/problems/word-search/", difficulty: "Medium", tags: ["backtracking"] },
         { title: "Palindrome Partitioning", link: "https://leetcode.com/problems/palindrome-partitioning/", difficulty: "Medium", tags: ["backtracking"] },
-        { title: "N‑Queens", link: "https://leetcode.com/problems/n-queens/", difficulty: "Hard", tags: ["backtracking"] },
         { title: "Combination Sum II", link: "https://leetcode.com/problems/combination-sum-ii/", difficulty: "Medium", tags: ["backtracking"] },
         { title: "Word Search II", link: "https://leetcode.com/problems/word-search-ii/", difficulty: "Hard", tags: ["backtracking"] },
-        { title: "Restore IP Addresses", link: "https://leetcode.com/problems/restore-ip-addresses/", difficulty: "Medium", tags: ["backtracking"] }
+        { title: "Letter Combinations of a Phone Number", link: "https://leetcode.com/problems/letter-combinations-of-a-phone-number/", difficulty: "Medium", tags: ["backtracking"] },
+        { title: "N Queens", link: "https://leetcode.com/problems/n-queens/", difficulty: "Hard", tags: ["backtracking"] }
       ]
     },
     {
@@ -148,33 +148,50 @@ const neetcode150Data = {
       ]
     },
     {
-      title: "1D / 2D Dynamic Programming",
+      title: "1D Dynamic Programming",
       problems: [
         { title: "Climbing Stairs", link: "https://leetcode.com/problems/climbing-stairs/", difficulty: "Easy", tags: ["dp"] },
+        { title: "Min Cost Climbing Stairs", link: "https://leetcode.com/problems/min-cost-climbing-stairs/", difficulty: "Easy", tags: ["dp"] },
         { title: "House Robber", link: "https://leetcode.com/problems/house-robber/", difficulty: "Easy", tags: ["dp"] },
         { title: "House Robber II", link: "https://leetcode.com/problems/house-robber-ii/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Longest Palindromic Substring", link: "https://leetcode.com/problems/longest-palindromic-substring/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Palindromic Substrings", link: "https://leetcode.com/problems/palindromic-substrings/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Decode Ways", link: "https://leetcode.com/problems/decode-ways/", difficulty: "Medium", tags: ["dp"] },
         { title: "Coin Change", link: "https://leetcode.com/problems/coin-change/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Maximum Product Subarray", link: "https://leetcode.com/problems/maximum-product-subarray/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Word Break", link: "https://leetcode.com/problems/word-break/", difficulty: "Medium", tags: ["dp"] },
         { title: "Longest Increasing Subsequence", link: "https://leetcode.com/problems/longest-increasing-subsequence/", difficulty: "Medium", tags: ["dp"] },
         { title: "Longest Common Subsequence", link: "https://leetcode.com/problems/longest-common-subsequence/", difficulty: "Medium", tags: ["dp"] },
-        { title: "Word Break", link: "https://leetcode.com/problems/word-break/", difficulty: "Medium", tags: ["dp"] },
-        { title: "Combination Sum IV", link: "https://leetcode.com/problems/combination-sum-iv/", difficulty: "Medium", tags: ["dp"] },
-        { title: "Decode Ways", link: "https://leetcode.com/problems/decode-ways/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Partition Equal Subset Sum", link: "https://leetcode.com/problems/partition-equal-subset-sum/", difficulty: "Medium", tags: ["dp"] }
+      ]
+    },
+    {
+      title: "2D Dynamic Programming",
+      problems: [
         { title: "Unique Paths", link: "https://leetcode.com/problems/unique-paths/", difficulty: "Medium", tags: ["dp"] },
-        { title: "Minimum Path Sum", link: "https://leetcode.com/problems/minimum-path-sum/", difficulty: "Medium", tags: ["dp"] },
-        { title: "Edit Distance", link: "https://leetcode.com/problems/edit-distance/", difficulty: "Hard", tags: ["dp"] }
+        { title: "Longest Common Subsequence", link: "https://leetcode.com/problems/longest-common-subsequence/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Best Time to Buy And Sell Stock with Cooldown", link: "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Coin Change II", link: "https://leetcode.com/problems/coin-change-ii/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Target Sum", link: "https://leetcode.com/problems/target-sum/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Interleaving String", link: "https://leetcode.com/problems/interleaving-string/", difficulty: "Medium", tags: ["dp"] },
+        { title: "Longest Increasing Path In a Matrix", link: "https://leetcode.com/problems/longest-increasing-path-in-a-matrix/", difficulty: "Hard", tags: ["dp"] },
+        { title: "Distinct Subsequences", link: "https://leetcode.com/problems/distinct-subsequences/", difficulty: "Hard", tags: ["dp"] },
+        { title: "Edit Distance", link: "https://leetcode.com/problems/edit-distance/", difficulty: "Hard", tags: ["dp"] },
+        { title: "Burst Ballonos", link: "https://leetcode.com/problems/burst-balloons/", difficulty: "Hard", tags: ["dp"] },
+        { title: "Regular Expression Matching", link: "https://leetcode.com/problems/regular-expression-matching/", difficulty: "Hard", tags: ["dp"] },
       ]
     },
     {
       title: "Greedy",
       problems: [
-        { title: "Jump Game II", link: "https://leetcode.com/problems/jump-game-ii/", difficulty: "Medium", tags: ["greedy"] },
-        { title: "Best Time to Buy and Sell Stock II", link: "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/", difficulty: "Medium", tags: ["greedy"] },
-        { title: "Candy", link: "https://leetcode.com/problems/candy/", difficulty: "Hard", tags: ["greedy"] },
-        { title: "Partition Labels", link: "https://leetcode.com/problems/partition-labels/", difficulty: "Medium", tags: ["greedy"] },
+        { title: "Maximum Subarray", link: "https://leetcode.com/problems/maximum-subarray/", difficulty: "Medium", tags: ["greedy"] },
+        { title: "Jump Game", link: "https://leetcode.com/problems/jump-game/", difficulty: "Medium", tags: ["greedy"] },
+        { title: "Jump Game 2", link: "https://leetcode.com/problems/jump-game-ii/", difficulty: "Medium", tags: ["greedy"] },
         { title: "Gas Station", link: "https://leetcode.com/problems/gas-station/", difficulty: "Medium", tags: ["greedy"] },
-        { title: "Merge Sorted Array", link: "https://leetcode.com/problems/merge-sorted-array/", difficulty: "Easy", tags: ["greedy", "array"] },
-        { title: "Minimum Number of Arrows to Burst Balloons", link: "https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/", difficulty: "Medium", tags: ["greedy"] },
-        { title: "Assign Cookies", link: "https://leetcode.com/problems/assign-cookies/", difficulty: "Easy", tags: ["greedy"] }
+        { title: "Hand of Straights", link: "https://leetcode.com/problems/hand-of-straights/", difficulty: "Medium", tags: ["greedy"] },
+        { title: "Merge Triplets to Form Target Triplet", link: "https://leetcode.com/problems/merge-triplets-to-form-target-triplet/", difficulty: "Medium", tags: ["greedy"] },
+        { title: "Partition Labels", link: "https://leetcode.com/problems/partition-labels/", difficulty: "Medium", tags: ["greedy"] },
+        { title: "Valid Parenthesis String", link: "https://leetcode.com/problems/valid-parenthesis-string/", difficulty: "Medium", tags: ["greedy"] }
       ]
     },
     {
@@ -185,32 +202,32 @@ const neetcode150Data = {
         { title: "Non-overlapping Intervals", link: "https://leetcode.com/problems/non-overlapping-intervals/", difficulty: "Medium", tags: ["intervals"] },
         { title: "Meeting Rooms", link: "https://leetcode.com/problems/meeting-rooms/", difficulty: "Easy", tags: ["intervals"] },
         { title: "Meeting Rooms II", link: "https://leetcode.com/problems/meeting-rooms-ii/", difficulty: "Medium", tags: ["intervals"] },
-        { title: "Minimum Number of Arrows to Burst Balloons", link: "https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/", difficulty: "Medium", tags: ["intervals"] }
+        { title: "Minimum Interval to Include Each Query", link: "https://leetcode.com/problems/minimum-interval-to-include-each-query/", difficulty: "Hard", tags: ["intervals"] }
       ]
     },
     {
       title: "Math & Geometry",
       problems: [
+        { title: "Rotate Image", link: "https://leetcode.com/problems/rotate-image/", difficulty: "Medium", tags: ["math", "geometry"] },
+        { title: "Spiral Matrix", link: "https://leetcode.com/problems/spiral-matrix/", difficulty: "Medium", tags: ["math", "geometry"] },
+        { title: "Set Matrix Zeroes", link: "https://leetcode.com/problems/set-matrix-zeroes/", difficulty: "Medium", tags: ["math", "geometry"] },
         { title: "Happy Number", link: "https://leetcode.com/problems/happy-number/", difficulty: "Easy", tags: ["math"] },
-        { title: "Power of Two", link: "https://leetcode.com/problems/power-of-two/", difficulty: "Easy", tags: ["math"] },
-        { title: "Integer to Roman", link: "https://leetcode.com/problems/integer-to-roman/", difficulty: "Medium", tags: ["math"] },
-        { title: "Roman to Integer", link: "https://leetcode.com/problems/roman-to-integer/", difficulty: "Easy", tags: ["math"] },
-        { title: "Multiply Strings", link: "https://leetcode.com/problems/multiply-strings/", difficulty: "Medium", tags: ["math"] },
-        { title: "Pow(x, n)", link: "https://leetcode.com/problems/powx-n/", difficulty: "Medium", tags: ["math"] },
         { title: "Plus One", link: "https://leetcode.com/problems/plus-one/", difficulty: "Easy", tags: ["math"] },
-        { title: "Sqrt(x)", link: "https://leetcode.com/problems/sqrtx/", difficulty: "Easy", tags: ["math"] }
+        { title: "Pow(x, n)", link: "https://leetcode.com/problems/powx-n/", difficulty: "Medium", tags: ["math"] },
+        { title: "Multiple Strings", link: "https://leetcode.com/problems/multiply-strings/", difficulty: "Medium", tags: ["math"] },
+        { title: "Detect Squares", link: "https://leetcode.com/problems/detect-squares/", difficulty: "Medium", tags: ["math"] },
       ]
     },
     {
       title: "Bit Manipulation",
       problems: [
         { title: "Single Number", link: "https://leetcode.com/problems/single-number/", difficulty: "Easy", tags: ["bit-manipulation"] },
-        { title: "Single Number II", link: "https://leetcode.com/problems/single-number-ii/", difficulty: "Medium", tags: ["bit-manipulation"] },
         { title: "Number of 1 Bits", link: "https://leetcode.com/problems/number-of-1-bits/", difficulty: "Easy", tags: ["bit-manipulation"] },
         { title: "Counting Bits", link: "https://leetcode.com/problems/counting-bits/", difficulty: "Easy", tags: ["bit-manipulation"] },
         { title: "Missing Number", link: "https://leetcode.com/problems/missing-number/", difficulty: "Easy", tags: ["bit-manipulation"] },
         { title: "Reverse Bits", link: "https://leetcode.com/problems/reverse-bits/", difficulty: "Easy", tags: ["bit-manipulation"] },
-        { title: "Bitwise AND of Numbers Range", link: "https://leetcode.com/problems/bitwise-and-of-numbers-range/", difficulty: "Medium", tags: ["bit-manipulation"] }
+        { title: "Sum of Two Integers", link: "https://leetcode.com/problems/sum-of-two-integers/", difficulty: "Medium", tags: ["bit-manipulation"] },
+        { title: "Reverse Integers", link: "https://leetcode.com/problems/reverse-integer/", difficulty: "Medium", tags: ["bit-manipulation"] }
       ]
     }
   ]

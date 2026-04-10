@@ -30,7 +30,7 @@ const Home = () => {
   ];
 
   const stats = [
-    { value: "1200+", label: "DSA Problems", icon: <FaCode /> },
+    { value: "AI", label: "Project Ideas", icon: <FaCode /> },
     { value: "5+", label: "CS Subjects", icon: <FaBook /> },
     { value: "4+", label: "Curated Sheets", icon: <FaStar /> },
     { value: "Free", label: "Always Free", icon: <FaTrophy /> },
@@ -38,7 +38,7 @@ const Home = () => {
 
   const whyUs = [
     { icon: <FiTarget />, title: "Focused Prep", desc: "No more scattered resources. Everything you need, organized in one place." },
-    { icon: <FiZap />, title: "AI-Powered", desc: "Gemini AI generates unique project ideas tailored to your stack and skill level." },
+    { icon: <FiZap />, title: "AI-Powered", desc: "AI generates unique project ideas tailored to your stack and skill level." },
     { icon: <FiCheck />, title: "Structured Paths", desc: "Follow proven roadmaps from beginner to placement-ready developer." },
     { icon: <FaUsers />, title: "Community-Driven", desc: "Built by students, for students — covering real interview patterns." },
   ];
