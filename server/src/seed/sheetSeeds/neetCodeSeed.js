@@ -139,12 +139,29 @@ const neetcode150Data = {
       title: "Graph",
       problems: [
         { title: "Number of Islands", link: "https://leetcode.com/problems/number-of-islands/", difficulty: "Medium", tags: ["graph"] },
-        { title: "Course Schedule", link: "https://leetcode.com/problems/course-schedule/", difficulty: "Medium", tags: ["graph", "topological-sort"] },
-        { title: "Pacific Atlantic Water Flow", link: "https://leetcode.com/problems/pacific-atlantic-water-flow/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Max Area of Island", link: "https://leetcode.com/problems/max-area-of-island/", difficulty: "Medium", tags: ["graph"] },
         { title: "Clone Graph", link: "https://leetcode.com/problems/clone-graph/", difficulty: "Medium", tags: ["graph"] },
-        { title: "Alien Dictionary", link: "https://leetcode.com/problems/alien-dictionary/", difficulty: "Hard", tags: ["graph"] },
+        { title: "Walls And Gates", link: "https://leetcode.com/problems/walls-and-gates/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Rotting Oranges", link: "https://leetcode.com/problems/rotting-oranges/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Pacific Atlantic Water FLow", link: "https://leetcode.com/problems/pacific-atlantic-water-flow/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Surrounded Regions", link: "https://leetcode.com/problems/surrounded-regions/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Course Schedule", link: "https://leetcode.com/problems/course-schedule/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Course Schedule II", link: "https://leetcode.com/problems/course-schedule-ii/", difficulty: "Medium", tags: ["graph"] },
         { title: "Graph Valid Tree", link: "https://leetcode.com/problems/graph-valid-tree/", difficulty: "Medium", tags: ["graph"] },
-        { title: "Number of Connected Components in an Undirected Graph", link: "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/", difficulty: "Medium", tags: ["graph"] }
+        { title: "Number of Connected Components in An Undirected Graph", link: "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Redundant Connection", link: "https://leetcode.com/problems/redundant-connection/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Word Ladder", link: "https://leetcode.com/problems/word-ladder/", difficulty: "Medium", tags: ["graph"] }
+      ]
+    },
+    {
+      title: "Advanced Graphs",
+      problems: [
+        { title: "Network Delay Time", link: "https://leetcode.com/problems/network-delay-time/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Recontruct Itinerary", link: "https://leetcode.com/problems/reconstruct-itinerary/", difficulty: "Hard", tags: ["graph"] },
+        { title: "Min Cost to Connect All Points", link: "https://leetcode.com/problems/min-cost-to-connect-all-points/", difficulty: "Medium", tags: ["graph"] },
+        { title: "Swim in Rising Water", link: "https://leetcode.com/problems/swim-in-rising-water/", difficulty: "Hard", tags: ["graph"] },
+        { title: "Allen Dictionary", link: "https://leetcode.com/problems/alien-dictionary/", difficulty: "Hard", tags: ["graph"] },
+        { title: "Cheapest Flights Within K Stops", link: "https://leetcode.com/problems/cheapest-flights-within-k-stops/", difficulty: "Medium", tags: ["graph"] }
       ]
     },
     {
