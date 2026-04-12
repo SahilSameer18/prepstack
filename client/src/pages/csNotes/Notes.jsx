@@ -8,58 +8,161 @@ const subjects = [
     title: "Operating Systems",
     slug: "os",
     icon: <FaCode />,
-    color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20",
+    hoverColor: "#60a5fa",   // blue-400
+    bg: "bg-blue-500/10", border: "border-blue-500/20",
     topics: 24,
+    description: "Deep dive into process management, memory, and the internals that power every computer.",
     topicList: ["Processes & Threads", "CPU Scheduling", "Deadlocks", "Memory Management", "Virtual Memory", "File Systems"],
     lastUpdated: "2 days ago",
     difficulty: "Core",
+    readTime: "~4 hrs",
   },
   {
     title: "DBMS",
     slug: "dbms",
     icon: <FaDatabase />,
-    color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20",
+    hoverColor: "#34d399",   // emerald-400
+    bg: "bg-emerald-500/10", border: "border-emerald-500/20",
     topics: 18,
+    description: "Master relational databases, SQL, normalization, transactions and indexing concepts.",
     topicList: ["ER Diagrams", "Normalization", "SQL Queries", "Transactions", "Indexing", "NoSQL Basics"],
     lastUpdated: "5 days ago",
     difficulty: "Core",
+    readTime: "~3 hrs",
   },
   {
     title: "Computer Networks",
     slug: "cn",
     icon: <FaNetworkWired />,
-    color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20",
+    hoverColor: "#c084fc",   // purple-400
+    bg: "bg-purple-500/10", border: "border-purple-500/20",
     topics: 30,
+    description: "Understand how the internet works — from OSI layers to TCP/IP, DNS, routing and sockets.",
     topicList: ["OSI & TCP/IP Model", "HTTP/HTTPS", "DNS & DHCP", "TCP vs UDP", "Routing Protocols", "Socket Programming"],
     lastUpdated: "1 week ago",
     difficulty: "Core",
+    readTime: "~5 hrs",
   },
   {
     title: "OOPs",
     slug: "oops",
     icon: <FaSitemap />,
-    color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20",
+    hoverColor: "#fb923c",   // orange-400
+    bg: "bg-orange-500/10", border: "border-orange-500/20",
     topics: 15,
+    description: "Grasp the four pillars of OOP and how design patterns solve real-world software problems.",
     topicList: ["Classes & Objects", "Inheritance", "Polymorphism", "Abstraction", "Encapsulation", "Design Patterns"],
     lastUpdated: "3 weeks ago",
     difficulty: "Core",
+    readTime: "~2 hrs",
   },
   {
     title: "System Design",
     slug: "system-design",
     icon: <FaProjectDiagram />,
-    color: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/20",
+    hoverColor: "#f472b6",   // pink-400
+    bg: "bg-pink-500/10", border: "border-pink-500/20",
     topics: 12,
+    description: "Learn to architect scalable systems — load balancing, caching, microservices and API design.",
     topicList: ["Scalability", "Load Balancing", "Caching", "Database Design", "Microservices", "API Design"],
     lastUpdated: "New",
     difficulty: "Advanced",
     isNew: true,
+    readTime: "~6 hrs",
   },
 ];
 
+// NoteCard uses explicit React state for hover to bypass Tailwind purge issues with dynamic classes
+const NoteCard = ({ s }) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`relative bg-[#0f0f0f] border border-white/[0.07] rounded-2xl overflow-hidden flex flex-col
+        transition-all duration-300
+        ${hovered ? 'border-white/[0.18] -translate-y-1' : ''}
+      `}
+      style={{
+        boxShadow: hovered ? `0 20px 40px -12px rgba(0,0,0,0.5), 0 0 0 1px ${s.hoverColor}18` : 'none',
+      }}
+    >
+      {/* Top colour accent bar */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px] transition-opacity duration-300"
+        style={{
+          background: `linear-gradient(to right, ${s.hoverColor}88, transparent)`,
+          opacity: hovered ? 1 : 0,
+        }}
+      />
+
+      <div className="p-6 flex flex-col flex-1">
+        {/* Icon + badges row */}
+        <div className="flex items-start justify-between mb-5">
+          <div
+            className={`p-3 rounded-xl ${s.bg} text-xl transition-transform duration-300`}
+            style={{ color: s.hoverColor, transform: hovered ? 'scale(1.1)' : 'scale(1)' }}
+          >
+            {s.icon}
+          </div>
+          <div className="flex items-center gap-1.5">
+            {s.isNew && (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-green-500/15 border border-green-500/20 text-green-400">New</span>
+            )}
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.difficulty === 'Advanced' ? 'bg-red-500/10 border border-red-500/20 text-red-400' : 'bg-[#ffa116]/10 border border-[#ffa116]/20 text-[#ffa116]'}`}>
+              {s.difficulty}
+            </span>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h3
+          className="text-xl font-bold mb-1.5 transition-colors duration-200"
+          style={{ color: hovered ? s.hoverColor : '#ffffff' }}
+        >
+          {s.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-gray-500 text-sm leading-relaxed mb-4 flex-1">{s.description}</p>
+
+        {/* Meta */}
+        <div className="flex items-center gap-3 text-xs text-gray-500 mb-4 flex-wrap">
+          <span className="flex items-center gap-1.5"><FiLayers className="text-xs" />{s.topics} Topics</span>
+          <span className="text-gray-700">•</span>
+          <span className="flex items-center gap-1.5"><FiClock className="text-xs" />{s.readTime}</span>
+          <span className="text-gray-700">•</span>
+          <span className="text-gray-600">Updated {s.lastUpdated}</span>
+        </div>
+
+        {/* Topic chips */}
+        <div className="flex flex-wrap gap-1.5 mb-5">
+          {s.topicList.slice(0, 4).map((t) => (
+            <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-gray-400">{t}</span>
+          ))}
+          {s.topicList.length > 4 && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-gray-500">+{s.topicList.length - 4} more</span>
+          )}
+        </div>
+
+        {/* CTA */}
+        <Link to={`/notes/${s.slug}`} className="block">
+          <button
+            className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${s.bg} border ${s.border}`}
+            style={{ color: s.hoverColor, filter: hovered ? 'brightness(1.2)' : 'brightness(1)' }}
+          >
+            Start Reading
+            <FiArrowRight className="text-xs" style={{ transform: hovered ? 'translateX(3px)' : 'translateX(0)', transition: 'transform 0.2s' }} />
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
 const Notes = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [expandedSlug, setExpandedSlug] = useState(null);
 
   const filtered = subjects.filter((s) =>
     s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -67,7 +170,7 @@ const Notes = () => {
   );
 
   return (
-    <div className="px-6 pb-4 max-w-7xl mx-auto page-enter">
+    <div className="px-6 pb-10 max-w-7xl mx-auto page-enter">
 
       {/* Header */}
       <div className="mb-10 pt-2">
@@ -95,74 +198,9 @@ const Notes = () => {
       </div>
 
       {/* Cards Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map((s) => (
-          <div
-            key={s.slug}
-            className={`group bg-[#111] border ${expandedSlug === s.slug ? `${s.border} shadow-lg` : 'border-white/[0.06] hover:border-white/[0.15]'} rounded-2xl transition-all duration-300 overflow-hidden hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/40`}
-          >
-            {/* Card Top */}
-            <div className="p-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className={`p-2.5 rounded-xl ${s.bg} ${s.color} text-lg group-hover:scale-110 transition-transform duration-300`}>
-                  {s.icon}
-                </div>
-                <div className="flex items-center gap-2">
-                  {s.isNew && (
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-green-500/15 border border-green-500/20 text-green-400">New</span>
-                  )}
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.difficulty === 'Advanced' ? 'bg-red-500/10 border border-red-500/20 text-red-400' : 'bg-[#ffa116]/10 border border-[#ffa116]/20 text-[#ffa116]'}`}>
-                    {s.difficulty}
-                  </span>
-                </div>
-              </div>
-
-              <h3 className={`text-xl font-bold mb-1 transition-colors ${expandedSlug === s.slug ? s.color : 'text-white group-hover:' + s.color}`}>{s.title}</h3>
-              <div className="flex items-center gap-3 text-xs text-gray-500 mb-4">
-                <span className="flex items-center gap-1"><FiLayers className="text-[10px]" />{s.topics} Topics</span>
-                <span>·</span>
-                <span className="flex items-center gap-1"><FiClock className="text-[10px]" />Updated {s.lastUpdated}</span>
-              </div>
-
-              {/* Topics preview */}
-              <div className="flex flex-wrap gap-1.5 mb-4">
-                {s.topicList.slice(0, 3).map((t) => (
-                  <span key={t} className="text-[10px] px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-gray-400">{t}</span>
-                ))}
-                {s.topicList.length > 3 && (
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-gray-500">+{s.topicList.length - 3} more</span>
-                )}
-              </div>
-
-              {/* Expand toggle */}
-              <button
-                onClick={() => setExpandedSlug(expandedSlug === s.slug ? null : s.slug)}
-                className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${expandedSlug === s.slug ? `${s.bg} ${s.color} border ${s.border}` : 'bg-white/[0.04] border border-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.08]'}`}
-              >
-                {expandedSlug === s.slug ? "Hide Topics" : "View Topics"} <FiArrowRight className={`text-xs transition-transform ${expandedSlug === s.slug ? 'rotate-90' : 'group-hover:translate-x-1'}`} />
-              </button>
-            </div>
-
-            {/* Expanded Topics */}
-            {expandedSlug === s.slug && (
-              <div className={`border-t ${s.border} px-5 py-4 bg-white/[0.01]`}>
-                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-3">All Topics</p>
-                <ul className="space-y-2">
-                  {s.topicList.map((t, i) => (
-                  <li key={i} className={`flex items-center gap-2 text-sm text-gray-300 hover:${s.color} cursor-pointer transition-colors`}>
-                    <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${s.color.replace('text-', 'bg-')}`} />
-                    {t}
-                  </li>
-                ))}
-                </ul>
-                <Link to={`/notes/${s.slug}`}>
-                  <button className={`mt-4 w-full py-2 rounded-xl text-sm font-semibold ${s.color} ${s.bg} border ${s.border} transition-all hover:opacity-90`}>
-                    Start Reading →
-                  </button>
-                </Link>
-              </div>
-            )}
-          </div>
+          <NoteCard key={s.slug} s={s} />
         ))}
 
         {filtered.length === 0 && (

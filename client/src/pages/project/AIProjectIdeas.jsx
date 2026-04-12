@@ -32,7 +32,7 @@ const AIProjectIdeas = () => {
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
       console.error("Failed to generate idea", error);
-    }    
+    }
   };
 
   const handleReset = () => {
@@ -66,7 +66,7 @@ const AIProjectIdeas = () => {
             Stop building another To-Do app. Generate unique, resume-worthy project ideas tailored to your tech stack and goals.
           </p>
         </div>
-        
+
         <button
           onClick={() => navigate('/project-dashboard')}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.1] transition-all font-medium text-sm self-start md:self-auto"
@@ -85,12 +85,17 @@ const AIProjectIdeas = () => {
             <div className="w-8 h-8 bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-lg flex items-center justify-center">
               <FiCode className="text-[#ffa116]" />
             </div>
-            <h2 className="font-bold text-white">Configure Your Idea</h2>
+            <div>
+              <h2 className="font-bold text-white text-sm">Configure Your Idea</h2>
+              <p className="text-[10px] text-gray-500">Set constraints for the AI</p>
+            </div>
           </div>
 
-          {/* Tech Stack */}
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tech Stack *</label>
+          {/* Tech Stack — grouped section */}
+          <div className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 space-y-2">
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+              Tech Stack <span className="text-[#ffa116]">*</span>
+            </label>
             <div className="flex flex-wrap gap-2">
               {techStacks.map((s) => (
                 <button
@@ -104,9 +109,11 @@ const AIProjectIdeas = () => {
             </div>
           </div>
 
-          {/* Complexity */}
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Complexity *</label>
+          {/* Complexity — grouped section */}
+          <div className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 space-y-2">
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+              Complexity <span className="text-[#ffa116]">*</span>
+            </label>
             <div className="flex gap-2">
               {complexities.map((c) => {
                 const colors = { Beginner: "text-green-400 border-green-500/40 bg-green-500/10", Intermediate: "text-yellow-400 border-yellow-500/40 bg-yellow-500/10", Advanced: "text-red-400 border-red-500/40 bg-red-500/10" };
@@ -123,33 +130,42 @@ const AIProjectIdeas = () => {
             </div>
           </div>
 
-          {/* Domain */}
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Domain / Industry</label>
-            <div className="flex flex-wrap gap-2">
-              {domains.map((d) => (
-                <button
-                  key={d}
-                  onClick={() => handleChange("domain", form.domain === d ? "" : d)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${form.domain === d ? "bg-purple-500/15 border-purple-500/40 text-purple-300" : "bg-white/[0.03] border-white/[0.07] text-gray-400 hover:text-white hover:border-white/[0.2]"}`}
-                >
-                  {d}
-                </button>
-              ))}
+          {/* Domain + Notes — grouped section */}
+          <div className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 space-y-3">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Domain / Industry</label>
+              <div className="flex flex-wrap gap-2">
+                {domains.map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => handleChange("domain", form.domain === d ? "" : d)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${form.domain === d ? "bg-purple-500/15 border-purple-500/40 text-purple-300" : "bg-white/[0.03] border-white/[0.07] text-gray-400 hover:text-white hover:border-white/[0.2]"}`}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-2 border-t border-white/[0.05]">
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Additional Notes</label>
+              <textarea
+                placeholder="e.g. something with real-time features, or related to my college project..."
+                rows={3}
+                value={form.notes}
+                onChange={(e) => handleChange("notes", e.target.value)}
+                className="w-full bg-[#0d0d0d] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] focus:shadow-[0_0_0_3px_rgba(255,161,22,0.08)] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none resize-none transition-all"
+              />
             </div>
           </div>
 
-          {/* Notes */}
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Additional Notes</label>
-            <textarea
-              placeholder="e.g. something with real-time features, or related to my college project..."
-              rows={3}
-              value={form.notes}
-              onChange={(e) => handleChange("notes", e.target.value)}
-              className="w-full bg-[#0d0d0d] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] focus:shadow-[0_0_0_3px_rgba(255,161,22,0.08)] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none resize-none transition-all"
-            />
-          </div>
+          {/* Validation hint */}
+          {!isFormValid && (
+            <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-2.5 rounded-lg">
+              <FiZap className="shrink-0 mt-0.5 text-sm" />
+              <p className="text-xs font-semibold">Select Tech Stack and Complexity to continue</p>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-col gap-3">
@@ -164,18 +180,14 @@ const AIProjectIdeas = () => {
                 <><FiZap /> Generate Project Idea</>
               )}
             </button>
-            {/* <button
+            <button
                onClick={handleReset}
                title="Clear all fields and start fresh"
-               className="w-full py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center gap-2 text-gray-500 hover:text-white hover:bg-white/[0.08] transition-all font-medium text-sm"
+               className="w-full py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.07] flex items-center justify-center gap-2 text-gray-500 hover:text-white hover:bg-white/[0.06] transition-all font-medium text-sm"
             >
-              <FiRefreshCw /> Start New Idea
-            </button> */}
+              <FiRefreshCw className="text-xs" /> Reset
+            </button>
           </div>
-
-          {!isFormValid && (
-            <p className="text-center text-xs text-gray-600">Select Tech Stack and Complexity to continue</p>
-          )}
         </div>
 
         {/* ─── RIGHT PANEL: Generated Idea ─── */}
@@ -214,11 +226,32 @@ const AIProjectIdeas = () => {
           {project && !loading && (
             <div className="bg-[#111] border border-white/[0.08] rounded-2xl overflow-hidden">
               {/* Card Header */}
-              <div className="bg-gradient-to-r from-[#ffa116]/10 to-transparent border-b border-white/[0.06] px-6 py-4 flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-2 py-0.5">AI Generated</span>
-                    <span className="text-xs text-gray-500">{project.techStack || form.techStack} · {project.difficulty || form.complexity}</span>
+              <div className="bg-gradient-to-r from-[#ffa116]/10 to-transparent border-b border-white/[0.06] px-6 py-5 flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  {/* Chip tags */}
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="text-[10px] font-bold tracking-widest text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-2.5 py-0.5 flex items-center gap-1">
+                      <FiCheck strokeWidth={3} className="text-[8px]" /> AI GENERATED
+                    </span>
+                    {(project.techStack || form.techStack) && (
+                      <span className="text-[10px] font-bold tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-full px-2.5 py-0.5 uppercase">
+                        {project.techStack || form.techStack}
+                      </span>
+                    )}
+                    {form.domain && (
+                      <span className="text-[10px] font-bold tracking-widest text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded-full px-2.5 py-0.5 uppercase">
+                        {form.domain}
+                      </span>
+                    )}
+                    {(project.difficulty || form.complexity) && (
+                      <span className={`text-[10px] font-bold tracking-widest rounded-full px-2.5 py-0.5 border uppercase ${
+                        (project.difficulty || form.complexity) === 'Beginner' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
+                        (project.difficulty || form.complexity) === 'Intermediate' ? 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' :
+                        'text-red-400 bg-red-500/10 border-red-500/20'
+                      }`}>
+                        {project.difficulty || form.complexity}
+                      </span>
+                    )}
                   </div>
                   <h2 className="text-2xl font-black text-white">{project.title}</h2>
                   <p className="text-gray-400 text-sm mt-1 italic">{project.tagline}</p>
@@ -235,9 +268,9 @@ const AIProjectIdeas = () => {
                   <button
                     onClick={handleReset}
                     title="Clear current idea and start over"
-                    className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.1] transition-all"
+                    className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.1] transition-all group"
                   >
-                    <FiRefreshCw className={loading ? "animate-spin" : ""} />
+                    <FiRefreshCw className="transition-transform group-hover:rotate-180 duration-500" />
                   </button>
                 </div>
               </div>
@@ -279,7 +312,7 @@ const AIProjectIdeas = () => {
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Resume Value - Full Width and Highlighted */}
                   <div className="bg-[#ffa116]/5 border border-[#ffa116]/10 rounded-xl p-4">
                     <p className="text-[10px] text-[#ffa116] uppercase tracking-wider mb-2 font-bold flex items-center gap-1.5">

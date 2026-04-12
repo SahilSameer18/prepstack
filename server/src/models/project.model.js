@@ -9,6 +9,7 @@ const projectSchema = new mongoose.Schema({
   difficulty: { type: String, required: true },
   estimatedTime: String,
   resumeValue: String,
+  domain: { type: String, default: '' },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-/* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap'); */
 
 
 /* ---------------- GLOBAL RESET ---------------- */
@@ -39,21 +38,31 @@ body {
 /* ---------------- SCROLLBAR ---------------- */
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--lc-bg);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--lc-border);
+  background: rgba(255,255,255,0.1);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--lc-primary);
 }
+
+/* Thin scrollbar for sidebars */
+.scrollbar-thin::-webkit-scrollbar { width: 3px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* Text selection */
+::selection { background: rgba(255,161,22,0.25); color: #fff; }
 
 /* ---------------- GLASS EFFECT ---------------- */
 
@@ -163,4 +172,4 @@ input:-webkit-autofill:active{
     -webkit-box-shadow: 0 0 0 30px #111 inset !important;
     -webkit-text-fill-color: white !important;
     transition: background-color 5000s ease-in-out 0s;
-}
+}

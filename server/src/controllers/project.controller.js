@@ -25,6 +25,7 @@ const generateProject = async (req, res) => {
       difficulty: projectIdea.difficulty,
       estimatedTime: projectIdea.estimatedTime,
       resumeValue: projectIdea.resumeValue,
+      domain: domain || '',
       user: req.user._id
     })
 
@@ -44,7 +45,10 @@ const generateProject = async (req, res) => {
 
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await projectModel.find({ user: req.user._id }).sort({ createdAt: -1 }).select('title tagline difficulty createdAt')
+    const projects = await projectModel
+      .find({ user: req.user._id })
+      .sort({ createdAt: -1 })
+      .select('title tagline difficulty createdAt techStack domain features')
     return res.status(200).json({
       success: true,
       message: "Projects fetched successfully",

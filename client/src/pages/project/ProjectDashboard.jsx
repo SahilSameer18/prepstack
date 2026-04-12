@@ -125,7 +125,7 @@ const ProjectDashboard = () => {
           </p>
           <Link
             to="/ai-projects"
-            className="px-6 py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-gray-200 transition-all"
+            className="px-8 py-3.5 rounded-xl bg-[#ffa116] text-black font-bold text-sm hover:bg-[#ffb84d] transition-all shadow-lg shadow-orange-500/20"
           >
             Generate Now
           </Link>
@@ -141,46 +141,73 @@ const ProjectDashboard = () => {
                 exit={{ opacity: 0, scale: 0.95 }}
                 layout
                 onClick={() => handleCardClick(project._id)}
-                className="group relative bg-[#111] border border-white/[0.08] hover:border-[#ffa116]/40 rounded-2xl p-6 cursor-pointer transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:-translate-y-1 overflow-hidden"
+                className="group relative bg-[#0a0a0a] border border-white/[0.06] hover:border-[#ffa116]/30 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-[#ffa116]/5 hover:-translate-y-1.5 flex flex-col h-full overflow-hidden"
               >
+                {/* Background Glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#ffa116]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
                 {/* Difficulty Badge */}
-                <div className="absolute top-4 right-4">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                    project.difficulty === 'Beginner' ? 'text-green-400 border-green-500/20 bg-green-500/10' :
-                    project.difficulty === 'Intermediate' ? 'text-yellow-400 border-yellow-500/20 bg-yellow-500/10' :
-                    'text-red-400 border-red-500/20 bg-red-500/10'
+                <div className="absolute top-5 right-5 z-10">
+                  <span className={`text-[9px] uppercase tracking-widest font-black px-2.5 py-0.5 rounded-full border ${
+                    project.difficulty === 'Beginner' ? 'text-green-400 border-green-500/20 bg-green-500/10 shadow-sm shadow-green-500/5' :
+                    project.difficulty === 'Intermediate' ? 'text-yellow-400 border-yellow-500/20 bg-yellow-500/10 shadow-sm shadow-yellow-500/5' :
+                    'text-red-400 border-red-500/20 bg-red-500/10 shadow-sm shadow-red-500/5'
                   }`}>
                     {project.difficulty}
                   </span>
                 </div>
 
                 {/* Content */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold text-white group-hover:text-[#ffa116] transition-colors mb-2 truncate pr-16 text-ellipsis overflow-hidden">
+                <div className="mb-4 flex-1">
+                  <h3 className="text-xl font-bold text-white group-hover:text-[#ffa116] transition-colors mb-1 truncate pr-20 text-ellipsis overflow-hidden">
                     {project.title}
                   </h3>
-                  <p className="text-gray-400 text-xs italic line-clamp-1">{project.tagline}</p>
+                  <p className="text-gray-400 text-xs italic line-clamp-1 mb-4">{project.tagline}</p>
+                  
+                  {/* Features Preview */}
+                  {project.features && project.features.length > 0 && (
+                    <div className="space-y-1.5 mb-5 pl-1 border-l-2 border-white/[0.05] ml-1">
+                      {project.features.slice(0, 2).map((feature, idx) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 mt-1.5" />
+                          <span className="text-[11px] text-gray-500 line-clamp-1">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Chips (Domain / Stack) - only show if data exists */}
+                  {(project.techStack || project.domain) && (
+                    <div className="flex flex-wrap gap-2">
+                      {project.techStack && (
+                        <span className="text-[9px] font-bold tracking-widest text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded px-1.5 py-0.5 uppercase">
+                          {project.techStack}
+                        </span>
+                      )}
+                      {project.domain && (
+                        <span className="text-[9px] font-bold tracking-widest text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded px-1.5 py-0.5 uppercase">
+                          {project.domain}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
-                  <p className="text-[10px] text-gray-500 font-medium">
-                    {new Date(project.createdAt).toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
+                <div className="mt-auto pt-4 border-t border-white/[0.05] flex items-center justify-between relative z-10">
+                  <p className="text-[10px] text-gray-600 font-bold uppercase tracking-wider whitespace-nowrap">
+                    {new Date(project.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                   </p>
-                  
+
                   <div className="flex items-center gap-2">
-                     <button
+                    <button
                       onClick={(e) => openDeleteModal(e, project._id)}
-                      className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                      className="w-8 h-8 rounded bg-red-500/5 border border-red-500/10 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
                       title="Delete"
                     >
-                      <FiTrash2 className="text-sm" />
+                      <FiTrash2 className="text-xs" />
                     </button>
-                    <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/[0.08] flex items-center justify-center text-gray-400 group-hover:text-white group-hover:bg-[#ffa116] group-hover:border-[#ffa116] transition-all">
-                      <FiExternalLink className="text-sm" />
+                    <div className="px-3 py-1.5 h-8 rounded bg-white/[0.05] border border-white/[0.1] flex items-center gap-1.5 text-[10px] font-bold text-gray-500 group-hover:text-black group-hover:bg-[#ffa116] group-hover:border-[#ffa116] group-hover:shadow-md group-hover:shadow-orange-500/20 transition-all duration-300">
+                      VIEW FULL <FiExternalLink className="text-[10px]" />
                     </div>
                   </div>
                 </div>

@@ -260,7 +260,7 @@ const Navbar = () => {
                       Saved Projects
                     </Link>
                     <button
-                      onClick={() => { if(!isLoggingOut) logout(); setMobileOpen(false); }}
+                      onClick={() => { if (!isLoggingOut) logout(); setMobileOpen(false); }}
                       disabled={isLoggingOut}
                       className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
