@@ -9,7 +9,7 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-  origin: "https://prepstack-liard.vercel.app",
+  origin: "https://prepstack-ss.vercel.app",
   credentials: true,
 }))
 
