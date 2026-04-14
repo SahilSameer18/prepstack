@@ -110,7 +110,7 @@ const Footer = () => {
         {/* Bottom bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6">
           <p className="text-gray-600 text-xs flex items-center gap-1.5">
-            Built with <FaHeart className="text-red-500 text-[10px]" /> for CSE students — © 2026 PrepStack. All rights reserved.
+            Built for CSE students — © 2026 PrepStack. All rights reserved.
           </p>
           <p className="text-gray-700 text-xs">Made by Sahil Sameer</p>
         </div>

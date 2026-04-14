@@ -33,8 +33,8 @@ const Login = () => {
 
   const stats = [
     { value: "1200+", label: "DSA Problems" },
-    { value: "5+", label: "CS Subjects" },
     { value: "AI", label: "Project Gen" },
+    { value: "4+", label: "CS Subjects" },
   ];
 
   const features = ["DSA Sheets", "CS Notes", "Roadmaps", "AI Projects", "Behavioral Prep", "Resume Guide"];
@@ -131,7 +131,7 @@ const Login = () => {
 
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Welcome back 👋</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Welcome back</h1>
             <p className="text-gray-400 text-sm">Log in to continue your preparation journey.</p>
           </div>
 
@@ -220,3 +220,4 @@ const Login = () => {
 };
 
 export default Login;
+

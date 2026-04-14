@@ -1,87 +1,81 @@
 # PrepStack 🚀
 
-PrepStack is a FAANG-ready interview preparation platform built for software engineering job seekers. It unifies AI-powered project ideation, resume building, candidate progress tracking, core computer science notes, and interview readiness workflows in one production-quality web app.
+PrepStack is a full-stack interview preparation platform for software engineering candidates. It combines AI-driven project ideation, resume guidance, DSA progress tracking, CS concept notes, and interview readiness tools into one modern web app.
 
 ---
 
-## Why PrepStack?
+## What PrepStack Solves
 
-Many candidates prepare in scattered tools: note apps, coding practice sites, and slide decks for resumes. PrepStack connects the entire journey:
+Candidates often prepare across many tools, notes, and practice sites. PrepStack centralizes the preparation journey so users can:
 
-- build project ideas recruiters love,
-- track DSA progress across popular sheet collections,
-- store CS concept notes,
-- generate polished resume content,
-- and practice behavioral and aptitude questions.
+- generate recruiter-ready project ideas
+- track curated coding sheet progress
+- review essential CS fundamentals
+- practice behavioral and aptitude skills
+- save progress with secure authentication
 
-This makes PrepStack a strong showcase for end-to-end product development, from full-stack architecture to AI service integration.
-
----
-
-## ✨ Core Product Features
-
-- **AI Project Idea Generator**: Create tailored, interview-ready project concepts using Google Gemini AI.
-- **Resume Builder Tips**: Draft clean, ATS-friendly resumes with structured sections.
-- **DSA Sheet Tracker**: Manage progress across curated sheets like Striver, NeetCode and Blind75.
-- **CS Concepts Library**: Access notes for OS, DBMS, Computer Networks, OOPS, and more.
-- **Behavioral Prep**: Review high-impact interview questions and model answers for system design and culture-fit rounds.
-- **Quiz Engine**: Assess readiness with aptitude and technical quizzes.
-- **Persistent User Sessions**: Secure login, progress saving, and stateful user history.
+This project also showcases modern full-stack architecture, AI integration, and product-focused UI design.
 
 ---
 
-## 🧱 Architecture Overview
+## Key Features
 
-PrepStack is organized as a clean two-tier full-stack application:
-
-- `client/`: React + Vite frontend
-- `server/`: Express + MongoDB backend
-
-```text
-client/  -> React 19 + Vite + Tailwind + Context API
-server/  -> Node.js + Express + MongoDB + Mongoose + JWT auth
-AI       -> Google Gemini via @google/genai
-```
+- **AI Project Ideation**: Generate structured project ideas using Google Gemini.
+- **Resume Guidance**: Draft polished project and experience descriptions.
+- **DSA Sheet Tracker**: Track progress for curated collections like Striver A2Z, NeetCode, Blind75, and LoveBabbar.
+- **CS Notes Library**: Review notes for OS, DBMS, Computer Networks, OOPS, and more.
+- **Behavioral & Aptitude Prep**: Practice interview questions and quizzes.
+- **Secure Authentication**: Login/signup flow with JWT-based sessions and saved progress.
+- **Seeded Demo Data**: Load sample data quickly for testing and demos.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend**
 - React 19
 - Vite
 - Tailwind CSS 4
 - Framer Motion
-- React Router 7
+- React Router DOM 7
 - Axios
 
 **Backend**
 - Node.js
 - Express 5
 - MongoDB + Mongoose
-- JWT authentication
-- cookie-parser + CORS
+- JSON Web Tokens (JWT)
+- cookie-parser, CORS
 - Zod validation
-- Google Gemini AI (`@google/genai`)
+- Google Gemini AI via `@google/genai`
 
 ---
 
-## 📁 Project Structure
+## Architecture
 
-- `client/`
-  - `src/`: app components, pages, hooks, context, services
-  - `src/pages/`: Auth, Home, Notes, Sheets, Projects, Roadmaps
-- `server/`
-  - `src/controllers/`: request handlers
-  - `src/models/`: MongoDB schemas
-  - `src/routes/`: API endpoints
-  - `src/services/ai.service.js`: Gemini AI integration
-  - `src/middlewares/`: auth and error middleware
-  - `src/seed/`: seed scripts and sample data
+PrepStack is structured as a two-tier app:
+
+- `client/` — React + Vite frontend
+- `server/` — Express + MongoDB backend
+
+Important backend folders:
+- `src/controllers/` — request handlers
+- `src/models/` — Mongoose schemas
+- `src/routes/` — API routes
+- `src/services/` — AI integration and helper logic
+- `src/middlewares/` — auth and error handling
+- `src/seed/` — demo data scripts
+
+Important frontend folders:
+- `src/pages/` — page views for auth, notes, sheets, projects, roadmaps
+- `src/components/` — reusable UI components
+- `src/context/` — React context providers
+- `src/hooks/` — custom hooks for auth, notes, projects, sheets
+- `src/api/services/` — Axios API wrappers
 
 ---
 
-## 🚀 Local Setup
+## Local Setup
 
 ### 1. Clone the repository
 
@@ -97,7 +91,7 @@ cd server
 npm install
 ```
 
-Create `server/.env` with:
+Create a `.env` file in `server/` with:
 
 ```env
 PORT=3000
@@ -106,7 +100,7 @@ JWT_SECRET=<your_jwt_secret>
 GOOGLE_API_KEY=<your_google_gemini_api_key>
 ```
 
-Run the server:
+Start the backend:
 
 ```bash
 npm run dev
@@ -120,23 +114,38 @@ npm install
 npm run dev
 ```
 
-Open the local Vite URL shown in the terminal and use the app.
+Open the local Vite URL shown in the terminal to use the app.
 
 ---
 
-## 🔧 Environment Variables
+## Available Scripts
+
+### Server
+- `npm run dev` — start backend with nodemon
+- `npm start` — run production server
+- `npm run seed:notes` — seed note data
+- `npm run seed:all` — seed full demo data
+
+### Client
+- `npm run dev` — start Vite development server
+- `npm run build` — build production assets
+- `npm run preview` — preview production build
+- `npm run lint` — run ESLint checks
+
+---
+
+## Environment Variables
 
 Required server environment variables:
 
-- `PORT` – server port (e.g. `3000`)
-- `MONGO_URI` – MongoDB connection string
-- `JWT_SECRET` – secret key for JWT authentication
-- `GOOGLE_API_KEY` – Google Gemini API key
+- `PORT` — backend port
+- `MONGO_URI` — MongoDB connection string
+- `JWT_SECRET` — JWT signing secret
+- `GOOGLE_API_KEY` — Google Gemini API key
 
 ---
 
-
-## 🧪 Seed Data
+## Demo Data
 
 To populate the database with sample content:
 
@@ -144,8 +153,19 @@ To populate the database with sample content:
 cd server
 npm run seed:all
 ```
+
 ---
 
-## 📜 License
-Add a `LICENSE` file to clarify usage. Recommended: MIT.
+## Notes for Reviewers
+
+- Demonstrates modern frontend architecture, state management, and API-driven design.
+- Backend includes authentication, validation, and seeded demo data.
+- AI integration strengthens project ideation and resume support.
+
+---
+
+## License
+Add a `LICENSE` file to clarify usage. `MIT` is recommended.
+
+
 

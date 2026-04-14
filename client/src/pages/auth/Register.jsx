@@ -150,8 +150,8 @@ const Register = () => {
 
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Create your account ✨</h1>
-            <p className="text-gray-400 text-sm">Get started for free — no credit card required.</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Create your account</h1>
+            <p className="text-gray-400 text-sm">Get started for free</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -48,8 +48,8 @@ const Navbar = () => {
 
   const mainLinks = [
     { name: "DSA Sheets", path: "/dsa", icon: <FiCode /> },
-    { name: "Roadmaps", path: "/roadmaps", icon: <FiMap /> },
     { name: "AI Projects", path: "/ai-projects", icon: <FiCpu /> },
+    { name: "Roadmaps", path: "/roadmaps", icon: <FiMap /> },
   ];
 
   const exploreLinks = [
@@ -267,7 +267,7 @@ const Navbar = () => {
                       {isLoggingOut ? (
                         <>
                           <InlineSpinner size={16} color="#f87171" />
-                          <span>Signing out...</span>
+                          <span>Signing out....</span>
                         </>
                       ) : (
                         <>
