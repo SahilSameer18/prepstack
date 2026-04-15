@@ -22,7 +22,7 @@ const categories = [
         difficulty: "Beginner → Intermediate",
         tags: ["Comprehensive", "GFG Based", "Topic-wise"],
         icon: <FaStar className="text-yellow-400" />,
-        recommended: true,
+        recommended: false,
         highlight: "Most loved for structured learning",
       },
       {
@@ -32,7 +32,7 @@ const categories = [
         difficulty: "Beginner → Advanced",
         tags: ["Structured", "Video Walkthrough", "Pattern-based"],
         icon: <FiLayers className="text-blue-400" />,
-        recommended: false,
+        recommended: true,
         highlight: "Best paired with YouTube series",
       },
     ],
