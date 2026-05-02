@@ -15,7 +15,7 @@ import Behavioral from './pages/Behavioral';
 import NotFound from './pages/NotFound';
 import Quiz from './pages/Quiz';
 import Aptitute from './pages/Aptitute';
-import ProjectDashboard from "./pages/project/ProjectDashboard";
+import UnifiedDashboard from "./pages/Dashboard/UnifiedDashboard";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 
@@ -87,7 +87,14 @@ export const router = createBrowserRouter([
         path: "/project-dashboard",
         element:
           <ProtectedRoute>
-            <ProjectDashboard />
+            <UnifiedDashboard />
+          </ProtectedRoute>
+      },
+      {
+        path: "/dashboard",
+        element:
+          <ProtectedRoute>
+            <UnifiedDashboard />
           </ProtectedRoute>
       },
       {

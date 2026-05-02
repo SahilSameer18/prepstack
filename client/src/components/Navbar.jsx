@@ -168,11 +168,11 @@ const Navbar = () => {
                         <p className="text-sm font-medium text-white truncate">{user.username}</p>
                       </div>
                       <Link
-                        to="/project-dashboard"
+                        to="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
                         className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.04] transition-colors"
                       >
-                        <FiGrid className="text-xs" /> Saved Projects
+                        <FiGrid className="text-xs" /> Dashboard
                       </Link>
                       <button
                         onClick={logout}
@@ -252,12 +252,12 @@ const Navbar = () => {
                 {user ? (
                   <div className="space-y-2">
                     <Link
-                      to="/project-dashboard"
+                      to="/dashboard"
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] transition-all"
                     >
                       <FiGrid className="text-base text-gray-500" />
-                      Saved Projects
+                      Dashboard
                     </Link>
                     <button
                       onClick={() => { if (!isLoggingOut) logout(); setMobileOpen(false); }}
