@@ -16,7 +16,7 @@ const Footer = () => {
 
   const social = [
     { icon: <FiGithub />, url: "https://github.com/SahilSameer18", label: "GitHub" },
-    { icon: <FiLinkedin />, url: "https://www.linkedin.com/in/sahil-sameer-siddique-abb849233/", label: "LinkedIn" },
+    { icon: <FiLinkedin />, url: "https://www.linkedin.com/in/sahil-sameer-siddique/", label: "LinkedIn" },
     { icon: <FiInstagram />, url: "https://instagram.com/yourprofile", label: "Instagram" },
     { icon: <FiMail />, url: "mailto:sahilsameer.dev18@gmail.com", label: "Email" },
   ];
@@ -47,9 +47,9 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ffa116] to-[#ff6b00] flex items-center justify-center shadow-md shadow-orange-500/20">
+              {/* <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ffa116] to-[#ff6b00] flex items-center justify-center shadow-md shadow-orange-500/20">
                 <FiCode className="text-white text-sm" />
-              </div>
+              </div> */}
               <span className="text-lg font-bold text-white">Prep<span className="text-[#ffa116]">Stack</span></span>
             </div>
             <p className="text-gray-500 text-sm leading-relaxed max-w-xs">

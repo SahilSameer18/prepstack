@@ -1,22 +1,26 @@
 import { createBrowserRouter } from "react-router-dom";
+import { lazy } from "react";
 import MainLayout from "./layout/MainLayout";
 import Home from "./pages/Home";
-import Sheets from "./pages/DsaSheets/Sheets";
-import SheetsDetail from "./pages/DsaSheets/SheetsDetail";
-import Notes from "./pages/csNotes/Notes";
-import NotesDetail from "./pages/csNotes/NotesDetail";
-import Roadmap from "./pages/roadmaps/Roadmap";
-import RoadmapDetail from "./pages/roadmaps/RoadmapDetail";
-import AIProjectIdeas from "./pages/project/AIProjectIdeas";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import Resume from './pages/Resume';
-import Behavioral from './pages/Behavioral';
 import NotFound from './pages/NotFound';
-import Quiz from './pages/Quiz';
-import Aptitute from './pages/Aptitute';
-import UnifiedDashboard from "./pages/Dashboard/UnifiedDashboard";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+
+
+// Lazy Loaded Routes
+const Sheets = lazy(() => import('./pages/DsaSheets/Sheets'));
+const SheetsDetail = lazy(() => import('./pages/DsaSheets/SheetsDetail'));
+const Notes = lazy(() => import('./pages/csNotes/Notes'));
+const NotesDetail = lazy(() => import('./pages/csNotes/NotesDetail'));
+const Roadmap = lazy(() => import('./pages/roadmaps/Roadmap'));
+const RoadmapDetail = lazy(() => import('./pages/roadmaps/RoadmapDetail'));
+const AIProjectIdeas = lazy(() => import('./pages/project/AIProjectIdeas'));
+const Resume = lazy(() => import('./pages/Resume'));
+const Behavioral = lazy(() => import('./pages/Behavioral'));
+const Quiz = lazy(() => import('./pages/Quiz'));
+const Aptitude = lazy(() => import('./pages/Aptitude'));
+const UnifiedDashboard = lazy(() => import('./pages/Dashboard/UnifiedDashboard'));
 
 
 export const router = createBrowserRouter([
@@ -122,7 +126,7 @@ export const router = createBrowserRouter([
         path: "/aptitude",
         element:
           <ProtectedRoute>
-            <Aptitute />
+            <Aptitude />
           </ProtectedRoute>
       },
     ],
