@@ -14,7 +14,7 @@ import {
   getSheetProgress,
   getSheetBySlug,
 } from "../../api/services/sheetService";
-import DSADash from "./DSADash";
+import DSADash from "./DsaDash";
 import ProjectDash from "./ProjectDash";
 
 // ── UnifiedDashboard ───────────────────────────────────────────────────────
