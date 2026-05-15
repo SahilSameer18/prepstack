@@ -108,3 +108,4 @@ const deleteProject = async (req, res) => {
 
 
 module.exports = { generateProject, getAllProjects, getProjectById, deleteProject }
+

@@ -116,7 +116,7 @@ const Home = () => {
           </p>
           <div className="grid grid-cols-2 gap-4">
             {whyUs.map((item) => (
-              <div key={item.title} className="bg-[#141414] border border-white/[0.06] rounded-xl p-4">
+              <div key={item.title} className="bg-[#141414] border border-white/[0.06] rounded-xl p-4 hover:border-white/[0.14] hover:bg-[#1a1a1a] transition-all duration-300">
                 <div className="text-[#ffa116] text-lg mb-2">{item.icon}</div>
                 <h4 className="font-semibold text-white text-sm mb-1">{item.title}</h4>
                 <p className="text-gray-500 text-xs leading-relaxed">{item.desc}</p>
@@ -128,7 +128,7 @@ const Home = () => {
           <img
             src={about2}
             alt="Learning illustration"
-            className="w-full max-w-md rounded-2xl shadow-2xl shadow-black/40"
+            className="w-full max-w-md rounded-2xl shadow-2xl shadow-black/40 hover:scale-[1.02] hover:shadow-black/60 transition-all duration-500"
           />
         </div>
       </section>
