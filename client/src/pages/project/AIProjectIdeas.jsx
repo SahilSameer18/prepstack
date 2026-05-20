@@ -68,7 +68,7 @@ const AIProjectIdeas = () => {
         </div>
 
         <button
-          onClick={() => navigate('/project-dashboard')}
+          onClick={() => navigate('/dashboard')}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.1] transition-all font-medium text-sm self-start md:self-auto"
         >
           <FiList className="text-[#ffa116]" /> View Saved Projects

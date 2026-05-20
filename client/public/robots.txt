@@ -1,0 +1,20 @@
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+Allow: /dsa
+Allow: /notes
+Allow: /roadmaps
+Allow: /behavioral
+Allow: /resume
+
+# Block crawls on authenticated dashboard/session routes to save crawl budget
+Disallow: /dashboard
+Disallow: /ai-projects
+Disallow: /login
+Disallow: /register
+Disallow: /quiz
+Disallow: /aptitude
+
+# Sitemap location
+Sitemap: https://prepstack-ss.vercel.app/sitemap.xml

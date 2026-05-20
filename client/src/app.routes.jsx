@@ -32,10 +32,7 @@ export const router = createBrowserRouter([
 
       {
         path: "/dsa",
-        element:
-          <ProtectedRoute>
-            <Sheets />
-          </ProtectedRoute>
+        element: <Sheets />
       },
       {
         path: "/dsa/:slug",
@@ -46,10 +43,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/notes",
-        element:
-          <ProtectedRoute>
-            <Notes />
-          </ProtectedRoute>
+        element: <Notes />
       },
       {
         path: "/notes/:subject",
@@ -61,10 +55,7 @@ export const router = createBrowserRouter([
 
       {
         path: "/roadmaps",
-        element:
-          <ProtectedRoute>
-            <Roadmap />
-          </ProtectedRoute>
+        element: <Roadmap />
       },
       {
         path: "/roadmaps/:id",
@@ -85,13 +76,6 @@ export const router = createBrowserRouter([
         element:
           <ProtectedRoute>
             <AIProjectIdeas />
-          </ProtectedRoute>
-      },
-      {
-        path: "/project-dashboard",
-        element:
-          <ProtectedRoute>
-            <UnifiedDashboard />
           </ProtectedRoute>
       },
       {
@@ -117,17 +101,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/quiz",
-        element:
-          <ProtectedRoute>
-            <Quiz />
-          </ProtectedRoute>
+        element: <Quiz />
       },
       {
         path: "/aptitude",
-        element:
-          <ProtectedRoute>
-            <Aptitude />
-          </ProtectedRoute>
+        element: <Aptitude />
       },
     ],
   },
