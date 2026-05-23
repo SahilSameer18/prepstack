@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minLength: [6, 'Password must be at least 6 characters']
   },
+  refreshToken: {          
+    type: String,
+    default: null
+  }
   // role: {
   //   type: String,
   //   enum: ['user', 'admin'],
@@ -40,3 +44,4 @@ const userSchema = new mongoose.Schema({
 const userModel = mongoose.model('User', userSchema)
 
 module.exports = userModel;
+

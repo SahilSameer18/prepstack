@@ -1,10 +1,9 @@
 const userModel = require('../models/auth.model')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const blacklistTokenModel = require('../models/blacklist.model');
+const { generateAccessToken, generateRefreshToken } = require('../utils/tokens');
 
 // register user
-
 const registerUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
@@ -32,21 +31,27 @@ const registerUser = async (req, res, next) => {
       password: hash
     });
 
-    const token = jwt.sign({
-      id: user._id,
-      username: user.username
-    },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' });
+    const accessToken = generateAccessToken(user)
+    const refreshToken = generateRefreshToken(user)
 
+    // save refresh token to user in DB
+    await userModel.findByIdAndUpdate(user._id, { refreshToken })
 
-    res.cookie('token', token,
-      {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: 24 * 60 * 60 * 1000
-      });
+    // short-lived access token in cookie
+    res.cookie('accessToken', accessToken, {  
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 1000           // 15 minutes
+    })
+
+    // long-lived refresh token in separate cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true, 
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+    })
 
     res.status(201).json({
       success: true,
@@ -81,20 +86,28 @@ const loginUser = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
-    const token = jwt.sign({
-      id: user._id,
-      username: user.username
-    },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' });
+    const accessToken = generateAccessToken(user)
+    const refreshToken = generateRefreshToken(user)
 
-    res.cookie('token', token,
-      {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: 24 * 60 * 60 * 1000
-      });
+    // save refresh token to user in DB
+    await userModel.findByIdAndUpdate(user._id, { refreshToken })
+
+    // short-lived access token in cookie
+    res.cookie('accessToken', accessToken, {  
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 1000           // 15 minutes
+    })
+
+    // long-lived refresh token in separate cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true, 
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+    })
+
     res.status(200).json({
       message: "user logged in successfully",
       user: {
@@ -113,17 +126,14 @@ const loginUser = async (req, res, next) => {
 
 const logoutUser = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-
-    if (token) {
-      await blacklistTokenModel.create({ token });
+    const user = await userModel.findById(req.user.id)
+    if (user) {
+      await userModel.findByIdAndUpdate(user._id, { refreshToken: null })
     }
 
-    res.clearCookie('token', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none'
-    });
+    res.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'none' })
+    res.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'none' })
+
     res.status(200).json({ success: true, message: 'User logged out successfully' });
   } catch (error) {
     next(error)
@@ -148,48 +158,54 @@ const getCurrentUser = async (req, res, next) => {
   }
 }
 
-// update user
+const refreshAccessToken = async (req, res, next) => {
+  try {
+    const token = req.cookies.refreshToken
 
-// const updateUser = async (req, res, next) => {
-//   try {
-//     const { username, email } = req.body;
-//     const user = await userModel.findByIdAndUpdate(req.user.id, { username, email }, { new: true });
-//     res.status(200).json({
-//       success: true,
-//       user: {
-//         id: user._id,
-//         username: user.username,
-//         email: user.email,
-//       },
-//     });
-//   } catch (error) {
-//     next(error)
-//   }
-// }
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'No refresh token' })
+    }
 
-// update password
+    // verify signature
+    const decoded = jwt.verify(token, process.env.REFRESH_SECRET)
 
-// const updatePassword = async (req, res, next) => {
-//   try {
-//     const { password } = req.body;
-//     const user = await userModel.findByIdAndUpdate(req.user.id, { password }, { new: true });
-//     res.status(200).json({
-//       success: true,
-//       user: {
-//         id: user._id,
-//         username: user.username,
-//         email: user.email,
-//       },
-//     });
-//   } catch (error) {
-//     next(error)
-//   }
-// }
+    // check it matches what's stored in DB
+    const user = await userModel.findById(decoded.id)
+    if (!user || user.refreshToken !== token) {
+      return res.status(403).json({ success: false, message: 'Invalid refresh token' })
+    }
 
+    // rotate — issue new both tokens
+    const newAccessToken = generateAccessToken(user)
+    const newRefreshToken = generateRefreshToken(user)
+
+    await userModel.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken })
+
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 15 * 60 * 1000
+    })
+
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    })
+
+    res.status(200).json({ success: true, message: 'Token refreshed' })
+  } catch (error) {
+    next(error)
+  }
+}
 
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
-  getCurrentUser
+  getCurrentUser,
+  refreshAccessToken
 }
+

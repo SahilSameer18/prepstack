@@ -41,4 +41,4 @@ const getNotesBySubject = async (req, res) => {
   }
 }
 
-module.exports = { getNotes, getNotesBySubject };
+module.exports = { getNotes, getNotesBySubject };

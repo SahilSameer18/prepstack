@@ -25,31 +25,8 @@ export async function logout() {
 }
 
 export async function getCurrentUser() {
-  try {
-    const response = await api.get("/api/auth/current-user");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching current user:", error);
-    return null;
-  }
+  const response = await api.get("/api/auth/current-user");
+  return response.data;
 }
 
-// export async function updateProfile({ name, email, password }) {
-//   const response = await api.put("/api/auth/profile",
-//     {
-//       name,
-//       email,
-//       password
-//     });
-//   return response.data;
-// }
-
-// export async function changePassword({ oldPassword, newPassword }) {
-//   const response = await api.put("/api/auth/password",
-//     {
-//       oldPassword,
-//       newPassword
-//     });
-//   return response.data;
-// }
 
