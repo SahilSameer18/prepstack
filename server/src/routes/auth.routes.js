@@ -4,14 +4,14 @@ const authMiddleware = require('../middlewares/auth.middleware')
 
 const authRouter = express.Router();
 
-// refresh access token
-authRouter.post('/refresh', authController.refreshAccessToken);
-
 // register user
 authRouter.post('/register', authController.registerUser);
 
 // login user
 authRouter.post('/login', authController.loginUser);
+
+// refresh access token
+authRouter.post('/refresh', authController.refreshAccessToken);
 
 //clear the token cookie to logout the user
 authRouter.post('/logout', authMiddleware, authController.logoutUser);
@@ -20,5 +20,4 @@ authRouter.post('/logout', authMiddleware, authController.logoutUser);
 authRouter.get('/current-user', authMiddleware, authController.getCurrentUser);
 
 module.exports = authRouter;
-
 
