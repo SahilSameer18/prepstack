@@ -6,7 +6,7 @@ import {
   FaStar, FaUsers, FaTrophy,
 } from "react-icons/fa";
 import { FiZap, FiTarget, FiCheck } from "react-icons/fi";
-import about2 from "../assets/about2.png";
+import about2 from "../assets/about2.webp";
 import Testimonial from "../components/homePage/Testimonial";
 import FAQ from "../components/homePage/FAQ";
 import { useAuth } from "../hooks/useAuth";
