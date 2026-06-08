@@ -1,20 +1,35 @@
 # https://www.robotstxt.org/robotstxt.html
 
 User-agent: *
+
+# Allow public SEO pages
 Allow: /
 Allow: /dsa
 Allow: /notes
 Allow: /roadmaps
-Allow: /behavioral
-Allow: /resume
+Allow: /quiz
+Allow: /aptitude
 
-# Block crawls on authenticated dashboard/session routes to save crawl budget
+# IMPORTANT: allow SEO indexable dynamic routes
+Allow: /dsa/
+Allow: /notes/
+Allow: /roadmaps/
+
+# Block authenticated / private / non-SEO pages
 Disallow: /dashboard
 Disallow: /ai-projects
 Disallow: /login
 Disallow: /register
-Disallow: /quiz
-Disallow: /aptitude
+Disallow: /resume
+Disallow: /behavioral
+
+# Optional: avoid indexing parameter confusion pages
+Disallow: /dashboard/
+Disallow: /ai-projects/
+Disallow: /login/
+Disallow: /register/
+Disallow: /resume/
+Disallow: /behavioral/
 
 # Sitemap location
 Sitemap: https://prepstack-ss.vercel.app/sitemap.xml
