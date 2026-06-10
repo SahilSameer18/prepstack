@@ -13,6 +13,7 @@ import {
 } from "react-icons/fi";
 import { useProject } from "../../hooks/useProject";
 import { SkeletonProjectCard } from "../../components/ui/Skeletons";
+import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 
 // ── ProjectDash ────────────────────────────────────────────────────────────
 // Owns its own filter/sort/delete state; reads projects from useProject hook.
@@ -29,23 +30,29 @@ const ProjectDash = () => {
   // Delete modal
   const [deletingId, setDeletingId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   // ── Delete handlers ──────────────────────────────────────────────────────
   const openDeleteModal = (e, id) => {
     e.stopPropagation();
     setDeletingId(id);
+    setDeleteError(null);
   };
   const confirmDelete = async () => {
     if (!deletingId) return;
     setIsDeleting(true);
+    setDeleteError(null);
     try {
       await deleteProjectById(deletingId);
       await getProjects();
+      setDeletingId(null);
     } catch (err) {
       console.error("Delete failed", err);
+      setDeleteError(
+        err?.response?.data?.message || "Failed to delete project. Please try again."
+      );
     } finally {
       setIsDeleting(false);
-      setDeletingId(null);
     }
   };
   const projectToDelete = projects.find((p) => p._id === deletingId);
@@ -101,13 +108,23 @@ const ProjectDash = () => {
               <h3 className="text-xl font-bold text-white text-center mb-2">
                 Delete Project Idea?
               </h3>
-              <p className="text-gray-400 text-center text-sm mb-8">
+              <p className="text-gray-400 text-center text-sm mb-6">
                 Are you sure you want to delete{" "}
                 <span className="text-white font-semibold">
                   "{projectToDelete?.title}"
                 </span>
                 ? This action cannot be undone.
               </p>
+
+              {/* Delete error */}
+              {deleteError && (
+                <div className="mb-4">
+                  <InlineErrorAlert
+                    message={deleteError}
+                    onDismiss={() => setDeleteError(null)}
+                  />
+                </div>
+              )}
               <div className="flex gap-3">
                 <button
                   disabled={isDeleting}

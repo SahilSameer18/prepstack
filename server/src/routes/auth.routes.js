@@ -1,14 +1,15 @@
 const express = require('express');
 const authController = require('../controllers/auth.controller')
 const authMiddleware = require('../middlewares/auth.middleware')
+const { authLimiter } = require('../middlewares/rateLimit.middleware')
 
 const authRouter = express.Router();
 
 // register user
-authRouter.post('/register', authController.registerUser);
+authRouter.post('/register', authLimiter, authController.registerUser);
 
 // login user
-authRouter.post('/login', authController.loginUser);
+authRouter.post('/login', authLimiter, authController.loginUser);
 
 // refresh access token
 authRouter.post('/refresh', authController.refreshAccessToken);

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { FiCpu, FiSave, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiLoader, FiList } from "react-icons/fi";
+import { FiCpu, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiLoader, FiList } from "react-icons/fi";
 import { FaRobot, FaBookmark, FaLightbulb } from "react-icons/fa";
 import { useProject } from '../../hooks/useProject'
 import { useNavigate } from "react-router-dom";
+import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 
 const techStacks = ["MERN Stack", "Python / Django", "React Native", "Next.js", "Flutter", "Spring Boot", "FastAPI", "Vue.js", "MEAN Stack"];
 const complexities = ["Beginner", "Intermediate", "Advanced"];
@@ -14,6 +15,7 @@ const AIProjectIdeas = () => {
   const { generateProject, loading, project, setProject } = useProject();
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // Clear generated project data when user leaves/unmounts the component
@@ -26,18 +28,22 @@ const AIProjectIdeas = () => {
 
   const handleGenerate = async () => {
     if (!form.techStack || !form.complexity) return;
+    setError(null);
     try {
       await generateProject(form);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (error) {
-      console.error("Failed to generate idea", error);
+    } catch (err) {
+      console.error("Failed to generate idea", err);
+      const msg = err?.response?.data?.message || "Failed to generate project idea. Please try again.";
+      setError(msg);
     }
   };
 
   const handleReset = () => {
     setForm({ techStack: "", complexity: "", domain: "", notes: "" });
     setProject(null);
+    setError(null);
   };
 
   const handleCopy = () => {
@@ -166,6 +172,13 @@ const AIProjectIdeas = () => {
               <p className="text-xs font-semibold">Select Tech Stack and Complexity to continue</p>
             </div>
           )}
+
+          {/* Rate limit / generation error */}
+          <InlineErrorAlert
+            message={error}
+            onDismiss={() => setError(null)}
+            className=""
+          />
 
           {/* Actions */}
           <div className="flex flex-col gap-3">
@@ -333,3 +346,4 @@ const AIProjectIdeas = () => {
 };
 
 export default AIProjectIdeas;
+

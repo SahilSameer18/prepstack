@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { getSheetBySlug, getSheetProgress, toggleProblem } from '../../api/services/sheetService';
 import { FaCheckCircle, FaRegCircle, FaChevronDown, FaChevronUp, FaExternalLinkAlt } from 'react-icons/fa';
 import { FiArrowLeft, FiTarget, FiAward } from 'react-icons/fi';
+import { PageErrorState } from '../../components/ui/ErrorComponents';
 
 // ── Unique sheet metadata ──────────────────────────────────────────────────
 const SHEET_META = {
@@ -61,7 +62,7 @@ const getSheetMeta = (slug) =>
 // ── Loader ─────────────────────────────────────────────────────────────────
 const Loader = () => (
   <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#ffa116]" />
+    <div className="w-10 h-10 border-4 border-[#ffa116]/30 border-t-[#ffa116] rounded-full animate-spin" />
   </div>
 );
 
@@ -150,27 +151,34 @@ const SheetsDetail = () => {
   const { slug } = useParams();
   const [sheet, setSheet] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [solved, setSolved] = useState([]);
   const [openTopics, setOpenTopics] = useState(new Set());
 
   const meta = getSheetMeta(slug);
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setFetchError(null);
+      const [sheetRes, progressRes] = await Promise.all([
+        getSheetBySlug(slug),
+        getSheetProgress(slug).catch(() => ({ data: { solvedProblems: [] } }))
+      ]);
+      if (sheetRes.success && sheetRes.data) setSheet(sheetRes.data);
+      if (progressRes.success || progressRes.data) setSolved(progressRes.data?.solvedProblems || []);
+    } catch (err) {
+      console.error('Error fetching sheet data:', err);
+      setFetchError(
+        err?.response?.data?.message ||
+        'Failed to load the sheet. Please check your connection and try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [sheetRes, progressRes] = await Promise.all([
-          getSheetBySlug(slug),
-          getSheetProgress(slug).catch(() => ({ data: { solvedProblems: [] } }))
-        ]);
-        if (sheetRes.success && sheetRes.data) setSheet(sheetRes.data);
-        if (progressRes.success || progressRes.data) setSolved(progressRes.data?.solvedProblems || []);
-      } catch (err) {
-        console.error('Error fetching sheet data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, [slug]);
 
@@ -194,7 +202,23 @@ const SheetsDetail = () => {
   };
 
   if (loading) return <Loader />;
-  if (!sheet) return <div className="text-center py-20 text-white">Sheet not found</div>;
+
+  if (fetchError) return (
+    <PageErrorState
+      message={fetchError}
+      onRetry={fetchData}
+      backTo="/dsa"
+      backLabel="Back to Sheets"
+    />
+  );
+
+  if (!sheet) return (
+    <PageErrorState
+      message="This sheet doesn't exist or couldn't be found."
+      backTo="/dsa"
+      backLabel="Back to Sheets"
+    />
+  );
 
   const allLinksInSheet = new Set();
   (sheet.topics || []).forEach(t => {

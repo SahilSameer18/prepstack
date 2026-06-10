@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft, FiAlertCircle, FiX } from "react-icons/fi";
+import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { InlineSpinner } from "../../components/ui/Skeletons";
+import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 
 /* ── variants ── */
 const panelLeft = {
@@ -176,20 +177,7 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
 
             {/* Error Alert */}
-            {error && (
-              <motion.div
-                className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <FiAlertCircle className="text-red-400 flex-shrink-0 mt-0.5 text-base" />
-                <p className="text-red-300 text-sm leading-snug flex-1">{error}</p>
-                <button type="button" onClick={() => setError(null)} className="text-red-400 hover:text-red-200 transition-colors flex-shrink-0">
-                  <FiX className="text-sm" />
-                </button>
-              </motion.div>
-            )}
+            <InlineErrorAlert message={error} onDismiss={() => setError(null)} />
 
             {/* Email */}
             <motion.div className="space-y-1.5" variants={formItem}>

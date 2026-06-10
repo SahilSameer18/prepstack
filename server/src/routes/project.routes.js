@@ -1,12 +1,13 @@
 const express = require('express');
 const { generateProject, getAllProjects, getProjectById, deleteProject } = require('../controllers/project.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
+const { aiProjectLimiter } = require('../middlewares/rateLimit.middleware')
 
 
 const projectRouter = express.Router();
 
 // generate project idea
-projectRouter.post('/generate', authMiddleware, generateProject);
+projectRouter.post('/generate', aiProjectLimiter, authMiddleware, generateProject);
 
 // get all project ideas of the logged in user
 projectRouter.get('/', authMiddleware, getAllProjects);

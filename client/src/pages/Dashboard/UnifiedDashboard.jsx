@@ -16,6 +16,7 @@ import {
 } from "../../api/services/sheetService";
 import DSADash from "./DsaDash";
 import ProjectDash from "./ProjectDash";
+import { PageErrorState } from "../../components/ui/ErrorComponents";
 
 // ── UnifiedDashboard ───────────────────────────────────────────────────────
 // Responsible for: fetching data, computing stats, rendering the page header
@@ -27,60 +28,66 @@ const UnifiedDashboard = () => {
   // DSA state
   const [dsaData, setDsaData] = useState([]);
   const [dsaLoading, setDsaLoading] = useState(true);
+  const [dsaError, setDsaError] = useState(null);
 
   // ── Fetch DSA progress on mount ──────────────────────────────────────────
-  useEffect(() => {
-    const fetchDSA = async () => {
-      setDsaLoading(true);
-      try {
-        const sheetsRes = await dsaSheet();
-        const sheets = sheetsRes?.data || [];
+  const fetchDSA = async () => {
+    setDsaLoading(true);
+    setDsaError(null);
+    try {
+      const sheetsRes = await dsaSheet();
+      const sheets = sheetsRes?.data || [];
 
-        const progressResults = await Promise.allSettled(
-          sheets.map((s) =>
-            getSheetProgress(s.slug).catch(() => ({
-              data: { solvedProblems: [] },
-            })),
-          ),
-        );
+      const progressResults = await Promise.allSettled(
+        sheets.map((s) =>
+          getSheetProgress(s.slug).catch(() => ({
+            data: { solvedProblems: [] },
+          })),
+        ),
+      );
 
-        const detailResults = await Promise.allSettled(
-          sheets.map((s) => getSheetBySlug(s.slug).catch(() => null)),
-        );
+      const detailResults = await Promise.allSettled(
+        sheets.map((s) => getSheetBySlug(s.slug).catch(() => null)),
+      );
 
-        const combined = sheets.map((sheet, i) => {
-          const progressData =
-            progressResults[i].status === "fulfilled"
-              ? progressResults[i].value?.data
-              : null;
-          const solved = progressData?.solvedProblems?.length || 0;
+      const combined = sheets.map((sheet, i) => {
+        const progressData =
+          progressResults[i].status === "fulfilled"
+            ? progressResults[i].value?.data
+            : null;
+        const solved = progressData?.solvedProblems?.length || 0;
 
-          const detail =
-            detailResults[i].status === "fulfilled"
-              ? detailResults[i].value?.data
-              : null;
-          let total = 0;
-          if (detail?.topics) {
-            const linkSet = new Set();
-            detail.topics.forEach((t) => {
-              (t.problems || t.questions || []).forEach((p) => {
-                if (p.link) linkSet.add(p.link);
-              });
+        const detail =
+          detailResults[i].status === "fulfilled"
+            ? detailResults[i].value?.data
+            : null;
+        let total = 0;
+        if (detail?.topics) {
+          const linkSet = new Set();
+          detail.topics.forEach((t) => {
+            (t.problems || t.questions || []).forEach((p) => {
+              if (p.link) linkSet.add(p.link);
             });
-            total = linkSet.size;
-          }
+          });
+          total = linkSet.size;
+        }
 
-          return { sheet, solved, total };
-        });
+        return { sheet, solved, total };
+      });
 
-        setDsaData(combined);
-      } catch (err) {
-        console.error("Failed to load DSA data", err);
-      } finally {
-        setDsaLoading(false);
-      }
-    };
+      setDsaData(combined);
+    } catch (err) {
+      console.error("Failed to load DSA data", err);
+      setDsaError(
+        err?.response?.data?.message ||
+        "Failed to load DSA progress. Please check your connection and try again."
+      );
+    } finally {
+      setDsaLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchDSA();
     getProjects();
   }, []);
@@ -197,7 +204,16 @@ const UnifiedDashboard = () => {
       )}
 
       {/* ── Sub-sections ──────────────────────────────────────────────── */}
-      <DSADash dsaData={dsaData} loading={dsaLoading} stats={stats} />
+      {dsaError ? (
+        <PageErrorState
+          message={dsaError}
+          onRetry={fetchDSA}
+          backTo="/"
+          backLabel="Go Home"
+        />
+      ) : (
+        <DSADash dsaData={dsaData} loading={dsaLoading} stats={stats} />
+      )}
       <ProjectDash />
     </div>
   );
