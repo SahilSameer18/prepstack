@@ -70,10 +70,6 @@ exports.toggleProblemCompletion = async (req, res) => {
     const { problemLink } = req.body;
     const userId = req.user._id;
 
-    if (!problemLink) {
-      return res.status(400).json({ success: false, message: 'Problem link is required' });
-    }
-
     let progress = await Progress.findOne({ user: userId, sheetSlug: slug });
 
     if (!progress) {

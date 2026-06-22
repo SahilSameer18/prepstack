@@ -80,7 +80,6 @@ const Testimonial = () => {
                     alt={t.name}
                     className="w-12 h-12 rounded-full object-cover"
                   />
-
                   <div>
                     <h4 className="font-semibold">{t.name}</h4>
                     <p className="text-sm text-gray-500">{t.role}</p>

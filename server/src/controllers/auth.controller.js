@@ -8,10 +8,6 @@ const registerUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
     const existingEmail = await userModel.findOne({ email });
     if (existingEmail) {
       return res.status(400).json({ message: "An account with this email already exists" });
@@ -73,9 +69,6 @@ const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Please provide email and password' });
-    }
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });

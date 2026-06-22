@@ -1,36 +1,37 @@
 # PrepStack 🚀 <!-- omit in toc -->
 
+<div align="center">
+
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](https://github.com/SahilSameer18/prepstack/pulls)
 [![React Version](https://img.shields.io/badge/React-19.2-61dafb.svg?logo=react&style=for-the-badge)](https://react.dev/)
 [![Tailwind Version](https://img.shields.io/badge/Tailwind-4.2-38bdf8.svg?logo=tailwindcss&style=for-the-badge)](https://tailwindcss.com/)
 [![Express Version](https://img.shields.io/badge/Express-5.2-000000.svg?logo=express&style=for-the-badge)](https://expressjs.com/)
 [![AI Integration](https://img.shields.io/badge/Gemini--AI-Structured-red.svg?logo=googlegemini&style=for-the-badge)](https://ai.google.dev/)
+[![Zod Validation](https://img.shields.io/badge/Zod-4.3-3068b7.svg?style=for-the-badge)](https://zod.dev/)
 
-PrepStack is a premium, full-stack SDE interview preparation ecosystem. It synthesizes **AI-driven project generation**, **curated DSA progress tracking**, **academic CS notes**, and **behavioral/STAR resume preparation templates** into a single, high-performance platform.
+**A premium, full-stack SDE interview preparation ecosystem.**
 
-Designed to showcase **modern software engineering practices**, PrepStack bridges the gap between raw candidate skills and recruiter expectations by showcasing production-ready architecture, structured GenAI pipelines, and secure session state.
+[Live Demo](https://prepstack-ss.vercel.app) · [Report Bug](https://github.com/SahilSameer18/prepstack/issues) · [Request Feature](https://github.com/SahilSameer18/prepstack/issues)
+
+</div>
+
+---
+
+PrepStack centralizes the entire SDE interview journey into one high-performance platform — **AI-driven project generation**, **curated DSA progress tracking**, **academic CS notes**, and **behavioral/STAR resume templates** — built with production-grade engineering practices.
 
 ---
 
 ## 📋 Table of Contents <!-- omit in toc -->
 
 - [🎯 The Problem PrepStack Solves](#-the-problem-prepstack-solves)
-- [⚡ High-Yield Technical Highlights (For Recruiters)](#-high-yield-technical-highlights-for-recruiters)
+- [⚡ High-Yield Technical Highlights](#-high-yield-technical-highlights)
 - [🏗️ Architectural Blueprint](#️-architectural-blueprint)
 - [✨ Core Features \& Business Value](#-core-features--business-value)
-  - [🤖 AI-Powered Project Generation](#-ai-powered-project-generation)
-  - [📈 Dynamic DSA Trackers](#-dynamic-dsa-trackers)
-  - [📚 CS Core Fundamentals Library](#-cs-core-fundamentals-library)
-  - [📝 STAR Resume \& Behavioral Console](#-star-resume--behavioral-console)
 - [🛠️ Deep-Dive Tech Stack](#️-deep-dive-tech-stack)
 - [💾 Database Schema ERD](#-database-schema-erd)
 - [🔗 API Endpoint Reference](#-api-endpoint-reference)
 - [🚀 Local Installation \& Seeding Guide](#-local-installation--seeding-guide)
-  - [1. Clone Repository](#1-clone-repository)
-  - [2. Backend Setup](#2-backend-setup)
-  - [3. Frontend Setup](#3-frontend-setup)
-  - [4. Seed Mock Data](#4-seed-mock-data)
 - [💼 Available Scripts](#-available-scripts)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
@@ -39,60 +40,159 @@ Designed to showcase **modern software engineering practices**, PrepStack bridge
 
 ## 🎯 The Problem PrepStack Solves
 
-Candidates typically scatter their preparation across multiple platforms: LeetCode for DSA, random blog posts for CS theory, ChatGPT for generic project descriptions, and various PDFs for resume tips.
+Candidates typically scatter their preparation across multiple platforms — LeetCode for DSA, random blog posts for CS theory, ChatGPT for generic project ideas, and various PDFs for resume tips.
 
 PrepStack centralizes and streamlines the entire workflow:
 
-1. **Generates unique, startup-level project ideas** using AI, outputting structured tech stacks and recruiter-tailored "resume impact points."
-2. **Tracks problem-solving progress** across curated, industry-standard sheets (Striver A2Z, Blind75, NeetCode, LoveBabbar) in one clean database.
-3. **Prepares candidates for the HR/Behavioral round** using interactive STAR (Situation, Task, Action, Result) response templates and strategic examples.
+1. **Generates unique, startup-quality project ideas** using structured Gemini AI, complete with tech stacks and recruiter-ready resume bullet points.
+2. **Tracks DSA problem-solving progress** across curated, industry-standard sheets (Striver A2Z, Blind75, NeetCode, Love Babbar) in a single clean dashboard.
+3. **Prepares candidates for HR/Behavioral rounds** with interactive STAR templates, expert strategy notes, and searchable behavioral question banks.
 
 ---
 
-## ⚡ High-Yield Technical Highlights (For Recruiters)
+## ⚡ High-Yield Technical Highlights
 
-This codebase is crafted to demonstrate production-ready design patterns and high-quality software craftsmanship:
-
-- **Type-Safe, Structured GenAI Outputs:** Rather than raw unstructured string parsing, the backend integrates the official `@google/genai` SDK and utilizes `zod-to-json-schema` to enforce type-safe JSON returns. The model outputs strictly conform to a structured Mongoose validation schema.
-- **Cutting-Edge Stack & Tools:** Built using the latest **React 19** (concurrent rendering, cleaner hooks) and **Vite 7**, backed by **Tailwind CSS v4**'s advanced compiler, and powered by **Express 5** (optimized route-level error handling).
-- **High Performance UX:** Implements route-based code splitting using React's **`lazy()` API** and suspense boundaries — lazy-loading is used for many route components (DSA Sheets, Notes, Roadmaps, AI Projects, Resume, Behavioral, Unified Dashboard), reducing initial bundle weight and improving Lighthouse performance metrics. Smooth fluid motion is powered by **Framer Motion 12**.
-
-- **State-of-the-Art Authentication:** Implements secure JWT session management via **HTTP-only SameSite cookies**, preventing CSRF/XSS vectors. Includes a refresh token rotation flow with long-lived cookies persisted on the server side for session renewal.
-
-- **Robust Database Seeding Infrastructure:** Features a robust database seeder pipeline (`masterSeed.js`) that uses `findOneAndUpdate` upsert logic to populate complete complex DSA sheets and CS notes schemas recursively without duplication risks.
+- **Type-Safe GenAI Pipelines:** Uses `zod-to-json-schema` to derive a strict JSON schema from Zod models, which is passed directly to the Gemini SDK. The model is constrained to emit only valid structured JSON — no fragile string parsing.
+- **Layered Zod Validation:** All API routes are guarded by a reusable `validate(schema)` Express middleware. Input is parsed and coerced before it ever touches a controller — returning structured per-field `422` errors on failure.
+- **Secure Session Architecture:** JWT session management via **HTTP-only `SameSite=none` cookies** prevents CSRF/XSS. A full **refresh token rotation flow** issues new access + refresh pairs on every `/refresh` call, with the server-stored token used for replay protection.
+- **Cutting-Edge Stack:** React 19 (concurrent rendering), Vite 7 (HMR), Tailwind CSS v4 (new compiler), Express 5 (native async error propagation), Mongoose 9.
+- **Global Error Handling:** A single centralized error middleware catches Zod errors, JWT errors, Mongoose duplicate key errors, and generic failures — producing uniform JSON error shapes across the whole API.
+- **Route-Level Code Splitting:** React `lazy()` + Suspense boundaries lazy-load all heavy pages (DSA Sheets, Notes, Roadmaps, AI Projects, Resume, Behavioral, Dashboard), reducing initial bundle weight and improving Lighthouse scores.
+- **Upsert-Safe Database Seeding:** `masterSeed.js` uses `findOneAndUpdate` with upsert to populate complex nested DSA sheets and CS notes schemas without duplication risk.
 
 ---
 
 ## 🏗️ Architectural Blueprint
 
-PrepStack is designed as a clean two-tier decoupled architecture:
+### System Overview
 
 ```mermaid
-graph TD
-    Client[React 19 + Tailwind v4 Client] <-->|Secure Cookies / CORS| Server[Express 5 API Server]
-    Server <-->|Mongoose ODM| DB[(MongoDB Cloud Atlas)]
-    Server <-->|Official SDK / Structured JSON| Gemini[Google Gemini AI]
-
-    subgraph Client Pages & Modules
-        Dashboard[Unified Dashboard]
-        DSA[DSA Sheets Tracker]
-        Notes[CS Notes Library]
-        ProjGen[AI Project Generator]
-        ResumePage[Resume & STAR Guide]
-        Behavioral[Behavioral Prep Hub]
+graph TB
+    subgraph Client ["🌐 Client  —  React 19 + Vite 7 + Tailwind v4"]
+        direction TB
+        UI_Pages["Pages / Views"]
+        LazyLoad["React.lazy() + Suspense\n(Code-Split Routes)"]
+        Axios["Axios Instance\n(withCredentials: true)"]
+        FM["Framer Motion 12\n(Animations)"]
+        UI_Pages --> LazyLoad
+        LazyLoad --> Axios
     end
 
-    subgraph Backend Architecture
-        AuthMW[JWT Auth Middleware]
-        RouteH[Route Handlers / MVC Controllers]
-        ZodV[Zod / Schema Validation]
-        Seeder[Seeder Scripts]
+    subgraph Server ["⚙️ Server  —  Node.js + Express 5"]
+        direction TB
+
+        subgraph Security ["🔐 Security Layer"]
+            RateLimit["express-rate-limit\n(Auth: 10/15min · AI: 4/hr)"]
+            ZodMW["validate(schema)\nZod Middleware  →  422 on fail"]
+            AuthMW["JWT Auth Middleware\n(HTTP-only Cookie)"]
+        end
+
+        subgraph MVC ["🧩 MVC Core"]
+            Routes["Route Handlers\n(/auth · /project · /sheets · /notes)"]
+            Controllers["Controllers\n(Auth · Project · Sheets · Notes)"]
+            Services["AI Service\n(generateProjectIdea)"]
+        end
+
+        subgraph ErrorLayer ["🚨 Global Error Middleware"]
+            ErrMW["errorMiddleware\n(Zod · JWT · Mongo · Generic)"]
+        end
+
+        RateLimit --> ZodMW
+        ZodMW --> AuthMW
+        AuthMW --> Routes
+        Routes --> Controllers
+        Controllers --> Services
+        Controllers --> ErrMW
+        Services --> ErrMW
     end
 
-    Client --> AuthMW
-    AuthMW --> RouteH
-    RouteH --> DB
-    RouteH --> Gemini
+    subgraph Data ["🗄️ Data Layer"]
+        MongoDB["MongoDB Atlas\n(Mongoose ODM)"]
+    end
+
+    subgraph AI ["🤖 AI Layer"]
+        Gemini["Google Gemini AI\n(@google/genai SDK)"]
+        ZodSchema["Zod Schema\n→ zod-to-json-schema\n→ Structured JSON Response"]
+        Gemini --> ZodSchema
+    end
+
+    Axios -- "HTTPS + Secure Cookies\n(SameSite=none)" --> Server
+    Controllers -- "Mongoose Queries" --> MongoDB
+    Services -- "Structured Prompt\n+ JSON Schema" --> Gemini
+    ZodSchema -- "Typed Response" --> Services
+```
+
+---
+
+### Request Lifecycle
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Browser as 🌐 Browser (React)
+    participant RL as 🚦 Rate Limiter
+    participant ZV as 🛡️ Zod Validator
+    participant AM as 🔐 Auth Middleware
+    participant CT as 🧩 Controller
+    participant DB as 🗄️ MongoDB
+    participant AI as 🤖 Gemini AI
+    participant EM as 🚨 Error Middleware
+
+    Browser->>RL: HTTP Request (with cookies)
+    alt Rate limit exceeded
+        RL-->>Browser: 429 Too Many Requests
+    end
+    RL->>ZV: Forward request
+
+    alt Invalid body / missing fields
+        ZV-->>Browser: 422 Validation Failed {errors:[{field,message}]}
+    end
+    ZV->>AM: Parsed & coerced req.body
+
+    alt Missing / expired token
+        AM-->>Browser: 401 Unauthorized
+    end
+    AM->>CT: req.user attached
+
+    CT->>DB: Mongoose Query
+    DB-->>CT: Document(s)
+
+    opt AI Project Route
+        CT->>AI: Structured prompt + Zod JSON Schema
+        AI-->>CT: Typed JSON response
+    end
+
+    alt Unhandled error
+        CT->>EM: next(error)
+        EM-->>Browser: Uniform JSON error response
+    end
+
+    CT-->>Browser: 200 / 201 Success Response
+```
+
+---
+
+### Token Refresh Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Browser as 🌐 Browser
+    participant API as ⚙️ Express API
+    participant DB as 🗄️ MongoDB
+
+    Browser->>API: POST /api/auth/refresh\n(refreshToken cookie)
+    API->>API: jwt.verify(token, REFRESH_SECRET)
+    API->>DB: findById(decoded.id)
+    DB-->>API: User document
+
+    alt Token mismatch (replay attack)
+        API-->>Browser: 403 Invalid Refresh Token
+    end
+
+    API->>API: Generate new accessToken + refreshToken
+    API->>DB: Save new refreshToken
+    API-->>Browser: Set-Cookie: accessToken (15min)\nSet-Cookie: refreshToken (7d)
 ```
 
 ---
@@ -101,109 +201,157 @@ graph TD
 
 ### 🤖 AI-Powered Project Generation
 
-- **Dynamic Prompting:** Candidates supply their target technology stack, project complexity (Easy/Medium/Hard), specific domains (FinTech, EdTech, Web3, HealthTech), and custom project notes.
-- **Actionable Recruiter Bulletpoints:** Gemini generates detailed features, exact step-by-step tech implementations, and **direct STAR bullet points for the user's resume**, explaining why the project will stand out to hiring managers.
-- **Persistence:** Saved ideas are linked to user accounts for continuous reference or deletion.
+- **Dynamic Prompting:** Candidates supply their target tech stack, complexity level (`beginner` / `intermediate` / `advanced`), domain (FinTech, EdTech, HealthTech, Web3), and custom notes.
+- **Recruiter-Ready Output:** Gemini returns structured JSON containing project title, tagline, full description, feature list, difficulty rating, estimated time, and direct STAR-style resume bullet points.
+- **Persistence:** Saved ideas are linked to user accounts via MongoDB for reference or deletion.
+- **Rate-Limited:** Protected at 4 AI requests per hour per IP via `express-rate-limit`.
 
 ### 📈 Dynamic DSA Trackers
 
-- Centralizes popular lists: **Blind 75**, **NeetCode**, **Striver A2Z**, and **Love Babbar**.
-- Tracks solved problems asynchronously, updating progress metrics on the unified dashboard instantly.
-- Problems are categorized by topics (e.g., Arrays, Graphs, Dynamic Programming) with external compiler links.
+- Centralizes popular sheets: **Blind 75**, **NeetCode 150**, **Striver A2Z**, and **Love Babbar 450**.
+- Asynchronously tracks solved problems with toggle completion, updating dashboard progress metrics instantly.
+- Problems are categorized by topic (Arrays, Graphs, DP, etc.) with direct external compiler links.
 
 ### 📚 CS Core Fundamentals Library
 
-- Pre-seeded revision notes for core academic subjects: **Operating Systems (OS)**, **Database Management Systems (DBMS)**, **Computer Networks (CN)**, and **Object-Oriented Programming (OOP)**.
-- Structured with interactive markdown lists and optimized layouts for fast revision.
+- Pre-seeded revision notes for: **Operating Systems**, **Database Management Systems**, **Computer Networks**, and **Object-Oriented Programming**.
+- Structured for fast session-style revision with markdown-rendered content.
 
 ### 📝 STAR Resume & Behavioral Console
 
-- **Resume Guidelines:** Detailed, section-by-section breakdown of contact details, technical skills, experiences, and projects with real-world examples.
-- **HR Behavioral Hub:** A searchable database of behavioral questions categorized by focus area (Teamwork, Problem Solving, Leadership, Personal) offering custom expert strategies and sample answers.
+- **Resume Guidelines:** Section-by-section breakdown of contact info, skills, experience, and projects with real-world examples.
+- **Behavioral Hub:** Searchable bank of behavioral questions categorized by focus area — Teamwork, Leadership, Problem Solving, Personal Growth — with expert sample answers.
 
 ---
 
 ## 🛠️ Deep-Dive Tech Stack
 
-### Frontend Client
+### Frontend
 
-- **React 19 & Vite 7:** High-speed Hot Module Replacement (HMR) and optimized compilation.
-- **Tailwind CSS v4:** Modern lightning-fast CSS utility rendering.
-- **Framer Motion 12:** Fluid animations and transitions for custom user feedback loops.
-- **React Router DOM 7:** Powerful client-side routing.
-- **Axios:** Configured interceptor instance supporting `withCredentials: true` for secure cookies.
+| Technology | Version | Role |
+|---|---|---|
+| React | 19.2 | UI library (concurrent rendering) |
+| Vite | 7 | Build tooling & HMR |
+| Tailwind CSS | v4 | Utility-first styling (new compiler) |
+| Framer Motion | 12 | Animations & transitions |
+| React Router DOM | 7 | Client-side routing |
+| Axios | latest | HTTP client with cookie interceptor |
 
-### Backend Server
+### Backend
 
-- **Node.js & Express 5:** Streamlined middleware, unified request routing, and native promise support.
-- **Mongoose 9:** ODM layer ensuring strict data-types and flexible MongoDB indexing.
-- **Google Gemini AI SDK:** Deep integration of `@google/genai` using structured response JSON config schemas.
-- **Zod & Zod-to-Json-Schema:** Strict request parsing on incoming parameters, shared seamlessly with Gemini.
-- **Bcrypt & JWT:** Cryptographically secure password hashing and session token generation.
+| Technology | Version | Role |
+|---|---|---|
+| Node.js + Express | 5.2 | Server framework (native async errors) |
+| Mongoose | 9 | MongoDB ODM with strict schemas |
+| Zod | 4 | Request validation + AI schema generation |
+| zod-to-json-schema | 3 | Converts Zod schemas → Gemini JSON config |
+| @google/genai | 1.47 | Official Gemini AI SDK |
+| jsonwebtoken | 9 | JWT signing & verification |
+| bcrypt | 6 | Secure password hashing (12 rounds) |
+| cookie-parser | 1.4 | HTTP-only cookie parsing |
+| express-rate-limit | 8.5 | API abuse protection |
+| multer | 2 | File upload handling |
 
 ---
 
 ## 💾 Database Schema ERD
 
-```
-┌─────────────────────────────────┐      ┌─────────────────────────────────┐
-│              User               │      │            Progress             │
-├─────────────────────────────────┤      ├─────────────────────────────────┤
-│ _id: ObjectId                   │◄────┐│ _id: ObjectId                   │
-│ username: String (Unique)       │     ││ user: ObjectId (Ref: User)      │
-│ email: String (Unique)          │     ││ sheetSlug: String               │
-│ password: String (Hashed)       │     ││ solvedProblems: Array [String]  │
-│ timestamps: Date                │     ││ timestamps: Date                │
-└─────────────────────────────────┘     │└─────────────────────────────────┘
-                                        │
-┌─────────────────────────────────┐     │┌─────────────────────────────────┐
-│             Project             │     ││            DSASheet             │
-├─────────────────────────────────┤     │├─────────────────────────────────┤
-│ _id: ObjectId                   │     ││ _id: ObjectId                   │
-│ user: ObjectId (Ref: User) ─────┼─────┘│ name: String                    │
-│ title: String                   │      │ slug: String (Unique)           │
-│ tagline: String                 │      │ description: String             │
-│ description: String             │      │ topics: Array [DSATopic]        │
-│ features: Array [String]        │      └─────────────────────────────────┘
-│ techStack: String               │
-│ difficulty: String              │
-│ estimatedTime: String           │
-│ resumeValue: String             │
-│ domain: String                  │
-│ timestamps: Date                │
-└─────────────────────────────────┘
+```mermaid
+erDiagram
+    USER {
+        ObjectId _id PK
+        string username "Unique"
+        string email "Unique"
+        string password "bcrypt hashed"
+        string refreshToken
+        date createdAt
+        date updatedAt
+    }
+
+    PROJECT {
+        ObjectId _id PK
+        ObjectId user FK
+        string title
+        string tagline
+        string description
+        array features
+        string techStack
+        string difficulty
+        string estimatedTime
+        string resumeValue
+        string domain
+        date createdAt
+        date updatedAt
+    }
+
+    DSASHEET {
+        ObjectId _id PK
+        string name
+        string slug "Unique"
+        string description
+        array topics
+    }
+
+    PROGRESS {
+        ObjectId _id PK
+        ObjectId user FK
+        string sheetSlug
+        array solvedProblems
+        date createdAt
+        date updatedAt
+    }
+
+    NOTES {
+        ObjectId _id PK
+        string subject "Unique"
+        string title
+        array topics
+        date createdAt
+    }
+
+    USER ||--o{ PROJECT : "owns"
+    USER ||--o{ PROGRESS : "tracks"
+    DSASHEET ||--o{ PROGRESS : "tracked by"
 ```
 
 ---
 
 ## 🔗 API Endpoint Reference
 
-### Authentication Services (`/api/auth`)
+### Authentication — `/api/auth`
 
-- `POST /register` - Register a new candidate.
-- `POST /login` - Login, signs JWT, and responds with secure HTTP-only cookies and refresh tokens.
-- `POST /logout` - Clears browser cookies and invalidates the current refresh token.
-- `POST /refresh` - Rotate access and refresh tokens using a valid refresh cookie.
-- `GET /current-user` - Returns authenticated candidate profile info.
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/register` | — | Register new user *(rate-limited: 10/15min)* |
+| `POST` | `/login` | — | Login + set JWT cookies *(rate-limited: 10/15min)* |
+| `POST` | `/refresh` | Cookie | Rotate access + refresh token pair |
+| `POST` | `/logout` | ✅ JWT | Clear cookies + invalidate refresh token |
+| `GET` | `/current-user` | ✅ JWT | Fetch authenticated user profile |
 
-### AI Project Services (`/api/projects`)
+### AI Projects — `/api/project`
 
-- `POST /generate` - Request Gemini to compose a structured project idea.
-- `GET /` - Retrieve all saved project templates for the logged-in user.
-- `GET /:projectId` - Fetch specific project details.
-- `DELETE /:projectId` - Remove project from saved collection.
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/generate` | ✅ JWT | Generate project idea via Gemini *(rate-limited: 4/hr)* |
+| `GET` | `/` | ✅ JWT | List all saved project ideas |
+| `GET` | `/:projectId` | ✅ JWT | Fetch a single project |
+| `DELETE` | `/:projectId` | ✅ JWT | Delete a saved project |
 
-### DSA Sheets Services (`/api/sheets`)
+### DSA Sheets — `/api/sheets`
 
-- `GET /` - List all seeded DSA tracking lists.
-- `GET /:slug` - Retrieve topics and problems within a specific sheet.
-- `GET /:slug/progress` - Fetch solved problems for the current user.
-- `POST /:slug/progress` - Toggle status (complete/incomplete) on a specific problem.
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/` | — | List all DSA sheets |
+| `GET` | `/:slug` | — | Get topics & problems for a sheet |
+| `GET` | `/:slug/progress` | ✅ JWT | Get user's solved problems |
+| `POST` | `/:slug/progress` | ✅ JWT | Toggle problem complete/incomplete |
 
-### Revision Notes Services (`/api/notes`)
+### CS Notes — `/api/notes`
 
-- `GET /` - List all core academic CS fundamental categories.
-- `GET /:subject` - Fetch the detailed syllabus notes of a selected subject.
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/` | — | List all CS subject categories |
+| `GET` | `/:subject` | — | Get detailed notes for a subject |
 
 ---
 
@@ -223,7 +371,7 @@ cd server
 npm install
 ```
 
-Create a `.env` file in the root of the `/server` directory:
+Create a `.env` file inside `/server`:
 
 ```env
 PORT=3000
@@ -233,7 +381,7 @@ REFRESH_SECRET=your_ultra_secure_refresh_token_secret
 GOOGLE_API_KEY=AIzaSyYourGeminiApiKeyHere
 ```
 
-Start the local server in development mode:
+Start the dev server:
 
 ```bash
 npm run dev
@@ -241,27 +389,24 @@ npm run dev
 
 ### 3. Frontend Setup
 
-In a new terminal window:
+Open a new terminal:
 
 ```bash
 cd client
 npm install
-```
-
-Start the development client:
-
-```bash
 npm run dev
 ```
 
-### 4. Seed Mock Data
+### 4. Seed the Database
 
-To populate the database with complete curricula and DSA sheets:
+Populate with complete DSA sheets and CS notes:
 
 ```bash
 cd server
 npm run seed:all
 ```
+
+> **Note:** Seeder uses `findOneAndUpdate` upsert — safe to run multiple times without creating duplicate documents.
 
 ---
 
@@ -269,23 +414,27 @@ npm run seed:all
 
 ### Backend (`server/`)
 
-- `npm run dev` - Launches server with Nodemon auto-reloads.
-- `npm start` - Launches server in production mode.
-- `npm run seed:notes` - Seeds the CS notes (DBMS, CN, OS, OOPS).
-- `npm run seed:all` - Seeds all sheets (Blind75, NeetCode, Striver A2Z, LoveBabbar, CS Notes).
+| Script | Description |
+|---|---|
+| `npm run dev` | Start with Nodemon (auto-reload on change) |
+| `npm start` | Start in production mode |
+| `npm run seed:notes` | Seed CS notes (OS, DBMS, CN, OOP) |
+| `npm run seed:all` | Seed all DSA sheets + CS notes |
 
 ### Frontend (`client/`)
 
-- `npm run dev` - Fires up Vite dev server.
-- `npm run build` - Compiles standard production bundles.
-- `npm run lint` - Code consistency review using ESLint.
-- `npm run preview` - Locally review built production files.
+| Script | Description |
+|---|---|
+| `npm run dev` | Start Vite dev server with HMR |
+| `npm run build` | Compile production bundle |
+| `npm run lint` | Run ESLint code quality check |
+| `npm run preview` | Preview the production build locally |
 
 ---
 
 ## 🤝 Contributing
 
-Contributions make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions make the open-source community an amazing place to learn, inspire, and create. All contributions are **greatly appreciated**.
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)

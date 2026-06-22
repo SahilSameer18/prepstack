@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const errorMiddleware = require('./middlewares/error.middleware')
 
 // initialize the express app
 const app = express()
@@ -9,7 +10,7 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-  origin: ["https://prepstack-ss.vercel.app", "http://localhost:5173"],
+  origin: ["http://localhost:5173", "https://prepstack-ss.vercel.app"],
   credentials: true,
 }))
 
@@ -34,12 +35,7 @@ app.use('/api/notes', notesRouter)
 
 
 // error handling middleware
-app.use((err, req, res, next) => {
-  console.log(err)
-  res.status(err.statusCode || 500).json({
-    success: false,
-    message: err.message
-  })
-})
+app.use(errorMiddleware)
 
 module.exports = app;
+

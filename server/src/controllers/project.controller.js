@@ -7,13 +7,6 @@ const generateProject = async (req, res) => {
   try {
     const { techStack, complexity, domain, notes } = req.body;
 
-    if (!techStack || !complexity) {
-      return res.status(400).json({
-        success: false,
-        message: "Tech stack and complexity are required"
-      })
-    }
-
     const projectIdea = await generateProjectIdea({ techStack, complexity, domain, notes });
 
     const project = await projectModel.create({
