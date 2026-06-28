@@ -7,6 +7,7 @@ const { ZodError } = require('zod');
  *
  * @param {import('zod').ZodSchema} schema
  */
+
 const validate = (schema) => (req, res, next) => {
   const result = schema.safeParse(req.body);
 

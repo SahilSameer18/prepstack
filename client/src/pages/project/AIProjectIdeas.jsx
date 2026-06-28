@@ -346,4 +346,3 @@ const AIProjectIdeas = () => {
 };
 
 export default AIProjectIdeas;
-

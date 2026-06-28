@@ -201,4 +201,3 @@ module.exports = {
   getCurrentUser,
   refreshAccessToken
 }
-

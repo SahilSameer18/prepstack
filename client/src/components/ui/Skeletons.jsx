@@ -94,3 +94,4 @@ export const SectionLoader = ({ message = "Loading..." }) => (
     <p className="text-gray-400 text-sm animate-pulse">{message}</p>
   </div>
 );
+

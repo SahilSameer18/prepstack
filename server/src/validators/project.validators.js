@@ -34,3 +34,4 @@ const generateProjectSchema = z.object({
 });
 
 module.exports = { generateProjectSchema };
+

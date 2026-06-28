@@ -24,3 +24,4 @@ authRouter.get('/current-user', authMiddleware, authController.getCurrentUser);
 
 module.exports = authRouter;
 
+

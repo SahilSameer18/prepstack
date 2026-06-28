@@ -28,3 +28,4 @@ export const useNotes = (subject) => {
 
   return { data, loading, error };
 };
+

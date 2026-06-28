@@ -68,42 +68,20 @@ PrepStack centralizes and streamlines the entire workflow:
 
 ```mermaid
 graph TB
-    subgraph Client ["🌐 Client  —  React 19 + Vite 7 + Tailwind v4"]
+    subgraph Client ["🌐 Client — React 19 + Vite 7 + Tailwind v4"]
         direction TB
-        UI_Pages["Pages / Views"]
-        LazyLoad["React.lazy() + Suspense\n(Code-Split Routes)"]
+        Pages["Pages / Views"]
         Axios["Axios Instance\n(withCredentials: true)"]
-        FM["Framer Motion 12\n(Animations)"]
-        UI_Pages --> LazyLoad
-        LazyLoad --> Axios
+        Pages --> Axios
     end
 
-    subgraph Server ["⚙️ Server  —  Node.js + Express 5"]
+    subgraph Server ["⚙️ Server — Node.js + Express 5"]
         direction TB
-
-        subgraph Security ["🔐 Security Layer"]
-            RateLimit["express-rate-limit\n(Auth: 10/15min · AI: 4/hr)"]
-            ZodMW["validate(schema)\nZod Middleware  →  422 on fail"]
-            AuthMW["JWT Auth Middleware\n(HTTP-only Cookie)"]
-        end
-
-        subgraph MVC ["🧩 MVC Core"]
-            Routes["Route Handlers\n(/auth · /project · /sheets · /notes)"]
-            Controllers["Controllers\n(Auth · Project · Sheets · Notes)"]
-            Services["AI Service\n(generateProjectIdea)"]
-        end
-
-        subgraph ErrorLayer ["🚨 Global Error Middleware"]
-            ErrMW["errorMiddleware\n(Zod · JWT · Mongo · Generic)"]
-        end
-
-        RateLimit --> ZodMW
-        ZodMW --> AuthMW
-        AuthMW --> Routes
-        Routes --> Controllers
-        Controllers --> Services
-        Controllers --> ErrMW
-        Services --> ErrMW
+        Security["Security Layer\n(rate limiting, validation, auth)"]
+        API["API Layer\n/routes → controllers → services"]
+        Error["Global Error Middleware\n(Zod · JWT · Mongo · Generic)"]
+        Security --> API
+        API --> Error
     end
 
     subgraph Data ["🗄️ Data Layer"]
@@ -111,15 +89,15 @@ graph TB
     end
 
     subgraph AI ["🤖 AI Layer"]
-        Gemini["Google Gemini AI\n(@google/genai SDK)"]
-        ZodSchema["Zod Schema\n→ zod-to-json-schema\n→ Structured JSON Response"]
-        Gemini --> ZodSchema
+        Gemini["Gemini AI\n(@google/genai SDK)"]
+        Schema["Zod → JSON Schema\n(typed structured output)"]
+        Gemini --> Schema
     end
 
-    Axios -- "HTTPS + Secure Cookies\n(SameSite=none)" --> Server
-    Controllers -- "Mongoose Queries" --> MongoDB
-    Services -- "Structured Prompt\n+ JSON Schema" --> Gemini
-    ZodSchema -- "Typed Response" --> Services
+    Axios -- "HTTPS + Secure Cookies" --> Server
+    API -- "Mongoose queries" --> MongoDB
+    API -- "Structured prompts + schema" --> Gemini
+    Schema -- "Typed response" --> API
 ```
 
 ---
@@ -450,4 +428,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-<p align="center">Made with ❤️ by Sahil Sameer and the PrepStack Team.</p>
+<p align="center">Made with ❤️ by Sahil Sameer Siddique</p>
