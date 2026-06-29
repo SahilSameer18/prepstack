@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const errorMiddleware = require('./middlewares/error.middleware')
+const AppError = require('./utils/AppError')
 
 // initialize the express app
 const app = express()
@@ -33,6 +34,11 @@ app.use('/api/sheets', sheetsRouter)
 app.use('/api/project', projectRouter)
 app.use('/api/notes', notesRouter)
 
+
+// 404 — catch any unmatched routes and forward to error handler
+app.use((req, res, next) => {
+  next(new AppError(404, `Cannot ${req.method} ${req.originalUrl}`));
+});
 
 // error handling middleware
 app.use(errorMiddleware)

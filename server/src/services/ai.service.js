@@ -1,6 +1,7 @@
 const { GoogleGenAI } = require("@google/genai");
 const { z } = require('zod');
 const { zodToJsonSchema } = require("zod-to-json-schema");
+const AppError = require('../utils/AppError');
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_API_KEY
@@ -60,13 +61,17 @@ const generateProjectIdea = async ({ techStack, complexity, domain, notes }) => 
       responseMimeType: "application/json",
       responseJsonSchema: zodToJsonSchema(projectSchema)
     },
-  })
+  });
 
-  // safer parsing
-  const data = JSON.parse(response.text);
+  let data;
+  try {
+    data = JSON.parse(response.text);
+  } catch {
+    throw new AppError(502, 'AI service returned an invalid response. Please try again.');
+  }
 
   return data;
 }
 
 
-module.exports = { generateProjectIdea }
+module.exports = { generateProjectIdea }

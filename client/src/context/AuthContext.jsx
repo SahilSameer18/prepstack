@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }) => {
         if (data && data.user) {
           setUser(data.user);
         }
-      } catch (error) {
-        console.log(error);
+      } catch {
+        // Expected for unauthenticated visitors (401 / refresh failure) — no action needed.
       } finally {
         setLoading(false);
       }

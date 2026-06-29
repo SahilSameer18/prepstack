@@ -34,9 +34,7 @@ const AIProjectIdeas = () => {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
-      console.error("Failed to generate idea", err);
-      const msg = err?.response?.data?.message || "Failed to generate project idea. Please try again.";
-      setError(msg);
+      setError(err.message || "Failed to generate project idea. Please try again.");
     }
   };
 

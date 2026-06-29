@@ -48,8 +48,7 @@ const Login = () => {
       await handleLogin(formData.email, formData.password);
       navigate("/");
     } catch (error) {
-      const msg = error?.response?.data?.message || "Login failed. Please try again.";
-      setError(msg);
+      setError(error.message || "Login failed. Please try again.");
     }
   };
 

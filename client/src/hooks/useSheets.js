@@ -1,15 +1,14 @@
 import { useContext } from "react";
-import { useParams } from "react-router-dom";
 import { SheetContext } from "../context/SheetContext";
-import { getSheetsByProjectId } from "../api/services/sheetService";
+import { dsaSheet } from "../api/services/sheetService";
+import { extractError } from "../utils/extractError";
 
 export const useSheets = () => {
 
   const context = useContext(SheetContext);
-  const {sheetId} = useParams();
 
   if(!context) {
-    throw new Error('useProject must be used within ProjectProvider')
+    throw new Error('useSheets must be used within SheetProvider')
   }
 
   const { sheets, setSheets, loading, setLoading } = context;
@@ -17,16 +16,15 @@ export const useSheets = () => {
   const getSheets = async () => {
     setLoading(true);
     try {
-      const response = await getSheetsByProjectId(sheetId);
-      setSheets(response?.sheets || response);
+      const response = await dsaSheet();
+      setSheets(response?.data || response);
       return response;
     } catch (error) {
-      console.error('Error fetching sheets:', error);
-      throw error;
+      throw new Error(extractError(error, 'Failed to fetch sheets. Please try again.'));
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return {
     sheets,

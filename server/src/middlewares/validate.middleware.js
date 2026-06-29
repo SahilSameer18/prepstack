@@ -12,14 +12,17 @@ const validate = (schema) => (req, res, next) => {
   const result = schema.safeParse(req.body);
 
   if (!result.success) {
-    const errors = result.error.errors.map((e) => ({
+    const errors = (result.error.issues ?? result.error.errors ?? []).map((e) => ({
       field: e.path.join('.'),
       message: e.message,
     }));
 
     return res.status(422).json({
       success: false,
-      message: 'Validation failed',
+      // Use the first specific field error as the top-level message so the
+      // client always gets a human-readable string (e.g. "Password must be
+      // at least 8 characters") rather than a vague "Validation failed".
+      message: errors[0]?.message || 'Validation failed',
       errors,
     });
   }

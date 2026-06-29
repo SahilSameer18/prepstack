@@ -2,6 +2,7 @@ import { generateProjectIdea, getAllProjects, getProjectById as fetchProjectById
 import { useParams } from 'react-router-dom'
 import { ProjectContext } from '../context/ProjectContext'
 import { useContext, useEffect } from "react";
+import { extractError } from "../utils/extractError";
 
 
 export const useProject = () => {
@@ -22,12 +23,11 @@ export const useProject = () => {
       setProject(response?.project || response);
       return response;
     } catch (error) {
-      console.error('Error generating project:', error);
-      throw error;
+      throw new Error(extractError(error, 'Failed to generate project idea. Please try again.'));
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const getProjects = async () => {
     setLoading(true);
@@ -36,12 +36,11 @@ export const useProject = () => {
       setProjects(response?.projects || response);
       return response;
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      throw error;
+      throw new Error(extractError(error, 'Failed to fetch projects. Please try again.'));
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const getProjectById = async (projectId) => {
     setLoading(true);
@@ -50,12 +49,11 @@ export const useProject = () => {
       setProject(response?.project || response);
       return response;
     } catch (error) {
-      console.error('Error fetching project:', error);
-      throw error;
+      throw new Error(extractError(error, 'Failed to fetch project. Please try again.'));
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const deleteProjectById = async (projectId) => {
     setLoading(true);
@@ -64,12 +62,11 @@ export const useProject = () => {
       setProject(null);
       return response;
     } catch (error) {
-      console.error('Error deleting project:', error);
-      throw error;
+      throw new Error(extractError(error, 'Failed to delete project. Please try again.'));
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(()=>{
     if(projectId) {

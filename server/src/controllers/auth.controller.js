@@ -2,68 +2,63 @@ const userModel = require('../models/auth.model')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { generateAccessToken, generateRefreshToken } = require('../utils/tokens');
+const AppError = require('../utils/AppError');
 
-// register user
+// ── Cookie options (DRY) ──────────────────────────────────────────────────────
+
+const ACCESS_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+  maxAge: 15 * 60 * 1000,           // 15 minutes
+};
+
+const REFRESH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+// ── Register ──────────────────────────────────────────────────────────────────
+
 const registerUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
     const existingEmail = await userModel.findOne({ email });
     if (existingEmail) {
-      return res.status(400).json({ message: "An account with this email already exists" });
+      return next(new AppError(409, 'An account with this email already exists'));
     }
 
     const existingUsername = await userModel.findOne({ username });
     if (existingUsername) {
-      return res.status(400).json({ message: "Username is already taken. Please choose another." });
+      return next(new AppError(409, 'Username is already taken. Please choose another.'));
     }
-
 
     const hash = await bcrypt.hash(password, 12);
 
-    const user = await userModel.create({
-      username,
-      email,
-      password: hash
-    });
+    const user = await userModel.create({ username, email, password: hash });
 
-    const accessToken = generateAccessToken(user)
-    const refreshToken = generateRefreshToken(user)
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-    // save refresh token to user in DB
-    await userModel.findByIdAndUpdate(user._id, { refreshToken })
+    await userModel.findByIdAndUpdate(user._id, { refreshToken });
 
-    // short-lived access token in cookie
-    res.cookie('accessToken', accessToken, {  
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 15 * 60 * 1000           // 15 minutes
-    })
-
-    // long-lived refresh token in separate cookie
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true, 
-      sameSite: 'none',
-      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-    })
+    res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
+    res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
-      }
+      user: { id: user._id, username: user.username, email: user.email },
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
-// login user
+// ── Login ─────────────────────────────────────────────────────────────────────
 
 const loginUser = async (req, res, next) => {
   try {
@@ -71,133 +66,99 @@ const loginUser = async (req, res, next) => {
 
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return next(new AppError(401, 'Invalid email or password'));
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+      return next(new AppError(401, 'Invalid email or password'));
     }
 
-    const accessToken = generateAccessToken(user)
-    const refreshToken = generateRefreshToken(user)
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-    // save refresh token to user in DB
-    await userModel.findByIdAndUpdate(user._id, { refreshToken })
+    await userModel.findByIdAndUpdate(user._id, { refreshToken });
 
-    // short-lived access token in cookie
-    res.cookie('accessToken', accessToken, {  
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 15 * 60 * 1000           // 15 minutes
-    })
-
-    // long-lived refresh token in separate cookie
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true, 
-      sameSite: 'none',
-      maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
-    })
+    res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
+    res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
 
     res.status(200).json({
-      message: "user logged in successfully",
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
+      success: true,
+      message: 'User logged in successfully',
+      user: { id: user._id, username: user.username, email: user.email },
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
-
-// logout user
+// ── Logout ────────────────────────────────────────────────────────────────────
 
 const logoutUser = async (req, res, next) => {
   try {
-    const user = await userModel.findById(req.user.id)
+    const user = await userModel.findById(req.user.id);
     if (user) {
-      await userModel.findByIdAndUpdate(user._id, { refreshToken: null })
+      await userModel.findByIdAndUpdate(user._id, { refreshToken: null });
     }
 
-    res.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'none' })
-    res.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'none' })
+    const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
+    res.clearCookie('accessToken', CLEAR_OPTIONS);
+    res.clearCookie('refreshToken', CLEAR_OPTIONS);
 
     res.status(200).json({ success: true, message: 'User logged out successfully' });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
-// get current user
+// ── Get current user ──────────────────────────────────────────────────────────
 
 const getCurrentUser = async (req, res, next) => {
   try {
     const user = await userModel.findById(req.user.id);
+    if (!user) {
+      return next(new AppError(404, 'User not found'));
+    }
     res.status(200).json({
       success: true,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
+      user: { id: user._id, username: user.username, email: user.email },
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
+
+// ── Refresh access token ──────────────────────────────────────────────────────
 
 const refreshAccessToken = async (req, res, next) => {
   try {
-    const token = req.cookies.refreshToken
+    const token = req.cookies.refreshToken;
 
     if (!token) {
-      return res.status(401).json({ success: false, message: 'No refresh token' })
+      return next(new AppError(401, 'No refresh token provided'));
     }
 
-    // verify signature
-    const decoded = jwt.verify(token, process.env.REFRESH_SECRET)
+    // Will throw JsonWebTokenError or TokenExpiredError on bad/expired tokens —
+    // the centralized error handler maps these to 403/401 automatically.
+    const decoded = jwt.verify(token, process.env.REFRESH_SECRET);
 
-    // check it matches what's stored in DB
-    const user = await userModel.findById(decoded.id)
+    const user = await userModel.findById(decoded.id);
     if (!user || user.refreshToken !== token) {
-      return res.status(403).json({ success: false, message: 'Invalid refresh token' })
+      return next(new AppError(403, 'Invalid refresh token'));
     }
 
-    // rotate — issue new both tokens
-    const newAccessToken = generateAccessToken(user)
-    const newRefreshToken = generateRefreshToken(user)
+    const newAccessToken = generateAccessToken(user);
+    const newRefreshToken = generateRefreshToken(user);
 
-    await userModel.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken })
+    await userModel.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken });
 
-    res.cookie('accessToken', newAccessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 15 * 60 * 1000
-    })
+    res.cookie('accessToken', newAccessToken, ACCESS_COOKIE_OPTIONS);
+    res.cookie('refreshToken', newRefreshToken, REFRESH_COOKIE_OPTIONS);
 
-    res.cookie('refreshToken', newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    })
-
-    res.status(200).json({ success: true, message: 'Token refreshed' })
+    res.status(200).json({ success: true, message: 'Token refreshed' });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
-module.exports = {
-  registerUser,
-  loginUser,
-  logoutUser,
-  getCurrentUser,
-  refreshAccessToken
-}
+module.exports = { registerUser, loginUser, logoutUser, getCurrentUser, refreshAccessToken };

@@ -35,9 +35,15 @@ api.interceptors.response.use(
 
     const is401 = error.response?.status === 401;
     const alreadyRetried = originalRequest._retry;
-    const isRefreshEndpoint = originalRequest.url?.includes("/api/auth/refresh");
 
-    if (is401 && !alreadyRetried && !isRefreshEndpoint) {
+    // Never attempt a refresh on these endpoints — a 401 here is a genuine
+    // "credentials wrong" error, not an expired access token.
+    const isRefreshEndpoint = originalRequest.url?.includes("/api/auth/refresh");
+    const isLoginEndpoint   = originalRequest.url?.includes("/api/auth/login");
+    const isRegisterEndpoint = originalRequest.url?.includes("/api/auth/register");
+    const isPublicAuthEndpoint = isRefreshEndpoint || isLoginEndpoint || isRegisterEndpoint;
+
+    if (is401 && !alreadyRetried && !isPublicAuthEndpoint) {
       // If a refresh is already in-flight, queue this request
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -51,12 +57,10 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Ask server for new tokens using the httpOnly refresh cookie
-        await axios.post(
-          '/api/auth/refresh',
-          {},
-          { withCredentials: true }
-        );
+        // Use `api` (not bare axios) so the baseURL is applied correctly.
+        // Using bare axios with a relative URL would hit the Vite dev server
+        // (localhost:5173) instead of the actual API backend.
+        await api.post("/api/auth/refresh", {}, { withCredentials: true });
 
         processQueue(null);               // unblock all queued requests
         return api(originalRequest);      // retry the original request
@@ -74,4 +78,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-

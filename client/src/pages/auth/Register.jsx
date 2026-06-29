@@ -48,16 +48,19 @@ const Register = () => {
       await handleRegister(formData.username, formData.email, formData.password);
       navigate("/");
     } catch (error) {
-      const msg = error?.response?.data?.message || "Registration failed. Please try again.";
-      setError(msg);
+      setError(error.message || "Registration failed. Please try again.");
     }
   };
 
   const passwordStrength = () => {
     const p = formData.password;
     if (!p) return { score: 0, label: "", color: "" };
-    if (p.length < 6) return { score: 1, label: "Weak", color: "bg-red-500" };
-    if (p.length < 10 || !/[A-Z]/.test(p)) return { score: 2, label: "Fair", color: "bg-yellow-500" };
+    // Mirrors backend Zod rules: 8+ chars, uppercase, lowercase, number
+    const hasUpper = /[A-Z]/.test(p);
+    const hasLower = /[a-z]/.test(p);
+    const hasNumber = /[0-9]/.test(p);
+    if (p.length < 8) return { score: 1, label: "Weak", color: "bg-red-500" };
+    if (!hasUpper || !hasLower || !hasNumber) return { score: 2, label: "Fair", color: "bg-yellow-500" };
     return { score: 3, label: "Strong", color: "bg-green-500" };
   };
   const strength = passwordStrength();
@@ -239,11 +242,11 @@ const Register = () => {
               <div className={`flex items-center gap-3 w-full bg-[#111] border rounded-xl px-4 h-12 transition-all duration-200 ${focusedField === "password" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
                 <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-[#ffa116]" : "text-gray-500"}`} />
                 <input
-                  type={showPassword ? "text" : "password"} name="password" placeholder="Min. 6 characters"
+                  type={showPassword ? "text" : "password"} name="password" placeholder="Min. 8 chars, uppercase & number"
                   className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm"
                   value={formData.password} onChange={handleChange}
                   onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)}
-                  required minLength={6}
+                  required minLength={8}
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-gray-500 hover:text-gray-300 transition-colors flex-shrink-0">
                   {showPassword ? <FiEye className="text-lg" /> : <FiEyeOff className="text-lg" />}

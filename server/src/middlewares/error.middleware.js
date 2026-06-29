@@ -1,107 +1,97 @@
-const { ZodError } = require('zod');
+const AppError = require('../utils/AppError');
 
 /**
- * Global Express error-handling middleware.
- * Handles Zod validation errors, JWT errors, Mongoose/MongoDB errors, and generic errors uniformly.
+ * Centralized Express error-handling middleware.
+ *
+ * Handles:
+ *  - AppError (operational, thrown by our code)
+ *  - Mongoose ValidationError        → 422
+ *  - Mongoose CastError (bad ObjectId) → 400
+ *  - Mongoose duplicate-key (11000)   → 409
+ *  - JWT JsonWebTokenError            → 403
+ *  - JWT TokenExpiredError            → 401
+ *  - Everything else                  → 500
+ *
+ * In development the full stack trace is included in the response.
+ * In production only the message is sent.
  */
-const errorMiddleware = (err, req, res, next) => {
-  console.error('[Error]', err);
 
-  // Mongoose Validation Error
-  if (err.name === 'ValidationError') {
-    const errors = Object.values(err.errors).map((e) => ({
-      field: e.path,
-      message: e.message,
-    }));
-    return res.status(400).json({
-      success: false,
-      message: 'Validation failed',
-      errors,
-    });
-  }
+// ── Mongoose / JWT error transformers ─────────────────────────────────────────
 
-  // Mongoose Cast Error (Invalid ObjectId)
-  if (err.name === 'CastError') {
-    return res.status(400).json({
-      success: false,
-      message: `Invalid format for ID: ${err.value}`,
-    });
-  }
+function handleCastError(err) {
+  return new AppError(400, `Invalid value for field "${err.path}": ${err.value}`);
+}
 
-  // Zod validation errors (if thrown directly rather than caught by validate middleware)
-  if (err instanceof ZodError) {
-    const errors = err.errors.map((e) => ({
-      field: e.path.join('.'),
-      message: e.message,
-    }));
-    return res.status(422).json({
-      success: false,
-      message: 'Validation failed',
-      errors,
-    });
-  }
+function handleValidationError(err) {
+  const messages = Object.values(err.errors).map((e) => e.message);
+  return new AppError(422, `Validation failed: ${messages.join('. ')}`);
+}
 
-  // JWT errors
-  if (err.name === 'JsonWebTokenError') {
-    return res.status(401).json({ success: false, message: 'Invalid token' });
-  }
-  if (err.name === 'TokenExpiredError') {
-    return res.status(401).json({ success: false, message: 'Token has expired' });
-  }
+function handleDuplicateKeyError(err) {
+  // Extract the duplicated field name from the error key-value map
+  const field = Object.keys(err.keyValue || {})[0] || 'field';
+  return new AppError(409, `An account with that ${field} already exists`);
+}
 
-  // Mongoose duplicate key
-  if (err.code === 11000) {
-    const field = Object.keys(err.keyValue || {})[0] || 'field';
-    const formattedField = field.charAt(0).toUpperCase() + field.slice(1);
-    return res.status(409).json({
-      success: false,
-      message: `${formattedField} already exists`,
-    });
-  }
+function handleJWTError() {
+  return new AppError(403, 'Invalid token. Please log in again.');
+}
 
-  // Generic fallback
-  let statusCode = err.statusCode || err.status || 500;
-  let message = err.message || 'Internal Server Error';
+function handleJWTExpiredError() {
+  return new AppError(401, 'Your session has expired. Please log in again.');
+}
 
-  // Prevent information leakage from downstream API errors (e.g., Gemini API, database)
-  if (typeof message === 'string') {
-    // 1. Check if the error message is a JSON string (common for downstream API errors)
-    try {
-      const parsed = JSON.parse(message);
-      if (parsed && (parsed.error || parsed.message || parsed.status)) {
-        const internalMessage = parsed.error?.message || parsed.message || '';
-        
-        if (internalMessage.toLowerCase().includes('high demand') || internalMessage.toLowerCase().includes('unavailable')) {
-          message = 'The AI service is temporarily experiencing high demand. Please try again in a few moments.';
-        } else if (internalMessage.toLowerCase().includes('limit') || internalMessage.toLowerCase().includes('quota')) {
-          message = 'AI service quota or rate limit exceeded. Please try again later.';
-        } else {
-          message = 'The AI service is temporarily unavailable. Please try again later.';
-        }
-        statusCode = 503;
-      }
-    } catch (e) {
-      // Message is not a valid JSON string, continue to substring sanitization
-    }
+// ── Response senders ──────────────────────────────────────────────────────────
 
-    // 2. Perform substring checks for sensitive keywords or raw error details
-    const messageLower = message.toLowerCase();
-    if (messageLower.includes('high demand') || messageLower.includes('unavailable') || messageLower.includes('gemini') || messageLower.includes('googlegenai')) {
-      message = 'The AI service is temporarily experiencing high demand. Please try again in a few moments.';
-      statusCode = 503;
-    } else if (messageLower.includes('api_key') || messageLower.includes('apikey') || messageLower.includes('credential') || messageLower.includes('auth') || messageLower.includes('secret')) {
-      message = 'A system configuration error occurred. Please contact support.';
-      statusCode = 500;
-    } else if (messageLower.includes('mongodb') || messageLower.includes('mongo_uri') || messageLower.includes('database') || messageLower.includes('connection')) {
-      message = 'A database connection error occurred. Please try again later.';
-      statusCode = 500;
-    }
-  }
-
-  res.status(statusCode).json({
+function sendDevError(err, res) {
+  res.status(err.statusCode).json({
     success: false,
-    message,
+    message: err.message,
+    stack: err.stack,
+    error: err,
   });
+}
+
+function sendProdError(err, res) {
+  if (err.isOperational) {
+    // Known, safe-to-expose error
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+    });
+  } else {
+    // Programmer or unknown error — don't leak details
+    console.error('UNEXPECTED ERROR 💥', err);
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong. Please try again later.',
+    });
+  }
+}
+
+// ── Main middleware ────────────────────────────────────────────────────────────
+
+const errorMiddleware = (err, req, res, next) => {
+  // Default to 500 if statusCode wasn't set
+  err.statusCode = err.statusCode || 500;
+  err.message = err.message || 'Internal Server Error';
+
+  if (process.env.NODE_ENV === 'development') {
+    sendDevError(err, res);
+    return;
+  }
+
+  // In production, transform known error types into AppErrors
+  let error = err;
+
+  if (err.name === 'CastError') error = handleCastError(err);
+  else if (err.name === 'ValidationError') error = handleValidationError(err);
+  else if (err.code === 11000) error = handleDuplicateKeyError(err);
+  else if (err.name === 'JsonWebTokenError') error = handleJWTError();
+  else if (err.name === 'TokenExpiredError') error = handleJWTExpiredError();
+
+  sendProdError(error, res);
 };
 
 module.exports = errorMiddleware;
+
