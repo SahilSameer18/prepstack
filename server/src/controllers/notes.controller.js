@@ -1,24 +1,20 @@
 const notesModel = require('../models/notes.model');
 
 // controller to get all the notes
-const getNotes = async (req, res) => {
+const getNotes = async (req, res, next) => {
   try {
-    // We could return just slugs and subjects
     const notesSummary = await notesModel.find({}, 'subject subjectSlug');
     res.status(200).json({
       success: true,
       data: notesSummary
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 }
 
 // controller to get notes by subject
-const getNotesBySubject = async (req, res) => {
+const getNotesBySubject = async (req, res, next) => {
   try {
     const subject = req.params.subject.toLowerCase();
     
@@ -26,7 +22,9 @@ const getNotesBySubject = async (req, res) => {
     const notes = await notesModel.findOne({ subjectSlug: subject });
     
     if (!notes) {
-      return res.status(404).json({ success: false, message: "Notes not found for this subject" });
+      const error = new Error("Notes not found for this subject");
+      error.statusCode = 404;
+      throw error;
     }
 
     res.status(200).json({
@@ -34,11 +32,10 @@ const getNotesBySubject = async (req, res) => {
       data: notes
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 }
 
 module.exports = { getNotes, getNotesBySubject };
+
+

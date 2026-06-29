@@ -29,13 +29,15 @@ const ProjectDash = () => {
 
   // Delete modal
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
   // ── Delete handlers ──────────────────────────────────────────────────────
-  const openDeleteModal = (e, id) => {
+  const openDeleteModal = (e, project) => {
     e.stopPropagation();
-    setDeletingId(id);
+    setDeletingId(project._id);
+    setSelectedProject(project);
     setDeleteError(null);
   };
   const confirmDelete = async () => {
@@ -44,8 +46,8 @@ const ProjectDash = () => {
     setDeleteError(null);
     try {
       await deleteProjectById(deletingId);
-      await getProjects();
       setDeletingId(null);
+      await getProjects();
     } catch (err) {
       console.error("Delete failed", err);
       setDeleteError(
@@ -55,7 +57,6 @@ const ProjectDash = () => {
       setIsDeleting(false);
     }
   };
-  const projectToDelete = projects.find((p) => p._id === deletingId);
 
   // ── Filtered / sorted list ───────────────────────────────────────────────
   const filteredProjects = useMemo(() => {
@@ -111,7 +112,7 @@ const ProjectDash = () => {
               <p className="text-gray-400 text-center text-sm mb-6">
                 Are you sure you want to delete{" "}
                 <span className="text-white font-semibold">
-                  "{projectToDelete?.title}"
+                  "{selectedProject?.title}"
                 </span>
                 ? This action cannot be undone.
               </p>
@@ -328,7 +329,7 @@ const ProjectDash = () => {
                       </p>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={(e) => openDeleteModal(e, project._id)}
+                          onClick={(e) => openDeleteModal(e, project)}
                           className="w-8 h-8 rounded bg-red-500/5 border border-red-500/10 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all"
                           title="Delete"
                         >

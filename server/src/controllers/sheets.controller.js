@@ -2,7 +2,7 @@ const DSASheet = require('../models/sheets.model');
 const Progress = require('../models/progress.model');
 
 // controller to get all the sheets
-exports.getSheets = async (req, res) => {
+exports.getSheets = async (req, res, next) => {
   try {
     const sheets = await DSASheet.find({}, 'name slug description');
     res.status(200).json({
@@ -10,37 +10,30 @@ exports.getSheets = async (req, res) => {
       data: sheets
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // controller to get sheet by slug
-exports.getSheetBySlug = async (req, res) => {
+exports.getSheetBySlug = async (req, res, next) => {
   try {
     const sheet = await DSASheet.findOne({ slug: req.params.slug });
     if (!sheet) {
-      return res.status(404).json({
-        success: false,
-        message: 'DSA Sheet not found'
-      });
+      const error = new Error('DSA Sheet not found');
+      error.statusCode = 404;
+      throw error;
     }
     res.status(200).json({
       success: true,
       data: sheet
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // get user progress for a sheet
-exports.getUserSheetProgress = async (req, res) => {
+exports.getUserSheetProgress = async (req, res, next) => {
   try {
     const { slug } = req.params;
     const userId = req.user._id;
@@ -56,15 +49,12 @@ exports.getUserSheetProgress = async (req, res) => {
       data: progress
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // toggle problem completion
-exports.toggleProblemCompletion = async (req, res) => {
+exports.toggleProblemCompletion = async (req, res, next) => {
   try {
     const { slug } = req.params;
     const { problemLink } = req.body;
@@ -90,10 +80,6 @@ exports.toggleProblemCompletion = async (req, res) => {
       data: progress
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
-

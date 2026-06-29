@@ -1,9 +1,8 @@
 const { generateProjectIdea } = require("../services/ai.service");
 const projectModel = require('../models/project.model');
 
-
 // controller to generate project idea
-const generateProject = async (req, res) => {
+const generateProject = async (req, res, next) => {
   try {
     const { techStack, complexity, domain, notes } = req.body;
 
@@ -28,15 +27,12 @@ const generateProject = async (req, res) => {
       project
     })
   } catch (error) {
-    console.error("Error generating project idea:", error);
-    res.status(500).json({ message: "Failed to generate project idea" });
+    next(error);
   }
 }
 
-
 // controller to get all the project idea of the loged in user
-
-const getAllProjects = async (req, res) => {
+const getAllProjects = async (req, res, next) => {
   try {
     const projects = await projectModel
       .find({ user: req.user._id })
@@ -48,22 +44,19 @@ const getAllProjects = async (req, res) => {
       projects
     })
   } catch (error) {
-    console.error("Error fetching projects:", error);
-    res.status(500).json({ message: "Failed to fetch projects" });
+    next(error);
   }
 }
 
 // controller to get project idea from projectId
-
-const getProjectById = async (req, res) => {
+const getProjectById = async (req, res, next) => {
   try {
     const { projectId } = req.params;
     const project = await projectModel.findOne({ _id: projectId, user: req.user._id });
     if (!project) {
-      return res.status(404).json({
-        success: false,
-        message: "Project not found"
-      })
+      const error = new Error("Project not found");
+      error.statusCode = 404;
+      throw error;
     }
     return res.status(200).json({
       success: true,
@@ -71,34 +64,28 @@ const getProjectById = async (req, res) => {
       project
     })
   } catch (error) {
-    console.error("Error fetching project:", error);
-    res.status(500).json({ message: "Failed to fetch project" });
+    next(error);
   }
 }
 
-
 // controller to delete project idea from Id
-
-const deleteProject = async (req, res) => {
+const deleteProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
     const project = await projectModel.findOneAndDelete({ _id: projectId, user: req.user._id });
     if (!project) {
-      return res.status(404).json({
-        success: false,
-        message: "Project not found"
-      })
+      const error = new Error("Project not found");
+      error.statusCode = 404;
+      throw error;
     }
     return res.status(200).json({
       success: true,
       message: "Project deleted successfully"
     })
   } catch (error) {
-    console.error("Error deleting project:", error);
-    res.status(500).json({ message: "Failed to delete project" });
+    next(error);
   }
 }
-
 
 module.exports = { generateProject, getAllProjects, getProjectById, deleteProject }
 
