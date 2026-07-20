@@ -35,4 +35,12 @@ const loginSchema = z.object({
     .min(1, 'Password is required'),
 });
 
-module.exports = { registerSchema, loginSchema };
+// Validates the Google ID Token sent from the frontend after Google sign-in.
+// The .min(1) guard prevents an empty string "" from bypassing the required_error.
+const googleLoginSchema = z.object({
+  idToken: z
+    .string({ required_error: 'Google ID token is required' })
+    .min(1, 'Google ID token cannot be empty'),
+});
+
+module.exports = { registerSchema, loginSchema, googleLoginSchema };

@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     unique: [true, 'Username already exists'],
     trim: true,
     minLength: [4, 'Username must be at least 4 characters'],
-    maxLength: [12, 'Username cannot exceed 12 characters']
+    maxLength: [20, 'Username cannot exceed 20 characters'] // raised from 12 → 20 to accommodate OAuth-generated usernames
   },
   email: {
     type: String,
@@ -25,8 +25,29 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
-    minLength: [6, 'Password must be at least 6 characters']
+    // Password is only required when the user has no linked OAuth providers.
+    // Google-only users will have providers.length > 0 and no password set.
+    required: function() {
+      return !this.providers || this.providers.length === 0;
+    },
+    minLength: [8, 'Password must be at least 8 characters']
+  },
+  // Supports multiple OAuth providers (Google, GitHub, etc.) for future expansion
+  providers: [{
+    providerName: {
+      type: String,
+      enum: ['google', 'github'],
+      required: true
+    },
+    providerId: {
+      type: String,
+      required: true
+    }
+  }],
+  // Stores the user's profile picture URL (populated from OAuth providers)
+  avatar: {
+    type: String,
+    default: null
   },
   refreshToken: {          
     type: String,
@@ -44,4 +65,3 @@ const userSchema = new mongoose.Schema({
 const userModel = mongoose.model('User', userSchema)
 
 module.exports = userModel;
-

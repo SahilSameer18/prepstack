@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { generateAccessToken, generateRefreshToken } = require('../utils/tokens');
 const AppError = require('../utils/AppError');
+const googleClient = require('../utils/googleClient');
+const { generateUniqueUsername } = require('../utils/usernameHelper');
 
 // ── Cookie options (DRY) ──────────────────────────────────────────────────────
 
@@ -66,6 +68,10 @@ const loginUser = async (req, res, next) => {
 
     const user = await userModel.findOne({ email });
     if (!user) {
+      return next(new AppError(401, 'Invalid email or password'));
+    }
+
+    if (!user.password) {
       return next(new AppError(401, 'Invalid email or password'));
     }
 
@@ -161,4 +167,155 @@ const refreshAccessToken = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, getCurrentUser, refreshAccessToken };
+// ── Google OAuth ──────────────────────────────────────────────────────────────
+
+const googleLogin = async (req, res, next) => {
+  try {
+    const { idToken } = req.body;
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    
+    const payload = ticket.getPayload();
+    const { email, email_verified, name, sub: googleId, picture } = payload;
+
+    if (!email_verified) {
+      return next(new AppError(400, "Google account email is not verified. Please verify your email with Google and try again."));
+    }
+
+    let user = await userModel.findOne({ 'providers.providerName': 'google', 'providers.providerId': googleId });
+
+    if (user) {
+      // Existing Google user
+      if (picture && user.avatar !== picture) {
+        user.avatar = picture;
+        await user.save();
+      }
+    } else {
+      // Not found by Google ID, check by email
+      user = await userModel.findOne({ email });
+
+      if (user) {
+        // Email exists, but no Google provider linked -> Conflict
+        return next(new AppError(409, "An account with this email already exists. Please log in with your password to link your Google identity."));
+      } else {
+        // New user registration
+        let username = await generateUniqueUsername(name, userModel);
+        let created = false;
+        let attempts = 0;
+
+        while (!created && attempts < 2) {
+          try {
+            user = await userModel.create({
+              username,
+              email,
+              avatar: picture || null,
+              providers: [{ providerName: 'google', providerId: googleId }]
+            });
+            created = true;
+          } catch (err) {
+            if (err.code === 11000 && err.keyValue?.username) {
+              attempts++;
+              username = await generateUniqueUsername(name + " " + Math.floor(Math.random() * 1000), userModel);
+            } else {
+              throw err;
+            }
+          }
+        }
+
+        if (!created) {
+          return next(new AppError(500, "Failed to generate a unique username. Please try again."));
+        }
+      }
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    await userModel.findByIdAndUpdate(user._id, { refreshToken });
+
+    res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
+    res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged in with Google successfully',
+      user: { id: user._id, username: user.username, email: user.email, avatar: user.avatar },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const linkGoogle = async (req, res, next) => {
+  try {
+    const { idToken } = req.body;
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    
+    const payload = ticket.getPayload();
+    const { email, email_verified, sub: googleId, picture } = payload;
+
+    if (!email_verified) {
+      return next(new AppError(400, "Google account email is not verified."));
+    }
+
+    const user = await userModel.findById(req.user.id);
+    if (!user) {
+      return next(new AppError(404, "User not found."));
+    }
+
+    if (user.email.toLowerCase() !== email.toLowerCase()) {
+      return next(new AppError(403, "The Google account email does not match your account email."));
+    }
+
+    const existingLink = await userModel.findOne({ 
+      'providers.providerName': 'google', 
+      'providers.providerId': googleId, 
+      _id: { $ne: req.user.id } 
+    });
+
+    if (existingLink) {
+      return next(new AppError(409, "This Google account is already linked to another PrepStack account."));
+    }
+
+    const isAlreadyLinkedToThis = user.providers && user.providers.some(p => p.providerName === 'google' && p.providerId === googleId);
+
+    if (isAlreadyLinkedToThis) {
+      return res.status(200).json({
+        success: true,
+        message: 'Google account is already linked.',
+        user: { id: user._id, username: user.username, email: user.email, avatar: user.avatar },
+      });
+    }
+
+    if (!user.providers) {
+      user.providers = [];
+    }
+    user.providers.push({ providerName: 'google', providerId: googleId });
+
+    if (!user.avatar && picture) {
+      user.avatar = picture;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Google account linked successfully.',
+      user: { id: user._id, username: user.username, email: user.email, avatar: user.avatar },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { registerUser, loginUser, logoutUser, getCurrentUser, refreshAccessToken, googleLogin, linkGoogle };
+
+
+

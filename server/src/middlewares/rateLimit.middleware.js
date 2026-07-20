@@ -24,4 +24,13 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, aiProjectLimiter }
+const linkGoogleLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,  // 15 minutes
+  max: 5,                      // 5 attempts per 15 min per IP
+  skipFailedRequests: true,
+  message: { success: false, message: "Too many linking attempts. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+module.exports = { authLimiter, aiProjectLimiter, linkGoogleLimiter }

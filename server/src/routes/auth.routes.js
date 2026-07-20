@@ -1,9 +1,9 @@
 const express = require('express');
 const authController = require('../controllers/auth.controller')
 const authMiddleware = require('../middlewares/auth.middleware')
-const { authLimiter } = require('../middlewares/rateLimit.middleware')
+const { authLimiter, linkGoogleLimiter } = require('../middlewares/rateLimit.middleware')
 const validate = require('../middlewares/validate.middleware')
-const { registerSchema, loginSchema } = require('../validators/auth.validators')
+const { registerSchema, loginSchema, googleLoginSchema } = require('../validators/auth.validators')
 
 const authRouter = express.Router();
 
@@ -22,6 +22,10 @@ authRouter.post('/logout', authMiddleware, authController.logoutUser);
 // get current user
 authRouter.get('/current-user', authMiddleware, authController.getCurrentUser);
 
+// Google OAuth — new login / registration
+authRouter.post('/google', authLimiter, validate(googleLoginSchema), authController.googleLogin);
+
+// Google Account Linking — authenticated user only
+authRouter.post('/link-google', linkGoogleLimiter, authMiddleware, validate(googleLoginSchema), authController.linkGoogle);
+
 module.exports = authRouter;
-
-
