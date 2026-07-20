@@ -55,6 +55,7 @@ PrepStack centralizes the workflow:
 - **Layered Request Validation:** Custom Express middleware `validate(schema)` intercepts and validates incoming HTTP requests using Zod schemas before hitting controllers, returning structured `422` field-specific errors.
 - **Centralized Error Middleware:** Uniform error handler intercepts Zod validation errors, Mongoose validator/CastErrors (preventing internal DB leaks on invalid object IDs), JWT errors, and duplicate key constraints.
 - **Secure Refresh Token Rotation:** Employs HTTP-only `SameSite=none` cookie access/refresh pairs. Access tokens rotate on every `/refresh` call, checking against database records to prevent token replay attacks.
+- **Robust OAuth 2.0 Integration:** Built-in Google Sign-In with advanced account linking, anti-hijacking conflict resolution, and automatic unique username generation for OAuth users.
 - **Client Rich Error UI:** Front-end error components dynamically parse string alerts or raw Axios error responses, auto-rendering structured validation failure lists for user inputs.
 - **Lighthouse Optimizations:** Enhances load times using React `lazy()` and `Suspense` routes to code-split heavier dashboard and notes modules.
 
@@ -117,6 +118,10 @@ graph TB
         API --> Error
     end
 
+    subgraph Auth ["🔒 External Auth"]
+        GoogleOAuth["Google Identity Services\n(OAuth 2.0)"]
+    end
+
     subgraph Data ["🗄️ Data Layer"]
         MongoDB["MongoDB Atlas\n(Mongoose ODM)"]
     end
@@ -127,7 +132,10 @@ graph TB
         Gemini --> Schema
     end
 
+    Client -- "OAuth Popups" --> GoogleOAuth
+    GoogleOAuth -- "ID Token" --> Client
     Axios -- "HTTPS + Secure Cookies" --> Server
+    API -- "Token Verification" --> GoogleOAuth
     API -- "Mongoose queries" --> MongoDB
     API -- "Structured prompts + schema" --> Gemini
     Schema -- "Typed response" --> API
@@ -239,6 +247,7 @@ sequenceDiagram
 | Framer Motion | 12 | Fluid UI transitions & animations |
 | React Router DOM | 7 | Client routing layer |
 | Axios | latest | Configured HTTP client (with credentials) |
+| @react-oauth/google | latest | Secure Google Identity Services integration |
 
 ### Backend
 | Technology | Version | Role |
@@ -252,6 +261,7 @@ sequenceDiagram
 | bcrypt | 6 | Salted security hashing (12 rounds) |
 | cookie-parser | 1.4 | Secure browser cookie management |
 | express-rate-limit | 8.5 | IP request flood limiter |
+| google-auth-library | latest | Official backend SDK for Google ID token verification |
 
 ---
 
@@ -263,7 +273,9 @@ erDiagram
         ObjectId _id PK
         string username "Unique"
         string email "Unique"
-        string password "bcrypt hashed"
+        string password "bcrypt hashed (Optional for OAuth)"
+        array providers "OAuth links (Google)"
+        string avatar "Profile picture URL"
         string refreshToken
         date createdAt
         date updatedAt
@@ -325,6 +337,8 @@ erDiagram
 |---|---|---|---|
 | `POST` | `/register` | — | Register user *(rate-limited: 10/15min)* |
 | `POST` | `/login` | — | Login user *(rate-limited: 10/15min)* |
+| `POST` | `/google` | — | Google OAuth login/registration |
+| `POST` | `/link-google` | ✅ JWT | Link Google account to existing user *(rate-limited: 5/15min)* |
 | `POST` | `/refresh` | Cookie | Rotates access and refresh tokens |
 | `POST` | `/logout` | ✅ JWT | Clears session cookies |
 | `GET` | `/current-user` | ✅ JWT | Retrieves current user session data |
@@ -373,6 +387,7 @@ MONGO_URI=mongodb://127.0.0.1:27017/prepstack
 ACCESS_SECRET=your_ultra_secure_access_token_secret
 REFRESH_SECRET=your_ultra_secure_refresh_token_secret
 GOOGLE_API_KEY=AIzaSyYourGeminiApiKeyHere
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
 ```
 Boot Express server:
 ```bash
@@ -380,6 +395,11 @@ npm run dev
 ```
 
 ### 3. Configure Client (`client/`)
+Create a `.env.development` file under `/client`:
+```env
+VITE_API_URL=http://localhost:3000
+VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
+```
 In a new terminal:
 ```bash
 cd client
