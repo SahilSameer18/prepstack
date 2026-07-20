@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { login, logout, register, getCurrentUser } from "../api/services/authService";
+import { login, logout, register, getCurrentUser, loginWithGoogle, linkGoogle } from "../api/services/authService";
 import { extractError } from "../utils/extractError";
 
 export const useAuth = () => {
@@ -60,5 +60,29 @@ export const useAuth = () => {
     }
   };
 
-  return { user, setUser, loading, setLoading, handleLogin, handleLogout, handleRegister, handleGetCurrentUser };
+  const handleGoogleLogin = async (idToken) => {
+    try {
+      setLoading(true);
+      const data = await loginWithGoogle(idToken);
+      setUser(data.user);
+    } catch (error) {
+      throw error; // Re-throw the raw Axios error so Login.jsx can inspect error.response.status
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLinkGoogle = async (idToken) => {
+    try {
+      setLoading(true);
+      const data = await linkGoogle(idToken);
+      setUser(data.user);
+    } catch (error) {
+      throw new Error(extractError(error, "Linking Google account failed."));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { user, setUser, loading, setLoading, handleLogin, handleLogout, handleRegister, handleGetCurrentUser, handleGoogleLogin, handleLinkGoogle };
 };

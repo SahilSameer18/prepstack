@@ -41,7 +41,8 @@ api.interceptors.response.use(
     const isRefreshEndpoint = originalRequest.url?.includes("/api/auth/refresh");
     const isLoginEndpoint   = originalRequest.url?.includes("/api/auth/login");
     const isRegisterEndpoint = originalRequest.url?.includes("/api/auth/register");
-    const isPublicAuthEndpoint = isRefreshEndpoint || isLoginEndpoint || isRegisterEndpoint;
+    const isGoogleEndpoint = originalRequest.url?.includes("/api/auth/google");
+    const isPublicAuthEndpoint = isRefreshEndpoint || isLoginEndpoint || isRegisterEndpoint || isGoogleEndpoint;
 
     if (is401 && !alreadyRetried && !isPublicAuthEndpoint) {
       // If a refresh is already in-flight, queue this request

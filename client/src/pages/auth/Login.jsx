@@ -5,6 +5,9 @@ import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { InlineSpinner } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
+import { GoogleLogin } from "@react-oauth/google";
+import toast from 'react-hot-toast';
+import { extractError } from "../../utils/extractError";
 
 /* ── variants ── */
 const panelLeft = {
@@ -29,11 +32,13 @@ const formItem = {
 
 const Login = () => {
   const navigate = useNavigate();
-  const { handleLogin, loading } = useAuth();
+  const { handleLogin, handleGoogleLogin, handleLinkGoogle, loading } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
   const [error, setError] = useState(null);
+  const [pendingGoogleToken, setPendingGoogleToken] = useState(null);
+  const [linkingMode, setLinkingMode] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,10 +51,40 @@ const Login = () => {
     setError(null);
     try {
       await handleLogin(formData.email, formData.password);
+      if (pendingGoogleToken) {
+        try {
+          await handleLinkGoogle(pendingGoogleToken);
+          setPendingGoogleToken(null);
+          setLinkingMode(false);
+          toast.success("Google account linked successfully!");
+        } catch (linkError) {
+          setError(extractError(linkError, "Login succeeded but Google linking failed. You can try linking from your profile."));
+        }
+      }
       navigate("/");
     } catch (error) {
       setError(error.message || "Login failed. Please try again.");
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    const idToken = credentialResponse.credential;
+    try {
+      await handleGoogleLogin(idToken);
+      navigate("/");
+    } catch (error) {
+      if (error.response?.status === 409) {
+        setPendingGoogleToken(idToken);
+        setLinkingMode(true);
+        setError("An account with this email already exists. Please enter your password below to link your Google identity.");
+      } else {
+        setError(extractError(error, "Google sign-in failed. Please try again."));
+      }
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Google sign-in was cancelled or failed. Please try again.");
   };
 
   const stats    = [{ value: "1200+", label: "DSA Problems" }, { value: "AI", label: "Project Gen" }, { value: "4+", label: "CS Subjects" }];
@@ -224,17 +259,31 @@ const Login = () => {
               className="w-full h-12 rounded-xl text-black font-semibold text-sm bg-gradient-to-r from-[#ffa116] to-[#ff8c00] hover:from-[#ffb84d] hover:to-[#ffa116] transition-all duration-300 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 mt-2 flex items-center justify-center gap-2.5 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <><InlineSpinner size={17} color="#000" /><span>Signing in...</span></>
+                <><InlineSpinner size={17} color="#000" /><span>{linkingMode ? "Linking..." : "Signing in..."}</span></>
               ) : (
-                "Log In to PrepStack"
+                linkingMode ? "Link Google Account" : "Log In to PrepStack"
               )}
             </motion.button>
 
-            <motion.div className="flex items-center gap-3 py-2" variants={formItem}>
-              <div className="flex-1 h-px bg-white/[0.07]" />
-              <span className="text-gray-500 text-xs">or</span>
-              <div className="flex-1 h-px bg-white/[0.07]" />
-            </motion.div>
+            {!linkingMode && (
+              <>
+                <motion.div className="flex items-center gap-3 py-2" variants={formItem}>
+                  <div className="flex-1 h-px bg-white/[0.07]" />
+                  <span className="text-gray-500 text-xs">or</span>
+                  <div className="flex-1 h-px bg-white/[0.07]" />
+                </motion.div>
+
+                <motion.div variants={formItem} className="w-full flex justify-center pb-2">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    theme="filled_black"
+                    shape="pill"
+                    text="continue_with"
+                  />
+                </motion.div>
+              </>
+            )}
 
             <motion.p className="text-center text-gray-400 text-sm" variants={formItem}>
               Don&apos;t have an account?{" "}

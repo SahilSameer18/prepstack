@@ -29,4 +29,13 @@ export async function getCurrentUser() {
   return response.data;
 }
 
+export async function loginWithGoogle(idToken) {
+  const response = await api.post("/api/auth/google", { idToken });
+  return response.data;
+}
+
+export async function linkGoogle(idToken) {
+  const response = await api.post("/api/auth/link-google", { idToken });
+  return response.data;
+}
 

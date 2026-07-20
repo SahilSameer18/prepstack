@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { InlineSpinner } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
+import { GoogleLogin } from "@react-oauth/google";
+import { extractError } from "../../utils/extractError";
 
 /* ── variants ── */
 const panelLeft = {
@@ -29,7 +31,7 @@ const formItem = {
 
 const Register = () => {
   const navigate = useNavigate();
-  const { handleRegister, loading } = useAuth();
+  const { handleRegister, handleGoogleLogin, loading } = useAuth();
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
@@ -50,6 +52,25 @@ const Register = () => {
     } catch (error) {
       setError(error.message || "Registration failed. Please try again.");
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    const idToken = credentialResponse.credential;
+    try {
+      await handleGoogleLogin(idToken);
+      navigate("/");
+    } catch (error) {
+      if (error.response?.status === 409) {
+        setError("An account with this email already exists. Redirecting to login...");
+        setTimeout(() => navigate("/login"), 2500);
+      } else {
+        setError(extractError(error, "Google sign-up failed. Please try again."));
+      }
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Google sign-up was cancelled or failed. Please try again.");
   };
 
   const passwordStrength = () => {
@@ -291,6 +312,16 @@ const Register = () => {
               <div className="flex-1 h-px bg-white/[0.07]" />
               <span className="text-gray-500 text-xs">or</span>
               <div className="flex-1 h-px bg-white/[0.07]" />
+            </motion.div>
+
+            <motion.div variants={formItem} className="w-full flex justify-center pb-2">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                theme="filled_black"
+                shape="pill"
+                text="continue_with"
+              />
             </motion.div>
 
             <motion.p className="text-center text-gray-400 text-sm" variants={formItem}>
