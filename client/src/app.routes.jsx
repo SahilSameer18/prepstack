@@ -21,6 +21,7 @@ const Behavioral = lazy(() => import('./pages/Behavioral'));
 const Quiz = lazy(() => import('./pages/Quiz'));
 const Aptitude = lazy(() => import('./pages/Aptitude'));
 const UnifiedDashboard = lazy(() => import('./pages/Dashboard/UnifiedDashboard'));
+const Profile = lazy(() => import('./pages/Profile/Profile'));
 
 
 export const router = createBrowserRouter([
@@ -86,6 +87,13 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
       },
       {
+        path: "/profile",
+        element:
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+      },
+      {
         path: "/resume",
         element:
           <ProtectedRoute>
@@ -113,5 +121,3 @@ export const router = createBrowserRouter([
   { path: '/register', element: <Register /> },
   { path: '*', element: <NotFound /> },
 ])
-
-

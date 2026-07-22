@@ -26,6 +26,7 @@ const authRouter = require('./routes/auth.routes')
 const sheetsRouter = require('./routes/sheets.routes')
 const projectRouter = require('./routes/project.routes')
 const notesRouter = require('./routes/notes.routes')
+const userRouter = require('./routes/user.routes')
 
 
 // use all the routes here
@@ -33,6 +34,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/sheets', sheetsRouter)
 app.use('/api/project', projectRouter)
 app.use('/api/notes', notesRouter)
+app.use('/api/user', userRouter)
 
 
 // 404 — catch any unmatched routes and forward to error handler
@@ -44,4 +46,6 @@ app.use((req, res, next) => {
 app.use(errorMiddleware)
 
 module.exports = app;
+
+
 

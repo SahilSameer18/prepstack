@@ -3,7 +3,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import {
   FiCode, FiMap, FiCpu, FiBook, FiMessageSquare, FiFileText,
-  FiHelpCircle, FiActivity, FiArrowRight, FiZap, FiLogOut, FiGrid
+  FiHelpCircle, FiActivity, FiArrowRight, FiZap, FiLogOut, FiGrid, FiUser
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
@@ -150,8 +150,20 @@ const Navbar = () => {
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.08] text-sm text-gray-300 hover:bg-white/[0.08] transition-all"
                 >
-                  <div className="w-6 h-6 rounded-full bg-[#ffa116] flex items-center justify-center">
-                    <span className="text-black text-xs font-bold">{user.username?.[0]?.toUpperCase() || "U"}</span>
+                  <div className="w-6 h-6 rounded-full bg-[#ffa116] flex items-center justify-center overflow-hidden">
+                    {user.avatar ? (
+                      <img 
+                        src={user.avatar} 
+                        alt="Avatar" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null; // prevents infinite loop
+                          e.target.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`;
+                        }}
+                      />
+                    ) : (
+                      <span className="text-black text-xs font-bold">{user.username?.[0]?.toUpperCase() || "U"}</span>
+                    )}
                   </div>
                   {user.username}
                   <FaChevronDown className="text-[10px]" />
@@ -167,6 +179,13 @@ const Navbar = () => {
                         <p className="text-xs text-gray-500">Signed in as</p>
                         <p className="text-sm font-medium text-white truncate">{user.username}</p>
                       </div>
+                      <Link
+                        to="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.04] transition-colors border-b border-white/[0.06]"
+                      >
+                        <FiUser className="text-xs" /> Profile
+                      </Link>
                       <Link
                         to="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
@@ -252,6 +271,14 @@ const Navbar = () => {
                 {user ? (
                   <div className="space-y-2">
                     <Link
+                      to="/profile"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] transition-all"
+                    >
+                      <FiUser className="text-base text-gray-500" />
+                      Profile
+                    </Link>
+                    <Link
                       to="/dashboard"
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] transition-all"
@@ -296,3 +323,5 @@ const Navbar = () => {
 
 
 export default Navbar;
+
+

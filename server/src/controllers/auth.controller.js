@@ -6,6 +6,22 @@ const AppError = require('../utils/AppError');
 const googleClient = require('../utils/googleClient');
 const { generateUniqueUsername } = require('../utils/usernameHelper');
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const formatUserResponse = (user) => {
+  const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`;
+  
+  return {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar || dicebearAvatar,
+    providers: user.providers || [],
+    hasPassword: !!user.password,
+    createdAt: user.createdAt
+  };
+};
+
 // ── Cookie options (DRY) ──────────────────────────────────────────────────────
 
 const ACCESS_COOKIE_OPTIONS = {
@@ -40,7 +56,14 @@ const registerUser = async (req, res, next) => {
 
     const hash = await bcrypt.hash(password, 12);
 
-    const user = await userModel.create({ username, email, password: hash });
+    const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
+
+    const user = await userModel.create({ 
+      username, 
+      email, 
+      password: hash,
+      avatar: dicebearAvatar 
+    });
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
@@ -53,7 +76,7 @@ const registerUser = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
-      user: { id: user._id, username: user.username, email: user.email },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     next(error);
@@ -91,7 +114,7 @@ const loginUser = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'User logged in successfully',
-      user: { id: user._id, username: user.username, email: user.email },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     next(error);
@@ -127,7 +150,7 @@ const getCurrentUser = async (req, res, next) => {
     }
     res.status(200).json({
       success: true,
-      user: { id: user._id, username: user.username, email: user.email },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     next(error);
@@ -208,10 +231,11 @@ const googleLogin = async (req, res, next) => {
 
         while (!created && attempts < 2) {
           try {
+            const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
             user = await userModel.create({
               username,
               email,
-              avatar: picture || null,
+              avatar: picture || dicebearAvatar,
               providers: [{ providerName: 'google', providerId: googleId }]
             });
             created = true;
@@ -242,7 +266,7 @@ const googleLogin = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Logged in with Google successfully',
-      user: { id: user._id, username: user.username, email: user.email, avatar: user.avatar },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     next(error);
@@ -290,7 +314,7 @@ const linkGoogle = async (req, res, next) => {
       return res.status(200).json({
         success: true,
         message: 'Google account is already linked.',
-        user: { id: user._id, username: user.username, email: user.email, avatar: user.avatar },
+        user: formatUserResponse(user),
       });
     }
 
@@ -308,7 +332,7 @@ const linkGoogle = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Google account linked successfully.',
-      user: { id: user._id, username: user.username, email: user.email, avatar: user.avatar },
+      user: formatUserResponse(user),
     });
   } catch (error) {
     next(error);
@@ -316,6 +340,4 @@ const linkGoogle = async (req, res, next) => {
 };
 
 module.exports = { registerUser, loginUser, logoutUser, getCurrentUser, refreshAccessToken, googleLogin, linkGoogle };
-
-
 

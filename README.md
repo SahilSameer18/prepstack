@@ -17,7 +17,7 @@
 
 ---
 
-PrepStack centralizes and optimizes the entire SDE interview preparation journey: **AI-powered project generation**, **curated DSA sheets progress tracking**, **core CS fundamentals notes**, and **behavioral interview / STAR templates**—built with production-grade fullstack architecture.
+PrepStack is a full-stack SDE interview preparation platform that unifies **AI-powered project generation**, **DSA progress tracking**, **CS fundamentals revision**, and **behavioral interview workflows** in one place.
 
 ---
 
@@ -43,6 +43,7 @@ PrepStack centralizes and optimizes the entire SDE interview preparation journey
 Candidates typically scatter preparation workflows across multiple disconnected tools: LeetCode/CodeStudio for DSA sheets, blog posts for CS theory, general-purpose LLMs for generic project ideas, and static templates for behavioral resumes.
 
 PrepStack centralizes the workflow:
+
 1. **Generates unique, recruiter-ready SDE project profiles** tailored to your tech stack and domain, returning STAR-style resume bullet points via Gemini AI.
 2. **Tracks problem-solving progress asynchronously** across industry-standard DSA sheets (Striver A2Z + SDE, Blind75, NeetCode, Love Babbar) in one clean dashboard.
 3. **Consolidates core CS theory revisions** (OS, DBMS, Networks, OOP) and behavioral STAR strategies in an interactive hub.
@@ -101,44 +102,37 @@ prepstack/
 ### System Overview
 
 ```mermaid
-graph TB
-    subgraph Client ["🌐 Client — React 19 + Vite 7 + Tailwind v4"]
+flowchart LR
+    subgraph Client["Client"]
         direction TB
-        Pages["Pages / Views"]
-        Axios["Axios Instance\n(withCredentials: true)"]
-        Pages --> Axios
+        Pages["React Views"]
+        UI["Tailwind UI"]
+        HTTP["Axios API Client"]
+        Pages --> UI --> HTTP
     end
 
-    subgraph Server ["⚙️ Server — Node.js + Express 5"]
+    subgraph Backend["Server"]
         direction TB
-        Security["Security Layer\n(rate limiting, validation, auth)"]
-        API["API Layer\n/routes → controllers → services"]
-        Error["Global Error Middleware\n(Zod · JWT · Mongo · Generic)"]
-        Security --> API
-        API --> Error
+        Router["Express Routes"]
+        Guard["Validation + Rate Limiting"]
+        Auth["JWT Auth"]
+        Ctrl["Controllers"]
+        Service["Services"]
+        Guard --> Router --> Auth --> Ctrl --> Service
     end
 
-    subgraph Auth ["🔒 External Auth"]
-        GoogleOAuth["Google Identity Services\n(OAuth 2.0)"]
+    subgraph External["External"]
+        direction TB
+        Google["Google OAuth"]
+        AI["Gemini AI"]
+        DB["MongoDB Atlas"]
     end
 
-    subgraph Data ["🗄️ Data Layer"]
-        MongoDB["MongoDB Atlas\n(Mongoose ODM)"]
-    end
-
-    subgraph AI ["🤖 AI Layer"]
-        Gemini["Gemini AI\n(@google/genai SDK)"]
-        Schema["Zod → JSON Schema\n(typed structured output)"]
-        Gemini --> Schema
-    end
-
-    Client -- "OAuth Popups" --> GoogleOAuth
-    GoogleOAuth -- "ID Token" --> Client
-    Axios -- "HTTPS + Secure Cookies" --> Server
-    API -- "Token Verification" --> GoogleOAuth
-    API -- "Mongoose queries" --> MongoDB
-    API -- "Structured prompts + schema" --> Gemini
-    Schema -- "Typed response" --> API
+    HTTP -->|"HTTPS + cookies"| Router
+    Router -->|"ID token"| Google
+    Google -->|"Identity"| Auth
+    Ctrl -->|"Mongoose"| DB
+    Service -->|"Prompt + schema"| AI
 ```
 
 ---
@@ -219,49 +213,62 @@ sequenceDiagram
 ## ✨ Core Features & Business Value
 
 ### 🤖 AI-Powered Project Generation
+
 - **Dynamic Prompts:** Accepts tech stack, domain (FinTech, SaaS, Web3), complexity level (`beginner`/`intermediate`/`advanced`), and extra constraints.
 - **Recruiter-Ready Output:** Gemini generates project descriptions, tagging, estimated timeline, and STAR resume bullets.
 - **Abuse Protection:** Enforced at 4 project requests per hour per IP.
 
 ### 📈 Dynamic DSA Trackers
+
 - **Industry Sheets:** Tracks Blind 75, NeetCode 150, Striver A2Z, Striver SDE, and Love Babbar 450.
 - **Live Sync:** Problem completions toggle asynchronously, instantly refreshing dashboard metrics.
 
 ### 📚 CS Fundamentals Library
+
 - **Pre-Seeded Notes:** High-performance revision cards covering OS, DBMS, Computer Networks, and OOP.
 
 ### 📝 STAR Resume & Behavioral Hub
+
 - **STAR Prompts:** Complete, interactive STAR templates for mapping experiences.
 - **Behavioral Bank:** Category-sorted bank of questions with expert strategies and answer blueprints.
+
+### 👤 Unified Profile Dashboard
+
+- **Dual-Identity Management:** Seamlessly link or manage Google OAuth and Email/Password authentications in one place.
+- **Dynamic Avatars:** Integrates the open-source DiceBear API to automatically generate unique, tech-themed robot avatars for users without Google profile pictures.
+- **Live Stats Engine:** Real-time aggregation of your total solved DSA problems and generated AI projects.
 
 ---
 
 ## 🛠️ Deep-Dive Tech Stack
 
 ### Frontend
-| Technology | Version | Role |
-|---|---|---|
-| React | 19.2 | UI library (concurrent rendering) |
-| Vite | 7 | Build tooling & HMR |
-| Tailwind CSS | v4 | Utility-first styling engine |
-| Framer Motion | 12 | Fluid UI transitions & animations |
-| React Router DOM | 7 | Client routing layer |
-| Axios | latest | Configured HTTP client (with credentials) |
-| @react-oauth/google | latest | Secure Google Identity Services integration |
+
+| Technology          | Version | Role                                        |
+| ------------------- | ------- | ------------------------------------------- |
+| React               | 19.2    | UI library (concurrent rendering)           |
+| Vite                | 7       | Build tooling & HMR                         |
+| Tailwind CSS        | v4      | Utility-first styling engine                |
+| Framer Motion       | 12      | Fluid UI transitions & animations           |
+| React Router DOM    | 7       | Client routing layer                        |
+| Axios               | latest  | Configured HTTP client (with credentials)   |
+| @react-oauth/google | latest  | Secure Google Identity Services integration |
+| DiceBear API        | 7.x     | Dynamic, deterministic avatar generation    |
 
 ### Backend
-| Technology | Version | Role |
-|---|---|---|
-| Node.js + Express | 5.2 | Web app framework (native async errors) |
-| Mongoose | 9 | MongoDB Object Document Mapper (ODM) |
-| Zod | 4 | Server validation and structured schema config |
-| zod-to-json-schema | 3 | Translates Zod structures into JSON Schemas |
-| @google/genai | 1.47 | Official SDK client for Gemini integrations |
-| jsonwebtoken | 9 | Cryptographic user session tokens |
-| bcrypt | 6 | Salted security hashing (12 rounds) |
-| cookie-parser | 1.4 | Secure browser cookie management |
-| express-rate-limit | 8.5 | IP request flood limiter |
-| google-auth-library | latest | Official backend SDK for Google ID token verification |
+
+| Technology          | Version | Role                                                  |
+| ------------------- | ------- | ----------------------------------------------------- |
+| Node.js + Express   | 5.2     | Web app framework (native async errors)               |
+| Mongoose            | 9       | MongoDB Object Document Mapper (ODM)                  |
+| Zod                 | 4       | Server validation and structured schema config        |
+| zod-to-json-schema  | 3       | Translates Zod structures into JSON Schemas           |
+| @google/genai       | 1.47    | Official SDK client for Gemini integrations           |
+| jsonwebtoken        | 9       | Cryptographic user session tokens                     |
+| bcrypt              | 6       | Salted security hashing (12 rounds)                   |
+| cookie-parser       | 1.4     | Secure browser cookie management                      |
+| express-rate-limit  | 8.5     | IP request flood limiter                              |
+| google-auth-library | latest  | Official backend SDK for Google ID token verification |
 
 ---
 
@@ -333,54 +340,68 @@ erDiagram
 ## 🔗 API Endpoint Reference
 
 ### Authentication — `/api/auth`
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/register` | — | Register user *(rate-limited: 10/15min)* |
-| `POST` | `/login` | — | Login user *(rate-limited: 10/15min)* |
-| `POST` | `/google` | — | Google OAuth login/registration |
-| `POST` | `/link-google` | ✅ JWT | Link Google account to existing user *(rate-limited: 5/15min)* |
-| `POST` | `/refresh` | Cookie | Rotates access and refresh tokens |
-| `POST` | `/logout` | ✅ JWT | Clears session cookies |
-| `GET` | `/current-user` | ✅ JWT | Retrieves current user session data |
+
+| Method | Endpoint        | Auth   | Description                                                    |
+| ------ | --------------- | ------ | -------------------------------------------------------------- |
+| `POST` | `/register`     | —      | Register user _(rate-limited: 10/15min)_                       |
+| `POST` | `/login`        | —      | Login user _(rate-limited: 10/15min)_                          |
+| `POST` | `/google`       | —      | Google OAuth login/registration                                |
+| `POST` | `/link-google`  | ✅ JWT | Link Google account to existing user _(rate-limited: 5/15min)_ |
+| `POST` | `/refresh`      | Cookie | Rotates access and refresh tokens                              |
+| `POST` | `/logout`       | ✅ JWT | Clears session cookies                                         |
+| `GET`  | `/current-user` | ✅ JWT | Retrieves current user session data                            |
+
+### User Profile — `/api/user`
+
+| Method | Endpoint | Auth   | Description                                            |
+| ------ | -------- | ------ | ------------------------------------------------------ |
+| `GET`  | `/stats` | ✅ JWT | Aggregates and returns total solved DSA and AI projects|
 
 ### AI Projects — `/api/project`
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `POST` | `/generate` | ✅ JWT | Triggers Gemini AI generation *(rate-limited: 4/hr)* |
-| `GET` | `/` | ✅ JWT | Returns all saved projects |
-| `GET` | `/:projectId` | ✅ JWT | Returns specific project metadata |
-| `DELETE` | `/:projectId` | ✅ JWT | Deletes project profile |
+
+| Method   | Endpoint      | Auth   | Description                                          |
+| -------- | ------------- | ------ | ---------------------------------------------------- |
+| `POST`   | `/generate`   | ✅ JWT | Triggers Gemini AI generation _(rate-limited: 4/hr)_ |
+| `GET`    | `/`           | ✅ JWT | Returns all saved projects                           |
+| `GET`    | `/:projectId` | ✅ JWT | Returns specific project metadata                    |
+| `DELETE` | `/:projectId` | ✅ JWT | Deletes project profile                              |
 
 ### DSA Sheets — `/api/sheets`
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/` | — | Lists all DSA sheets |
-| `GET` | `/:slug` | — | Returns sheet sections and problem links |
-| `GET` | `/:slug/progress` | ✅ JWT | Returns active user solved problems |
+
+| Method | Endpoint          | Auth   | Description                                |
+| ------ | ----------------- | ------ | ------------------------------------------ |
+| `GET`  | `/`               | —      | Lists all DSA sheets                       |
+| `GET`  | `/:slug`          | —      | Returns sheet sections and problem links   |
+| `GET`  | `/:slug/progress` | ✅ JWT | Returns active user solved problems        |
 | `POST` | `/:slug/progress` | ✅ JWT | Toggles state of problem (solved/unsolved) |
 
 ### CS Notes — `/api/notes`
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| `GET` | `/` | — | Returns CS note categories |
-| `GET` | `/:subject` | — | Returns core sections/content for subject |
+
+| Method | Endpoint    | Auth | Description                               |
+| ------ | ----------- | ---- | ----------------------------------------- |
+| `GET`  | `/`         | —    | Returns CS note categories                |
+| `GET`  | `/:subject` | —    | Returns core sections/content for subject |
 
 ---
 
 ## 🚀 Local Installation & Seeding Guide
 
 ### 1. Setup Codebase
+
 ```bash
 git clone https://github.com/SahilSameer18/prepstack.git
 cd prepstack
 ```
 
 ### 2. Configure Server (`server/`)
+
 ```bash
 cd server
 npm install
 ```
+
 Create a `.env` file under `/server`:
+
 ```env
 PORT=3000
 MONGO_URI=mongodb://127.0.0.1:27017/prepstack
@@ -389,18 +410,24 @@ REFRESH_SECRET=your_ultra_secure_refresh_token_secret
 GOOGLE_API_KEY=AIzaSyYourGeminiApiKeyHere
 GOOGLE_CLIENT_ID=your_google_oauth_client_id
 ```
+
 Boot Express server:
+
 ```bash
 npm run dev
 ```
 
 ### 3. Configure Client (`client/`)
+
 Create a `.env.development` file under `/client`:
+
 ```env
 VITE_API_URL=http://localhost:3000
 VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
 ```
+
 In a new terminal:
+
 ```bash
 cd client
 npm install
@@ -408,31 +435,36 @@ npm run dev
 ```
 
 ### 4. Database Seed
+
 To populate sheets and CS revision datasets:
+
 ```bash
 cd server
 npm run seed:all
 ```
-*(Uses idempotent upsert logic — safe to run multiple times).*
+
+_(Uses idempotent upsert logic — safe to run multiple times)._
 
 ---
 
 ## 💼 Available Scripts
 
 ### Backend (`server/`)
-| Script | Description |
-|---|---|
-| `npm run dev` | Boots dev environment using nodemon |
-| `npm start` | Launches server |
-| `npm run seed:notes` | Seeds CS Note items |
-| `npm run seed:all` | Idempotently seeds DSA Sheets and CS notes |
+
+| Script               | Description                                |
+| -------------------- | ------------------------------------------ |
+| `npm run dev`        | Boots dev environment using nodemon        |
+| `npm start`          | Launches server                            |
+| `npm run seed:notes` | Seeds CS Note items                        |
+| `npm run seed:all`   | Idempotently seeds DSA Sheets and CS notes |
 
 ### Frontend (`client/`)
-| Script | Description |
-|---|---|
-| `npm run dev` | Launches dev build server |
-| `npm run build` | Builds production bundle |
-| `npm run lint` | Analyzes code styling with ESLint |
+
+| Script            | Description                       |
+| ----------------- | --------------------------------- |
+| `npm run dev`     | Launches dev build server         |
+| `npm run build`   | Builds production bundle          |
+| `npm run lint`    | Analyzes code styling with ESLint |
 | `npm run preview` | Previews production bundle output |
 
 ---
@@ -440,6 +472,7 @@ npm run seed:all
 ## 🤝 Contributing
 
 We welcome open-source contributions!
+
 1. Fork the Project.
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
 3. Commit changes (`git commit -m 'Add AmazingFeature'`).
@@ -455,3 +488,4 @@ Distributed under the MIT License. See `LICENSE` for details.
 ---
 
 <p align="center">Made with ❤️ by Sahil Sameer Siddique</p>
+
