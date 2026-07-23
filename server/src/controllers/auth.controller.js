@@ -208,12 +208,16 @@ const googleLogin = async (req, res, next) => {
       return next(new AppError(400, "Google account email is not verified. Please verify your email with Google and try again."));
     }
 
+    // Ignore Google's default first-letter avatar
+    const isDefaultGooglePic = !picture || picture.includes('default-user');
+    const validGooglePicture = isDefaultGooglePic ? null : picture;
+
     let user = await userModel.findOne({ 'providers.providerName': 'google', 'providers.providerId': googleId });
 
     if (user) {
       // Existing Google user
-      if (picture && user.avatar !== picture) {
-        user.avatar = picture;
+      if (validGooglePicture && user.avatar !== validGooglePicture) {
+        user.avatar = validGooglePicture;
         await user.save();
       }
     } else {
@@ -235,7 +239,7 @@ const googleLogin = async (req, res, next) => {
             user = await userModel.create({
               username,
               email,
-              avatar: picture || dicebearAvatar,
+              avatar: validGooglePicture || dicebearAvatar,
               providers: [{ providerName: 'google', providerId: googleId }]
             });
             created = true;
@@ -289,6 +293,10 @@ const linkGoogle = async (req, res, next) => {
       return next(new AppError(400, "Google account email is not verified."));
     }
 
+    // Ignore Google's default first-letter avatar
+    const isDefaultGooglePic = !picture || picture.includes('default-user');
+    const validGooglePicture = isDefaultGooglePic ? null : picture;
+
     const user = await userModel.findById(req.user.id);
     if (!user) {
       return next(new AppError(404, "User not found."));
@@ -323,8 +331,9 @@ const linkGoogle = async (req, res, next) => {
     }
     user.providers.push({ providerName: 'google', providerId: googleId });
 
-    if (!user.avatar && picture) {
-      user.avatar = picture;
+    // If the Google account has a real profile picture, overwrite the current avatar (usually DiceBear)
+    if (validGooglePicture) {
+      user.avatar = validGooglePicture;
     }
 
     await user.save();
@@ -340,4 +349,3 @@ const linkGoogle = async (req, res, next) => {
 };
 
 module.exports = { registerUser, loginUser, logoutUser, getCurrentUser, refreshAccessToken, googleLogin, linkGoogle };
-
