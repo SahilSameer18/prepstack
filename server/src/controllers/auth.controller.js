@@ -348,4 +348,36 @@ const linkGoogle = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, getCurrentUser, refreshAccessToken, googleLogin, linkGoogle };
+const setPassword = async (req, res, next) => {
+  try {
+    const { password } = req.body;
+    
+    if (!password || password.length < 8) {
+      return next(new AppError(400, "Password must be at least 8 characters long"));
+    }
+
+    const user = await userModel.findById(req.user.id);
+    if (!user) {
+      return next(new AppError(404, "User not found"));
+    }
+
+    if (user.password) {
+      return next(new AppError(400, "This account already has a password set."));
+    }
+
+    const hash = await bcrypt.hash(password, 12);
+    user.password = hash;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password set successfully',
+      user: formatUserResponse(user),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { registerUser, loginUser, logoutUser, getCurrentUser, refreshAccessToken, googleLogin, linkGoogle, setPassword };
+

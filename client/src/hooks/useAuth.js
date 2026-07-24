@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { login, logout, register, getCurrentUser, loginWithGoogle, linkGoogle } from "../api/services/authService";
+import { login, logout, register, getCurrentUser, loginWithGoogle, linkGoogle, setPassword } from "../api/services/authService";
 import { extractError } from "../utils/extractError";
 
 export const useAuth = () => {
@@ -84,5 +84,18 @@ export const useAuth = () => {
     }
   };
 
-  return { user, setUser, loading, setLoading, handleLogin, handleLogout, handleRegister, handleGetCurrentUser, handleGoogleLogin, handleLinkGoogle };
+  const handleSetPassword = async (password) => {
+    try {
+      setLoading(true);
+      const data = await setPassword(password);
+      setUser(data.user);
+    } catch (error) {
+      throw new Error(extractError(error, "Setting password failed."));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { user, setUser, loading, setLoading, handleLogin, handleLogout, handleRegister, handleGetCurrentUser, handleGoogleLogin, handleLinkGoogle, handleSetPassword };
 };
+

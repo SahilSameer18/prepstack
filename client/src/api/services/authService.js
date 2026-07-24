@@ -39,3 +39,9 @@ export async function linkGoogle(idToken) {
   return response.data;
 }
 
+export async function setPassword(password) {
+  const response = await api.put("/api/auth/set-password", { password });
+  return response.data;
+}
+
+

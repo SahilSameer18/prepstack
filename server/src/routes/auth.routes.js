@@ -3,7 +3,7 @@ const authController = require('../controllers/auth.controller')
 const authMiddleware = require('../middlewares/auth.middleware')
 const { authLimiter, linkGoogleLimiter } = require('../middlewares/rateLimit.middleware')
 const validate = require('../middlewares/validate.middleware')
-const { registerSchema, loginSchema, googleLoginSchema } = require('../validators/auth.validators')
+const { registerSchema, loginSchema, googleLoginSchema, setPasswordSchema } = require('../validators/auth.validators')
 
 const authRouter = express.Router();
 
@@ -27,5 +27,8 @@ authRouter.post('/google', authLimiter, validate(googleLoginSchema), authControl
 
 // Google Account Linking — authenticated user only
 authRouter.post('/link-google', linkGoogleLimiter, authMiddleware, validate(googleLoginSchema), authController.linkGoogle);
+
+// Set password for OAuth users
+authRouter.put('/set-password', authLimiter, authMiddleware, validate(setPasswordSchema), authController.setPassword);
 
 module.exports = authRouter;

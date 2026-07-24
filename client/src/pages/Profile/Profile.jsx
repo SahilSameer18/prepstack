@@ -10,10 +10,13 @@ import { GoogleLogin } from "@react-oauth/google";
 import { InlineSpinner } from "../../components/ui/Skeletons";
 
 const Profile = () => {
-  const { user, handleLogout, handleLinkGoogle } = useAuth();
+  const { user, handleLogout, handleLinkGoogle, handleSetPassword } = useAuth();
   const [stats, setStats] = useState({ generatedProjectsCount: 0, solvedDSACount: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [isSettingPassword, setIsSettingPassword] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,7 +51,25 @@ const Profile = () => {
       toast.success("Google account successfully linked!");
       window.location.reload();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to link Google account");
+      toast.error(error.message || "Failed to link Google account");
+    }
+  };
+
+  const onSetPasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 8) {
+      return toast.error("Password must be at least 8 characters long");
+    }
+    setIsSettingPassword(true);
+    try {
+      await handleSetPassword(newPassword);
+      toast.success("Password set successfully!");
+      setShowPasswordForm(false);
+      setNewPassword("");
+    } catch (error) {
+      toast.error(error.message || "Failed to set password");
+    } finally {
+      setIsSettingPassword(false);
     }
   };
 
@@ -141,7 +162,7 @@ const Profile = () => {
           
           <div className="space-y-4">
             {/* Email Provider */}
-            <div className="flex items-center justify-between p-4 rounded-xl border border-white/[0.05] bg-[#0a0a0a]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-white/[0.05] bg-[#0a0a0a] gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white/[0.05] flex items-center justify-center text-gray-300">
                   <FaEnvelope />
@@ -153,9 +174,50 @@ const Profile = () => {
                   </p>
                 </div>
               </div>
-              <div className="text-xs font-semibold px-3 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
-                Active
-              </div>
+              
+              {user.hasPassword ? (
+                <div className="text-xs font-semibold px-3 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 self-start sm:self-auto">
+                  Active
+                </div>
+              ) : (
+                <div className="self-start sm:self-auto w-full sm:w-auto">
+                  {!showPasswordForm ? (
+                    <button 
+                      onClick={() => setShowPasswordForm(true)}
+                      className="px-4 py-1.5 text-xs font-semibold rounded-full bg-[#ffa116]/10 text-[#ffa116] border border-[#ffa116]/20 hover:bg-[#ffa116]/20 transition-all w-full sm:w-auto"
+                    >
+                      Set Password
+                    </button>
+                  ) : (
+                    <form onSubmit={onSetPasswordSubmit} className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
+                      <input 
+                        type="password" 
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="New password (min 8)" 
+                        className="bg-black/50 border border-white/[0.1] rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#ffa116]/50"
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button 
+                          type="submit" 
+                          disabled={isSettingPassword}
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#ffa116] text-black hover:bg-[#ffb84d] transition-all disabled:opacity-50 flex-1 sm:flex-none"
+                        >
+                          {isSettingPassword ? "Saving..." : "Save"}
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => setShowPasswordForm(false)}
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/[0.05] text-gray-400 hover:bg-white/[0.1] transition-all flex-1 sm:flex-none"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Google Provider */}
@@ -196,6 +258,4 @@ const Profile = () => {
 };
 
 export default Profile;
-
-
 
