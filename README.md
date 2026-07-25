@@ -234,7 +234,7 @@ sequenceDiagram
 
 ### 👤 Unified Profile Dashboard
 
-- **Dual-Identity Management:** Seamlessly link or manage Google OAuth and Email/Password authentications in one place.
+- **Dual-Identity Management:** Seamlessly link Google OAuth and Email/Password authentications, including the ability for OAuth-only users to establish a permanent password directly from their profile page.
 - **Dynamic Avatars:** Integrates the open-source DiceBear API to automatically generate unique, tech-themed robot avatars for users without Google profile pictures.
 - **Live Stats Engine:** Real-time aggregation of your total solved DSA problems and generated AI projects.
 
@@ -347,6 +347,7 @@ erDiagram
 | `POST` | `/login`        | —      | Login user _(rate-limited: 10/15min)_                          |
 | `POST` | `/google`       | —      | Google OAuth login/registration                                |
 | `POST` | `/link-google`  | ✅ JWT | Link Google account to existing user _(rate-limited: 5/15min)_ |
+| `PUT`  | `/set-password` | ✅ JWT | Sets a permanent password for OAuth-only users                 |
 | `POST` | `/refresh`      | Cookie | Rotates access and refresh tokens                              |
 | `POST` | `/logout`       | ✅ JWT | Clears session cookies                                         |
 | `GET`  | `/current-user` | ✅ JWT | Retrieves current user session data                            |
@@ -488,4 +489,3 @@ Distributed under the MIT License. See `LICENSE` for details.
 ---
 
 <p align="center">Made with ❤️ by Sahil Sameer Siddique</p>
-
