@@ -7,7 +7,7 @@ import { FaGoogle, FaEnvelope } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { GoogleLogin } from "@react-oauth/google";
-import { InlineSpinner } from "../../components/ui/Skeletons";
+import { InlineSpinner, SkeletonStat } from "../../components/ui/Skeletons";
 
 const Profile = () => {
   const { user, handleLogout, handleLinkGoogle, handleSetPassword } = useAuth();
@@ -80,7 +80,7 @@ const Profile = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-8">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }} className="space-y-6">
         
         {/* Header / Identity Card */}
         <div className="bg-[#111] border border-white/[0.08] rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 relative overflow-hidden">
@@ -138,7 +138,7 @@ const Profile = () => {
             <div>
               <p className="text-gray-400 text-sm font-medium mb-1">DSA Problems Solved</p>
               <h3 className="text-2xl font-bold text-white">
-                {loadingStats ? <InlineSpinner size={20} color="#ffa116" /> : stats.solvedDSACount}
+                {loadingStats ? <SkeletonStat width="w-10" height="h-7" /> : stats.solvedDSACount}
               </h3>
             </div>
           </div>
@@ -150,7 +150,7 @@ const Profile = () => {
             <div>
               <p className="text-gray-400 text-sm font-medium mb-1">AI Projects Generated</p>
               <h3 className="text-2xl font-bold text-white">
-                {loadingStats ? <InlineSpinner size={20} color="#60a5fa" /> : stats.generatedProjectsCount}
+                {loadingStats ? <SkeletonStat width="w-10" height="h-7" /> : stats.generatedProjectsCount}
               </h3>
             </div>
           </div>

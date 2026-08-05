@@ -4,6 +4,7 @@ import { getSheetBySlug, getSheetProgress, toggleProblem } from '../../api/servi
 import { FaCheckCircle, FaRegCircle, FaChevronDown, FaChevronUp, FaExternalLinkAlt } from 'react-icons/fa';
 import { FiArrowLeft, FiTarget, FiAward } from 'react-icons/fi';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
+import { SkeletonSheetDetail } from '../../components/ui/Skeletons';
 
 // ── Unique sheet metadata ──────────────────────────────────────────────────
 const SHEET_META = {
@@ -201,7 +202,7 @@ const SheetsDetail = () => {
     }
   };
 
-  if (loading) return <Loader />;
+  if (loading) return <SkeletonSheetDetail />;
 
   if (fetchError) return (
     <PageErrorState

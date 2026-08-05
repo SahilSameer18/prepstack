@@ -1,14 +1,14 @@
 import { createContext, useEffect, useState } from "react";
 import { getCurrentUser } from "../api/services/authService";
 import { setLogoutCallback } from "../api/axios";
-
+import { LogoutOverlay } from "../components/ui/LogoutOverlay";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Let the axios interceptor call this when refresh token is also expired/invalid.
   // This avoids a circular import (axios can't use React hooks directly).
@@ -31,14 +31,23 @@ export const AuthProvider = ({ children }) => {
       } finally {
         setLoading(false);
       }
-    }
+    };
     getAndSetUser();
-  }, [])
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, setLoading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        loading,
+        setLoading,
+        isLoggingOut,
+        setIsLoggingOut,
+      }}
+    >
       {children}
+      <LogoutOverlay isOpen={isLoggingOut} />
     </AuthContext.Provider>
-  )
-
-}
+  );
+};

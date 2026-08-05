@@ -2,7 +2,7 @@ import React from "react";
 
 const PageLoader = ({ message = "Loading..." }) => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0a] relative overflow-hidden">
+    <div className="min-h-[60vh] flex flex-col items-center justify-center bg-[#0a0a0a] relative overflow-hidden py-16">
 
       {/* Background glows */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#ffa116]/5 rounded-full blur-[120px] animate-pulse" />

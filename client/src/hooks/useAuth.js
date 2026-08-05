@@ -4,10 +4,9 @@ import { login, logout, register, getCurrentUser, loginWithGoogle, linkGoogle, s
 import { extractError } from "../utils/extractError";
 
 export const useAuth = () => {
-
   const context = useContext(AuthContext);
 
-  const { user, setUser, loading, setLoading } = context;
+  const { user, setUser, loading, setLoading, isLoggingOut, setIsLoggingOut } = context;
 
   const handleLogin = async (email, password) => {
     try {
@@ -23,16 +22,20 @@ export const useAuth = () => {
 
   const handleLogout = async () => {
     try {
-      setLoading(true);
-      await logout();
+      if (setIsLoggingOut) setIsLoggingOut(true);
+      
+      // Perform server logout and allow the full-screen overlay to display smoothly for 800ms
+      await Promise.allSettled([
+        logout(),
+        new Promise((resolve) => setTimeout(resolve, 800)),
+      ]);
+
       setUser(null);
     } catch (error) {
-      // Logout failed server-side — clear the user locally anyway since the
-      // access token is short-lived, but surface the error to the caller.
       setUser(null);
       throw new Error(extractError(error, 'Logout failed. Please try again.'));
     } finally {
-      setLoading(false);
+      if (setIsLoggingOut) setIsLoggingOut(false);
     }
   };
 
@@ -96,6 +99,19 @@ export const useAuth = () => {
     }
   };
 
-  return { user, setUser, loading, setLoading, handleLogin, handleLogout, handleRegister, handleGetCurrentUser, handleGoogleLogin, handleLinkGoogle, handleSetPassword };
+  return {
+    user,
+    setUser,
+    loading,
+    setLoading,
+    isLoggingOut,
+    setIsLoggingOut,
+    handleLogin,
+    handleLogout,
+    handleRegister,
+    handleGetCurrentUser,
+    handleGoogleLogin,
+    handleLinkGoogle,
+    handleSetPassword,
+  };
 };
-

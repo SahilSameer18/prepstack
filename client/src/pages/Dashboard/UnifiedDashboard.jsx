@@ -122,21 +122,16 @@ const UnifiedDashboard = () => {
       {/* ── Page Header ────────────────────────────────────────────────── */}
       <motion.div
         className="mb-8"
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.35 }}
       >
-        <motion.div
-          className="flex items-center gap-2 mb-2"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-        >
+        <div className="flex items-center gap-2 mb-2">
           <FiGrid className="text-[#ffa116] text-lg" />
           <span className="text-xs font-bold uppercase tracking-widest text-[#ffa116]">
             {user?.username || "Coder"}'s Dashboard
           </span>
-        </motion.div>
+        </div>
         <h1 className="text-4xl md:text-5xl font-black text-white mb-2">
           Welcome back,{" "}
           <span className="text-[#ffa116]">{user?.username || "Coder"}</span>
@@ -148,9 +143,20 @@ const UnifiedDashboard = () => {
       </motion.div>
 
       {/* ── Key Stats Strip ────────────────────────────────────────────── */}
-      {!dsaLoading && (
-        <section className="mb-10 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {[
+      <section className="mb-10 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {dsaLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="border border-white/[0.06] rounded-2xl bg-[#111] px-4 py-5 flex flex-col items-center justify-center gap-3 text-center"
+            >
+              <div className="w-6 h-6 rounded-md skeleton-shine" />
+              <div className="w-16 h-8 rounded-lg skeleton-shine" />
+              <div className="w-24 h-3 rounded skeleton-shine" />
+            </div>
+          ))
+        ) : (
+          [
             {
               label: "Problems Solved",
               value: stats.totalSolved,
@@ -182,13 +188,9 @@ const UnifiedDashboard = () => {
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.5,
-                ease: [0.22, 1, 0.36, 1],
-                delay: i * 0.07,
-              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: i * 0.04 }}
               className={`border rounded-2xl ${stat.bg} px-4 py-5 flex flex-col items-center justify-center gap-2 text-center backdrop-blur-sm hover:border-opacity-60 transition-all`}
             >
               <span className="text-xl">{stat.icon}</span>
@@ -199,9 +201,9 @@ const UnifiedDashboard = () => {
                 {stat.label}
               </span>
             </motion.div>
-          ))}
-        </section>
-      )}
+          ))
+        )}
+      </section>
 
       {/* ── Sub-sections ──────────────────────────────────────────────── */}
       {dsaError ? (

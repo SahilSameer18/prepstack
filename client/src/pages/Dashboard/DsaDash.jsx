@@ -103,13 +103,7 @@ const MiniRing = memo(({ pct, color }) => {
 //   stats     – { totalSolved, sheetsCompleted }
 const DSADash = ({ dsaData, loading, stats }) => {
   return (
-    <motion.section
-      className="mb-14"
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <section className="mb-14">
       {/* Section heading */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
@@ -142,8 +136,8 @@ const DSADash = ({ dsaData, loading, stats }) => {
               return (
                 <motion.div
                   key={sheet.slug}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   className="relative"
                 >
                   <Link
@@ -211,8 +205,8 @@ const DSADash = ({ dsaData, loading, stats }) => {
       {/* Achievement callout */}
       {!loading && stats.totalSolved > 0 && (
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           className="mt-6 flex items-center gap-3 bg-gradient-to-r from-emerald-500/[0.06] to-blue-500/[0.06] border border-emerald-500/20 rounded-2xl px-5 py-4"
         >
           <FiAward className="text-emerald-400 text-xl flex-shrink-0" />
@@ -233,7 +227,7 @@ const DSADash = ({ dsaData, loading, stats }) => {
           </div>
         </motion.div>
       )}
-    </motion.section>
+    </section>
   );
 };
 

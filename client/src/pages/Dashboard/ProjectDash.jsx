@@ -152,12 +152,7 @@ const ProjectDash = () => {
       </AnimatePresence>
 
       {/* ── Section ─────────────────────────────────────────────────────── */}
-      <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      >
+      <section>
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
@@ -219,17 +214,13 @@ const ProjectDash = () => {
         {/* Empty state */}
         {!projectsLoading && projects.length === 0 ? (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="flex flex-col items-center justify-center py-20 bg-[#0f0f0f] border border-dashed border-white/[0.07] rounded-3xl text-center"
           >
-            <motion.div
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-              className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-5"
-            >
+            <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-5">
               <FiCpu className="text-3xl text-gray-600" />
-            </motion.div>
+            </div>
             <h3 className="text-lg font-bold text-gray-300 mb-2">
               No projects saved yet
             </h3>
@@ -256,8 +247,8 @@ const ProjectDash = () => {
                 filteredProjects.map((project) => (
                   <motion.div
                     key={project._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     layout
                     onClick={() => navigate(`/ai-projects/${project._id}`)}
@@ -357,7 +348,7 @@ const ProjectDash = () => {
             </AnimatePresence>
           </div>
         )}
-      </motion.section>
+      </section>
     </>
   );
 };

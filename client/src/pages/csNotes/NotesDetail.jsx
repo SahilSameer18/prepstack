@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { FiChevronLeft, FiMenu, FiX, FiInfo, FiAlertTriangle, FiCheckCircle, FiMessageSquare, FiChevronRight } from 'react-icons/fi';
 import { useNotes } from '../../hooks/useNotes';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SkeletonNotesDetail } from '../../components/ui/Skeletons';
 
 const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderClass }) => {
   if (!items || items.length === 0) return null;
@@ -51,11 +52,7 @@ export default function NotesDetail() {
   }, [isSidebarOpen]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-      </div>
-    );
+    return <SkeletonNotesDetail />;
   }
 
   if (error || !noteConfig) {
@@ -197,9 +194,9 @@ export default function NotesDetail() {
           {activeTopic ? (
             <motion.div
               key={activeTopic.name}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
             >
               {/* Breadcrumb */}
               <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-5">
