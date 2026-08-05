@@ -42,6 +42,7 @@ const AIProjectIdeas = () => {
     setForm({ techStack: "", complexity: "", domain: "", notes: "" });
     setProject(null);
     setError(null);
+    navigate('/ai-projects', { replace: true });
   };
 
   const handleCopy = () => {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import axiosInstance from "../../api/axios";
-import { FiGrid, FiCode, FiLogOut, FiCalendar } from "react-icons/fi";
+import { FiGrid, FiCode, FiLogOut, FiCalendar, FiEye, FiEyeOff } from "react-icons/fi";
 import { FaGoogle, FaEnvelope } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -15,6 +15,7 @@ const Profile = () => {
   const [loadingStats, setLoadingStats] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [isSettingPassword, setIsSettingPassword] = useState(false);
   const navigate = useNavigate();
@@ -65,6 +66,7 @@ const Profile = () => {
       await handleSetPassword(newPassword);
       toast.success("Password set successfully!");
       setShowPasswordForm(false);
+      setShowPassword(false);
       setNewPassword("");
     } catch (error) {
       toast.error(error.message || "Failed to set password");
@@ -189,15 +191,25 @@ const Profile = () => {
                       Set Password
                     </button>
                   ) : (
-                    <form onSubmit={onSetPasswordSubmit} className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
-                      <input 
-                        type="password" 
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        placeholder="New password (min 8)" 
-                        className="bg-black/50 border border-white/[0.1] rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-[#ffa116]/50"
-                        autoFocus
-                      />
+                    <form onSubmit={onSetPasswordSubmit} className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0 items-stretch sm:items-center">
+                      <div className="relative flex items-center">
+                        <input 
+                          type={showPassword ? "text" : "password"} 
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="New password (min 8)" 
+                          className="bg-black/50 border border-white/[0.1] rounded-lg pl-3 pr-8 py-1.5 text-sm text-white focus:outline-none focus:border-[#ffa116]/50 w-full"
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-2.5 text-gray-400 hover:text-white transition-colors"
+                          title={showPassword ? "Hide password" : "Show password"}
+                        >
+                          {showPassword ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
+                        </button>
+                      </div>
                       <div className="flex gap-2">
                         <button 
                           type="submit" 
@@ -208,7 +220,7 @@ const Profile = () => {
                         </button>
                         <button 
                           type="button" 
-                          onClick={() => setShowPasswordForm(false)}
+                          onClick={() => { setShowPasswordForm(false); setShowPassword(false); }}
                           className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white/[0.05] text-gray-400 hover:bg-white/[0.1] transition-all flex-1 sm:flex-none"
                         >
                           Cancel
@@ -258,4 +270,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
