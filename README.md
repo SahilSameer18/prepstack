@@ -59,6 +59,7 @@ PrepStack centralizes the workflow:
 - **Robust OAuth 2.0 Integration:** Built-in Google Sign-In with advanced account linking, anti-hijacking conflict resolution, and automatic unique username generation for OAuth users.
 - **Client Rich Error UI:** Front-end error components dynamically parse string alerts or raw Axios error responses, auto-rendering structured validation failure lists for user inputs.
 - **Lighthouse Optimizations:** Enhances load times using React `lazy()` and `Suspense` routes to code-split heavier dashboard and notes modules.
+- **Zero-CLS Skeletons & Fluid UX:** Custom pixel-matched skeleton loaders prevent Cumulative Layout Shift (CLS) during asynchronous data fetching, coupled with a full-screen animated logout transition overlay.
 
 ---
 
@@ -232,9 +233,15 @@ sequenceDiagram
 - **STAR Prompts:** Complete, interactive STAR templates for mapping experiences.
 - **Behavioral Bank:** Category-sorted bank of questions with expert strategies and answer blueprints.
 
-### 👤 Unified Profile Dashboard
+### 🗺️ Curated Developer Roadmaps
+
+- **6 End-to-End Learning Tracks:** Structured roadmaps for **Frontend**, **Backend**, **Full Stack MERN**, **Android Development**, **Data Analytics**, and **Machine Learning**.
+- **Actionable Steps & Milestones:** Breaks down complex subjects into step-by-step milestones with estimated completion times, difficulty tiers, and curated free resources.
+
+### 👤 Unified Profile & Security Hub
 
 - **Dual-Identity Management:** Seamlessly link Google OAuth and Email/Password authentications, including the ability for OAuth-only users to establish a permanent password directly from their profile page.
+- **Full-Screen Logout Overlay:** Seamless full-screen transition overlay that smoothly clears session state with visual feedback.
 - **Dynamic Avatars:** Integrates the open-source DiceBear API to automatically generate unique, tech-themed robot avatars for users without Google profile pictures.
 - **Live Stats Engine:** Real-time aggregation of your total solved DSA problems and generated AI projects.
 
@@ -399,9 +406,10 @@ cd prepstack
 ```bash
 cd server
 npm install
+cp .env.example .env
 ```
 
-Create a `.env` file under `/server`:
+Configure your `.env` file under `/server`:
 
 ```env
 PORT=3000
@@ -420,18 +428,24 @@ npm run dev
 
 ### 3. Configure Client (`client/`)
 
-Create a `.env.development` file under `/client`:
+In a new terminal:
+
+```bash
+cd client
+npm install
+cp .env.example .env.development
+```
+
+Configure your `.env.development` file under `/client`:
 
 ```env
 VITE_API_URL=http://localhost:3000
 VITE_GOOGLE_CLIENT_ID=your_google_oauth_client_id
 ```
 
-In a new terminal:
+Boot Vite dev server:
 
 ```bash
-cd client
-npm install
 npm run dev
 ```
 
@@ -472,12 +486,16 @@ _(Uses idempotent upsert logic — safe to run multiple times)._
 
 ## 🤝 Contributing
 
-We welcome open-source contributions!
+We welcome open-source contributions! Please follow the **[Conventional Commits](https://www.conventionalcommits.org/)** specification when submitting pull requests.
 
 1. Fork the Project.
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3. Commit changes (`git commit -m 'Add AmazingFeature'`).
-4. Push feature branch (`git push origin feature/AmazingFeature`).
+2. Create your Feature Branch (`git checkout -b feat/amazing-feature`).
+3. Commit changes using Conventional Commits format (`git commit -m 'feat: add amazing feature'`).
+   - `feat: ...` for new features
+   - `fix: ...` for bug fixes
+   - `refactor: ...` for code restructuring
+   - `docs: ...` for documentation updates
+4. Push feature branch (`git push origin feat/amazing-feature`).
 5. Open a Pull Request.
 
 ---
@@ -489,3 +507,5 @@ Distributed under the MIT License. See `LICENSE` for details.
 ---
 
 <p align="center">Made with ❤️ by Sahil Sameer Siddique</p>
+
+
