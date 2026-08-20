@@ -9,7 +9,7 @@ const { generateProjectSchema } = require('../validators/project.validators')
 const projectRouter = express.Router();
 
 // generate project idea
-projectRouter.post('/generate', aiProjectLimiter, authMiddleware, validate(generateProjectSchema), generateProject);
+projectRouter.post('/generate', authMiddleware, aiProjectLimiter, validate(generateProjectSchema), generateProject);
 
 // get all project ideas of the logged in user
 projectRouter.get('/', authMiddleware, getAllProjects);

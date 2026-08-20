@@ -47,7 +47,6 @@ const ProjectDash = () => {
     try {
       await deleteProjectById(deletingId);
       setDeletingId(null);
-      await getProjects();
     } catch (err) {
       console.error("Delete failed", err);
       setDeleteError(
@@ -60,10 +59,10 @@ const ProjectDash = () => {
 
   // ── Filtered / sorted list ───────────────────────────────────────────────
   const filteredProjects = useMemo(() => {
-    let filtered = projects.filter((p) => {
+    let filtered = (projects || []).filter((p) => {
       const matchesSearch =
-        p.title.toLowerCase().includes(projectSearch.toLowerCase()) ||
-        p.tagline.toLowerCase().includes(projectSearch.toLowerCase());
+        p.title?.toLowerCase().includes(projectSearch.toLowerCase()) ||
+        p.tagline?.toLowerCase().includes(projectSearch.toLowerCase());
       const matchesFilter =
         projectFilter === "all" || p.difficulty === projectFilter;
       return matchesSearch && matchesFilter;

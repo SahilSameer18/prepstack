@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useMemo } from "react";
 import { getCurrentUser } from "../api/services/authService";
 import { setLogoutCallback } from "../api/axios";
 import { LogoutOverlay } from "../components/ui/LogoutOverlay";
@@ -35,19 +35,23 @@ export const AuthProvider = ({ children }) => {
     getAndSetUser();
   }, []);
 
+  const value = useMemo(
+    () => ({
+      user,
+      setUser,
+      loading,
+      setLoading,
+      isLoggingOut,
+      setIsLoggingOut,
+    }),
+    [user, loading, isLoggingOut]
+  );
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        setUser,
-        loading,
-        setLoading,
-        isLoggingOut,
-        setIsLoggingOut,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
       <LogoutOverlay isOpen={isLoggingOut} />
     </AuthContext.Provider>
   );
 };
+

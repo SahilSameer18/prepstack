@@ -47,6 +47,7 @@ function sendDevError(err, res) {
   res.status(err.statusCode).json({
     success: false,
     message: err.message,
+    errors: err.errors || [err.message],
     stack: err.stack,
     error: err,
   });
@@ -58,6 +59,7 @@ function sendProdError(err, res) {
     res.status(err.statusCode).json({
       success: false,
       message: err.message,
+      errors: err.errors || [err.message],
     });
   } else {
     // Programmer or unknown error — don't leak details
@@ -65,6 +67,7 @@ function sendProdError(err, res) {
     res.status(500).json({
       success: false,
       message: 'Something went wrong. Please try again later.',
+      errors: ['Something went wrong. Please try again later.'],
     });
   }
 }
@@ -94,4 +97,5 @@ const errorMiddleware = (err, req, res, next) => {
 };
 
 module.exports = errorMiddleware;
+
 

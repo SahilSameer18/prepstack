@@ -1,12 +1,14 @@
 const rateLimit = require("express-rate-limit");
 
-const aiProjectLimiter =  rateLimit({
+const aiProjectLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 4, // 4 requests per hour per IP
+  max: 4, // 4 requests per hour per user
   skipFailedRequests: true, // if response is 4xx/5xx, don't count it
+  keyGenerator: (req) => req.user?._id?.toString() || req.user?.id?.toString() || req.ip,
   message: {
     success: false,
     message: "Too many Project idea generation requests. Please try again after an hour.",
+    errors: ["Rate limit exceeded. Maximum 4 project ideas generated per hour."],
   },
   standardHeaders: true, // sends RateLimit headers in response
   legacyHeaders: false,
@@ -19,6 +21,7 @@ const authLimiter = rateLimit({
   message: {
     success: false,
     message: "Too many attempts. Please try again after 15 minutes.",
+    errors: ["Rate limit exceeded. Please try again after 15 minutes."],
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -28,9 +31,13 @@ const linkGoogleLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
   max: 5,                      // 5 attempts per 15 min per IP
   skipFailedRequests: true,
-  message: { success: false, message: "Too many linking attempts. Please try again later." },
+  message: { 
+    success: false, 
+    message: "Too many linking attempts. Please try again later.",
+    errors: ["Rate limit exceeded. Please try again after 15 minutes."],
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, aiProjectLimiter, linkGoogleLimiter }
+module.exports = { authLimiter, aiProjectLimiter, linkGoogleLimiter };

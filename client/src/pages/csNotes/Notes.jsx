@@ -65,9 +65,9 @@ const subjects = [
     topics: 12,
     description: "Learn to architect scalable systems — load balancing, caching, microservices and API design.",
     topicList: ["Scalability", "Load Balancing", "Caching", "Database Design", "Microservices", "API Design"],
-    lastUpdated: "New",
+    lastUpdated: "In Progress",
     difficulty: "Advanced",
-    isNew: true,
+    comingSoon: true,
     readTime: "~6 hrs",
   },
 ];
@@ -107,12 +107,16 @@ const NoteCard = ({ s }) => {
             {s.icon}
           </div>
           <div className="flex items-center gap-1.5">
-            {s.isNew && (
+            {s.comingSoon ? (
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-pink-500/15 border border-pink-500/20 text-pink-400">Coming Soon</span>
+            ) : s.isNew ? (
               <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-green-500/15 border border-green-500/20 text-green-400">New</span>
+            ) : null}
+            {!s.comingSoon && (
+              <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.difficulty === 'Advanced' ? 'bg-red-500/10 border border-red-500/20 text-red-400' : 'bg-[#ffa116]/10 border border-[#ffa116]/20 text-[#ffa116]'}`}>
+                {s.difficulty}
+              </span>
             )}
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${s.difficulty === 'Advanced' ? 'bg-red-500/10 border border-red-500/20 text-red-400' : 'bg-[#ffa116]/10 border border-[#ffa116]/20 text-[#ffa116]'}`}>
-              {s.difficulty}
-            </span>
           </div>
         </div>
 
@@ -147,15 +151,24 @@ const NoteCard = ({ s }) => {
         </div>
 
         {/* CTA */}
-        <Link to={`/notes/${s.slug}`} className="block">
+        {s.comingSoon ? (
           <button
-            className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${s.bg} border ${s.border}`}
-            style={{ color: s.hoverColor, filter: hovered ? 'brightness(1.2)' : 'brightness(1)' }}
+            disabled
+            className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-white/[0.03] border border-white/[0.06] text-gray-500 cursor-not-allowed"
           >
-            Start Reading
-            <FiArrowRight className="text-xs" style={{ transform: hovered ? 'translateX(3px)' : 'translateX(0)', transition: 'transform 0.2s' }} />
+            Coming Soon
           </button>
-        </Link>
+        ) : (
+          <Link to={`/notes/${s.slug}`} className="block">
+            <button
+              className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${s.bg} border ${s.border}`}
+              style={{ color: s.hoverColor, filter: hovered ? 'brightness(1.2)' : 'brightness(1)' }}
+            >
+              Start Reading
+              <FiArrowRight className="text-xs" style={{ transform: hovered ? 'translateX(3px)' : 'translateX(0)', transition: 'transform 0.2s' }} />
+            </button>
+          </Link>
+        )}
       </div>
     </div>
   );

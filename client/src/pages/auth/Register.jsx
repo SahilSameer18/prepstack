@@ -236,11 +236,11 @@ const Register = () => {
                   className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm"
                   value={formData.username} onChange={handleChange}
                   onFocus={() => setFocusedField("username")} onBlur={() => setFocusedField(null)}
-                  required minLength={4} maxLength={12}
+                  required minLength={4} maxLength={30}
                 />
                 {formData.username.length >= 4 && <FiCheck className="text-green-400 flex-shrink-0" />}
               </div>
-              <p className="text-xs text-gray-600 pl-1">4–12 characters</p>
+              <p className="text-xs text-gray-600 pl-1">4–30 characters</p>
             </motion.div>
 
             {/* Email */}

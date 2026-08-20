@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiCpu, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiLoader, FiList } from "react-icons/fi";
 import { FaRobot, FaBookmark, FaLightbulb } from "react-icons/fa";
 import { useProject } from '../../hooks/useProject'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 
 const techStacks = ["MERN Stack", "Python / Django", "React Native", "Next.js", "Flutter", "Spring Boot", "FastAPI", "Vue.js", "MEAN Stack"];
@@ -11,18 +11,22 @@ const domains = ["FinTech", "HealthTech", "EdTech", "E-Commerce", "SaaS", "Web3"
 
 const AIProjectIdeas = () => {
   const navigate = useNavigate();
+  const { projectId } = useParams();
   const [form, setForm] = useState({ techStack: "", complexity: "", domain: "", notes: "" });
-  const { generateProject, loading, project, setProject } = useProject();
+  const { generateProject, getProjectById, loading, project, setProject } = useProject();
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (projectId) {
+      getProjectById(projectId);
+    }
     // Clear generated project data when user leaves/unmounts the component
     return () => {
       setProject(null);
     };
-  }, [setProject]);
+  }, [projectId, getProjectById, setProject]);
 
   const handleChange = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 

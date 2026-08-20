@@ -9,9 +9,10 @@
  * isOperational = false → programmer error / unexpected (should not happen)
  */
 class AppError extends Error {
-  constructor(statusCode, message) {
+  constructor(statusCode, message, errors = []) {
     super(message);
     this.statusCode = statusCode;
+    this.errors = Array.isArray(errors) && errors.length > 0 ? errors : [message];
     this.isOperational = true;
     // Capture clean stack trace (V8 only)
     Error.captureStackTrace(this, this.constructor);

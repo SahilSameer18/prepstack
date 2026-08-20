@@ -1,48 +1,48 @@
 import { generateProjectIdea, getAllProjects, getProjectById as fetchProjectById, deleteProject } from "../api/services/projectService";
-import { useParams } from 'react-router-dom'
-import { ProjectContext } from '../context/ProjectContext'
-import { useContext, useEffect } from "react";
+import { ProjectContext } from '../context/ProjectContext';
+import { useContext, useCallback } from "react";
 import { extractError } from "../utils/extractError";
 
-
 export const useProject = () => {
-
   const context = useContext(ProjectContext);
-  const { projectId } = useParams()
 
-  if(!context) {
-    throw new Error('useProject must be used within ProjectProvider')
+  if (!context) {
+    throw new Error('useProject must be used within ProjectProvider');
   }
 
   const { project, setProject, projects, setProjects, loading, setLoading } = context;
 
-  const generateProject = async (data) => {
+  const generateProject = useCallback(async (data) => {
     setLoading(true);
     try {
       const response = await generateProjectIdea(data);
-      setProject(response?.project || response);
+      const newProj = response?.project || response;
+      setProject(newProj);
+      if (newProj && newProj._id) {
+        setProjects((prev) => [newProj, ...(prev || [])]);
+      }
       return response;
     } catch (error) {
       throw new Error(extractError(error, 'Failed to generate project idea. Please try again.'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [setProject, setProjects, setLoading]);
 
-  const getProjects = async () => {
+  const getProjects = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getAllProjects();
-      setProjects(response?.projects || response);
+      setProjects(response?.projects || response || []);
       return response;
     } catch (error) {
       throw new Error(extractError(error, 'Failed to fetch projects. Please try again.'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [setProjects, setLoading]);
 
-  const getProjectById = async (projectId) => {
+  const getProjectById = useCallback(async (projectId) => {
     setLoading(true);
     try {
       const response = await fetchProjectById(projectId);
@@ -53,26 +53,22 @@ export const useProject = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setProject, setLoading]);
 
-  const deleteProjectById = async (projectId) => {
+  const deleteProjectById = useCallback(async (projectId) => {
     setLoading(true);
     try {
       const response = await deleteProject(projectId);
-      setProject(null);
+      // Optimistically remove deleted project from local state
+      setProjects((prev) => (prev || []).filter((p) => p._id !== projectId));
+      setProject((curr) => (curr?._id === projectId ? null : curr));
       return response;
     } catch (error) {
       throw new Error(extractError(error, 'Failed to delete project. Please try again.'));
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(()=>{
-    if(projectId) {
-      getProjectById(projectId);
-    }
-  }, [projectId])
+  }, [setProjects, setProject, setLoading]);
 
   return {
     project,
@@ -84,6 +80,8 @@ export const useProject = () => {
     generateProject,
     getProjects,
     getProjectById,
-    deleteProjectById
-  }
-}
+    deleteProjectById,
+  };
+};
+
+

@@ -2,7 +2,6 @@ import { RouterProvider } from "react-router-dom"
 import { router } from './app.routes.jsx'
 import { AuthProvider } from "./context/AuthContext";
 import { ProjectProvider } from "./context/ProjectContext";
-import { SheetProvider } from "./context/SheetContext";
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -11,9 +10,7 @@ function App() {
     <>
       <AuthProvider>
         <ProjectProvider>
-          <SheetProvider>
-            <RouterProvider router={router} />
-          </SheetProvider>
+          <RouterProvider router={router} />
         </ProjectProvider>
       </AuthProvider>
       <Toaster 

@@ -1,4 +1,5 @@
 const notesModel = require('../models/notes.model');
+const AppError = require('../utils/AppError');
 
 // controller to get all the notes
 const getNotes = async (req, res, next) => {
@@ -11,7 +12,7 @@ const getNotes = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
 
 // controller to get notes by subject
 const getNotesBySubject = async (req, res, next) => {
@@ -22,9 +23,7 @@ const getNotesBySubject = async (req, res, next) => {
     const notes = await notesModel.findOne({ subjectSlug: subject });
     
     if (!notes) {
-      const error = new Error("Notes not found for this subject");
-      error.statusCode = 404;
-      throw error;
+      return next(new AppError(404, "Notes not found for this subject"));
     }
 
     res.status(200).json({
@@ -34,8 +33,6 @@ const getNotesBySubject = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-}
+};
 
 module.exports = { getNotes, getNotesBySubject };
-
-
