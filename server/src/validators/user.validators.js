@@ -8,12 +8,6 @@ const updateProfileSchema = z.object({
     .max(30, 'Username cannot exceed 30 characters')
     .regex(/^[a-zA-Z][a-zA-Z0-9_]*$/, 'Username must start with a letter and can only contain letters, numbers, and underscores'),
 
-  email: z
-    .string({ required_error: 'Email is required' })
-    .trim()
-    .toLowerCase()
-    .email('Please provide a valid email address'),
-
   avatar: z
     .string()
     .trim()

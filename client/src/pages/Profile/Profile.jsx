@@ -15,7 +15,8 @@ import {
   FiCheck, 
   FiRefreshCw, 
   FiShield,
-  FiSave
+  FiSave,
+  FiCopy
 } from "react-icons/fi";
 import { FaGoogle, FaEnvelope } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -31,12 +32,12 @@ const Profile = () => {
   const [stats, setStats] = useState({ generatedProjectsCount: 0, solvedDSACount: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
   const navigate = useNavigate();
 
   // ── Profile Form State ──
   const [profileForm, setProfileForm] = useState({
     username: "",
-    email: "",
     avatar: "",
   });
   const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -47,7 +48,6 @@ const Profile = () => {
     if (user) {
       setProfileForm({
         username: user.username || "",
-        email: user.email || "",
         avatar: user.avatar || getDiceBearAvatar(user.username),
       });
     }
@@ -59,7 +59,6 @@ const Profile = () => {
     const currentAvatar = user.avatar || getDiceBearAvatar(user.username);
     return (
       profileForm.username.trim() !== user.username ||
-      profileForm.email.trim().toLowerCase() !== user.email.toLowerCase() ||
       profileForm.avatar.trim() !== currentAvatar
     );
   }, [user, profileForm]);
@@ -109,6 +108,14 @@ const Profile = () => {
     handleProfileChange("avatar", getDiceBearAvatar(randomSeed));
   };
 
+  const handleCopyEmail = () => {
+    if (!user?.email) return;
+    navigator.clipboard.writeText(user.email);
+    setCopiedEmail(true);
+    toast.success("Email copied to clipboard!");
+    setTimeout(() => setCopiedEmail(false), 2500);
+  };
+
   const onSaveProfile = async (e) => {
     e.preventDefault();
     if (!isProfileDirty || isSavingProfile) return;
@@ -116,7 +123,7 @@ const Profile = () => {
     // Validate username format
     const usernameClean = profileForm.username.trim();
     if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(usernameClean)) {
-      setProfileError("Username must start with a letter and only contain letters, numbers, and underscores.");
+      setProfileError("Username must start with a letter and can only contain letters, numbers, and underscores.");
       return;
     }
     if (usernameClean.length < 4 || usernameClean.length > 30) {
@@ -129,7 +136,6 @@ const Profile = () => {
     try {
       const response = await updateUserProfile({
         username: usernameClean,
-        email: profileForm.email.trim(),
         avatar: profileForm.avatar.trim(),
       });
       if (response && response.user) {
@@ -150,13 +156,17 @@ const Profile = () => {
     setPasswordError(null);
 
     if (user.hasPassword) {
-      // Changing existing password
+      // Changing existing password: verify old password & new password
       if (!passwordForm.currentPassword) {
         setPasswordError("Please enter your current password.");
         return;
       }
       if (passwordForm.newPassword.length < 8) {
         setPasswordError("New password must be at least 8 characters long.");
+        return;
+      }
+      if (passwordForm.currentPassword === passwordForm.newPassword) {
+        setPasswordError("New password must be different from your current password.");
         return;
       }
       if (passwordForm.newPassword !== passwordForm.confirmPassword) {
@@ -178,7 +188,7 @@ const Profile = () => {
         setShowPasswordSection(false);
       } catch (err) {
         setPasswordError(
-          err?.response?.data?.message || err.message || "Failed to change password."
+          err?.response?.data?.message || err.message || "Failed to change password. Please check your current password."
         );
       } finally {
         setIsSubmittingPassword(false);
@@ -316,7 +326,7 @@ const Profile = () => {
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
                 <FiUser className="text-[#ffa116]" /> Personal Details
               </h2>
-              <p className="text-xs text-gray-400 mt-1">Manage your public username, email, and robot avatar.</p>
+              <p className="text-xs text-gray-400 mt-1">Customize your unique username and choose your robot avatar.</p>
             </div>
           </div>
 
@@ -324,7 +334,7 @@ const Profile = () => {
             <InlineErrorAlert message={profileError} onDismiss={() => setProfileError(null)} />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Username */}
+              {/* Username (Unique & Editable) */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Username</label>
                 <div className="flex items-center gap-3 bg-[#0a0a0a] border border-white/[0.08] focus-within:border-[#ffa116] focus-within:shadow-[0_0_0_3px_rgba(255,161,22,0.1)] rounded-xl px-4 h-12 transition-all">
@@ -333,7 +343,7 @@ const Profile = () => {
                     type="text"
                     value={profileForm.username}
                     onChange={(e) => handleProfileChange("username", e.target.value)}
-                    placeholder="Username"
+                    placeholder="Unique username"
                     className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm font-medium"
                     required
                     minLength={4}
@@ -341,24 +351,28 @@ const Profile = () => {
                   />
                   {profileForm.username.trim().length >= 4 && <FiCheck className="text-green-400 shrink-0" />}
                 </div>
-                <p className="text-[11px] text-gray-600 pl-1">4–30 chars (letters, numbers, underscores)</p>
+                <p className="text-[11px] text-gray-600 pl-1">Unique handle • 4–30 alphanumeric & underscore characters</p>
               </div>
 
-              {/* Email */}
+              {/* Email (Read-Only with Copy Action) */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Email Address</label>
-                <div className="flex items-center gap-3 bg-[#0a0a0a] border border-white/[0.08] focus-within:border-[#ffa116] focus-within:shadow-[0_0_0_3px_rgba(255,161,22,0.1)] rounded-xl px-4 h-12 transition-all">
-                  <FiMail className="text-gray-500 text-base shrink-0" />
-                  <input
-                    type="email"
-                    value={profileForm.email}
-                    onChange={(e) => handleProfileChange("email", e.target.value)}
-                    placeholder="you@domain.com"
-                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm font-medium"
-                    required
-                  />
+                <div className="flex items-center justify-between gap-3 bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 h-12 transition-all">
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    <FiMail className="text-gray-500 text-base shrink-0" />
+                    <span className="text-gray-300 text-sm font-medium truncate select-all">{user.email}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyEmail}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] text-gray-300 hover:text-white text-xs font-medium transition-all shrink-0 cursor-pointer"
+                    title="Copy Email"
+                  >
+                    {copiedEmail ? <FiCheck className="text-green-400 text-xs" /> : <FiCopy className="text-xs" />}
+                    <span>{copiedEmail ? "Copied" : "Copy"}</span>
+                  </button>
                 </div>
-                <p className="text-[11px] text-gray-600 pl-1">Used for login and notifications</p>
+                <p className="text-[11px] text-gray-600 pl-1">Permanently linked to your account</p>
               </div>
             </div>
 
@@ -371,7 +385,7 @@ const Profile = () => {
                 <button
                   type="button"
                   onClick={handleRandomizeAvatar}
-                  className="flex items-center gap-1.5 text-xs text-[#ffa116] hover:text-[#ffb84d] transition-colors font-medium"
+                  className="flex items-center gap-1.5 text-xs text-[#ffa116] hover:text-[#ffb84d] transition-colors font-medium cursor-pointer"
                 >
                   <FiRefreshCw className="text-xs" /> Randomize
                 </button>
@@ -386,7 +400,7 @@ const Profile = () => {
                       key={preset.id}
                       type="button"
                       onClick={() => handlePresetAvatar(preset.seed)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all ${
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all cursor-pointer ${
                         isSelected
                           ? "bg-[#ffa116]/15 border-[#ffa116] text-white shadow-[0_0_12px_rgba(255,161,22,0.2)]"
                           : "bg-[#0a0a0a] border-white/[0.08] text-gray-400 hover:border-white/[0.2] hover:text-white"
@@ -424,7 +438,7 @@ const Profile = () => {
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               <FiShield className="text-[#ffa116]" /> Security & Authentication
             </h2>
-            <p className="text-xs text-gray-400 mt-1">Manage connected login methods and password protection.</p>
+            <p className="text-xs text-gray-400 mt-1">Manage connected login methods and password verification.</p>
           </div>
 
           <div className="space-y-4">
@@ -481,7 +495,7 @@ const Profile = () => {
                     setShowPasswordSection(!showPasswordSection);
                     setPasswordError(null);
                   }}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/[0.06] border border-white/[0.08] text-white hover:bg-white/[0.12] transition-all self-start sm:self-auto"
+                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/[0.06] border border-white/[0.08] text-white hover:bg-white/[0.12] transition-all self-start sm:self-auto cursor-pointer"
                 >
                   {showPasswordSection ? "Hide Form" : user.hasPassword ? "Change Password" : "Set Password"}
                 </button>
@@ -508,14 +522,14 @@ const Profile = () => {
                             type={showCurrentPw ? "text" : "password"}
                             value={passwordForm.currentPassword}
                             onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                            placeholder="Enter current password"
+                            placeholder="Enter current password to verify"
                             className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm pr-8"
                             required
                           />
                           <button
                             type="button"
                             onClick={() => setShowCurrentPw(!showCurrentPw)}
-                            className="absolute right-3 text-gray-400 hover:text-white"
+                            className="absolute right-3 text-gray-400 hover:text-white cursor-pointer"
                           >
                             {showCurrentPw ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
                           </button>
@@ -541,7 +555,7 @@ const Profile = () => {
                           <button
                             type="button"
                             onClick={() => setShowNewPw(!showNewPw)}
-                            className="absolute right-3 text-gray-400 hover:text-white"
+                            className="absolute right-3 text-gray-400 hover:text-white cursor-pointer"
                           >
                             {showNewPw ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
                           </button>
@@ -549,7 +563,7 @@ const Profile = () => {
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-gray-300">Confirm Password</label>
+                        <label className="text-xs font-medium text-gray-300">Confirm New Password</label>
                         <div className="flex items-center bg-black/50 border border-white/[0.1] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
                           <input
                             type="password"
@@ -568,17 +582,17 @@ const Profile = () => {
                       <button
                         type="button"
                         onClick={() => setShowPasswordSection(false)}
-                        className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/[0.05] text-gray-400 hover:bg-white/[0.1] transition-all"
+                        className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/[0.05] text-gray-400 hover:bg-white/[0.1] transition-all cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={isSubmittingPassword}
-                        className="px-5 py-2 text-xs font-semibold rounded-xl bg-[#ffa116] text-black hover:bg-[#ffb84d] transition-all disabled:opacity-50 flex items-center gap-2"
+                        className="px-5 py-2 text-xs font-semibold rounded-xl bg-[#ffa116] text-black hover:bg-[#ffb84d] transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer font-medium"
                       >
                         {isSubmittingPassword ? <InlineSpinner size={14} color="#000" /> : null}
-                        {isSubmittingPassword ? "Saving..." : user.hasPassword ? "Update Password" : "Set Password"}
+                        {isSubmittingPassword ? "Saving..." : user.hasPassword ? "Verify & Update Password" : "Set Password"}
                       </button>
                     </div>
                   </motion.form>
@@ -613,5 +627,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
-

@@ -5,6 +5,7 @@ const aiProjectLimiter = rateLimit({
   max: 4, // 4 requests per hour per user
   skipFailedRequests: true, // if response is 4xx/5xx, don't count it
   keyGenerator: (req) => req.user?._id?.toString() || req.user?.id?.toString() || req.ip,
+  validate: { keyGeneratorIpFallback: false },
   message: {
     success: false,
     message: "Too many Project idea generation requests. Please try again after an hour.",

@@ -121,40 +121,29 @@ const getDashboardSummary = async (req, res, next) => {
   }
 };
 
-// ── Update user profile (username, email, avatar) ──────────────────────────────
+// ── Update user profile (username, avatar only — email is immutable) ───────────
 
 const updateProfile = async (req, res, next) => {
   try {
     const userId = req.user._id || req.user.id;
-    const { username, email, avatar } = req.body;
+    const { username, avatar } = req.body;
 
     const user = await userModel.findById(userId);
     if (!user) {
       return next(new AppError(404, 'User not found'));
     }
 
-    // Check if username is being changed and is already taken by someone else
-    if (username && username !== user.username) {
+    // Check if username is being changed and is already taken by someone else (case-insensitive)
+    if (username && username.trim() !== user.username) {
+      const cleanUsername = username.trim();
       const existingUsername = await userModel.findOne({
-        username,
+        username: { $regex: new RegExp(`^${cleanUsername}$`, 'i') },
         _id: { $ne: userId }
       });
       if (existingUsername) {
-        return next(new AppError(409, 'Username is already taken. Please choose another.'));
+        return next(new AppError(409, 'This username is already taken. Please choose a unique username.'));
       }
-      user.username = username;
-    }
-
-    // Check if email is being changed and is already taken by someone else
-    if (email && email.toLowerCase() !== user.email.toLowerCase()) {
-      const existingEmail = await userModel.findOne({
-        email: email.toLowerCase(),
-        _id: { $ne: userId }
-      });
-      if (existingEmail) {
-        return next(new AppError(409, 'An account with this email already exists.'));
-      }
-      user.email = email.toLowerCase();
+      user.username = cleanUsername;
     }
 
     if (avatar !== undefined) {
