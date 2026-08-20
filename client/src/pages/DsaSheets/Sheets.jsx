@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { FaSearch, FaStar, FaCode, FaCheckCircle, FaExternalLinkAlt } from "react-icons/fa";
 import { FiBook, FiTarget, FiZap, FiLayers } from "react-icons/fi";
@@ -132,54 +132,67 @@ const Sheets = () => {
   }, []);
 
   // Enrich dynamic backend sheets with category and UI meta
-  const enrichedSheets = (dbSheets.length > 0 ? dbSheets : [
-    { name: "Love Babbar DSA Sheet", slug: "love-babbar", totalProblems: 450, difficulty: "Beginner → Intermediate", tags: ["Comprehensive", "GFG Based"] },
-    { name: "Striver A2Z Sheet", slug: "striver-a2z", totalProblems: 455, difficulty: "Beginner → Advanced", tags: ["Structured", "Pattern-based"] },
-    { name: "Striver SDE Sheet", slug: "striver-sde", totalProblems: 191, difficulty: "Intermediate → Advanced", tags: ["FAANG Patterns", "Must Solve"] },
-    { name: "NeetCode 150", slug: "neetcode-150", totalProblems: 150, difficulty: "Advanced", tags: ["LeetCode Patterns", "Concise"] },
-    { name: "Blind 75", slug: "blind-75", totalProblems: 75, difficulty: "Intermediate → Advanced", tags: ["Essential", "Time-boxed"] },
-  ]).map((sheet) => {
-    const meta = SHEET_METADATA_MAP[sheet.slug] || {
-      icon: <FaCode className="text-[#ffa116]" />,
-      highlight: sheet.description || "Structured interview prep sheet",
-      recommended: false,
-      defaultCategoryId: "foundation",
-    };
+  const enrichedSheets = useMemo(() => {
+    const source = dbSheets.length > 0 ? dbSheets : [
+      { name: "Love Babbar DSA Sheet", slug: "love-babbar", totalProblems: 450, difficulty: "Beginner → Intermediate", tags: ["Comprehensive", "GFG Based"] },
+      { name: "Striver A2Z Sheet", slug: "striver-a2z", totalProblems: 455, difficulty: "Beginner → Advanced", tags: ["Structured", "Pattern-based"] },
+      { name: "Striver SDE Sheet", slug: "striver-sde", totalProblems: 191, difficulty: "Intermediate → Advanced", tags: ["FAANG Patterns", "Must Solve"] },
+      { name: "NeetCode 150", slug: "neetcode-150", totalProblems: 150, difficulty: "Advanced", tags: ["LeetCode Patterns", "Concise"] },
+      { name: "Blind 75", slug: "blind-75", totalProblems: 75, difficulty: "Intermediate → Advanced", tags: ["Essential", "Time-boxed"] },
+    ];
 
-    let categoryId = meta.defaultCategoryId;
-    const catFound = CATEGORY_DEFINITIONS.find((c) => c.slugs.includes(sheet.slug));
-    if (catFound) categoryId = catFound.id;
+    return source.map((sheet) => {
+      const meta = SHEET_METADATA_MAP[sheet.slug] || {
+        icon: <FaCode className="text-[#ffa116]" />,
+        highlight: sheet.description || "Structured interview prep sheet",
+        recommended: false,
+        defaultCategoryId: "foundation",
+      };
 
-    return {
-      title: sheet.name,
-      slug: sheet.slug,
-      count: sheet.totalProblems || 0,
-      difficulty: sheet.difficulty || "Intermediate",
-      tags: sheet.tags && sheet.tags.length > 0 ? sheet.tags : ["Interview Prep", "DSA"],
-      icon: meta.icon,
-      highlight: meta.highlight,
-      recommended: meta.recommended,
-      categoryId,
-    };
-  });
+      let categoryId = meta.defaultCategoryId;
+      const catFound = CATEGORY_DEFINITIONS.find((c) => c.slugs.includes(sheet.slug));
+      if (catFound) categoryId = catFound.id;
 
-  const categories = CATEGORY_DEFINITIONS.map((c) => ({
-    ...c,
-    sheets: enrichedSheets.filter((s) => s.categoryId === c.id),
-  }));
+      return {
+        title: sheet.name,
+        slug: sheet.slug,
+        count: sheet.totalProblems || 0,
+        difficulty: sheet.difficulty || "Intermediate",
+        tags: sheet.tags && sheet.tags.length > 0 ? sheet.tags : ["Interview Prep", "DSA"],
+        icon: meta.icon,
+        highlight: meta.highlight,
+        recommended: meta.recommended,
+        categoryId,
+      };
+    });
+  }, [dbSheets]);
 
-  const totalProblemCount = enrichedSheets.reduce((acc, s) => acc + s.count, 0);
+  const categories = useMemo(() => {
+    return CATEGORY_DEFINITIONS.map((c) => ({
+      ...c,
+      sheets: enrichedSheets.filter((s) => s.categoryId === c.id),
+    }));
+  }, [enrichedSheets]);
 
-  const filtered = enrichedSheets.filter((s) => {
-    const matchSearch = s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.tags.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchCat = activeCategory === "all" || s.categoryId === activeCategory;
-    return matchSearch && matchCat;
-  });
+  const totalProblemCount = useMemo(() => {
+    return enrichedSheets.reduce((acc, s) => acc + s.count, 0);
+  }, [enrichedSheets]);
 
-  const visibleCategories = activeCategory === "all"
-    ? categories
-    : categories.filter((c) => c.id === activeCategory);
+  const filtered = useMemo(() => {
+    const query = searchTerm.toLowerCase();
+    return enrichedSheets.filter((s) => {
+      const matchSearch = s.title.toLowerCase().includes(query) ||
+        s.tags.some((t) => t.toLowerCase().includes(query));
+      const matchCat = activeCategory === "all" || s.categoryId === activeCategory;
+      return matchSearch && matchCat;
+    });
+  }, [enrichedSheets, searchTerm, activeCategory]);
+
+  const visibleCategories = useMemo(() => {
+    return activeCategory === "all"
+      ? categories.filter((c) => c.sheets.length > 0)
+      : categories.filter((c) => c.id === activeCategory);
+  }, [categories, activeCategory]);
 
   return (
     <div className="px-6 pb-4 max-w-7xl mx-auto page-enter">

@@ -1,57 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, memo } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
-const FAQItem = ({ question, answer, isOpen, toggle }) => {
+const FAQS_DATA = [
+  {
+    question: "Who is this platform for?",
+    answer: "This platform is designed specifically for Computer Science students preparing for internships, placements, and software engineering interviews.",
+  },
+  {
+    question: "Does it include core CS notes?",
+    answer: "Yes! We have comprehensive notes for Operating Systems, DBMS, OOPs, Computer Networks, and basic System Design concepts specifically tailored for interview prep.",
+  },
+  {
+    question: "How do the behavioral question answers help?",
+    answer: "Our behavioral section provides strategic tips and STAR-method based example answers to help you structure your responses effectively and leave a great impression during HR interviews.",
+  },
+  {
+    question: "Can I generate project ideas using AI?",
+    answer: "Absolutely! With our AI integration, you can generate unique project ideas tailored to your chosen tech stack, helping you build a standout portfolio.",
+  },
+  {
+    question: "Are there structured roadmaps?",
+    answer: "Yes, you can explore domain-specific roadmaps (like Web Development, Data Science, Backend) and pre-built year-wise guides to navigate your college journey.",
+  },
+  {
+    question: "Are these resources free to use?",
+    answer: "Yes, our mission is to provide high-quality, curated interview preparation resources to all students for free to ensure equal opportunities for everyone.",
+  },
+];
+
+const FAQItem = memo(({ question, answer, isOpen, toggle }) => {
   return (
-    <div className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isOpen ? "border-[#ffa116] bg-[#1a1a1a]" : "border-[#2a2a2a] bg-[#1a1a1a]/40"
-      }`}>
+    <div className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isOpen ? "border-[#ffa116] bg-[#1a1a1a]" : "border-[#2a2a2a] bg-[#1a1a1a]/40"}`}>
       <button
         onClick={toggle}
-        className="w-full p-5 flex justify-between items-center text-left focus:outline-none"
+        className="w-full p-5 flex justify-between items-center text-left focus:outline-none cursor-pointer"
       >
         <span className="text-lg font-medium text-gray-200">{question}</span>
         <FaChevronDown className={`text-[#ffa116] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
-      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}>
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
         <div className="px-5 pb-5 text-gray-400 leading-relaxed border-t border-[#2a2a2a]/50 pt-4">
           {answer}
         </div>
       </div>
     </div>
   );
-};
+});
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
-  const faqs = [
-    {
-      question: "Who is this platform for?",
-      answer: "This platform is designed specifically for Computer Science students preparing for internships, placements, and software engineering interviews.",
-    },
-    {
-      question: "Does it include core CS notes?",
-      answer: "Yes! We have comprehensive notes for Operating Systems, DBMS, OOPs, Computer Networks, and basic System Design concepts specifically tailored for interview prep.",
-    },
-    {
-      question: "How do the behavioral question answers help?",
-      answer: "Our behavioral section provides strategic tips and STAR-method based example answers to help you structure your responses effectively and leave a great impression during HR interviews.",
-    },
-    {
-      question: "Can I generate project ideas using AI?",
-      answer: "Absolutely! With our AI integration, you can generate unique project ideas tailored to your chosen tech stack, helping you build a standout portfolio.",
-    },
-    {
-      question: "Are there structured roadmaps?",
-      answer: "Yes, you can explore domain-specific roadmaps (like Web Development, Data Science, Backend) and pre-built year-wise guides to navigate your college journey.",
-    },
-    {
-      question: "Are these resources free to use?",
-      answer: "Yes, our mission is to provide high-quality, curated interview preparation resources to all students for free to ensure equal opportunities for everyone.",
-    },
-  ];
+  const handleToggle = useCallback((index) => {
+    setOpenIndex((prev) => (prev === index ? null : index));
+  }, []);
 
   return (
     <section className="mt-12">
@@ -66,13 +68,13 @@ const FAQ = () => {
         </div>
 
         <div className="space-y-3">
-          {faqs.map((faq, index) => (
+          {FAQS_DATA.map((faq, index) => (
             <FAQItem
               key={index}
               question={faq.question}
               answer={faq.answer}
               isOpen={openIndex === index}
-              toggle={() => setOpenIndex(openIndex === index ? null : index)}
+              toggle={() => handleToggle(index)}
             />
           ))}
         </div>

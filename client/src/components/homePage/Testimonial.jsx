@@ -1,46 +1,47 @@
-import React from 'react'
+import React from 'react';
+
+const TESTIMONIALS_DATA = [
+  {
+    name: "Aman Gupta",
+    role: "CSE Student",
+    img: "https://randomuser.me/api/portraits/men/32.jpg",
+    text: "This platform organized all the resources I needed for interview prep. The DSA sheets and notes saved me hours of searching."
+  },
+  {
+    name: "Priya Sharma",
+    role: "Frontend Developer",
+    img: "https://randomuser.me/api/portraits/women/44.jpg",
+    text: "The AI project idea generator helped me build projects aligned with my tech stack."
+  },
+  {
+    name: "Rahul Verma",
+    role: "3rd Year CSE",
+    img: "https://randomuser.me/api/portraits/men/65.jpg",
+    text: "The structured roadmaps are amazing. Instead of random resources, everything is in one place."
+  },
+  {
+    name: "Sneha Kapoor",
+    role: "Backend Developer",
+    img: "https://randomuser.me/api/portraits/women/68.jpg",
+    text: "Perfect platform for interview preparation. The CS core notes are extremely helpful."
+  },
+  {
+    name: "Arjun Mehta",
+    role: "SDE Intern @ Flipkart",
+    img: "https://randomuser.me/api/portraits/men/22.jpg",
+    text: "The behavioral questions section is a hidden gem. The example answers helped me crack my HR round with confidence."
+  },
+  {
+    name: "Divya Nair",
+    role: "2nd Year CSE",
+    img: "https://randomuser.me/api/portraits/women/12.jpg",
+    text: "I used the roadmap section to structure my entire second year. I know exactly what to learn and when. Highly recommended!"
+  }
+];
+
+const MARQUEE_TESTIMONIALS = [...TESTIMONIALS_DATA, ...TESTIMONIALS_DATA];
 
 const Testimonial = () => {
-
-  const testimonials = [
-    {
-      name: "Aman Gupta",
-      role: "CSE Student",
-      img: "https://randomuser.me/api/portraits/men/32.jpg",
-      text: "This platform organized all the resources I needed for interview prep. The DSA sheets and notes saved me hours of searching."
-    },
-    {
-      name: "Priya Sharma",
-      role: "Frontend Developer",
-      img: "https://randomuser.me/api/portraits/women/44.jpg",
-      text: "The AI project idea generator helped me build projects aligned with my tech stack."
-    },
-    {
-      name: "Rahul Verma",
-      role: "3rd Year CSE",
-      img: "https://randomuser.me/api/portraits/men/65.jpg",
-      text: "The structured roadmaps are amazing. Instead of random resources, everything is in one place."
-    },
-    {
-      name: "Sneha Kapoor",
-      role: "Backend Developer",
-      img: "https://randomuser.me/api/portraits/women/68.jpg",
-      text: "Perfect platform for interview preparation. The CS core notes are extremely helpful."
-    },
-    {
-      name: "Arjun Mehta",
-      role: "SDE Intern @ Flipkart",
-      img: "https://randomuser.me/api/portraits/men/22.jpg",
-      text: "The behavioral questions section is a hidden gem. The example answers helped me crack my HR round with confidence."
-    },
-    {
-      name: "Divya Nair",
-      role: "2nd Year CSE",
-      img: "https://randomuser.me/api/portraits/women/12.jpg",
-      text: "I used the roadmap section to structure my entire second year. I know exactly what to learn and when. Highly recommended!"
-    }
-  ];
-
   return (
     <div>
       {/* Testimonials */}
@@ -58,7 +59,7 @@ const Testimonial = () => {
 
           <div className="flex gap-8 animate-marquee">
 
-            {[...testimonials, ...testimonials].map((t, i) => (
+            {MARQUEE_TESTIMONIALS.map((t, i) => (
               <div
                 key={i}
                 className="min-w-[340px] max-w-[340px] p-6 rounded-2xl bg-[#1a1a1a] border border-[#2a2a2a] hover:border-[#ffa116]/40 transition"
