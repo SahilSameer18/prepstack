@@ -96,8 +96,8 @@ June 2024 – August 2024  |  Hyderabad (Remote)
       "Describe what each project does, what problem it solves, and your impact.",
       "Prefer projects that are deployed or have a live demo link.",
     ],
-    example: `PrepNova — MERN Stack, Tailwind CSS, Gemini AI
-  github.com/rahulkumar/prepnova  |  prepnova.vercel.app
+    example: `PrepStack — MERN Stack, Tailwind CSS, Gemini AI
+  github.com/rahulkumar/prepstack  |  prepstack-ss.vercel.app
 
 • Built a full-stack interview prep platform for CSE students 
   with DSA sheets, core CS notes, and an AI project generator.

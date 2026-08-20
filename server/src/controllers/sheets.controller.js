@@ -1,5 +1,6 @@
 const DSASheet = require('../models/sheets.model');
 const Progress = require('../models/progress.model');
+const AppError = require('../utils/AppError');
 
 // controller to get all the sheets
 exports.getSheets = async (req, res, next) => {
@@ -19,9 +20,7 @@ exports.getSheetBySlug = async (req, res, next) => {
   try {
     const sheet = await DSASheet.findOne({ slug: req.params.slug });
     if (!sheet) {
-      const error = new Error('DSA Sheet not found');
-      error.statusCode = 404;
-      throw error;
+      return next(new AppError(404, 'DSA Sheet not found'));
     }
     res.status(200).json({
       success: true,
@@ -38,11 +37,11 @@ exports.getUserSheetProgress = async (req, res, next) => {
     const { slug } = req.params;
     const userId = req.user._id;
 
-    let progress = await Progress.findOne({ user: userId, sheetSlug: slug });
-    
-    if (!progress) {
-      progress = await Progress.create({ user: userId, sheetSlug: slug, solvedProblems: [] });
-    }
+    const progress = await Progress.findOneAndUpdate(
+      { user: userId, sheetSlug: slug },
+      { $setOnInsert: { solvedProblems: [] } },
+      { new: true, upsert: true }
+    );
 
     res.status(200).json({
       success: true,
@@ -53,27 +52,29 @@ exports.getUserSheetProgress = async (req, res, next) => {
   }
 };
 
-// toggle problem completion
+// toggle problem completion atomically
 exports.toggleProblemCompletion = async (req, res, next) => {
   try {
     const { slug } = req.params;
     const { problemLink } = req.body;
     const userId = req.user._id;
 
-    let progress = await Progress.findOne({ user: userId, sheetSlug: slug });
+    // Check if the problem is already marked as solved
+    const existing = await Progress.findOne({
+      user: userId,
+      sheetSlug: slug,
+      solvedProblems: problemLink
+    });
 
-    if (!progress) {
-      progress = new Progress({ user: userId, sheetSlug: slug, solvedProblems: [problemLink] });
-    } else {
-      const idx = progress.solvedProblems.indexOf(problemLink);
-      if (idx !== -1) {
-        progress.solvedProblems.splice(idx, 1);
-      } else {
-        progress.solvedProblems.push(problemLink);
-      }
-    }
+    const updateOperation = existing
+      ? { $pull: { solvedProblems: problemLink } }
+      : { $addToSet: { solvedProblems: problemLink } };
 
-    await progress.save();
+    const progress = await Progress.findOneAndUpdate(
+      { user: userId, sheetSlug: slug },
+      updateOperation,
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
 
     res.status(200).json({
       success: true,
@@ -83,3 +84,4 @@ exports.toggleProblemCompletion = async (req, res, next) => {
     next(error);
   }
 };
+

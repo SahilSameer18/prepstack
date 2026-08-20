@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     unique: [true, 'Username already exists'],
     trim: true,
     minLength: [4, 'Username must be at least 4 characters'],
-    maxLength: [20, 'Username cannot exceed 20 characters'] // raised from 12 → 20 to accommodate OAuth-generated usernames
+    maxLength: [30, 'Username cannot exceed 30 characters']
   },
   email: {
     type: String,

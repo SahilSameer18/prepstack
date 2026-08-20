@@ -2,12 +2,15 @@ const jwt = require('jsonwebtoken');
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.cookies.accessToken;
+    const authHeader = req.headers.authorization;
+    const token = (authHeader && authHeader.startsWith('Bearer '))
+      ? authHeader.split(' ')[1]
+      : req.cookies?.accessToken;
 
     if (!token) {
       return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
-    const decodedToken = jwt.verify(token, process.env.ACCESS_SECRET)
+    const decodedToken = jwt.verify(token, process.env.ACCESS_SECRET);
     req.user = decodedToken;
     req.user._id = decodedToken.id; // normalize: JWT uses 'id', controllers use '_id'
     next();
@@ -25,3 +28,4 @@ const authMiddleware = async (req, res, next) => {
 }
 
 module.exports = authMiddleware;
+
