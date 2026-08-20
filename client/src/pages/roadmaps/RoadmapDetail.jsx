@@ -14,15 +14,17 @@ const iconMap = {
 };
 
 const RoadmapDetail = () => {
-  const { id } = useParams();
-  const roadmapIndex = parseInt(id, 10);
+  const { slug, id } = useParams();
+  const param = slug || id;
   const [expandedIdx, setExpandedIdx] = useState(null);
 
-  if (isNaN(roadmapIndex) || roadmapIndex < 0 || roadmapIndex >= roadmaps.length) {
+  // Lookup by semantic slug, or fallback to numeric index for backward compatibility
+  const roadmap = roadmaps.find((r) => r.slug === param) ||
+    (!isNaN(parseInt(param, 10)) ? roadmaps[parseInt(param, 10)] : null);
+
+  if (!roadmap) {
     return <Navigate to="/roadmaps" replace />;
   }
-
-  const roadmap = roadmaps[roadmapIndex];
 
   const toggle = (idx) => setExpandedIdx(expandedIdx === idx ? null : idx);
 

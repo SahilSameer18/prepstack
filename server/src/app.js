@@ -7,6 +7,9 @@ const AppError = require('./utils/AppError')
 // initialize the express app
 const app = express()
 
+// Trust reverse proxy (Vercel, Render, Nginx) for accurate client IP rate limiting
+app.set('trust proxy', 1)
+
 // use the middleware
 app.use(express.json())
 app.use(cookieParser())
@@ -46,6 +49,3 @@ app.use((req, res, next) => {
 app.use(errorMiddleware)
 
 module.exports = app;
-
-
-

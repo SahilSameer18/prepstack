@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
         element: <Roadmap />
       },
       {
-        path: "/roadmaps/:id",
+        path: "/roadmaps/:slug",
         element:
           <ProtectedRoute>
             <RoadmapDetail />

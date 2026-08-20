@@ -19,6 +19,9 @@ const projectSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Compound index for fast queries sorting user's projects by creation date
+projectSchema.index({ user: 1, createdAt: -1 });
+
 const projectModel = mongoose.model("Project", projectSchema);
 
 module.exports = projectModel;

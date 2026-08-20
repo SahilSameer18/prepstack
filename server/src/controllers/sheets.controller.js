@@ -2,13 +2,49 @@ const DSASheet = require('../models/sheets.model');
 const Progress = require('../models/progress.model');
 const AppError = require('../utils/AppError');
 
-// controller to get all the sheets
+// controller to get all the sheets with dynamic problem counts
 exports.getSheets = async (req, res, next) => {
   try {
-    const sheets = await DSASheet.find({}, 'name slug description');
+    const sheets = await DSASheet.find({}, 'name slug description topics.problems.link topics.problems.difficulty topics.problems.tags topics.questions.link');
+    
+    const formattedSheets = sheets.map(sheet => {
+      const linkSet = new Set();
+      const tagSet = new Set();
+      let hasEasy = false, hasMedium = false, hasHard = false;
+
+      (sheet.topics || []).forEach(t => {
+        (t.problems || t.questions || []).forEach(p => {
+          if (p.link) linkSet.add(p.link);
+          if (p.difficulty) {
+            const d = p.difficulty.toLowerCase();
+            if (d === 'easy') hasEasy = true;
+            if (d === 'medium') hasMedium = true;
+            if (d === 'hard') hasHard = true;
+          }
+          (p.tags || []).forEach(tag => tagSet.add(tag));
+        });
+      });
+
+      let difficultyLabel = 'Intermediate';
+      if (hasEasy && hasHard) difficultyLabel = 'Beginner → Advanced';
+      else if (hasEasy && hasMedium) difficultyLabel = 'Beginner → Intermediate';
+      else if (hasMedium && hasHard) difficultyLabel = 'Intermediate → Advanced';
+      else if (hasHard) difficultyLabel = 'Advanced';
+      else if (hasEasy) difficultyLabel = 'Beginner';
+
+      return {
+        name: sheet.name,
+        slug: sheet.slug,
+        description: sheet.description || '',
+        totalProblems: linkSet.size,
+        difficulty: difficultyLabel,
+        tags: Array.from(tagSet).slice(0, 4)
+      };
+    });
+
     res.status(200).json({
       success: true,
-      data: sheets
+      data: formattedSheets
     });
   } catch (error) {
     next(error);
@@ -83,5 +119,4 @@ exports.toggleProblemCompletion = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
-
+}

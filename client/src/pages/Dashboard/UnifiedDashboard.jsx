@@ -9,112 +9,57 @@ import { FaCheckCircle } from "react-icons/fa";
 import { FiAward } from "react-icons/fi";
 import { useAuth } from "../../hooks/useAuth";
 import { useProject } from "../../hooks/useProject";
-import {
-  dsaSheet,
-  getSheetProgress,
-  getSheetBySlug,
-} from "../../api/services/sheetService";
+import { getDashboardSummary } from "../../api/services/userService";
 import DSADash from "./DsaDash";
 import ProjectDash from "./ProjectDash";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
 
 // ── UnifiedDashboard ───────────────────────────────────────────────────────
-// Responsible for: fetching data, computing stats, rendering the page header
-// + stats strip, then delegating to <DSADash> and <ProjectDash>.
+// Responsible for: fetching pre-aggregated dashboard data in 1 single query,
+// rendering the page header + stats strip, then delegating to <DSADash> and <ProjectDash>.
 const UnifiedDashboard = () => {
   const { user } = useAuth();
   const { getProjects } = useProject();
 
-  // DSA state
+  // DSA & Stats state (from single server aggregator)
   const [dsaData, setDsaData] = useState([]);
-  const [dsaLoading, setDsaLoading] = useState(true);
-  const [dsaError, setDsaError] = useState(null);
+  const [stats, setStats] = useState({
+    totalSolved: 0,
+    totalQuestions: 0,
+    sheetsInProgress: 0,
+    sheetsCompleted: 0,
+    overallPct: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [dashboardError, setDashboardError] = useState(null);
 
-  // ── Fetch DSA progress on mount ──────────────────────────────────────────
-  const fetchDSA = async () => {
-    setDsaLoading(true);
-    setDsaError(null);
+  // ── Fetch all dashboard data in 1 single optimized server call ───────────
+  const fetchDashboard = async () => {
+    setLoading(true);
+    setDashboardError(null);
     try {
-      const sheetsRes = await dsaSheet();
-      const sheets = sheetsRes?.data || [];
-
-      const progressResults = await Promise.allSettled(
-        sheets.map((s) =>
-          getSheetProgress(s.slug).catch(() => ({
-            data: { solvedProblems: [] },
-          })),
-        ),
-      );
-
-      const detailResults = await Promise.allSettled(
-        sheets.map((s) => getSheetBySlug(s.slug).catch(() => null)),
-      );
-
-      const combined = sheets.map((sheet, i) => {
-        const progressData =
-          progressResults[i].status === "fulfilled"
-            ? progressResults[i].value?.data
-            : null;
-        const solved = progressData?.solvedProblems?.length || 0;
-
-        const detail =
-          detailResults[i].status === "fulfilled"
-            ? detailResults[i].value?.data
-            : null;
-        let total = 0;
-        if (detail?.topics) {
-          const linkSet = new Set();
-          detail.topics.forEach((t) => {
-            (t.problems || t.questions || []).forEach((p) => {
-              if (p.link) linkSet.add(p.link);
-            });
-          });
-          total = linkSet.size;
+      const res = await getDashboardSummary();
+      if (res?.data) {
+        setDsaData(res.data.dsaSheets || []);
+        if (res.data.stats) {
+          setStats(res.data.stats);
         }
-
-        return { sheet, solved, total };
-      });
-
-      setDsaData(combined);
+      }
     } catch (err) {
-      console.error("Failed to load DSA data", err);
-      setDsaError(
+      console.error("Failed to load dashboard summary", err);
+      setDashboardError(
         err?.response?.data?.message ||
         "Failed to load DSA progress. Please check your connection and try again."
       );
     } finally {
-      setDsaLoading(false);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDSA();
+    fetchDashboard();
     getProjects();
   }, []);
-
-  // ── Computed aggregate stats (passed to DSADash + stats strip) ──────────
-  const stats = useMemo(() => {
-    const totalSolved = dsaData.reduce((acc, d) => acc + d.solved, 0);
-    const totalQuestions = dsaData.reduce((acc, d) => acc + d.total, 0);
-    const sheetsInProgress = dsaData.filter(
-      (d) => d.solved > 0 && d.solved < d.total,
-    ).length;
-    const sheetsCompleted = dsaData.filter(
-      (d) => d.solved > 0 && d.solved === d.total,
-    ).length;
-    const overallPct =
-      totalQuestions === 0
-        ? 0
-        : Math.round((totalSolved / totalQuestions) * 100);
-
-    return {
-      totalSolved,
-      totalQuestions,
-      sheetsInProgress,
-      sheetsCompleted,
-      overallPct,
-    };
-  }, [dsaData]);
 
   return (
     <div className="px-4 md:px-6 py-8 max-w-7xl mx-auto page-enter text-white">
@@ -144,7 +89,7 @@ const UnifiedDashboard = () => {
 
       {/* ── Key Stats Strip ────────────────────────────────────────────── */}
       <section className="mb-10 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-        {dsaLoading ? (
+        {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
@@ -206,15 +151,15 @@ const UnifiedDashboard = () => {
       </section>
 
       {/* ── Sub-sections ──────────────────────────────────────────────── */}
-      {dsaError ? (
+      {dashboardError ? (
         <PageErrorState
-          message={dsaError}
-          onRetry={fetchDSA}
+          message={dashboardError}
+          onRetry={fetchDashboard}
           backTo="/"
           backLabel="Go Home"
         />
       ) : (
-        <DSADash dsaData={dsaData} loading={dsaLoading} stats={stats} />
+        <DSADash dsaData={dsaData} loading={loading} stats={stats} />
       )}
       <ProjectDash />
     </div>
@@ -222,4 +167,5 @@ const UnifiedDashboard = () => {
 };
 
 export default UnifiedDashboard;
+
 

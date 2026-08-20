@@ -50,7 +50,6 @@ const Profile = () => {
     try {
       await handleLinkGoogle(credentialResponse.credential);
       toast.success("Google account successfully linked!");
-      window.location.reload();
     } catch (error) {
       toast.error(error.message || "Failed to link Google account");
     }

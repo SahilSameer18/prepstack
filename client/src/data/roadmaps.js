@@ -1,6 +1,7 @@
 export const roadmaps = [
   {
     title: "Frontend Development",
+    slug: "frontend",
     icon: "FaLaptopCode",
     color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", glow: "shadow-blue-500/10",
     desc: "HTML → CSS → JavaScript → React → Next.js → Production. Complete path from zero to deployable portfolio.",
@@ -67,6 +68,7 @@ export const roadmaps = [
   },
   {
     title: "Backend Development",
+    slug: "backend",
     icon: "FaServer",
     color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", glow: "shadow-red-500/10",
     desc: "Node.js → Express → MongoDB → REST APIs → Auth → Cloud. Build scalable backend applications.",
@@ -127,6 +129,7 @@ export const roadmaps = [
   },
   {
     title: "Full Stack MERN",
+    slug: "fullstack",
     icon: "FaDatabase",
     color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", glow: "shadow-purple-500/10",
     desc: "Combine Frontend & Backend to build production-grade MERN applications.",
@@ -194,6 +197,7 @@ export const roadmaps = [
   },
   {
     title: "Android Development",
+    slug: "android",
     icon: "FaMobileAlt",
     color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", glow: "shadow-emerald-500/10",
     desc: "Kotlin → Jetpack Compose → Android SDK → Firebase. Publish apps to Google Play Store.",
@@ -255,6 +259,7 @@ export const roadmaps = [
   },
   {
     title: "Data Analytics",
+    slug: "data-analytics",
     icon: "FaChartLine",
     color: "text-blue-400",
     bg: "bg-blue-500/10",
@@ -324,6 +329,7 @@ export const roadmaps = [
   },
   {
     title: "Machine Learning",
+    slug: "machine-learning",
     icon: "FaBrain",
     color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", glow: "shadow-purple-500/10",
     desc: "Python → NumPy → Pandas → Scikit-Learn → Deep Learning. Build and deploy ML models.",

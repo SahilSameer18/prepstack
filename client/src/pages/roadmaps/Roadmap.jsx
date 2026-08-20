@@ -63,7 +63,7 @@ const Roadmap = () => {
             <p className="text-gray-400 text-sm leading-relaxed mb-5">{r.desc}</p>
 
             {/* CTA */}
-            <Link to={`/roadmaps/${i}`} className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${r.bg} ${r.color} border ${r.border} group-hover:opacity-90`}>
+            <Link to={`/roadmaps/${r.slug}`} className={`w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${r.bg} ${r.color} border ${r.border} group-hover:opacity-90`}>
               Open Roadmap <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

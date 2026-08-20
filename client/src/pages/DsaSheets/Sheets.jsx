@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaSearch, FaStar, FaCode, FaCheckCircle, FaExternalLinkAlt } from "react-icons/fa";
 import { FiBook, FiTarget, FiZap, FiLayers } from "react-icons/fi";
+import { dsaSheet } from "../../api/services/sheetService";
 
-const categories = [
+const CATEGORY_DEFINITIONS = [
   {
     id: "foundation",
     label: "Build Your Foundation",
@@ -14,28 +15,7 @@ const categories = [
     activeBorder: "border-blue-500",
     badge: "bg-blue-500/15 text-blue-300 border-blue-500/20",
     desc: "Start from scratch and master every DSA concept. Best for beginners starting their prep journey.",
-    sheets: [
-      {
-        title: "Love Babbar DSA Sheet",
-        slug: "love-babbar",
-        count: 450,
-        difficulty: "Beginner → Intermediate",
-        tags: ["Comprehensive", "GFG Based", "Topic-wise"],
-        icon: <FaStar className="text-yellow-400" />,
-        recommended: false,
-        highlight: "Most loved for structured learning",
-      },
-      {
-        title: "Striver A2Z Sheet",
-        slug: "striver-a2z",
-        count: 455,
-        difficulty: "Beginner → Advanced",
-        tags: ["Structured", "Video Walkthrough", "Pattern-based"],
-        icon: <FiLayers className="text-blue-400" />,
-        recommended: true,
-        highlight: "Best paired with YouTube series",
-      },
-    ],
+    slugs: ["love-babbar", "striver-a2z"],
   },
   {
     id: "product",
@@ -47,28 +27,7 @@ const categories = [
     activeBorder: "border-orange-500",
     badge: "bg-orange-500/15 text-orange-300 border-orange-500/20",
     desc: "Focused sets targeting FAANG / MNCs. High-quality questions interview teams actually ask.",
-    sheets: [
-      {
-        title: "Striver SDE Sheet",
-        slug: "striver-sde",
-        count: 191,
-        difficulty: "Intermediate → Advanced",
-        tags: ["FAANG Patterns", "Must Solve", "Interview Focused"],
-        icon: <FiTarget className="text-orange-400" />,
-        recommended: true,
-        highlight: "Handpicked for top companies",
-      },
-      {
-        title: "NeetCode 150",
-        slug: "neetcode-150",
-        count: 150,
-        difficulty: "Advanced",
-        tags: ["LeetCode Patterns", "Video Solutions", "Concise"],
-        icon: <FaCode className="text-green-400" />,
-        recommended: false,
-        highlight: "Pattern-based FAANG prep",
-      },
-    ],
+    slugs: ["striver-sde", "neetcode-150"],
   },
   {
     id: "revision",
@@ -80,20 +39,42 @@ const categories = [
     activeBorder: "border-red-500",
     badge: "bg-red-500/15 text-red-300 border-red-500/20",
     desc: "Interview tomorrow? These compact sheets cover the essentials every SDE must know — fast.",
-    sheets: [
-      {
-        title: "Blind 75",
-        slug: "blind-75",
-        count: 75,
-        difficulty: "Intermediate → Advanced",
-        tags: ["Essential", "Time-boxed", "Widely Recommended"],
-        icon: <FaCheckCircle className="text-red-400" />,
-        recommended: true,
-        highlight: "The go-to pre-interview checklist",
-      },
-    ],
+    slugs: ["blind-75"],
   },
 ];
+
+const SHEET_METADATA_MAP = {
+  "love-babbar": {
+    icon: <FaStar className="text-yellow-400" />,
+    highlight: "Most loved for structured learning",
+    recommended: false,
+    defaultCategoryId: "foundation",
+  },
+  "striver-a2z": {
+    icon: <FiLayers className="text-blue-400" />,
+    highlight: "Best paired with YouTube series",
+    recommended: true,
+    defaultCategoryId: "foundation",
+  },
+  "striver-sde": {
+    icon: <FiTarget className="text-orange-400" />,
+    highlight: "Handpicked for top companies",
+    recommended: true,
+    defaultCategoryId: "product",
+  },
+  "neetcode-150": {
+    icon: <FaCode className="text-green-400" />,
+    highlight: "Pattern-based FAANG prep",
+    recommended: false,
+    defaultCategoryId: "product",
+  },
+  "blind-75": {
+    icon: <FaCheckCircle className="text-red-400" />,
+    highlight: "The go-to pre-interview checklist",
+    recommended: true,
+    defaultCategoryId: "revision",
+  },
+};
 
 const SheetCard = ({ sheet, cat }) => (
   <div className="group bg-[#111] border border-white/[0.06] hover:border-white/[0.15] rounded-2xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/40 relative overflow-hidden">
@@ -117,7 +98,7 @@ const SheetCard = ({ sheet, cat }) => (
       </div>
     </div>
     <div className="flex flex-wrap gap-1.5 mb-5">
-      {sheet.tags.map((tag, idx) => (
+      {(sheet.tags || []).map((tag, idx) => (
         <span key={idx} className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.07] text-gray-400">
           {tag}
         </span>
@@ -132,12 +113,64 @@ const SheetCard = ({ sheet, cat }) => (
 const Sheets = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [dbSheets, setDbSheets] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const allSheets = categories.flatMap((c) =>
-    c.sheets.map((s) => ({ ...s, categoryId: c.id }))
-  );
+  useEffect(() => {
+    const fetchSheets = async () => {
+      try {
+        setLoading(true);
+        const res = await dsaSheet();
+        setDbSheets(res?.data || []);
+      } catch (err) {
+        console.error("Failed to fetch dynamic sheets", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSheets();
+  }, []);
 
-  const filtered = allSheets.filter((s) => {
+  // Enrich dynamic backend sheets with category and UI meta
+  const enrichedSheets = (dbSheets.length > 0 ? dbSheets : [
+    { name: "Love Babbar DSA Sheet", slug: "love-babbar", totalProblems: 450, difficulty: "Beginner → Intermediate", tags: ["Comprehensive", "GFG Based"] },
+    { name: "Striver A2Z Sheet", slug: "striver-a2z", totalProblems: 455, difficulty: "Beginner → Advanced", tags: ["Structured", "Pattern-based"] },
+    { name: "Striver SDE Sheet", slug: "striver-sde", totalProblems: 191, difficulty: "Intermediate → Advanced", tags: ["FAANG Patterns", "Must Solve"] },
+    { name: "NeetCode 150", slug: "neetcode-150", totalProblems: 150, difficulty: "Advanced", tags: ["LeetCode Patterns", "Concise"] },
+    { name: "Blind 75", slug: "blind-75", totalProblems: 75, difficulty: "Intermediate → Advanced", tags: ["Essential", "Time-boxed"] },
+  ]).map((sheet) => {
+    const meta = SHEET_METADATA_MAP[sheet.slug] || {
+      icon: <FaCode className="text-[#ffa116]" />,
+      highlight: sheet.description || "Structured interview prep sheet",
+      recommended: false,
+      defaultCategoryId: "foundation",
+    };
+
+    let categoryId = meta.defaultCategoryId;
+    const catFound = CATEGORY_DEFINITIONS.find((c) => c.slugs.includes(sheet.slug));
+    if (catFound) categoryId = catFound.id;
+
+    return {
+      title: sheet.name,
+      slug: sheet.slug,
+      count: sheet.totalProblems || 0,
+      difficulty: sheet.difficulty || "Intermediate",
+      tags: sheet.tags && sheet.tags.length > 0 ? sheet.tags : ["Interview Prep", "DSA"],
+      icon: meta.icon,
+      highlight: meta.highlight,
+      recommended: meta.recommended,
+      categoryId,
+    };
+  });
+
+  const categories = CATEGORY_DEFINITIONS.map((c) => ({
+    ...c,
+    sheets: enrichedSheets.filter((s) => s.categoryId === c.id),
+  }));
+
+  const totalProblemCount = enrichedSheets.reduce((acc, s) => acc + s.count, 0);
+
+  const filtered = enrichedSheets.filter((s) => {
     const matchSearch = s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.tags.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchCat = activeCategory === "all" || s.categoryId === activeCategory;
@@ -152,7 +185,7 @@ const Sheets = () => {
     <div className="px-6 pb-4 max-w-7xl mx-auto page-enter">
       <div className="mb-10 pt-2">
         <div className="inline-flex items-center gap-2 text-xs font-semibold text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-3 py-1 mb-4">
-          <FaCode /> 1200+ Problems
+          <FaCode /> {totalProblemCount > 0 ? `${totalProblemCount}+ Problems` : "1200+ Problems"}
         </div>
         <h1 className="text-4xl md:text-5xl font-black mb-3">
           DSA Problem <span className="text-[#ffa116]">Sheets</span>
@@ -185,7 +218,18 @@ const Sheets = () => {
         </div>
       </div>
 
-      {searchTerm === "" ? (
+      {loading ? (
+        <div className="grid md:grid-cols-2 gap-5">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-[#111] border border-white/[0.06] rounded-2xl p-6 space-y-4">
+              <div className="w-10 h-10 rounded-xl skeleton-shine" />
+              <div className="w-48 h-6 rounded skeleton-shine" />
+              <div className="w-32 h-3 rounded skeleton-shine" />
+              <div className="w-full h-10 rounded-xl skeleton-shine" />
+            </div>
+          ))}
+        </div>
+      ) : searchTerm === "" ? (
         <div className="space-y-14">
           {visibleCategories.map((cat) => (
             <div key={cat.id}>
@@ -211,7 +255,7 @@ const Sheets = () => {
           {filtered.length > 0 ? (
             <div className="grid md:grid-cols-2 gap-5">
               {filtered.map((sheet, i) => {
-                const cat = categories.find((c) => c.id === sheet.categoryId);
+                const cat = categories.find((c) => c.id === sheet.categoryId) || categories[0];
                 return <SheetCard key={i} sheet={sheet} cat={cat} />;
               })}
             </div>
