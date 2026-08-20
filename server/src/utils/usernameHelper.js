@@ -13,9 +13,10 @@ const generateUniqueUsername = async (displayName, userModel) => {
   baseUsername = baseUsername.replace(/^[^a-z]+/, '');
   baseUsername = baseUsername.substring(0, 15);
 
-  // 3. Fallback if empty or too short
+  // 3. Fallback if empty or too short (e.g. Non-Latin names like 张伟 or محمد)
   if (baseUsername.length < 4) {
-    baseUsername = 'prepstack_user';
+    const randomHex = Math.random().toString(36).substring(2, 7);
+    baseUsername = `prepstack_${randomHex}`;
   }
 
   // 4. Try finding a unique username
@@ -44,4 +45,3 @@ const generateUniqueUsername = async (displayName, userModel) => {
 };
 
 module.exports = { generateUniqueUsername };
-

@@ -1,7 +1,23 @@
+const userModel = require('../models/auth.model');
 const projectModel = require('../models/project.model');
 const progressModel = require('../models/progress.model');
 const DSASheet = require('../models/sheets.model');
 const AppError = require('../utils/AppError');
+const bcrypt = require('bcrypt');
+
+const formatUserResponse = (user) => {
+  const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`;
+  
+  return {
+    id: user._id,
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar || dicebearAvatar,
+    providers: user.providers || [],
+    hasPassword: !!user.password,
+    createdAt: user.createdAt
+  };
+};
 
 // ── Get user stats ────────────────────────────────────────────────────────────
 
@@ -105,7 +121,99 @@ const getDashboardSummary = async (req, res, next) => {
   }
 };
 
-module.exports = { getUserStats, getDashboardSummary };
+// ── Update user profile (username, email, avatar) ──────────────────────────────
+
+const updateProfile = async (req, res, next) => {
+  try {
+    const userId = req.user._id || req.user.id;
+    const { username, email, avatar } = req.body;
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return next(new AppError(404, 'User not found'));
+    }
+
+    // Check if username is being changed and is already taken by someone else
+    if (username && username !== user.username) {
+      const existingUsername = await userModel.findOne({
+        username,
+        _id: { $ne: userId }
+      });
+      if (existingUsername) {
+        return next(new AppError(409, 'Username is already taken. Please choose another.'));
+      }
+      user.username = username;
+    }
+
+    // Check if email is being changed and is already taken by someone else
+    if (email && email.toLowerCase() !== user.email.toLowerCase()) {
+      const existingEmail = await userModel.findOne({
+        email: email.toLowerCase(),
+        _id: { $ne: userId }
+      });
+      if (existingEmail) {
+        return next(new AppError(409, 'An account with this email already exists.'));
+      }
+      user.email = email.toLowerCase();
+    }
+
+    if (avatar !== undefined) {
+      user.avatar = avatar;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: formatUserResponse(user)
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ── Change user password ───────────────────────────────────────────────────────
+
+const changePassword = async (req, res, next) => {
+  try {
+    const userId = req.user._id || req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return next(new AppError(404, 'User not found'));
+    }
+
+    if (!user.password) {
+      return next(new AppError(400, 'This account is managed with Google Sign-In and does not have a password set. Please use "Set Password" first.'));
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return next(new AppError(401, 'Incorrect current password'));
+    }
+
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return next(new AppError(400, 'New password must be different from your current password'));
+    }
+
+    const hash = await bcrypt.hash(newPassword, 12);
+    user.password = hash;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password changed successfully',
+      user: formatUserResponse(user)
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getUserStats, getDashboardSummary, updateProfile, changePassword };
 
 
 
