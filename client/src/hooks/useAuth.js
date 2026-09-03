@@ -68,8 +68,6 @@ export const useAuth = () => {
       setLoading(true);
       const data = await loginWithGoogle(idToken);
       setUser(data.user);
-    } catch (error) {
-      throw error; // Re-throw the raw Axios error so Login.jsx can inspect error.response.status
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@ import { getCurrentUser } from "../api/services/authService";
 import { setLogoutCallback } from "../api/axios";
 import { LogoutOverlay } from "../components/ui/LogoutOverlay";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

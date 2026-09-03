@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   FiGrid,
@@ -34,7 +34,7 @@ const UnifiedDashboard = () => {
   const [dashboardError, setDashboardError] = useState(null);
 
   // ── Fetch all dashboard data in 1 single optimized server call ───────────
-  const fetchDashboard = async () => {
+  const fetchDashboard = useCallback(async () => {
     setLoading(true);
     setDashboardError(null);
     try {
@@ -54,12 +54,12 @@ const UnifiedDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchDashboard();
     getProjects();
-  }, []);
+  }, [fetchDashboard, getProjects]);
 
   return (
     <div className="px-4 md:px-6 py-8 max-w-7xl mx-auto page-enter text-white">

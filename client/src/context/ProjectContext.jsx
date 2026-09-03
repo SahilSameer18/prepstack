@@ -1,5 +1,6 @@
 import React, { createContext, useState, useMemo } from 'react'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const ProjectContext = createContext();
 
 export const ProjectProvider = ({ children }) => {
@@ -27,5 +28,4 @@ export const ProjectProvider = ({ children }) => {
 }
 
 export default ProjectContext
-
 

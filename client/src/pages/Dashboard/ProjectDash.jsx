@@ -18,7 +18,7 @@ import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 // ── ProjectDash ────────────────────────────────────────────────────────────
 // Owns its own filter/sort/delete state; reads projects from useProject hook.
 const ProjectDash = () => {
-  const { projects, getProjects, deleteProjectById, loading: projectsLoading } =
+  const { projects, deleteProjectById, loading: projectsLoading } =
     useProject();
   const navigate = useNavigate();
 

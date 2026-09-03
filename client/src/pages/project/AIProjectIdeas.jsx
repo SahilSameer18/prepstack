@@ -14,7 +14,6 @@ const AIProjectIdeas = () => {
   const { projectId } = useParams();
   const [form, setForm] = useState({ techStack: "", complexity: "", domain: "", notes: "" });
   const { generateProject, getProjectById, loading, project, setProject } = useProject();
-  const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(null);
 
@@ -35,8 +34,6 @@ const AIProjectIdeas = () => {
     setError(null);
     try {
       await generateProject(form);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
     } catch (err) {
       setError(err.message || "Failed to generate project idea. Please try again.");
     }

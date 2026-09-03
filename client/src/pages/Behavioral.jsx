@@ -172,7 +172,6 @@ const Behavioral = () => {
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => {
             const isActive = selectedCategory === cat.label;
-            const style = CATEGORY_COLORS[cat.label] || {};
             return (
               <button
                 key={cat.label}
