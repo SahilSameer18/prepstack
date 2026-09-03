@@ -76,7 +76,7 @@ exports.getUserSheetProgress = async (req, res, next) => {
     const progress = await Progress.findOneAndUpdate(
       { user: userId, sheetSlug: slug },
       { $setOnInsert: { solvedProblems: [] } },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     );
 
     res.status(200).json({
@@ -109,7 +109,7 @@ exports.toggleProblemCompletion = async (req, res, next) => {
     const progress = await Progress.findOneAndUpdate(
       { user: userId, sheetSlug: slug },
       updateOperation,
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
 
     res.status(200).json({

@@ -255,7 +255,7 @@ const seedNeetCode150 = async () => {
   await DSASheet.findOneAndUpdate(
     { slug: neetcode150Data.slug },
     neetcode150Data,
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   );
   console.log('NeetCode 150 Sheet Seeded');
 };

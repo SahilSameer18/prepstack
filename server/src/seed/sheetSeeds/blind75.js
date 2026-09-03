@@ -179,7 +179,7 @@ const seedBlind75 = async () => {
   await DSASheet.findOneAndUpdate(
     { slug: blind75Data.slug },
     blind75Data,
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   );
   console.log('Blind 75 Sheet Seeded');
 };

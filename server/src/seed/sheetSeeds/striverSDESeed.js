@@ -347,7 +347,7 @@ const seedStriverSDE = async () => {
   await DSASheet.findOneAndUpdate(
     { slug: striverSDEData.slug },
     striverSDEData,
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   );
   console.log('Striver SDE Sheet Seeded');
 };

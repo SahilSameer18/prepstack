@@ -540,7 +540,7 @@ const seedLoveBabbar = async () => {
   await DSASheet.findOneAndUpdate(
     { slug: loveBabbarData.slug },
     loveBabbarData,
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   );
   console.log('Love Babbar Sheet Seeded');
 };

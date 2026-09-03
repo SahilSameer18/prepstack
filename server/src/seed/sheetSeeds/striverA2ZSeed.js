@@ -741,7 +741,7 @@ const seedStriverA2Z = async () => {
   await DSASheet.findOneAndUpdate(
     { slug: striverA2ZData.slug },
     striverA2ZData,
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   );
   console.log('Striver A2Z Sheet Seeded');
 };
