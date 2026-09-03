@@ -22,6 +22,8 @@ const Quiz = lazy(() => import('./pages/Quiz'));
 const Aptitude = lazy(() => import('./pages/Aptitude'));
 const UnifiedDashboard = lazy(() => import('./pages/Dashboard/UnifiedDashboard'));
 const Profile = lazy(() => import('./pages/Profile/Profile'));
+const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
+const TermsOfUse = lazy(() => import('./pages/legal/TermsOfUse'));
 
 
 export const router = createBrowserRouter([
@@ -114,6 +116,14 @@ export const router = createBrowserRouter([
       {
         path: "/aptitude",
         element: <Aptitude />
+      },
+      {
+        path: "/privacy",
+        element: <PrivacyPolicy />
+      },
+      {
+        path: "/terms",
+        element: <TermsOfUse />
       },
     ],
   },

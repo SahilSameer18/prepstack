@@ -189,24 +189,13 @@ const Register = () => {
 
       {/* ── Right Panel (Form) ── */}
       <motion.div
-        className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-12 relative"
+        className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-8 sm:py-12 relative overflow-y-auto"
         variants={panelRight}
         initial="hidden"
         animate="show"
       >
-        {/* Back to home */}
-        <button
-          onClick={() => navigate("/")}
-          className="absolute top-6 left-6 flex items-center gap-2 text-gray-400 hover:text-white text-sm font-medium transition-colors group"
-        >
-          <span className="w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.1] transition-all">
-            <FiArrowLeft className="text-sm" />
-          </span>
-          <span className="hidden sm:inline">Back to Home</span>
-        </button>
-
         {/* Mobile logo */}
-        <div className="lg:hidden mb-8">
+        <div className="lg:hidden mb-6">
           <Link to="/" className="text-xl font-bold">Prep<span className="text-[#ffa116]">Stack</span></Link>
         </div>
 
@@ -216,8 +205,21 @@ const Register = () => {
           initial="hidden"
           animate="show"
         >
-          <motion.div className="mb-8" variants={formItem}>
-            <h1 className="text-3xl font-bold text-white mb-2">Create your account</h1>
+          {/* Back to Home button with clear breathing room */}
+          <motion.div variants={formItem} className="mb-6">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-xs font-mono text-gray-400 hover:text-white transition-colors group"
+            >
+              <span className="w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.08] group-hover:border-[#ffa116]/40 group-hover:text-[#ffa116] transition-all">
+                <FiArrowLeft className="text-xs" />
+              </span>
+              <span>Back to Home</span>
+            </Link>
+          </motion.div>
+
+          <motion.div className="mb-6" variants={formItem}>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5">Create your account</h1>
             <p className="text-gray-400 text-sm">Get started for free</p>
           </motion.div>
 
@@ -289,8 +291,8 @@ const Register = () => {
 
             <motion.p className="text-xs text-gray-500 leading-relaxed" variants={formItem}>
               By creating an account, you agree to our{" "}
-              <span className="text-[#ffa116] cursor-pointer">Terms of Service</span> and{" "}
-              <span className="text-[#ffa116] cursor-pointer">Privacy Policy</span>.
+              <Link to="/terms" className="text-[#ffa116] hover:underline">Terms of Use</Link> and{" "}
+              <Link to="/privacy" className="text-[#ffa116] hover:underline">Privacy Policy</Link>.
             </motion.p>
 
             <motion.button
