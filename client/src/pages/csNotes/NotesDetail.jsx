@@ -30,16 +30,18 @@ export default function NotesDetail() {
   const { subject } = useParams();
   const { data: noteConfig, loading, error } = useNotes(subject);
   
-  const [activeTopic, setActiveTopic] = useState(null);
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [prevSubject, setPrevSubject] = useState(subject);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    if (noteConfig && noteConfig.sections && noteConfig.sections.length > 0) {
-      if (noteConfig.sections[0].topics && noteConfig.sections[0].topics.length > 0) {
-        setActiveTopic(noteConfig.sections[0].topics[0]);
-      }
-    }
-  }, [noteConfig]);
+  // Reset selected topic when subject param changes
+  if (prevSubject !== subject) {
+    setPrevSubject(subject);
+    setSelectedTopic(null);
+  }
+
+  // Derive activeTopic: selected topic or default to first topic of first section
+  const activeTopic = selectedTopic || (noteConfig?.sections?.[0]?.topics?.[0] ?? null);
 
   // Lock body scroll when mobile sidebar is open
   useEffect(() => {
@@ -109,84 +111,80 @@ export default function NotesDetail() {
       </AnimatePresence>
 
       {/* ── Sidebar ── */}
-      <AnimatePresence>
-        {(isSidebarOpen || true) && (
-          <div
-            className={`
-              fixed md:sticky top-0 md:top-[80px]
-              h-screen md:h-[calc(100vh-80px)]
-              w-[280px] md:w-64
-              bg-[#0c0c0c] md:bg-[#0d0d0d]
-              border-r border-white/[0.07]
-              z-50 md:z-auto
-              flex flex-col
-              transition-transform duration-300 ease-in-out
-              ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-            `}
+      <div
+        className={`
+          fixed md:sticky top-0 md:top-[80px]
+          h-screen md:h-[calc(100vh-80px)]
+          w-[280px] md:w-64
+          bg-[#0c0c0c] md:bg-[#0d0d0d]
+          border-r border-white/[0.07]
+          z-50 md:z-auto
+          flex flex-col
+          transition-transform duration-300 ease-in-out
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+      >
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.07] flex-shrink-0">
+          <Link
+            to="/notes"
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm group"
           >
-            {/* Sidebar Header */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.07] flex-shrink-0">
-              <Link
-                to="/notes"
-                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm group"
-              >
-                <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
-                  <FiChevronLeft className="text-sm" />
-                </div>
-                <span className="font-medium">All Subjects</span>
-              </Link>
-              <button
-                onClick={() => setIsSidebarOpen(false)}
-                className="md:hidden flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
-              >
-                <FiX className="text-sm" />
-              </button>
+            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
+              <FiChevronLeft className="text-sm" />
             </div>
+            <span className="font-medium">All Subjects</span>
+          </Link>
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="md:hidden flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <FiX className="text-sm" />
+          </button>
+        </div>
 
-            {/* Subject Title */}
-            <div className="px-4 pt-4 pb-3 border-b border-white/[0.05] flex-shrink-0">
-              <h2 className="text-base font-bold text-white mb-0.5">{subjectTitle}</h2>
-              <p className="text-xs text-gray-500">{totalTopics} topics</p>
-            </div>
+        {/* Subject Title */}
+        <div className="px-4 pt-4 pb-3 border-b border-white/[0.05] flex-shrink-0">
+          <h2 className="text-base font-bold text-white mb-0.5">{subjectTitle}</h2>
+          <p className="text-xs text-gray-500">{totalTopics} topics</p>
+        </div>
 
-            {/* Topic List */}
-            <div className="flex-1 overflow-y-auto py-3 scrollbar-thin">
-              <div className="px-3 space-y-5">
-                {sections.map((section, sIdx) => (
-                  <div key={sIdx}>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.15em] mb-1.5 px-2">
-                      {section.title}
-                    </p>
-                    <ul className="space-y-0.5">
-                      {section.topics.map((topic, tIdx) => {
-                        const isActive = activeTopic?.name === topic.name;
-                        return (
-                          <li key={tIdx}>
-                            <button
-                              onClick={() => {
-                                setActiveTopic(topic);
-                                setIsSidebarOpen(false);
-                              }}
-                              className={`w-full text-left px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 flex items-center justify-between group ${
-                                isActive 
-                                  ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' 
-                                  : 'text-gray-400 hover:bg-white/[0.05] hover:text-gray-100 border border-transparent'
-                              }`}
-                            >
-                              <span className="truncate">{topic.name}</span>
-                              {isActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0 ml-2" />}
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
+        {/* Topic List */}
+        <div className="flex-1 overflow-y-auto py-3 scrollbar-thin">
+          <div className="px-3 space-y-5">
+            {sections.map((section, sIdx) => (
+              <div key={sIdx}>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.15em] mb-1.5 px-2">
+                  {section.title}
+                </p>
+                <ul className="space-y-0.5">
+                  {section.topics.map((topic, tIdx) => {
+                    const isActive = activeTopic?.name === topic.name;
+                    return (
+                      <li key={tIdx}>
+                        <button
+                          onClick={() => {
+                            setSelectedTopic(topic);
+                            setIsSidebarOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 flex items-center justify-between group ${
+                            isActive 
+                              ? 'bg-blue-500/15 text-blue-400 border border-blue-500/20' 
+                              : 'text-gray-400 hover:bg-white/[0.05] hover:text-gray-100 border border-transparent'
+                          }`}
+                        >
+                          <span className="truncate">{topic.name}</span>
+                          {isActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0 ml-2" />}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
-            </div>
+            ))}
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      </div>
 
       {/* ── Main Content ── */}
       <div className="flex-1 overflow-y-auto">

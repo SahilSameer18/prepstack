@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getSheetBySlug, getSheetProgress, toggleProblem } from '../../api/services/sheetService';
 import { FaCheckCircle, FaRegCircle, FaChevronDown, FaChevronUp, FaExternalLinkAlt } from 'react-icons/fa';
@@ -158,7 +158,7 @@ const SheetsDetail = () => {
 
   const meta = getSheetMeta(slug);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setFetchError(null);
@@ -177,11 +177,11 @@ const SheetsDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [slug]);
 
   useEffect(() => {
     fetchData();
-  }, [slug]);
+  }, [fetchData]);
 
   const toggleTopic = (index) => {
     const newOpen = new Set(openTopics);
@@ -202,6 +202,20 @@ const SheetsDetail = () => {
     }
   };
 
+  const { totalProblems, totalSolvedCount, progressPercentage } = useMemo(() => {
+    if (!sheet) return { totalProblems: 0, totalSolvedCount: 0, progressPercentage: 0 };
+    const linkSet = new Set();
+    (sheet.topics || []).forEach((t) => {
+      (t.problems || t.questions || []).forEach((p) => {
+        if (p.link) linkSet.add(p.link);
+      });
+    });
+    const total = linkSet.size;
+    const count = (solved || []).filter((link) => linkSet.has(link)).length;
+    const pct = total === 0 ? 0 : Math.round((count / total) * 100);
+    return { totalProblems: total, totalSolvedCount: count, progressPercentage: pct };
+  }, [sheet, solved]);
+
   if (loading) return <SkeletonSheetDetail />;
 
   if (fetchError) return (
@@ -220,20 +234,6 @@ const SheetsDetail = () => {
       backLabel="Back to Sheets"
     />
   );
-
-  const { allLinksInSheet, totalProblems, totalSolvedCount, progressPercentage } = useMemo(() => {
-    if (!sheet) return { allLinksInSheet: new Set(), totalProblems: 0, totalSolvedCount: 0, progressPercentage: 0 };
-    const linkSet = new Set();
-    (sheet.topics || []).forEach((t) => {
-      (t.problems || t.questions || []).forEach((p) => {
-        if (p.link) linkSet.add(p.link);
-      });
-    });
-    const total = linkSet.size;
-    const count = (solved || []).filter((link) => linkSet.has(link)).length;
-    const pct = total === 0 ? 0 : Math.round((count / total) * 100);
-    return { allLinksInSheet: linkSet, totalProblems: total, totalSolvedCount: count, progressPercentage: pct };
-  }, [sheet, solved]);
 
   return (
     <div className="px-4 md:px-6 py-8 max-w-5xl mx-auto page-enter text-white">
