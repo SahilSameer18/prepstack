@@ -13,8 +13,27 @@ app.set('trust proxy', 1)
 // use the middleware
 app.use(express.json())
 app.use(cookieParser())
+// CORS configuration supporting localhost, production domain, Vercel previews, and custom env origins
+const defaultOrigins = ["http://localhost:5173", "https://prepstack-ss.vercel.app"];
+const extraOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+  : (process.env.CLIENT_URL ? [process.env.CLIENT_URL.trim()] : []);
+const allowedOrigins = Array.from(new Set([...defaultOrigins, ...extraOrigins]));
+
 app.use(cors({
-  origin: ["http://localhost:5173", "https://prepstack-ss.vercel.app"],
+  origin: (origin, callback) => {
+    // Allow non-browser requests with no origin (e.g., Postman, server-to-server)
+    if (!origin) return callback(null, true);
+
+    if (
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/prepstack[a-z0-9-]*\.vercel\.app$/.test(origin)
+    ) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
   credentials: true,
 }))
 
@@ -49,3 +68,4 @@ app.use((req, res, next) => {
 app.use(errorMiddleware)
 
 module.exports = app;
+

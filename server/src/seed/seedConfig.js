@@ -2,8 +2,10 @@ const mongoose = require('mongoose');
 const path = require('path');
 const dns = require('dns');
 
-// Fix for MongoDB connection issues in some environments
-dns.setServers(['1.1.1.1', '8.8.8.8']);
+// Fix for MongoDB connection issues in some development environments
+if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_CUSTOM_DNS === 'true') {
+  dns.setServers(['1.1.1.1', '8.8.8.8']);
+}
 
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 

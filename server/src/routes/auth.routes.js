@@ -1,7 +1,7 @@
 const express = require('express');
 const authController = require('../controllers/auth.controller')
 const authMiddleware = require('../middlewares/auth.middleware')
-const { authLimiter, linkGoogleLimiter } = require('../middlewares/rateLimit.middleware')
+const { authLimiter, linkGoogleLimiter, refreshLimiter } = require('../middlewares/rateLimit.middleware')
 const validate = require('../middlewares/validate.middleware')
 const { registerSchema, loginSchema, googleLoginSchema, setPasswordSchema } = require('../validators/auth.validators')
 
@@ -14,7 +14,7 @@ authRouter.post('/register', authLimiter, validate(registerSchema), authControll
 authRouter.post('/login', authLimiter, validate(loginSchema), authController.loginUser);
 
 // refresh access token
-authRouter.post('/refresh', authController.refreshAccessToken);
+authRouter.post('/refresh', refreshLimiter, authController.refreshAccessToken);
 
 //clear the token cookie to logout the user
 authRouter.post('/logout', authMiddleware, authController.logoutUser);

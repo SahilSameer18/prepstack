@@ -62,6 +62,10 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Index for fast OAuth provider lookups
+userSchema.index({ 'providers.providerName': 1, 'providers.providerId': 1 });
+
 const userModel = mongoose.model('User', userSchema)
 
 module.exports = userModel;
+

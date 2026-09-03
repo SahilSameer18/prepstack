@@ -4,8 +4,10 @@ const connectToDB = require('./src/config/database')
 
 const dns = require('dns');
 
-//changing dns because of mongodb not connected
-dns.setServers(['1.1.1.1', '8.8.8.8'])
+// Override DNS in development or if explicitly requested (resolves local ISP SRV resolution issues)
+if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_CUSTOM_DNS === 'true') {
+  dns.setServers(['1.1.1.1', '8.8.8.8']);
+}
 
 connectToDB()
 

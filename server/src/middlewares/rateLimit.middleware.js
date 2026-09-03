@@ -41,4 +41,21 @@ const linkGoogleLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, aiProjectLimiter, linkGoogleLimiter };
+const refreshLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30, // 30 refresh attempts per 15 min per IP
+  skipFailedRequests: true,
+  message: {
+    success: false,
+    message: "Too many session refresh attempts. Please log in again.",
+    errors: ["Rate limit exceeded. Please log in again."],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+module.exports = { authLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter };
+
+
+
+
