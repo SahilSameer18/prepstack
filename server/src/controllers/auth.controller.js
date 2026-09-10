@@ -1,7 +1,7 @@
 const userModel = require('../models/auth.model')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { generateAccessToken, generateRefreshToken } = require('../utils/tokens');
+const { generateAccessToken, generateRefreshToken, hashToken } = require('../utils/tokens');
 const AppError = require('../utils/AppError');
 const googleClient = require('../utils/googleClient');
 const { generateUniqueUsername } = require('../utils/usernameHelper');
@@ -20,6 +20,26 @@ const formatUserResponse = (user) => {
     hasPassword: !!user.password,
     createdAt: user.createdAt
   };
+};
+
+// Cryptographically hashes and appends a refresh token to the user's multi-device active session pool
+const storeSessionToken = async (user, refreshToken) => {
+  const tokenHash = hashToken(refreshToken);
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  // Prune expired sessions
+  let activeTokens = (user.refreshTokens || []).filter(
+    (t) => t.expiresAt && t.expiresAt > new Date()
+  );
+
+  // Cap maximum concurrent sessions to 10 devices
+  if (activeTokens.length >= 10) {
+    activeTokens = activeTokens.slice(activeTokens.length - 9);
+  }
+
+  activeTokens.push({ tokenHash, expiresAt });
+  user.refreshTokens = activeTokens;
+  await user.save();
 };
 
 // ── Cookie options (DRY) ──────────────────────────────────────────────────────
@@ -68,7 +88,7 @@ const registerUser = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    await userModel.findByIdAndUpdate(user._id, { refreshToken });
+    await storeSessionToken(user, refreshToken);
 
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
@@ -107,7 +127,7 @@ const loginUser = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    await userModel.findByIdAndUpdate(user._id, { refreshToken });
+    await storeSessionToken(user, refreshToken);
 
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
@@ -123,13 +143,20 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-// ── Logout ────────────────────────────────────────────────────────────────────
+// ── Logout (Current Device) ───────────────────────────────────────────────────
 
 const logoutUser = async (req, res, next) => {
   try {
+    const incomingToken = req.cookies?.refreshToken;
     const user = await userModel.findById(req.user.id);
-    if (user) {
-      await userModel.findByIdAndUpdate(user._id, { refreshToken: null });
+
+    if (user && incomingToken) {
+      const incomingHash = hashToken(incomingToken);
+      // Remove only the current device's session hash, leaving other devices active
+      user.refreshTokens = (user.refreshTokens || []).filter(
+        (t) => t.tokenHash !== incomingHash
+      );
+      await user.save();
     }
 
     const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
@@ -137,6 +164,27 @@ const logoutUser = async (req, res, next) => {
     res.clearCookie('refreshToken', CLEAR_OPTIONS);
 
     res.status(200).json({ success: true, message: 'User logged out successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ── Logout All Devices (Global Revocation) ────────────────────────────────────
+
+const logoutAllDevices = async (req, res, next) => {
+  try {
+    const user = await userModel.findById(req.user.id);
+    if (user) {
+      // Invalidate all active device sessions globally
+      user.refreshTokens = [];
+      await user.save();
+    }
+
+    const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
+    res.clearCookie('accessToken', CLEAR_OPTIONS);
+    res.clearCookie('refreshToken', CLEAR_OPTIONS);
+
+    res.status(200).json({ success: true, message: 'Signed out of all devices successfully' });
   } catch (error) {
     next(error);
   }
@@ -159,7 +207,7 @@ const getCurrentUser = async (req, res, next) => {
   }
 };
 
-// ── Refresh access token ──────────────────────────────────────────────────────
+// ── Refresh access token (Multi-Device & Hashed Rotation) ────────────────────
 
 const refreshAccessToken = async (req, res, next) => {
   try {
@@ -174,14 +222,35 @@ const refreshAccessToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.REFRESH_SECRET);
 
     const user = await userModel.findById(decoded.id);
-    if (!user || user.refreshToken !== token) {
-      return next(new AppError(403, 'Invalid refresh token'));
+    if (!user || !user.refreshTokens || user.refreshTokens.length === 0) {
+      return next(new AppError(403, 'Invalid or expired session. Please log in again.'));
     }
 
+    const incomingHash = hashToken(token);
+    const matchedIndex = user.refreshTokens.findIndex(
+      (t) => t.tokenHash === incomingHash && t.expiresAt && t.expiresAt > new Date()
+    );
+
+    if (matchedIndex === -1) {
+      return next(new AppError(403, 'Invalid or expired refresh token'));
+    }
+
+    // Single-use token consumption: remove the consumed token
+    user.refreshTokens.splice(matchedIndex, 1);
+
+    // Prune any expired sessions
+    user.refreshTokens = user.refreshTokens.filter(
+      (t) => t.expiresAt && t.expiresAt > new Date()
+    );
+
+    // Issue fresh token pair
     const newAccessToken = generateAccessToken(user);
     const newRefreshToken = generateRefreshToken(user);
+    const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const newTokenHash = hashToken(newRefreshToken);
 
-    await userModel.findByIdAndUpdate(user._id, { refreshToken: newRefreshToken });
+    user.refreshTokens.push({ tokenHash: newTokenHash, expiresAt: newExpiresAt });
+    await user.save();
 
     res.cookie('accessToken', newAccessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', newRefreshToken, REFRESH_COOKIE_OPTIONS);
@@ -268,7 +337,7 @@ const googleLogin = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    await userModel.findByIdAndUpdate(user._id, { refreshToken });
+    await storeSessionToken(user, refreshToken);
 
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
@@ -386,5 +455,4 @@ const setPassword = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, getCurrentUser, refreshAccessToken, googleLogin, linkGoogle, setPassword };
-
+module.exports = { registerUser, loginUser, logoutUser, logoutAllDevices, getCurrentUser, refreshAccessToken, googleLogin, linkGoogle, setPassword };

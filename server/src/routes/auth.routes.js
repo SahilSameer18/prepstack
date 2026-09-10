@@ -16,8 +16,11 @@ authRouter.post('/login', authLimiter, validate(loginSchema), authController.log
 // refresh access token
 authRouter.post('/refresh', refreshLimiter, authController.refreshAccessToken);
 
-//clear the token cookie to logout the user
+// clear current device token cookie to logout user
 authRouter.post('/logout', authMiddleware, authController.logoutUser);
+
+// revoke all active device sessions globally
+authRouter.post('/logout-all', authMiddleware, authController.logoutAllDevices);
 
 // get current user
 authRouter.get('/current-user', authMiddleware, authController.getCurrentUser);

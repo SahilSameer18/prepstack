@@ -49,23 +49,30 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  refreshToken: {          
-    type: String,
-    default: null
-  }
-  // role: {
-  //   type: String,
-  //   enum: ['user', 'admin'],
-  //   default: 'user'
-  // }
+  // Multi-device active refresh tokens stored as SHA-256 hashes
+  refreshTokens: [{
+    tokenHash: {
+      type: String,
+      required: true
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    expiresAt: {
+      type: Date,
+      required: true
+    }
+  }]
 }, {
   timestamps: true
 });
 
 // Index for fast OAuth provider lookups
 userSchema.index({ 'providers.providerName': 1, 'providers.providerId': 1 });
+// Index for fast token hash lookups during session rotation
+userSchema.index({ 'refreshTokens.tokenHash': 1 });
 
 const userModel = mongoose.model('User', userSchema)
 
 module.exports = userModel;
-

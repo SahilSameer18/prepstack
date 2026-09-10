@@ -4,6 +4,7 @@ const progressModel = require('../models/progress.model');
 const DSASheet = require('../models/sheets.model');
 const AppError = require('../utils/AppError');
 const bcrypt = require('bcrypt');
+const { hashToken } = require('../utils/tokens');
 
 const formatUserResponse = (user) => {
   const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`;
@@ -190,11 +191,24 @@ const changePassword = async (req, res, next) => {
 
     const hash = await bcrypt.hash(newPassword, 12);
     user.password = hash;
+
+    // Multi-device security revocation:
+    // Invalidate all other active device sessions, retaining only the current device's session
+    const currentRefreshToken = req.cookies?.refreshToken;
+    if (currentRefreshToken) {
+      const currentHash = hashToken(currentRefreshToken);
+      user.refreshTokens = (user.refreshTokens || []).filter(
+        (t) => t.tokenHash === currentHash && t.expiresAt > new Date()
+      );
+    } else {
+      user.refreshTokens = [];
+    }
+
     await user.save();
 
     res.status(200).json({
       success: true,
-      message: 'Password changed successfully',
+      message: 'Password changed successfully. Other active devices have been signed out.',
       user: formatUserResponse(user)
     });
   } catch (error) {
@@ -203,6 +217,5 @@ const changePassword = async (req, res, next) => {
 };
 
 module.exports = { getUserStats, getDashboardSummary, updateProfile, changePassword };
-
 
 
