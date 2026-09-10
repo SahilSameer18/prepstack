@@ -64,15 +64,18 @@ const TermsOfUse = () => {
         {/* Section 4 */}
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="text-[#ffa116]">4.</span> Acceptable Use & Account Integrity
+            <span className="text-[#ffa116]">4.</span> Acceptable Use & Session Integrity
           </h2>
           <p>You agree not to:</p>
           <ul className="list-disc pl-5 space-y-1 text-gray-400">
             <li>Deploy automated bots, scrapers, or spiders against PrepStack APIs.</li>
             <li>Attempt to bypass rate limiting, authentication safeguards, or DDoS protections.</li>
-            <li>Share access tokens or compromise the security of other students accounts.</li>
+            <li>Share access tokens or compromise the security of other students' accounts.</li>
             <li>Use the AI generation endpoints to produce malicious, fraudulent, or harmful code.</li>
           </ul>
+          <p className="text-xs text-gray-400 pt-1">
+            <strong className="text-white">User Session Responsibility:</strong> You are responsible for safeguarding your credentials and monitoring your active logins. We provide an in-app <strong className="text-white">Active Devices & Sessions Manager</strong> allowing you to inspect logged-in devices and revoke remote sessions at any time.
+          </p>
         </section>
 
         {/* Section 5 */}
@@ -88,10 +91,13 @@ const TermsOfUse = () => {
         {/* Section 6 */}
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="text-[#ffa116]">6.</span> Termination
+            <span className="text-[#ffa116]">6.</span> Account Termination & Self-Service Erasure
           </h2>
           <p>
-            We reserve the right to suspend or terminate accounts that engage in platform abuse, API flooding, or security breaches without prior notice.
+            <strong className="text-white">Voluntary User Termination:</strong> You may permanently terminate your account and erase all associated data at any time via the self-service <strong className="text-white">Delete Account</strong> feature in your Profile settings.
+          </p>
+          <p>
+            <strong className="text-white">Platform Termination:</strong> We reserve the right to suspend or terminate accounts that engage in platform abuse, API flooding, or security breaches without prior notice.
           </p>
         </section>
 
