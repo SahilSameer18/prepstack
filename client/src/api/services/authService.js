@@ -24,6 +24,11 @@ export async function logout() {
   return response.data;
 }
 
+export async function logoutAll() {
+  const response = await api.post("/api/auth/logout-all");
+  return response.data;
+}
+
 export async function getCurrentUser() {
   const response = await api.get("/api/auth/current-user");
   return response.data;
@@ -43,5 +48,4 @@ export async function setPassword(password) {
   const response = await api.put("/api/auth/set-password", { password });
   return response.data;
 }
-
 

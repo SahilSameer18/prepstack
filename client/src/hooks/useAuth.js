@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { login, logout, register, getCurrentUser, loginWithGoogle, linkGoogle, setPassword } from "../api/services/authService";
+import { login, logout, logoutAll, register, getCurrentUser, loginWithGoogle, linkGoogle, setPassword } from "../api/services/authService";
 import { extractError } from "../utils/extractError";
 
 export const useAuth = () => {
@@ -34,6 +34,24 @@ export const useAuth = () => {
     } catch (error) {
       setUser(null);
       throw new Error(extractError(error, 'Logout failed. Please try again.'));
+    } finally {
+      if (setIsLoggingOut) setIsLoggingOut(false);
+    }
+  };
+
+  const handleLogoutAll = async () => {
+    try {
+      if (setIsLoggingOut) setIsLoggingOut(true);
+
+      await Promise.allSettled([
+        logoutAll(),
+        new Promise((resolve) => setTimeout(resolve, 800)),
+      ]);
+
+      setUser(null);
+    } catch (error) {
+      setUser(null);
+      throw new Error(extractError(error, 'Global sign out failed. Please try again.'));
     } finally {
       if (setIsLoggingOut) setIsLoggingOut(false);
     }
@@ -106,6 +124,7 @@ export const useAuth = () => {
     setIsLoggingOut,
     handleLogin,
     handleLogout,
+    handleLogoutAll,
     handleRegister,
     handleGetCurrentUser,
     handleGoogleLogin,

@@ -28,10 +28,11 @@ import { updateUserProfile, changeUserPassword } from "../../api/services/userSe
 import { getDiceBearAvatar, PRESET_AVATARS } from "../../utils/avatar";
 
 const Profile = () => {
-  const { user, setUser, handleLogout, handleLinkGoogle, handleSetPassword } = useAuth();
+  const { user, setUser, handleLogout, handleLogoutAll, handleLinkGoogle, handleSetPassword } = useAuth();
   const [stats, setStats] = useState({ generatedProjectsCount: 0, solvedDSACount: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isLoggingOutAll, setIsLoggingOutAll] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const navigate = useNavigate();
 
@@ -236,6 +237,22 @@ const Profile = () => {
       toast.error("Logout failed");
     } finally {
       setIsLoggingOut(false);
+    }
+  };
+
+  const logoutAll = async () => {
+    if (!window.confirm("Are you sure you want to sign out of all active devices? You will need to log back in on all devices.")) {
+      return;
+    }
+    setIsLoggingOutAll(true);
+    try {
+      await handleLogoutAll();
+      toast.success("Successfully signed out of all devices");
+      navigate('/login');
+    } catch {
+      toast.error("Failed to sign out of all devices");
+    } finally {
+      setIsLoggingOutAll(false);
     }
   };
 
@@ -603,22 +620,33 @@ const Profile = () => {
         </div>
 
         {/* ── 4. Danger Zone / Logout ── */}
-        <div className="bg-[#111] border border-red-500/15 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="bg-[#111] border border-red-500/15 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div>
             <h3 className="text-sm font-bold text-red-400 flex items-center gap-2">
               <FiLogOut /> Session Management
             </h3>
-            <p className="text-xs text-gray-500 mt-0.5">Safely terminate your active session on this device.</p>
+            <p className="text-xs text-gray-500 mt-0.5">Safely terminate active sessions on this device or revoke all active devices.</p>
           </div>
 
-          <button
-            onClick={logout}
-            disabled={isLoggingOut}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-all font-semibold text-xs shrink-0 cursor-pointer"
-          >
-            {isLoggingOut ? <InlineSpinner size={14} color="#f87171" /> : <FiLogOut />}
-            {isLoggingOut ? "Signing out..." : "Sign Out of PrepStack"}
-          </button>
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <button
+              onClick={logout}
+              disabled={isLoggingOut || isLoggingOutAll}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.08] transition-all font-semibold text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50"
+            >
+              {isLoggingOut ? <InlineSpinner size={14} color="#fff" /> : <FiLogOut />}
+              {isLoggingOut ? "Signing out..." : "Sign Out (This Device)"}
+            </button>
+
+            <button
+              onClick={logoutAll}
+              disabled={isLoggingOut || isLoggingOutAll}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-all font-semibold text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50"
+            >
+              {isLoggingOutAll ? <InlineSpinner size={14} color="#f87171" /> : <FiShield />}
+              {isLoggingOutAll ? "Revoking all..." : "Sign Out of All Devices"}
+            </button>
+          </div>
         </div>
 
       </motion.div>
