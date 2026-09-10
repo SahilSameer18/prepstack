@@ -49,3 +49,13 @@ export async function setPassword(password) {
   return response.data;
 }
 
+export async function getActiveSessions() {
+  const response = await api.get("/api/auth/sessions");
+  return response.data;
+}
+
+export async function revokeSession(sessionId) {
+  const response = await api.delete(`/api/auth/sessions/${sessionId}`);
+  return response.data;
+}
+

@@ -34,4 +34,8 @@ authRouter.post('/link-google', linkGoogleLimiter, authMiddleware, validate(goog
 // Set password for OAuth users
 authRouter.put('/set-password', authLimiter, authMiddleware, validate(setPasswordSchema), authController.setPassword);
 
+// Active device session management
+authRouter.get('/sessions', authMiddleware, authController.getActiveSessions);
+authRouter.delete('/sessions/:sessionId', authMiddleware, authController.revokeSession);
+
 module.exports = authRouter;

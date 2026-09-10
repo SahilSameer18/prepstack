@@ -49,11 +49,31 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  // Multi-device active refresh tokens stored as SHA-256 hashes
+  // Multi-device active refresh tokens stored as SHA-256 hashes with device fingerprinting
   refreshTokens: [{
     tokenHash: {
       type: String,
       required: true
+    },
+    device: {
+      type: String,
+      default: 'Unknown Device'
+    },
+    browser: {
+      type: String,
+      default: 'Unknown Browser'
+    },
+    os: {
+      type: String,
+      default: 'Unknown OS'
+    },
+    ip: {
+      type: String,
+      default: 'Unknown IP'
+    },
+    lastActive: {
+      type: Date,
+      default: Date.now
     },
     createdAt: {
       type: Date,

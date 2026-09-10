@@ -5,6 +5,7 @@ const { generateAccessToken, generateRefreshToken, hashToken } = require('../uti
 const AppError = require('../utils/AppError');
 const googleClient = require('../utils/googleClient');
 const { generateUniqueUsername } = require('../utils/usernameHelper');
+const { parseDeviceInfo } = require('../utils/deviceParser');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -22,10 +23,16 @@ const formatUserResponse = (user) => {
   };
 };
 
-// Cryptographically hashes and appends a refresh token to the user's multi-device active session pool
-const storeSessionToken = async (user, refreshToken) => {
+// Cryptographically hashes and appends a refresh token to the user's multi-device active session pool with device telemetry
+const storeSessionToken = async (user, refreshToken, req) => {
   const tokenHash = hashToken(refreshToken);
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const deviceInfo = req ? parseDeviceInfo(req) : {
+    device: "Unknown Device",
+    browser: "Unknown Browser",
+    os: "Unknown OS",
+    ip: "Unknown IP"
+  };
 
   // Prune expired sessions
   let activeTokens = (user.refreshTokens || []).filter(
@@ -37,7 +44,15 @@ const storeSessionToken = async (user, refreshToken) => {
     activeTokens = activeTokens.slice(activeTokens.length - 9);
   }
 
-  activeTokens.push({ tokenHash, expiresAt });
+  activeTokens.push({
+    tokenHash,
+    device: deviceInfo.device,
+    browser: deviceInfo.browser,
+    os: deviceInfo.os,
+    ip: deviceInfo.ip,
+    lastActive: new Date(),
+    expiresAt
+  });
   user.refreshTokens = activeTokens;
   await user.save();
 };
@@ -88,7 +103,7 @@ const registerUser = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    await storeSessionToken(user, refreshToken);
+    await storeSessionToken(user, refreshToken, req);
 
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
@@ -127,7 +142,7 @@ const loginUser = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    await storeSessionToken(user, refreshToken);
+    await storeSessionToken(user, refreshToken, req);
 
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
@@ -235,6 +250,8 @@ const refreshAccessToken = async (req, res, next) => {
       return next(new AppError(403, 'Invalid or expired refresh token'));
     }
 
+    const matchedSession = user.refreshTokens[matchedIndex];
+
     // Single-use token consumption: remove the consumed token
     user.refreshTokens.splice(matchedIndex, 1);
 
@@ -249,7 +266,17 @@ const refreshAccessToken = async (req, res, next) => {
     const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const newTokenHash = hashToken(newRefreshToken);
 
-    user.refreshTokens.push({ tokenHash: newTokenHash, expiresAt: newExpiresAt });
+    // Preserve device info and update lastActive timestamp
+    user.refreshTokens.push({
+      tokenHash: newTokenHash,
+      device: matchedSession.device || 'Unknown Device',
+      browser: matchedSession.browser || 'Unknown Browser',
+      os: matchedSession.os || 'Unknown OS',
+      ip: matchedSession.ip || 'Unknown IP',
+      lastActive: new Date(),
+      createdAt: matchedSession.createdAt || new Date(),
+      expiresAt: newExpiresAt
+    });
     await user.save();
 
     res.cookie('accessToken', newAccessToken, ACCESS_COOKIE_OPTIONS);
@@ -337,7 +364,7 @@ const googleLogin = async (req, res, next) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    await storeSessionToken(user, refreshToken);
+    await storeSessionToken(user, refreshToken, req);
 
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
@@ -455,4 +482,103 @@ const setPassword = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, logoutAllDevices, getCurrentUser, refreshAccessToken, googleLogin, linkGoogle, setPassword };
+// ── Get Active Sessions ───────────────────────────────────────────────────────
+
+const getActiveSessions = async (req, res, next) => {
+  try {
+    const user = await userModel.findById(req.user.id);
+    if (!user) {
+      return next(new AppError(404, 'User not found'));
+    }
+
+    const currentRefreshToken = req.cookies?.refreshToken;
+    const currentHash = currentRefreshToken ? hashToken(currentRefreshToken) : null;
+    const now = new Date();
+
+    const activeSessions = (user.refreshTokens || [])
+      .filter((t) => t.expiresAt && t.expiresAt > now)
+      .map((t) => ({
+        id: t._id ? t._id.toString() : undefined,
+        device: t.device || 'Unknown Device',
+        browser: t.browser || 'Unknown Browser',
+        os: t.os || 'Unknown OS',
+        ip: t.ip || 'Unknown IP',
+        lastActive: t.lastActive || t.createdAt,
+        createdAt: t.createdAt,
+        isCurrent: Boolean(currentHash && t.tokenHash === currentHash)
+      }))
+      .sort((a, b) => (b.isCurrent ? 1 : 0) - (a.isCurrent ? 1 : 0) || new Date(b.lastActive) - new Date(a.lastActive));
+
+    res.status(200).json({
+      success: true,
+      message: 'Active sessions retrieved successfully',
+      data: {
+        sessions: activeSessions
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ── Revoke Specific Session ───────────────────────────────────────────────────
+
+const revokeSession = async (req, res, next) => {
+  try {
+    const { sessionId } = req.params;
+    const user = await userModel.findById(req.user.id);
+    if (!user) {
+      return next(new AppError(404, 'User not found'));
+    }
+
+    const sessionIndex = (user.refreshTokens || []).findIndex(
+      (t) => t._id && t._id.toString() === sessionId
+    );
+
+    if (sessionIndex === -1) {
+      return next(new AppError(404, 'Session not found or already revoked'));
+    }
+
+    const targetSession = user.refreshTokens[sessionIndex];
+    const currentRefreshToken = req.cookies?.refreshToken;
+    const currentHash = currentRefreshToken ? hashToken(currentRefreshToken) : null;
+    const isCurrentRevoked = Boolean(currentHash && targetSession.tokenHash === currentHash);
+
+    // Remove the selected session
+    user.refreshTokens.splice(sessionIndex, 1);
+    await user.save();
+
+    // If the user revoked their own current session, clear their cookies
+    if (isCurrentRevoked) {
+      const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
+      res.clearCookie('accessToken', CLEAR_OPTIONS);
+      res.clearCookie('refreshToken', CLEAR_OPTIONS);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: isCurrentRevoked 
+        ? 'Current session revoked. You have been signed out.' 
+        : 'Device session revoked successfully.',
+      data: {
+        isCurrentRevoked
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { 
+  registerUser, 
+  loginUser, 
+  logoutUser, 
+  logoutAllDevices, 
+  getCurrentUser, 
+  refreshAccessToken, 
+  googleLogin, 
+  linkGoogle, 
+  setPassword,
+  getActiveSessions,
+  revokeSession
+};
