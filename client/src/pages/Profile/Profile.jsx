@@ -20,7 +20,9 @@ import {
   FiMonitor,
   FiSmartphone,
   FiTablet,
-  FiTrash2
+  FiTrash2,
+  FiAlertTriangle,
+  FiX
 } from "react-icons/fi";
 import { FaGoogle, FaEnvelope } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +30,7 @@ import toast from "react-hot-toast";
 import { GoogleLogin } from "@react-oauth/google";
 import { InlineSpinner, SkeletonStat } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
-import { updateUserProfile, changeUserPassword } from "../../api/services/userService";
+import { updateUserProfile, changeUserPassword, deleteUserAccount } from "../../api/services/userService";
 import { getActiveSessions, revokeSession } from "../../api/services/authService";
 import { getDiceBearAvatar, PRESET_AVATARS } from "../../utils/avatar";
 
@@ -53,6 +55,10 @@ const Profile = () => {
   const [sessions, setSessions] = useState([]);
   const [loadingSessions, setLoadingSessions] = useState(true);
   const [revokingSessionId, setRevokingSessionId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const navigate = useNavigate();
 
@@ -317,6 +323,42 @@ const Profile = () => {
       toast.error(err?.response?.data?.message || "Failed to revoke session");
     } finally {
       setRevokingSessionId(null);
+    }
+  };
+
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
+    setDeleteError(null);
+
+    if (user.hasPassword) {
+      if (!deleteConfirmation) {
+        setDeleteError("Please enter your current password to confirm deletion.");
+        return;
+      }
+    } else {
+      if (deleteConfirmation.trim().toLowerCase() !== user.email.toLowerCase()) {
+        setDeleteError(`Please type your exact email (${user.email}) to confirm deletion.`);
+        return;
+      }
+    }
+
+    setIsDeletingAccount(true);
+    try {
+      const payload = user.hasPassword
+        ? { password: deleteConfirmation }
+        : { confirmationEmail: deleteConfirmation.trim() };
+
+      await deleteUserAccount(payload);
+      toast.success("Your account and all data have been permanently deleted.");
+      setShowDeleteModal(false);
+      setUser(null);
+      navigate("/register");
+    } catch (err) {
+      setDeleteError(
+        err?.response?.data?.message || err.message || "Failed to delete account. Please check your credentials."
+      );
+    } finally {
+      setIsDeletingAccount(false);
     }
   };
 
@@ -845,6 +887,109 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* ── 5. GDPR Privacy & Account Deletion ── */}
+        <div className="bg-[#111] border border-red-500/25 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden">
+          <div>
+            <h3 className="text-sm font-bold text-red-500 flex items-center gap-2">
+              <FiAlertTriangle /> Delete Account (GDPR Right to Erasure)
+            </h3>
+            <p className="text-xs text-gray-500 mt-0.5 max-w-xl">
+              Permanently wipe your profile, solved DSA practice tracker, and generated AI projects. This action cannot be undone.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setDeleteError(null);
+              setDeleteConfirmation("");
+              setShowDeleteModal(true);
+            }}
+            className="px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 hover:border-red-500/50 transition-all font-semibold text-xs cursor-pointer shrink-0"
+          >
+            Delete Account...
+          </button>
+        </div>
+
+        {/* ── Account Deletion Confirmation Modal ── */}
+        <AnimatePresence>
+          {showDeleteModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="w-full max-w-md bg-[#121212] border border-red-500/30 rounded-2xl p-6 space-y-5 shadow-2xl relative"
+              >
+                <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+                  <div className="flex items-center gap-2.5 text-red-400 font-bold text-sm">
+                    <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-base">
+                      <FiAlertTriangle />
+                    </div>
+                    <span>Delete Account Permanently</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteModal(false)}
+                    className="text-gray-400 hover:text-white p-1 cursor-pointer transition-colors"
+                  >
+                    <FiX className="text-lg" />
+                  </button>
+                </div>
+
+                <div className="text-xs text-gray-300 space-y-2 leading-relaxed">
+                  <p>This action is irreversible. The following data will be permanently wiped:</p>
+                  <ul className="list-disc list-inside space-y-1 text-gray-400 pl-1">
+                    <li>All solved DSA problem tracker entries across all sheets.</li>
+                    <li>All generated AI project ideas and history.</li>
+                    <li>All security credentials and active device sessions.</li>
+                  </ul>
+                </div>
+
+                <InlineErrorAlert message={deleteError} onDismiss={() => setDeleteError(null)} />
+
+                <form onSubmit={handleDeleteAccount} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-300">
+                      {user.hasPassword ? (
+                        "Enter your password to confirm:"
+                      ) : (
+                        <span>Type your email <strong className="text-white select-all">{user.email}</strong> to confirm:</span>
+                      )}
+                    </label>
+                    <input
+                      type={user.hasPassword ? "password" : "text"}
+                      value={deleteConfirmation}
+                      onChange={(e) => setDeleteConfirmation(e.target.value)}
+                      placeholder={user.hasPassword ? "Enter current password" : user.email}
+                      required
+                      className="w-full bg-black/60 border border-white/[0.1] focus:border-red-500/50 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-600 outline-none transition-colors"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteModal(false)}
+                      disabled={isDeletingAccount}
+                      className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/[0.06] text-gray-300 hover:bg-white/[0.1] transition-all cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isDeletingAccount}
+                      className="px-5 py-2 text-xs font-semibold rounded-xl bg-red-600 hover:bg-red-500 text-white transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-lg shadow-red-600/20"
+                    >
+                      {isDeletingAccount && <InlineSpinner size={14} color="#fff" />}
+                      {isDeletingAccount ? "Deleting..." : "Permanently Delete"}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );

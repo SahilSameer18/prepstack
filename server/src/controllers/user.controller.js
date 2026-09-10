@@ -216,6 +216,56 @@ const changePassword = async (req, res, next) => {
   }
 };
 
-module.exports = { getUserStats, getDashboardSummary, updateProfile, changePassword };
+// ── Delete user account & cascade personal data (GDPR Right to Erasure) ──────
 
+const deleteAccount = async (req, res, next) => {
+  try {
+    const userId = req.user._id || req.user.id;
+    const { password, confirmationEmail } = req.body;
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return next(new AppError(404, 'User not found'));
+    }
+
+    // Security Verification:
+    // 1. If account has a password, verify it
+    if (user.password) {
+      if (!password) {
+        return next(new AppError(400, 'Please enter your password to confirm account deletion.'));
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return next(new AppError(401, 'Incorrect password. Verification failed.'));
+      }
+    } else {
+      // 2. Google OAuth account with no password set: verify email matches
+      if (!confirmationEmail || confirmationEmail.toLowerCase().trim() !== user.email.toLowerCase().trim()) {
+        return next(new AppError(400, 'Please enter your account email correctly to confirm deletion.'));
+      }
+    }
+
+    // Atomic Cascade Deletion across all collections
+    await Promise.all([
+      progressModel.deleteMany({ user: userId }),
+      projectModel.deleteMany({ user: userId }),
+      userModel.findByIdAndDelete(userId)
+    ]);
+
+    // Clear authentication cookies
+    const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
+    res.clearCookie('accessToken', CLEAR_OPTIONS);
+    res.clearCookie('refreshToken', CLEAR_OPTIONS);
+
+    res.status(200).json({
+      success: true,
+      message: 'Your account and all associated data have been permanently deleted.',
+      data: null
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getUserStats, getDashboardSummary, updateProfile, changePassword, deleteAccount };
 

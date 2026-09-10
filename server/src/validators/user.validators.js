@@ -29,7 +29,9 @@ const changePasswordSchema = z.object({
     .regex(/[0-9]/, 'New password must contain at least one number'),
 });
 
-module.exports = { updateProfileSchema, changePasswordSchema };
+const deleteAccountSchema = z.object({
+  password: z.string().optional(),
+  confirmationEmail: z.string().trim().email('Please enter a valid confirmation email').optional(),
+});
 
-
-
+module.exports = { updateProfileSchema, changePasswordSchema, deleteAccountSchema };
