@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { FiCpu, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiLoader, FiList } from "react-icons/fi";
-import { FaRobot, FaBookmark, FaLightbulb } from "react-icons/fa";
 import { useProject } from '../../hooks/useProject'
 import { useNavigate, useParams } from "react-router-dom";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
@@ -57,49 +56,50 @@ const AIProjectIdeas = () => {
   const isFormValid = form.techStack && form.complexity;
 
   return (
-    <div className="px-6 pb-4 max-w-7xl mx-auto page-enter">
+    <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto page-enter">
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pt-2">
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-semibold text-green-400 bg-green-500/10 border border-green-500/20 rounded-full px-3 py-1 mb-4">
-            <FaRobot /> Powered by AI
+          <div className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
+            <span className="tracking-wider uppercase font-semibold text-zinc-300">Architecture Compiler</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-3">
-            AI Project <span className="text-[#ffa116]">Generator</span>
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-[-0.035em] mb-3">
+            System Architecture Studio
           </h1>
-          <p className="text-gray-400 max-w-2xl text-base leading-relaxed">
-            Stop building another To-Do app. Generate unique, resume-worthy project ideas tailored to your tech stack and goals.
+          <p className="text-zinc-400 max-w-2xl text-base sm:text-lg leading-relaxed font-normal">
+            Generate production-grade engineering projects tailored to your target tech stack with distributed systems challenges, concurrency bottlenecks, and realistic benchmark targets.
           </p>
         </div>
 
         <button
           onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.1] transition-all font-medium text-sm self-start md:self-auto"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-zinc-300 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.18] transition-all font-display font-semibold text-xs sm:text-sm self-start md:self-auto cursor-pointer"
         >
-          <FiList className="text-[#ffa116]" /> View Saved Projects
+          <FiList className="text-[#ffa116]" /> Saved Blueprints
         </button>
       </div>
 
       {/* Two-Panel Layout */}
-      <div className="grid lg:grid-cols-[380px_1fr] gap-6 items-start">
+      <div className="grid lg:grid-cols-[380px_1fr] gap-6 items-start text-left">
 
         {/* ─── LEFT PANEL: Controls ─── */}
-        <div className="bg-[#111] border border-white/[0.08] rounded-2xl p-6 space-y-5 sticky top-20">
+        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 space-y-5 sticky top-20 shadow-xl">
 
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-lg flex items-center justify-center">
-              <FiCode className="text-[#ffa116]" />
+          <div className="flex items-center gap-2.5 mb-2 pb-3 border-b border-white/[0.08]">
+            <div className="w-8 h-8 bg-[#ffa116]/10 border border-[#ffa116]/25 rounded-lg flex items-center justify-center">
+              <FiCode className="text-[#ffa116] text-sm" />
             </div>
             <div>
-              <h2 className="font-bold text-white text-sm">Configure Your Idea</h2>
-              <p className="text-[10px] text-gray-500">Set constraints for the AI</p>
+              <h2 className="font-display font-bold text-white text-sm">Specification Constraints</h2>
+              <p className="text-[11px] font-mono text-zinc-400">Define architectural parameters</p>
             </div>
           </div>
 
           {/* Tech Stack — grouped section */}
-          <div className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 space-y-2">
-            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+          <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3.5 space-y-2.5">
+            <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
               Tech Stack <span className="text-[#ffa116]">*</span>
             </label>
             <div className="flex flex-wrap gap-2">
@@ -107,7 +107,11 @@ const AIProjectIdeas = () => {
                 <button
                   key={s}
                   onClick={() => handleChange("techStack", s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${form.techStack === s ? "bg-[#ffa116]/15 border-[#ffa116]/40 text-[#ffa116]" : "bg-white/[0.03] border-white/[0.07] text-gray-400 hover:text-white hover:border-white/[0.2]"}`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                    form.techStack === s 
+                      ? "bg-[#ffa116]/15 border-[#ffa116]/40 text-[#ffa116] font-semibold" 
+                      : "bg-[#121216] border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.2]"
+                  }`}
                 >
                   {s}
                 </button>
@@ -116,18 +120,26 @@ const AIProjectIdeas = () => {
           </div>
 
           {/* Complexity — grouped section */}
-          <div className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 space-y-2">
-            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
-              Complexity <span className="text-[#ffa116]">*</span>
+          <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3.5 space-y-2.5">
+            <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+              Target Complexity <span className="text-[#ffa116]">*</span>
             </label>
             <div className="flex gap-2">
               {complexities.map((c) => {
-                const colors = { Beginner: "text-green-400 border-green-500/40 bg-green-500/10", Intermediate: "text-yellow-400 border-yellow-500/40 bg-yellow-500/10", Advanced: "text-red-400 border-red-500/40 bg-red-500/10" };
+                const activeColors = { 
+                  Beginner: "text-emerald-400 border-emerald-500/40 bg-emerald-500/10", 
+                  Intermediate: "text-amber-400 border-amber-500/40 bg-amber-500/10", 
+                  Advanced: "text-rose-400 border-rose-500/40 bg-rose-500/10" 
+                };
                 return (
                   <button
                     key={c}
                     onClick={() => handleChange("complexity", c)}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-all ${form.complexity === c ? colors[c] : "bg-white/[0.03] border-white/[0.07] text-gray-400 hover:text-white"}`}
+                    className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                      form.complexity === c 
+                        ? activeColors[c] 
+                        : "bg-[#121216] border-white/[0.08] text-zinc-400 hover:text-zinc-200"
+                    }`}
                   >
                     {c}
                   </button>
@@ -137,15 +149,19 @@ const AIProjectIdeas = () => {
           </div>
 
           {/* Domain + Notes — grouped section */}
-          <div className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 space-y-3">
+          <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3.5 space-y-3">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Domain / Industry</label>
+              <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider">Target Domain</label>
               <div className="flex flex-wrap gap-2">
                 {domains.map((d) => (
                   <button
                     key={d}
                     onClick={() => handleChange("domain", form.domain === d ? "" : d)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${form.domain === d ? "bg-purple-500/15 border-purple-500/40 text-purple-300" : "bg-white/[0.03] border-white/[0.07] text-gray-400 hover:text-white hover:border-white/[0.2]"}`}
+                    className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                      form.domain === d 
+                        ? "bg-purple-500/20 border-purple-500/40 text-purple-300 font-semibold" 
+                        : "bg-[#121216] border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.2]"
+                    }`}
                   >
                     {d}
                   </button>
@@ -153,23 +169,23 @@ const AIProjectIdeas = () => {
               </div>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-white/[0.05]">
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Additional Notes</label>
+            <div className="space-y-2 pt-2.5 border-t border-white/[0.06]">
+              <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider">Architectural Constraints / Goals</label>
               <textarea
-                placeholder="e.g. something with real-time features, or related to my college project..."
+                placeholder="e.g. distributed event queue, high throughput p99 latency target, or WebSocket coordination..."
                 rows={3}
                 value={form.notes}
                 onChange={(e) => handleChange("notes", e.target.value)}
-                className="w-full bg-[#0d0d0d] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] focus:shadow-[0_0_0_3px_rgba(255,161,22,0.08)] rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none resize-none transition-all"
+                className="w-full bg-[#121216] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] focus:ring-1 focus:ring-[#ffa116] rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none resize-none transition-colors"
               />
             </div>
           </div>
 
           {/* Validation hint */}
           {!isFormValid && (
-            <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-2.5 rounded-lg">
+            <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-2.5 rounded-lg text-left">
               <FiZap className="shrink-0 mt-0.5 text-sm" />
-              <p className="text-xs font-semibold">Select Tech Stack and Complexity to continue</p>
+              <p className="text-xs font-medium">Select Tech Stack and Complexity to compile blueprint</p>
             </div>
           )}
 
@@ -185,20 +201,24 @@ const AIProjectIdeas = () => {
             <button
               onClick={handleGenerate}
               disabled={!isFormValid || loading}
-              className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${isFormValid && !loading ? "bg-gradient-to-r from-[#ffa116] to-[#ff8c00] text-black hover:from-[#ffb84d] hover:to-[#ffa116] shadow-lg shadow-orange-500/20 hover:-translate-y-0.5" : "bg-white/[0.05] text-gray-500 cursor-not-allowed"}`}
+              className={`w-full py-3 rounded-xl font-display font-semibold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                isFormValid && !loading 
+                  ? "amber-specular-button text-black font-bold" 
+                  : "bg-white/[0.04] border border-white/[0.08] text-zinc-500 cursor-not-allowed"
+              }`}
             >
               {loading ? (
-                <><FiLoader className="animate-spin" /> Generating Idea...</>
+                <><FiLoader className="animate-spin text-zinc-400" /> Compiling Blueprint...</>
               ) : (
-                <><FiZap /> Generate Project Idea</>
+                <><FiZap /> Generate Architecture Blueprint</>
               )}
             </button>
             <button
                onClick={handleReset}
                title="Clear all fields and start fresh"
-               className="w-full py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.07] flex items-center justify-center gap-2 text-gray-500 hover:text-white hover:bg-white/[0.06] transition-all font-medium text-sm"
+               className="w-full py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center gap-2 text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors font-medium text-xs sm:text-sm cursor-pointer"
             >
-              <FiRefreshCw className="text-xs" /> Reset
+              <FiRefreshCw className="text-xs" /> Reset Parameters
             </button>
           </div>
         </div>
@@ -206,17 +226,23 @@ const AIProjectIdeas = () => {
         {/* ─── RIGHT PANEL: Generated Idea ─── */}
         <div className="min-h-[500px]">
           {!project && !loading && (
-            <div className="h-full min-h-[500px] flex flex-col items-center justify-center bg-[#111] border border-dashed border-white/[0.08] rounded-2xl p-10 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-[#ffa116]/10 border border-[#ffa116]/20 flex items-center justify-center mb-4">
-                <FaRobot className="text-3xl text-[#ffa116]/60" />
+            <div className="h-full min-h-[500px] flex flex-col items-center justify-center bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-8 sm:p-12 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-[#ffa116]/10 border border-[#ffa116]/25 flex items-center justify-center mb-4">
+                <FiCpu className="text-2xl text-[#ffa116]" />
               </div>
-              <h3 className="text-lg font-bold text-gray-300 mb-2">Your idea will appear here</h3>
-              <p className="text-gray-500 text-sm max-w-xs">Configure your preferences on the left and hit Generate to get a unique, tailored project idea.</p>
+              <h3 className="font-display text-lg font-bold text-white mb-2">Architectural Blueprint Canvas</h3>
+              <p className="text-zinc-400 text-sm max-w-sm leading-relaxed">
+                Configure your system parameters on the left to compile an industry-grade architecture blueprint with realistic distributed challenges.
+              </p>
               <div className="mt-8 grid grid-cols-3 gap-3 w-full max-w-sm">
-                {["Resume-Worthy", "Unique Concepts", "Practical Ideas"].map((tag) => (
-                  <div key={tag} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center">
-                    <FaLightbulb className="text-[#ffa116]/40 mx-auto mb-1.5" />
-                    <p className="text-xs text-gray-500 font-medium">{tag}</p>
+                {[
+                  { label: "Production Scale", sub: "Distributed" },
+                  { label: "Benchmarked", sub: "Latency & RPS" },
+                  { label: "ATS Caliber", sub: "Portfolio Ready" }
+                ].map((tag) => (
+                  <div key={tag.label} className="bg-[#121216] border border-white/[0.08] rounded-xl p-3 text-center">
+                    <p className="text-xs text-zinc-200 font-semibold mb-0.5">{tag.label}</p>
+                    <p className="text-[10px] font-mono text-zinc-500">{tag.sub}</p>
                   </div>
                 ))}
               </div>
@@ -224,64 +250,63 @@ const AIProjectIdeas = () => {
           )}
 
           {loading && (
-            <div className="h-full min-h-[500px] flex flex-col items-center justify-center bg-[#111] border border-white/[0.08] rounded-2xl p-10 text-center">
+            <div className="h-full min-h-[500px] flex flex-col items-center justify-center bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-10 text-center">
               <div className="relative w-16 h-16 mb-4">
-                <div className="absolute inset-0 rounded-full border-2 border-[#ffa116]/20 animate-ping" />
                 <div className="w-16 h-16 rounded-full bg-[#ffa116]/10 border border-[#ffa116]/30 flex items-center justify-center">
                   <FiCpu className="text-2xl text-[#ffa116] animate-pulse" />
                 </div>
               </div>
-              <p className="text-white font-semibold mb-1">Generating your idea...</p>
-              <p className="text-gray-500 text-sm">AI is crafting something unique for you</p>
+              <p className="font-display text-white font-semibold text-base mb-1">Synthesizing Blueprint...</p>
+              <p className="font-mono text-zinc-400 text-xs">[SYSTEM_ARCH] Formulating data schemas and concurrency controls</p>
             </div>
           )}
 
           {project && !loading && (
-            <div className="bg-[#111] border border-white/[0.08] rounded-2xl overflow-hidden">
+            <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl overflow-hidden shadow-2xl">
               {/* Card Header */}
-              <div className="bg-gradient-to-r from-[#ffa116]/10 to-transparent border-b border-white/[0.06] px-6 py-5 flex items-start justify-between gap-4">
+              <div className="bg-[#101014] border-b border-white/[0.08] px-6 py-5 flex items-start justify-between gap-4">
                 <div className="flex-1">
                   {/* Chip tags */}
                   <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="text-[10px] font-bold tracking-widest text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-2.5 py-0.5 flex items-center gap-1">
-                      <FiCheck strokeWidth={3} className="text-[8px]" /> AI GENERATED
+                    <span className="text-[10px] font-mono font-bold tracking-wider text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/25 rounded-full px-2.5 py-0.5 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" /> ARCHITECTURE BLUEPRINT
                     </span>
                     {(project.techStack || form.techStack) && (
-                      <span className="text-[10px] font-bold tracking-widest text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-full px-2.5 py-0.5 uppercase">
+                      <span className="text-[10px] font-mono font-semibold tracking-wider text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-full px-2.5 py-0.5 uppercase">
                         {project.techStack || form.techStack}
                       </span>
                     )}
                     {form.domain && (
-                      <span className="text-[10px] font-bold tracking-widest text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded-full px-2.5 py-0.5 uppercase">
+                      <span className="text-[10px] font-mono font-semibold tracking-wider text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded-full px-2.5 py-0.5 uppercase">
                         {form.domain}
                       </span>
                     )}
                     {(project.difficulty || form.complexity) && (
-                      <span className={`text-[10px] font-bold tracking-widest rounded-full px-2.5 py-0.5 border uppercase ${
-                        (project.difficulty || form.complexity) === 'Beginner' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
-                        (project.difficulty || form.complexity) === 'Intermediate' ? 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' :
-                        'text-red-400 bg-red-500/10 border-red-500/20'
+                      <span className={`text-[10px] font-mono font-semibold tracking-wider rounded-full px-2.5 py-0.5 border uppercase ${
+                        (project.difficulty || form.complexity) === 'Beginner' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/25' :
+                        (project.difficulty || form.complexity) === 'Intermediate' ? 'text-amber-400 bg-amber-500/10 border-amber-500/25' :
+                        'text-rose-400 bg-rose-500/10 border-rose-500/25'
                       }`}>
                         {project.difficulty || form.complexity}
                       </span>
                     )}
                   </div>
-                  <h2 className="text-2xl font-black text-white">{project.title}</h2>
-                  <p className="text-gray-400 text-sm mt-1 italic">{project.tagline}</p>
+                  <h2 className="text-xl sm:text-2xl font-display font-bold text-white mb-1">{project.title}</h2>
+                  <p className="text-zinc-400 text-xs sm:text-sm">{project.tagline}</p>
                 </div>
                 {/* Action buttons */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={handleCopy}
-                    title="Copy to clipboard"
-                    className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.1] transition-all"
+                    title="Copy specification to clipboard"
+                    className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
                   >
-                    {copied ? <FiCheck className="text-green-400" /> : <FiCopy />}
+                    {copied ? <FiCheck className="text-emerald-400" /> : <FiCopy />}
                   </button>
                   <button
                     onClick={handleReset}
-                    title="Clear current idea and start over"
-                    className="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.1] transition-all group"
+                    title="Clear current specification and start over"
+                    className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer group"
                   >
                     <FiRefreshCw className="transition-transform group-hover:rotate-180 duration-500" />
                   </button>
@@ -292,20 +317,20 @@ const AIProjectIdeas = () => {
               <div className="p-6 space-y-6">
                 {/* Description */}
                 <div>
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Project Overview</h3>
-                  <p className="text-gray-300 leading-relaxed text-sm">{project.description}</p>
+                  <h3 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-wider mb-2">System Overview</h3>
+                  <p className="text-zinc-300 leading-relaxed text-sm sm:text-base">{project.description}</p>
                 </div>
 
                 {/* Features */}
                 <div>
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Key Features</h3>
-                  <ul className="space-y-2">
+                  <h3 className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-wider mb-3">Core Technical Requirements</h3>
+                  <ul className="space-y-2.5">
                     {project.features?.map((f, i) => (
-                      <li key={i} className="flex items-start gap-2.5 text-sm text-gray-300">
-                        <span className="w-5 h-5 rounded-full bg-[#ffa116]/15 border border-[#ffa116]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <FiCheck className="text-[#ffa116] text-[10px]" />
+                      <li key={i} className="flex items-start gap-3 text-sm text-zinc-300">
+                        <span className="w-5 h-5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <FiCheck className="text-[#ffa116] text-xs" />
                         </span>
-                        {f}
+                        <span className="leading-relaxed">{f}</span>
                       </li>
                     ))}
                   </ul>
@@ -316,22 +341,22 @@ const AIProjectIdeas = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {[
                       { label: "Tech Stack", value: project.techStack },
-                      { label: "Difficulty", value: project.difficulty },
-                      { label: "Time Estimate", value: project.estimatedTime },
+                      { label: "Architectural Tier", value: project.difficulty },
+                      { label: "Implementation Target", value: project.estimatedTime },
                     ].map((m) => (
-                      <div key={m.label} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3">
-                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{m.label}</p>
-                        <p className="text-xs text-white font-medium leading-snug">{m.value}</p>
+                      <div key={m.label} className="bg-[#121216] border border-white/[0.08] rounded-xl p-3.5">
+                        <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider mb-1">{m.label}</p>
+                        <p className="text-xs sm:text-sm text-white font-medium leading-snug">{m.value}</p>
                       </div>
                     ))}
                   </div>
 
                   {/* Resume Value - Full Width and Highlighted */}
-                  <div className="bg-[#ffa116]/5 border border-[#ffa116]/10 rounded-xl p-4">
-                    <p className="text-[10px] text-[#ffa116] uppercase tracking-wider mb-2 font-bold flex items-center gap-1.5">
-                      <FiZap className="text-xs" /> Resume Impact & Implementation Value
+                  <div className="bg-[#ffa116]/[0.03] border border-[#ffa116]/20 rounded-xl p-4">
+                    <p className="text-[11px] font-mono text-[#ffa116] uppercase tracking-wider mb-2 font-bold flex items-center gap-2">
+                      <FiZap className="text-xs" /> Portfolio Value & ATS High-Signal Talking Points
                     </p>
-                    <p className="text-xs text-gray-300 leading-relaxed italic">
+                    <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
                       {project.resumeValue}
                     </p>
                   </div>

@@ -90,29 +90,31 @@ const Register = () => {
   const avatars = ["S", "A", "R", "P"];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex">
+    <div className="min-h-screen bg-[#060608] flex selection:bg-[#ffa116]/25 selection:text-white">
 
       {/* ── Left Panel ── */}
       <motion.div
-        className="hidden lg:flex lg:w-1/2 relative flex-col p-10 xl:p-14 overflow-y-auto custom-scrollbar overflow-x-hidden"
+        className="hidden lg:flex lg:w-1/2 relative flex-col p-10 xl:p-14 overflow-y-auto custom-scrollbar overflow-x-hidden border-r border-white/[0.06]"
         variants={panelLeft}
         initial="hidden"
         animate="show"
       >
-        {/* Backgrounds */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0f0f0f] via-[#111] to-[#0a0a0a]" />
-        <motion.div
-          className="absolute top-[-80px] right-[-40px] w-[360px] h-[360px] bg-[#ffa116]/8 rounded-full blur-[100px]"
-          animate={{ scale: [1, 1.08, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-[60px] left-[-60px] w-[280px] h-[280px] bg-orange-600/6 rounded-full blur-[80px]"
-          animate={{ scale: [1, 1.06, 1], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        {/* Hardware-accelerated ambient glow (0 GPU re-rasterization) */}
+        <div className="absolute inset-0 bg-[#060608]" />
+        <div
+          className="absolute top-[-80px] right-[-40px] w-[420px] h-[420px] rounded-full pointer-events-none transform-gpu opacity-60"
+          style={{
+            background: "radial-gradient(circle, rgba(255,161,22,0.12) 0%, transparent 70%)",
+          }}
         />
         <div
-          className="absolute inset-0 opacity-[0.025]"
+          className="absolute bottom-[60px] left-[-60px] w-[360px] h-[360px] rounded-full pointer-events-none transform-gpu opacity-40"
+          style={{
+            background: "radial-gradient(circle, rgba(234,88,12,0.08) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-[0.025] pointer-events-none"
           style={{
             backgroundImage: `radial-gradient(circle, rgba(255,161,22,0.8) 1px, transparent 1px)`,
             backgroundSize: "40px 40px",
@@ -122,7 +124,7 @@ const Register = () => {
         {/* Logo */}
         <div className="relative z-10 mb-10 shrink-0">
           <Link to="/" className="flex items-center gap-2 group w-fit">
-            <span className="text-2xl font-bold tracking-tight text-white group-hover:opacity-90 transition-opacity">
+            <span className="text-2xl font-display font-bold tracking-tight text-white group-hover:opacity-90 transition-opacity">
               Prep<span className="text-[#ffa116]">Stack</span>
             </span>
           </Link>
@@ -136,7 +138,7 @@ const Register = () => {
           animate="show"
         >
           <motion.div variants={formItem}>
-            <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-1.5 mb-5">
+            <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-1.5 mb-5 font-mono text-xs font-semibold text-emerald-400">
               <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
               <span className="text-green-400 text-xs font-semibold tracking-widest uppercase">Free Forever</span>
             </div>
@@ -230,29 +232,29 @@ const Register = () => {
 
             {/* Username */}
             <motion.div className="space-y-1.5" variants={formItem}>
-              <label className="text-sm font-medium text-gray-300">Username</label>
-              <div className={`flex items-center gap-3 w-full bg-[#111] border rounded-xl px-4 h-12 transition-all duration-200 ${focusedField === "username" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
-                <FiUser className={`text-lg flex-shrink-0 transition-colors ${focusedField === "username" ? "text-[#ffa116]" : "text-gray-500"}`} />
+              <label className="text-sm font-medium text-zinc-300">Username</label>
+              <div className={`flex items-center gap-3 w-full bg-[#0c0c0e] border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "username" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
+                <FiUser className={`text-lg flex-shrink-0 transition-colors ${focusedField === "username" ? "text-[#ffa116]" : "text-zinc-500"}`} />
                 <input
                   type="text" name="username" placeholder="e.g. coder_sahil"
-                  className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm"
+                  className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
                   value={formData.username} onChange={handleChange}
                   onFocus={() => setFocusedField("username")} onBlur={() => setFocusedField(null)}
                   required minLength={4} maxLength={30}
                 />
-                {formData.username.length >= 4 && <FiCheck className="text-green-400 flex-shrink-0" />}
+                {formData.username.length >= 4 && <FiCheck className="text-emerald-400 flex-shrink-0" />}
               </div>
-              <p className="text-xs text-gray-600 pl-1">4–30 characters</p>
+              <p className="text-xs text-zinc-400 pl-1 font-mono">4–30 characters</p>
             </motion.div>
 
             {/* Email */}
             <motion.div className="space-y-1.5" variants={formItem}>
-              <label className="text-sm font-medium text-gray-300">Email address</label>
-              <div className={`flex items-center gap-3 w-full bg-[#111] border rounded-xl px-4 h-12 transition-all duration-200 ${focusedField === "email" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
-                <FiMail className={`text-lg flex-shrink-0 transition-colors ${focusedField === "email" ? "text-[#ffa116]" : "text-gray-500"}`} />
+              <label className="text-sm font-medium text-zinc-300">Email address</label>
+              <div className={`flex items-center gap-3 w-full bg-[#0c0c0e] border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "email" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
+                <FiMail className={`text-lg flex-shrink-0 transition-colors ${focusedField === "email" ? "text-[#ffa116]" : "text-zinc-500"}`} />
                 <input
                   type="email" name="email" placeholder="you@example.com"
-                  className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm"
+                  className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
                   value={formData.email} onChange={handleChange}
                   onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} required
                 />
@@ -261,17 +263,17 @@ const Register = () => {
 
             {/* Password */}
             <motion.div className="space-y-1.5" variants={formItem}>
-              <label className="text-sm font-medium text-gray-300">Password</label>
-              <div className={`flex items-center gap-3 w-full bg-[#111] border rounded-xl px-4 h-12 transition-all duration-200 ${focusedField === "password" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
-                <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-[#ffa116]" : "text-gray-500"}`} />
+              <label className="text-sm font-medium text-zinc-300">Password</label>
+              <div className={`flex items-center gap-3 w-full bg-[#0c0c0e] border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "password" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
+                <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-[#ffa116]" : "text-zinc-500"}`} />
                 <input
                   type={showPassword ? "text" : "password"} name="password" placeholder="Min. 8 chars, uppercase & number"
-                  className="w-full bg-transparent text-white placeholder-gray-500 outline-none text-sm"
+                  className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
                   value={formData.password} onChange={handleChange}
                   onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)}
                   required minLength={8}
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-gray-500 hover:text-gray-300 transition-colors flex-shrink-0">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-zinc-500 hover:text-zinc-300 transition-colors flex-shrink-0">
                   {showPassword ? <FiEye className="text-lg" /> : <FiEyeOff className="text-lg" />}
                 </button>
               </div>
@@ -282,14 +284,14 @@ const Register = () => {
                       <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= strength.score ? strength.color : "bg-white/10"}`} />
                     ))}
                   </div>
-                  <span className={`text-xs font-medium ${strength.score === 1 ? "text-red-400" : strength.score === 2 ? "text-yellow-400" : "text-green-400"}`}>
+                  <span className={`text-xs font-medium ${strength.score === 1 ? "text-rose-400" : strength.score === 2 ? "text-amber-400" : "text-emerald-400"}`}>
                     {strength.label}
                   </span>
                 </div>
               )}
             </motion.div>
 
-            <motion.p className="text-xs text-gray-500 leading-relaxed" variants={formItem}>
+            <motion.p className="text-xs text-zinc-400 leading-relaxed" variants={formItem}>
               By creating an account, you agree to our{" "}
               <Link to="/terms" className="text-[#ffa116] hover:underline">Terms of Use</Link> and{" "}
               <Link to="/privacy" className="text-[#ffa116] hover:underline">Privacy Policy</Link>.
@@ -299,9 +301,7 @@ const Register = () => {
               type="submit"
               disabled={loading}
               variants={formItem}
-              whileHover={{ scale: loading ? 1 : 1.015 }}
-              whileTap={{ scale: loading ? 1 : 0.98 }}
-              className="w-full h-12 rounded-xl text-black font-semibold text-sm bg-gradient-to-r from-[#ffa116] to-[#ff8c00] hover:from-[#ffb84d] hover:to-[#ffa116] transition-all duration-300 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 mt-1 flex items-center justify-center gap-2.5 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="amber-specular-button w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <><InlineSpinner size={17} color="#000" /><span>Creating account...</span></>

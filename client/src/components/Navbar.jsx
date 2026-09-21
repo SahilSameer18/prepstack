@@ -64,13 +64,13 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#0a0a0a]/95 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.05)]' : 'bg-[#0a0a0a]/80 backdrop-blur-md'}`}>
-      <div className="max-w-7xl mx-auto px-5">
-        <div className="flex items-center justify-between h-[62px]">
+    <nav className={`fixed top-0 w-full z-50 transition-colors duration-200 ${scrolled ? 'bg-[#060608]/95 backdrop-blur-md border-b border-white/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.8)]' : 'bg-[#060608]/80 backdrop-blur-sm border-b border-white/[0.05]'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16">
 
           {/* ── Logo (text only) ── */}
           <NavLink to="/" className="flex items-center group">
-            <span className="text-xl font-bold tracking-tight text-white group-hover:opacity-90 transition-opacity">
+            <span className="text-xl font-display font-bold tracking-tight text-white group-hover:opacity-90 transition-opacity">
               Prep<span className="text-[#ffa116]">Stack</span>
             </span>
           </NavLink>
@@ -82,11 +82,24 @@ const Navbar = () => {
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive ? "text-[#ffa116] bg-[#ffa116]/10" : "text-gray-400 hover:text-white hover:bg-white/[0.06]"}`
+                  `relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    isActive ? "text-[#ffa116]" : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
+                  }`
                 }
               >
-                <span className="text-base">{link.icon}</span>
-                {link.name}
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <motion.div
+                        layoutId="navbarActiveIndicator"
+                        className="absolute inset-0 bg-[#ffa116]/10 border border-[#ffa116]/30 rounded-lg -z-10 shadow-sm"
+                        transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                    <span className="text-base">{link.icon}</span>
+                    <span>{link.name}</span>
+                  </>
+                )}
               </NavLink>
             ))}
 
@@ -94,7 +107,7 @@ const Navbar = () => {
             <div className="relative" ref={exploreRef}>
               <button
                 onClick={() => setExploreOpen(!exploreOpen)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${exploreOpen ? "text-white bg-white/[0.06]" : "text-gray-400 hover:text-white hover:bg-white/[0.06]"}`}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${exploreOpen ? "text-white bg-white/[0.06]" : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"}`}
               >
                 Explore
                 <motion.span animate={{ rotate: exploreOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
@@ -109,34 +122,34 @@ const Navbar = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.97 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-72 bg-[#111] border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/50 overflow-hidden"
+                    className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-72 bg-[#0c0c0e] border border-white/[0.1] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden backdrop-blur-2xl"
                   >
                     <div className="px-4 py-3 border-b border-white/[0.06]">
-                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">More Resources</p>
+                      <p className="text-[11px] font-mono text-zinc-400 font-semibold uppercase tracking-wider">More Resources</p>
                     </div>
-                    <div className="p-2">
+                    <div className="p-2 space-y-0.5">
                       {exploreLinks.map((link) => (
                         <NavLink
                           key={link.path}
                           to={link.path}
                           onClick={() => setExploreOpen(false)}
                           className={({ isActive }) =>
-                            `flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 group ${isActive ? "bg-[#ffa116]/10" : "hover:bg-white/[0.04]"}`
+                            `flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 group ${isActive ? "bg-[#ffa116]/10 text-white" : "hover:bg-white/[0.04]"}`
                           }
                         >
-                          <div className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center text-gray-400 group-hover:text-[#ffa116] group-hover:bg-[#ffa116]/10 transition-all flex-shrink-0 mt-0.5">
+                          <div className="w-7 h-7 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-zinc-400 group-hover:text-[#ffa116] group-hover:bg-[#ffa116]/10 transition-all flex-shrink-0 mt-0.5">
                             {link.icon}
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors">{link.name}</div>
-                            <div className="text-xs text-gray-500">{link.desc}</div>
+                            <div className="text-sm font-medium text-zinc-200 group-hover:text-white transition-colors">{link.name}</div>
+                            <div className="text-xs text-zinc-400">{link.desc}</div>
                           </div>
                         </NavLink>
                       ))}
                     </div>
-                    <div className="m-2 mt-0 bg-gradient-to-r from-[#ffa116]/10 to-orange-600/5 border border-[#ffa116]/10 rounded-xl px-3 py-2.5 flex items-center gap-2">
+                    <div className="m-2 mt-0 bg-gradient-to-r from-[#ffa116]/10 to-orange-600/5 border border-[#ffa116]/15 rounded-xl px-3 py-2.5 flex items-center gap-2">
                       <FiZap className="text-[#ffa116] text-sm flex-shrink-0" />
-                      <p className="text-xs text-gray-300">Try the <span className="text-[#ffa116] font-semibold">AI Project Generator</span></p>
+                      <p className="text-xs text-zinc-300">Try the <span className="text-[#ffa116] font-semibold">AI Project Generator</span></p>
                       <FiArrowRight className="text-[#ffa116] text-xs ml-auto flex-shrink-0" />
                     </div>
                   </motion.div>
@@ -151,7 +164,7 @@ const Navbar = () => {
               <div className="relative" ref={userRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.08] text-sm text-gray-300 hover:bg-white/[0.08] transition-all"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-zinc-200 hover:bg-white/[0.08] hover:border-white/[0.15] transition-all"
                 >
                   <div className="w-6 h-6 rounded-full bg-[#ffa116] flex items-center justify-center overflow-hidden">
                     {user.avatar ? (
@@ -169,37 +182,37 @@ const Navbar = () => {
                     )}
                   </div>
                   {user.username}
-                  <FaChevronDown className="text-[10px]" />
+                  <FaChevronDown className="text-[10px] text-zinc-400" />
                 </button>
                 <AnimatePresence>
                   {userMenuOpen && (
                     <motion.div
                       initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-[calc(100%+8px)] w-44 bg-[#111] border border-white/[0.08] rounded-xl shadow-xl overflow-hidden"
+                      className="absolute right-0 top-[calc(100%+8px)] w-48 bg-[#0c0c0e] border border-white/[0.1] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden backdrop-blur-2xl"
                     >
                       <div className="px-4 py-2.5 border-b border-white/[0.06]">
-                        <p className="text-xs text-gray-500">Signed in as</p>
-                        <p className="text-sm font-medium text-white truncate">{user.username}</p>
+                        <p className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">Signed in as</p>
+                        <p className="text-sm font-semibold text-white truncate">{user.username}</p>
                       </div>
                       <Link
                         to="/profile"
                         onClick={() => setUserMenuOpen(false)}
-                        className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.04] transition-colors border-b border-white/[0.06]"
+                        className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors border-b border-white/[0.06]"
                       >
-                        <FiUser className="text-xs" /> Profile
+                        <FiUser className="text-xs text-zinc-400" /> Profile
                       </Link>
                       <Link
                         to="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
-                        className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-300 hover:bg-white/[0.04] transition-colors"
+                        className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-colors"
                       >
-                        <FiGrid className="text-xs" /> Dashboard
+                        <FiGrid className="text-xs text-zinc-400" /> Dashboard
                       </Link>
                       <button
                         onClick={logout}
                         disabled={isLoggingOut}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-t border-white/[0.06]"
                       >
                         {isLoggingOut ? (
                           <>
@@ -219,16 +232,17 @@ const Navbar = () => {
             ) : (
               <NavLink
                 to="/login"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-black bg-gradient-to-r from-[#ffa116] to-[#ff8c00] hover:from-[#ffb84d] hover:to-[#ffa116] shadow-md shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-300 hover:-translate-y-0.5"
+                className="amber-specular-button flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
               >
                 Get Started <FiArrowRight className="text-xs" />
               </NavLink>
             )}
           </div>
 
-          {/* ── Mobile Toggle ── */}
+          {/* ── Mobile Toggle (WCAG 44x44px target) ── */}
           <button
-            className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/[0.04] border border-white/[0.08] text-gray-300 hover:text-white transition-colors"
+            aria-label="Toggle Navigation Menu"
+            className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             <AnimatePresence mode="wait">
@@ -254,7 +268,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
-            className="md:hidden overflow-hidden bg-[#0d0d0d] border-t border-white/[0.05]"
+            className="md:hidden overflow-hidden bg-[#060608]/98 backdrop-blur-2xl border-t border-white/[0.08]"
           >
             <div className="px-5 py-4 space-y-1">
               {[...mainLinks, ...exploreLinks].map((link) => (
@@ -263,41 +277,41 @@ const Navbar = () => {
                   to={link.path}
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive ? "text-[#ffa116] bg-[#ffa116]/10" : "text-gray-300 hover:text-white hover:bg-white/[0.04]"}`
+                    `flex items-center gap-3 px-4 py-3 min-h-[44px] rounded-xl text-sm font-medium transition-all ${isActive ? "text-[#ffa116] bg-[#ffa116]/10" : "text-zinc-300 hover:text-white hover:bg-white/[0.04]"}`
                   }
                 >
-                  <span className="text-base text-gray-500">{link.icon}</span>
+                  <span className="text-base text-zinc-400">{link.icon}</span>
                   {link.name}
                 </NavLink>
               ))}
-              <div className="pt-3 pb-1 border-t border-white/[0.05] mt-2">
+              <div className="pt-3 pb-1 border-t border-white/[0.06] mt-2">
                 {user ? (
                   <div className="space-y-2">
                     <Link
                       to="/profile"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] transition-all"
+                      className="flex items-center gap-3 px-4 py-3 min-h-[44px] rounded-xl text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-all"
                     >
-                      <FiUser className="text-base text-gray-500" />
+                      <FiUser className="text-base text-zinc-400" />
                       Profile
                     </Link>
                     <Link
                       to="/dashboard"
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/[0.04] transition-all"
+                      className="flex items-center gap-3 px-4 py-3 min-h-[44px] rounded-xl text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] transition-all"
                     >
-                      <FiGrid className="text-base text-gray-500" />
+                      <FiGrid className="text-base text-zinc-400" />
                       Dashboard
                     </Link>
                     <button
                       onClick={() => { if (!isLoggingOut) logout(); setMobileOpen(false); }}
                       disabled={isLoggingOut}
-                      className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-medium text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center justify-center gap-2 w-full py-3 min-h-[44px] rounded-xl text-sm font-medium text-rose-400 border border-rose-500/20 hover:bg-rose-500/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLoggingOut ? (
                         <>
                           <InlineSpinner size={16} color="#f87171" />
-                          <span>Signing out....</span>
+                          <span>Signing out...</span>
                         </>
                       ) : (
                         <>
@@ -310,7 +324,7 @@ const Navbar = () => {
                   <Link
                     to="/login"
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-black bg-gradient-to-r from-[#ffa116] to-[#ff8c00]"
+                    className="amber-specular-button flex items-center justify-center gap-2 w-full py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-all"
                   >
                     Get Started Free <FiArrowRight />
                   </Link>

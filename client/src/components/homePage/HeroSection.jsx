@@ -8,59 +8,77 @@ const HeroSection = () => {
   const { user } = useAuth();
 
   return (
-    <section className="text-center pt-8 pb-14">
-      {/* Engineering Monospace Badge */}
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-mono text-gray-400 mb-6 backdrop-blur-sm">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
-        <span className="text-gray-300 font-semibold tracking-wider">PREPSTACK</span>
-        <span className="text-white/20">/</span>
-        <span className="text-[#ffa116]">SDE PLACEMENT SYSTEM</span>
+    <section className="pt-4 sm:pt-8 pb-6 sm:pb-12 text-left">
+      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* ── LEFT PANE: Mission, Editorial Typography, Direct CTA (5 Columns) ── */}
+        <div className="lg:col-span-5 flex flex-col justify-center space-y-6 sm:space-y-7">
+          {/* Left-Aligned High-Contrast Display Headline */}
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-[54px] font-extrabold tracking-[-0.035em] text-white leading-[1.07]">
+            Stop grinding blindly.{" "}
+            <span className="text-[#ffa116] block mt-1.5">
+              Engineer your placement.
+            </span>
+          </h1>
+
+          {/* Authoritative Subtitle */}
+          <p className="text-sm sm:text-base text-zinc-400 leading-relaxed font-normal max-w-lg">
+            A unified technical cockpit replacing 15 scattered tabs. Vetted algorithmic patterns, low-level CS internals, and production-grade system blueprints designed for real interview rounds.
+          </p>
+
+          {/* Capability Tags */}
+          <div className="flex flex-wrap gap-2 pt-1 font-mono text-[11px]">
+            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.08] text-zinc-300">
+              75 Core Patterns
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.08] text-zinc-300">
+              Atomic DB Sync
+            </span>
+            <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.08] text-zinc-300">
+              Low-Level CS
+            </span>
+          </div>
+
+          {/* Action Strip */}
+          <div className="flex flex-wrap items-center gap-3.5 pt-2">
+            <Link
+              to="/dsa"
+              className="amber-specular-button inline-flex items-center gap-2 font-bold px-6 py-3.5 rounded-xl text-xs sm:text-sm font-display tracking-tight cursor-pointer"
+            >
+              Launch Workspace <FaArrowRight className="text-xs" />
+            </Link>
+
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-1.5 px-5 py-3.5 rounded-xl border border-white/[0.1] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06] hover:text-white hover:border-white/[0.2] transition-all text-xs sm:text-sm font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] cursor-pointer"
+              >
+                Dashboard &rarr;
+              </Link>
+            ) : (
+              <Link
+                to="/register"
+                className="inline-flex items-center gap-1.5 px-5 py-3.5 rounded-xl border border-white/[0.1] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06] hover:text-white hover:border-white/[0.2] transition-all text-xs sm:text-sm font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] cursor-pointer"
+              >
+                Create Account
+              </Link>
+            )}
+          </div>
+
+          {/* Target Placement Ticker */}
+          <div className="pt-4 border-t border-white/[0.06] flex items-center gap-2 font-mono text-[11px] text-zinc-400">
+            <span className="text-zinc-500 uppercase tracking-wider font-semibold">Alumni Placements:</span>
+            <span className="truncate text-zinc-300">Google · Amazon · Microsoft · Swiggy · Top Startups</span>
+          </div>
+        </div>
+
+        {/* ── RIGHT PANE: Live Interactive IDE Workbench Cockpit (7 Columns) ── */}
+        <div className="lg:col-span-7 w-full">
+          <HeroProductShowcase />
+        </div>
       </div>
-
-      {/* High-Impact Headline */}
-      <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white max-w-4xl mx-auto leading-[1.08] mb-6">
-        The engineered workspace for{" "}
-        <span className="bg-gradient-to-r from-white via-gray-100 to-gray-400 bg-clip-text text-transparent">
-          serious software
-        </span>{" "}
-        <span className="text-[#ffa116]">placements</span>.
-      </h1>
-
-      {/* Authoritative Subtitle */}
-      <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed mb-8">
-        Curated DSA problem patterns with atomic progress sync, low-level CS interview internals, and recruiter-grade project architectures. Built for developers who value clarity.
-      </p>
-
-      {/* CTA Buttons */}
-      <div className="flex flex-wrap items-center justify-center gap-3.5 mb-14">
-        <Link
-          to="/dsa"
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-[#ffa116] to-[#ff8c00] text-black font-bold px-7 py-3 rounded-xl hover:from-[#ffb84d] hover:to-[#ffa116] shadow-lg shadow-[#ffa116]/20 hover:shadow-[#ffa116]/30 hover:-translate-y-0.5 transition-all text-sm"
-        >
-          Start Preparing <FaArrowRight className="text-xs" />
-        </Link>
-
-        {user ? (
-          <Link
-            to="/dashboard"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.1] bg-white/[0.03] text-gray-300 hover:bg-white/[0.08] hover:text-white transition-all text-sm font-medium"
-          >
-            Go to Dashboard →
-          </Link>
-        ) : (
-          <Link
-            to="/register"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/[0.1] bg-white/[0.03] text-gray-300 hover:bg-white/[0.08] hover:text-white transition-all text-sm font-medium"
-          >
-            Create Free Account
-          </Link>
-        )}
-      </div>
-
-      {/* ── LIVE INTERACTIVE PRODUCT PREVIEW ── */}
-      <HeroProductShowcase />
     </section>
   );
 };
 
 export default HeroSection;
+

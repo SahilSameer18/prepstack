@@ -11,7 +11,7 @@ const MainLayout = () => {
     <div className="min-h-screen flex flex-col">
       <ScrollToTop />
       <Navbar />
-      <main className="flex-grow pt-28 px-4 pb-8 overflow-x-hidden">
+      <main className="flex-grow pt-20 sm:pt-24 px-4 pb-8 overflow-x-hidden">
         <div className="max-w-7xl mx-auto">
           <Suspense fallback={<PageLoader />}>
             <Outlet /> {/* Render the child route pages here */}

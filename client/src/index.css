@@ -19,27 +19,134 @@ html, body, #root {
 }
 
 :root {
-  --lc-bg: #0f0f0f;
-  --lc-card: #1a1a1a;
-  --lc-border: #2a2a2a;
+  /* ── OBSIDIAN SURFACE & BORDER SCALE ── */
+  --surface-base: #060608;
+  --surface-card: #0c0c0e;
+  --surface-card-hover: #121216;
+  --surface-elevated: #16161c;
+  --surface-overlay: rgba(8, 8, 11, 0.85);
 
+  --border-hairline: rgba(255, 255, 255, 0.07);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  --border-specular: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --border-focus: rgba(255, 161, 22, 0.5);
+
+  /* ── BRAND TOKENS (Locked Singular Accent) ── */
+  --brand-amber: #ffa116;
+  --brand-amber-hover: #ffb342;
+  --brand-amber-glow: rgba(255, 161, 22, 0.22);
+
+  /* ── FUNCTIONAL STATUS TOKENS ── */
+  --status-easy: #34d399;
+  --status-medium: #fbbf24;
+  --status-hard: #f87171;
+  --status-info: #60a5fa;
+
+  /* ── LEGACY LEETCODE TOKENS (Preserved for compatibility) ── */
+  --lc-bg: #060608;
+  --lc-card: #0c0c0e;
+  --lc-border: rgba(255, 255, 255, 0.08);
   --lc-primary: #ffa116;
-  /* leetcode yellow */
   --lc-primary-hover: #ffb84d;
+  --lc-text: #f4f4f5;
+  --lc-muted: #a1a1aa;
 
-  --lc-text: #e5e7eb;
-  --lc-muted: #9ca3af;
+  /* ── TYPOGRAPHY STACK ── */
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* ---------------- BODY ---------------- */
+/* ---------------- BODY & TYPOGRAPHY ---------------- */
 
 body {
-  background-color: var(--lc-bg);
+  background-color: var(--surface-base);
   color: var(--lc-text);
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  letter-spacing: -0.011em;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ---------------- LUXURY & SPECULAR UTILITIES ---------------- */
+
+.luxury-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.008) 100%);
+  border: 1px solid var(--border-hairline);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.luxury-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.luxury-glass {
+  background: var(--surface-overlay);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-hairline);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.specular-border {
+  border: 1px solid var(--border-hairline);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.amber-specular-button {
+  background: linear-gradient(180deg, #ffa826 0%, #e68d05 100%);
+  color: #050505;
+  box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, background 0.15s ease;
+  will-change: transform;
+}
+
+.amber-specular-button:hover {
+  background: linear-gradient(180deg, #ffb342 0%, #f59508 100%);
+  box-shadow: 0 14px 30px -4px rgba(245, 158, 11, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+.amber-specular-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 15px -3px rgba(245, 158, 11, 0.25);
+}
+
+/* ── SPOTLIGHT CARD (Zero layout-thrashing cursor glow) ── */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: 1rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.spotlight-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.85);
+}
+
+/* ── PREFERS REDUCED MOTION ── */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ---------------- SCROLLBAR ---------------- */

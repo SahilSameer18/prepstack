@@ -60,43 +60,55 @@ const getSheetMeta = (slug) =>
     sourceUrl: '#'
   };
 
-// ── Loader ─────────────────────────────────────────────────────────────────
-const Loader = () => (
-  <div className="flex justify-center items-center h-64">
-    <div className="w-10 h-10 border-4 border-[#ffa116]/30 border-t-[#ffa116] rounded-full animate-spin" />
-  </div>
-);
-
 // ── Platform icon resolver ─────────────────────────────────────────────────
 const getPlatformIcon = (link) => {
   if (!link) return null;
   const l = link.toLowerCase();
-  if (l.includes('leetcode.com'))
-    return <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/LeetCode_logo_black.png" alt="LeetCode" className="w-4 h-4 object-contain filter invert opacity-80" />;
-  if (l.includes('geeksforgeeks.org'))
-    return <img src="https://media.geeksforgeeks.org/wp-content/cdn-uploads/gfg_favicon.png" alt="GFG" className="w-4 h-4 object-contain opacity-80" />;
-  if (l.includes('codingninjas.com'))
-    return <img src="https://www.codingninjas.com/favicon.ico" alt="CodingNinjas" className="w-4 h-4 object-contain opacity-80" />;
-  if (l.includes('takeuforward.org') || l.includes('tuf'))
-  return (
-    <img
-      src="https://takeuforward.org/favicon.ico"
-      alt="TUF"
-      className="w-4 h-4 object-contain opacity-80"
-    />
-  );
-  if (l.includes('interviewbit.com'))
-    return <img src="https://www.interviewbit.com/favicon.ico" alt="InterviewBit" className="w-4 h-4 object-contain opacity-80" />;
-  return <FaExternalLinkAlt className="text-gray-400 text-xs" />;
+  if (l.includes('leetcode.com')) {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#ffa116]/10 text-[#ffa116] border border-[#ffa116]/20">
+        LC
+      </span>
+    );
+  }
+  if (l.includes('geeksforgeeks.org')) {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+        GFG
+      </span>
+    );
+  }
+  if (l.includes('codingninjas.com')) {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+        CN
+      </span>
+    );
+  }
+  if (l.includes('takeuforward.org') || l.includes('tuf')) {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+        TUF
+      </span>
+    );
+  }
+  if (l.includes('interviewbit.com')) {
+    return (
+      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+        IB
+      </span>
+    );
+  }
+  return <FaExternalLinkAlt className="text-zinc-400 text-xs" />;
 };
 
 const getDifficultyColor = (diff) => {
-  if (!diff) return 'text-gray-400';
+  if (!diff) return 'text-zinc-400';
   const d = diff.toLowerCase();
   if (d === 'easy') return 'text-emerald-400';
   if (d === 'medium') return 'text-yellow-400';
   if (d === 'hard') return 'text-red-400';
-  return 'text-gray-400';
+  return 'text-zinc-400';
 };
 
 const getDifficultyBg = (diff) => {
@@ -239,13 +251,13 @@ const SheetsDetail = () => {
     <div className="px-4 md:px-6 py-8 max-w-5xl mx-auto page-enter text-white">
 
       {/* Back link */}
-      <Link to="/dsa" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-200 text-sm mb-6 transition-colors group">
+      <Link to="/dsa" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-6 transition-colors group">
         <FiArrowLeft className="transition-transform group-hover:-translate-x-0.5" />
         Back to Sheets
       </Link>
 
       {/* ── Header Card ── */}
-      <div className="relative bg-[#0f0f0f] border border-white/[0.07] rounded-2xl p-6 md:p-8 mb-8 overflow-hidden">
+      <div className="relative bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 md:p-8 mb-8 overflow-hidden shadow-2xl">
         {/* Subtle glow blob */}
         <div
           className="absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-10 blur-3xl pointer-events-none"
@@ -259,16 +271,16 @@ const SheetsDetail = () => {
               <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${meta.badgeColor}`}>
                 {meta.badge}
               </span>
-              <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.07] text-gray-400 uppercase tracking-wider">
+              <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 uppercase tracking-wider font-mono">
                 {totalProblems} Problems
               </span>
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-black mb-3 leading-tight" style={{ color: meta.accentColor }}>
+            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3 leading-tight tracking-tight text-white">
               {sheet.name}
             </h1>
 
-            <p className="text-gray-400 text-sm leading-relaxed max-w-2xl mb-5">
+            <p className="text-zinc-400 text-sm leading-relaxed max-w-2xl mb-5">
               {meta.description}
             </p>
 
@@ -277,11 +289,11 @@ const SheetsDetail = () => {
               <div className="flex items-center gap-5 flex-wrap">
                 <div className="flex items-center gap-2">
                   <FiTarget className="text-sm" style={{ color: meta.accentColor }} />
-                  <span className="text-sm text-gray-300 font-medium">{totalSolvedCount} solved</span>
+                  <span className="text-sm text-zinc-200 font-medium">{totalSolvedCount} solved</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FiAward className="text-sm text-gray-500" />
-                  <span className="text-sm text-gray-400">{totalProblems - totalSolvedCount} remaining</span>
+                  <FiAward className="text-sm text-zinc-400" />
+                  <span className="text-sm text-zinc-400">{totalProblems - totalSolvedCount} remaining</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-24 md:w-32 bg-white/[0.06] rounded-full overflow-hidden">
@@ -290,7 +302,7 @@ const SheetsDetail = () => {
                       style={{ width: `${progressPercentage}%`, background: meta.accentColor }}
                     />
                   </div>
-                  <span className="text-xs font-bold text-gray-400">{progressPercentage}%</span>
+                  <span className="text-xs font-mono font-medium text-zinc-300">{progressPercentage}%</span>
                 </div>
               </div>
 
@@ -300,10 +312,10 @@ const SheetsDetail = () => {
                   href={meta.sourceUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08] text-gray-400 hover:text-white hover:bg-white/[0.1] hover:border-white/[0.2] transition-all w-max shadow-sm"
+                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.15] transition-all w-max shadow-sm"
                 >
                   <span>Official Source: {meta.sourceName}</span>
-                  <FaExternalLinkAlt className="text-[10px] text-gray-500" />
+                  <FaExternalLinkAlt className="text-[10px] text-zinc-400" />
                 </a>
               )}
             </div>
@@ -317,7 +329,7 @@ const SheetsDetail = () => {
               total={totalProblems}
               accentColor={meta.accentColor}
             />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Progress</span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">Progress</span>
           </div>
         </div>
       </div>
@@ -332,7 +344,7 @@ const SheetsDetail = () => {
           const topicPct = topicTotal === 0 ? 0 : Math.round((topicSolvedCount / topicTotal) * 100);
 
           return (
-            <div key={index} className={`bg-[#0f0f0f] border rounded-xl overflow-hidden transition-all duration-200 ${isOpen ? 'border-white/[0.1]' : 'border-white/[0.05] hover:border-white/[0.09]'}`}>
+            <div key={index} className={`bg-[#0c0c0e] border rounded-xl overflow-hidden transition-all duration-200 ${isOpen ? 'border-white/[0.12] shadow-lg' : 'border-white/[0.06] hover:border-white/[0.1]'}`}>
               {/* Accordion Header */}
               <button
                 onClick={() => toggleTopic(index)}
@@ -340,10 +352,10 @@ const SheetsDetail = () => {
               >
                 <div className="flex items-center gap-4 min-w-0">
                   <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex-shrink-0">
-                    <span className="text-sm font-black text-white">{index + 1}</span>
+                    <span className="text-sm font-bold text-white font-mono">{index + 1}</span>
                   </div>
                   <div className="min-w-0 text-left">
-                    <h2 className="text-sm md:text-base font-bold text-gray-100 truncate">{topic.title || topic.topic || `Topic ${index + 1}`}</h2>
+                    <h2 className="text-sm md:text-base font-semibold text-zinc-100 truncate">{topic.title || topic.topic || `Topic ${index + 1}`}</h2>
                     <div className="flex items-center gap-2 mt-0.5">
                       <div className="h-1 w-16 bg-white/[0.06] rounded-full overflow-hidden">
                         <div
@@ -351,19 +363,19 @@ const SheetsDetail = () => {
                           style={{ width: `${topicPct}%`, background: meta.accentColor, opacity: 0.8 }}
                         />
                       </div>
-                      <span className="text-[11px] text-gray-500 font-medium">{topicSolvedCount}/{topicTotal}</span>
+                      <span className="text-[11px] text-zinc-400 font-mono">{topicSolvedCount}/{topicTotal}</span>
                     </div>
                   </div>
                 </div>
                 {isOpen
-                  ? <FaChevronUp className="text-gray-600 text-xs flex-shrink-0" />
-                  : <FaChevronDown className="text-gray-600 text-xs flex-shrink-0" />
+                  ? <FaChevronUp className="text-zinc-400 text-xs flex-shrink-0" />
+                  : <FaChevronDown className="text-zinc-400 text-xs flex-shrink-0" />
                 }
               </button>
 
               {/* Accordion Body */}
               {isOpen && (
-                <div className="border-t border-white/[0.05]">
+                <div className="border-t border-white/[0.06]">
                   {problems.map((problem, pIdx) => {
                     const isCompleted = solved.includes(problem.link);
                     return (
@@ -375,14 +387,14 @@ const SheetsDetail = () => {
                           {/* Toggle */}
                           <button
                             onClick={(e) => handleToggleProblem(e, problem.link)}
-                            className="flex-shrink-0 text-lg text-gray-600 hover:scale-110 transition-all"
+                            className="flex-shrink-0 text-lg text-zinc-500 hover:text-zinc-300 hover:scale-110 transition-all"
                             style={isCompleted ? { color: '#10b981' } : {}}
                           >
                             {isCompleted ? <FaCheckCircle /> : <FaRegCircle />}
                           </button>
 
                           {/* Title */}
-                          <span className={`text-sm font-medium truncate transition-colors ${isCompleted ? 'text-gray-600 line-through' : 'text-gray-200 group-hover:text-white'}`}>
+                          <span className={`text-sm font-medium truncate transition-colors ${isCompleted ? 'text-zinc-500 line-through' : 'text-zinc-200 group-hover:text-white'}`}>
                             {pIdx + 1}. {problem.title}
                           </span>
                         </div>
@@ -392,16 +404,16 @@ const SheetsDetail = () => {
                           {problem.tags && problem.tags.length > 0 && (
                             <div className="flex items-center gap-1">
                               {problem.tags.slice(0, 2).map((tag, tIdx) => (
-                                <span key={tIdx} className="text-[10px] font-semibold text-gray-500 bg-white/[0.04] border border-white/[0.07] px-1.5 py-0.5 rounded-md">
+                                <span key={tIdx} className="text-[10px] font-mono text-zinc-400 bg-white/[0.04] border border-white/[0.07] px-1.5 py-0.5 rounded-md">
                                   {tag}
                                 </span>
                               ))}
-                              {problem.tags.length > 2 && <span className="text-[10px] text-gray-600">+{problem.tags.length - 2}</span>}
+                              {problem.tags.length > 2 && <span className="text-[10px] font-mono text-zinc-400">+{problem.tags.length - 2}</span>}
                             </div>
                           )}
 
                           {/* Difficulty */}
-                          <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md border ${getDifficultyColor(problem.difficulty)} ${getDifficultyBg(problem.difficulty)}`}>
+                          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${getDifficultyColor(problem.difficulty)} ${getDifficultyBg(problem.difficulty)}`}>
                             {problem.difficulty || 'Medium'}
                           </span>
 
@@ -411,7 +423,7 @@ const SheetsDetail = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             title="View Problem"
-                            className="flex items-center justify-center p-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.1] hover:border-white/20 transition-all"
+                            className="flex items-center justify-center p-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] hover:border-white/20 transition-all"
                           >
                             {getPlatformIcon(problem.link)}
                           </a>

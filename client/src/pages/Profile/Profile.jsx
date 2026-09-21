@@ -369,18 +369,18 @@ const Profile = () => {
   const liveAvatarUrl = profileForm.avatar || user.avatar || getDiceBearAvatar(user.username);
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="space-y-6">
+    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 page-enter text-left">
+      <div className="space-y-6">
         
         {/* ── 1. Hero Identity & Progress Banner ── */}
-        <div className="bg-[#111] border border-white/[0.08] rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 relative overflow-hidden">
-          {/* Ambient Glow */}
-          <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-[#ffa116]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 relative overflow-hidden shadow-2xl">
+          {/* Ambient Glow - Hardware Accelerated */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#ffa116]/[0.03] rounded-full blur-[90px] -translate-y-1/2 translate-x-1/3 pointer-events-none transform-gpu" />
           
           {/* Avatar Preview with Glow */}
           <div className="relative group shrink-0">
-            <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-[#ffa116] to-[#ff8c00] p-1 shadow-xl shadow-orange-500/20 z-10">
-              <div className="w-full h-full rounded-xl bg-[#0a0a0a] flex items-center justify-center overflow-hidden">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-[#ffa116] to-[#ff8c00] p-0.5 shadow-xl shadow-orange-500/15 z-10">
+              <div className="w-full h-full rounded-2xl bg-[#060608] flex items-center justify-center overflow-hidden">
                 <img 
                   src={liveAvatarUrl} 
                   alt={user.username} 
@@ -394,46 +394,48 @@ const Profile = () => {
             </div>
           </div>
           
-          <div className="flex-1 text-center sm:text-left z-10">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{user.username}</h1>
+          <div className="flex-1 text-center sm:text-left z-10 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+              <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight truncate">
+                {user.username}
+              </h1>
               {user.hasPassword && (
-                <span className="self-center sm:self-auto text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
-                  Verified Account
+                <span className="self-center sm:self-auto text-[10px] font-mono font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                  Verified Identity
                 </span>
               )}
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 text-sm text-gray-400 font-medium mb-6">
-              <span className="flex items-center justify-center sm:justify-start gap-2">
-                <FaEnvelope className="text-gray-500 text-xs" /> {user.email}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-xs sm:text-sm text-zinc-400 font-mono mb-6">
+              <span className="flex items-center justify-center sm:justify-start gap-2 text-zinc-300">
+                <FaEnvelope className="text-zinc-500 text-xs" /> {user.email}
               </span>
               <span className="flex items-center justify-center sm:justify-start gap-2">
-                <FiCalendar className="text-gray-500 text-xs" /> Joined {joinDate}
+                <FiCalendar className="text-zinc-500 text-xs" /> Joined {joinDate}
               </span>
             </div>
 
             {/* Quick Stat Chips */}
             <div className="grid grid-cols-2 gap-3 max-w-md">
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#ffa116]/10 text-[#ffa116] flex items-center justify-center text-sm shrink-0">
+              <div className="bg-[#121216] border border-white/[0.08] rounded-xl px-4 py-3 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#ffa116]/10 text-[#ffa116] flex items-center justify-center text-sm shrink-0 border border-[#ffa116]/20">
                   <FiCode />
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 font-medium">DSA Solved</div>
-                  <div className="text-base font-bold text-white">
+                  <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase tracking-wider">DSA Mastered</div>
+                  <div className="text-base font-mono font-bold text-white">
                     {loadingStats ? <SkeletonStat width="w-8" height="h-5" /> : stats.solvedDSACount}
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-sm shrink-0">
+              <div className="bg-[#121216] border border-white/[0.08] rounded-xl px-4 py-3 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-sm shrink-0 border border-blue-500/20">
                   <FiGrid />
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 font-medium">AI Projects</div>
-                  <div className="text-base font-bold text-white">
+                  <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase tracking-wider">Blueprints</div>
+                  <div className="text-base font-mono font-bold text-white">
                     {loadingStats ? <SkeletonStat width="w-8" height="h-5" /> : stats.generatedProjectsCount}
                   </div>
                 </div>
@@ -442,14 +444,16 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* ── 2. Account Details & Live Avatar Picker ── */}
-        <div className="bg-[#111] border border-white/[0.08] rounded-2xl p-6 sm:p-8">
-          <div className="flex items-center justify-between mb-6">
+        {/* ── 2. Account Details & Developer Identicon ── */}
+        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 shadow-xl">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.06]">
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <FiUser className="text-[#ffa116]" /> Personal Details
+              <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
+                <FiUser className="text-[#ffa116]" /> Developer Identity & Handle
               </h2>
-              <p className="text-xs text-gray-400 mt-1">Customize your unique username and choose your robot avatar.</p>
+              <p className="text-xs font-mono text-zinc-400 mt-1">
+                Configure your unique platform handle and cryptographic identicon.
+              </p>
             </div>
           </div>
 
@@ -459,62 +463,62 @@ const Profile = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Username (Unique & Editable) */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Username</label>
-                <div className="flex items-center gap-3 bg-[#0a0a0a] border border-white/[0.08] focus-within:border-[#ffa116] focus-within:shadow-[0_0_0_3px_rgba(255,161,22,0.1)] rounded-xl px-4 h-12 transition-all">
-                  <FiUser className="text-gray-500 text-base shrink-0" />
+                <label className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">Handle / Username</label>
+                <div className="flex items-center gap-3 bg-[#121216] border border-white/[0.08] focus-within:border-[#ffa116] rounded-xl px-4 h-12 transition-colors">
+                  <FiUser className="text-zinc-500 text-base shrink-0" />
                   <input
                     type="text"
                     value={profileForm.username}
                     onChange={(e) => handleProfileChange("username", e.target.value)}
-                    placeholder="Unique username"
-                    className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm font-medium"
+                    placeholder="Unique handle"
+                    className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm font-mono font-medium"
                     required
                     minLength={4}
                     maxLength={30}
                   />
-                  {profileForm.username.trim().length >= 4 && <FiCheck className="text-green-400 shrink-0" />}
+                  {profileForm.username.trim().length >= 4 && <FiCheck className="text-emerald-400 shrink-0" />}
                 </div>
-                <p className="text-[11px] text-gray-600 pl-1">Unique handle • 4–30 alphanumeric & underscore characters</p>
+                <p className="text-[11px] font-mono text-zinc-500 pl-1">Unique handle • 4–30 alphanumeric & underscore characters</p>
               </div>
 
               {/* Email (Read-Only with Copy Action) */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">Email Address</label>
-                <div className="flex items-center justify-between gap-3 bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 h-12 transition-all">
+                <label className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">Primary Email</label>
+                <div className="flex items-center justify-between gap-3 bg-[#121216] border border-white/[0.08] rounded-xl px-4 h-12 transition-colors">
                   <div className="flex items-center gap-3 overflow-hidden">
-                    <FiMail className="text-gray-500 text-base shrink-0" />
-                    <span className="text-gray-300 text-sm font-medium truncate select-all">{user.email}</span>
+                    <FiMail className="text-zinc-500 text-base shrink-0" />
+                    <span className="text-zinc-300 text-sm font-mono font-medium truncate select-all">{user.email}</span>
                   </div>
                   <button
                     type="button"
                     onClick={handleCopyEmail}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] text-gray-300 hover:text-white text-xs font-medium transition-all shrink-0 cursor-pointer"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] text-zinc-300 hover:text-white text-xs font-mono transition-colors shrink-0 cursor-pointer min-h-[36px]"
                     title="Copy Email"
                   >
-                    {copiedEmail ? <FiCheck className="text-green-400 text-xs" /> : <FiCopy className="text-xs" />}
+                    {copiedEmail ? <FiCheck className="text-emerald-400 text-xs" /> : <FiCopy className="text-xs" />}
                     <span>{copiedEmail ? "Copied" : "Copy"}</span>
                   </button>
                 </div>
-                <p className="text-[11px] text-gray-600 pl-1">Permanently linked to your account</p>
+                <p className="text-[11px] font-mono text-zinc-500 pl-1">Primary authentication credential</p>
               </div>
             </div>
 
-            {/* Avatar Customization */}
-            <div className="pt-2 border-t border-white/[0.06] space-y-3">
+            {/* Identicon Presets */}
+            <div className="pt-4 border-t border-white/[0.06] space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Robot Avatar Presets
+                <label className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">
+                  Cryptographic Identicons
                 </label>
                 <button
                   type="button"
                   onClick={handleRandomizeAvatar}
-                  className="flex items-center gap-1.5 text-xs text-[#ffa116] hover:text-[#ffb84d] transition-colors font-medium cursor-pointer"
+                  className="flex items-center gap-1.5 text-xs font-mono text-[#ffa116] hover:text-[#ffb84d] transition-colors font-medium cursor-pointer min-h-[44px]"
                 >
-                  <FiRefreshCw className="text-xs" /> Randomize
+                  <FiRefreshCw className="text-xs" /> Randomize Seed
                 </button>
               </div>
 
-              <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 {PRESET_AVATARS.map((preset) => {
                   const avatarUrl = getDiceBearAvatar(preset.seed);
                   const isSelected = profileForm.avatar === avatarUrl;
@@ -523,14 +527,14 @@ const Profile = () => {
                       key={preset.id}
                       type="button"
                       onClick={() => handlePresetAvatar(preset.seed)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all cursor-pointer ${
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors cursor-pointer min-h-[44px] ${
                         isSelected
-                          ? "bg-[#ffa116]/15 border-[#ffa116] text-white shadow-[0_0_12px_rgba(255,161,22,0.2)]"
-                          : "bg-[#0a0a0a] border-white/[0.08] text-gray-400 hover:border-white/[0.2] hover:text-white"
+                          ? "bg-[#ffa116]/15 border-[#ffa116] text-white"
+                          : "bg-[#121216] border-white/[0.08] text-zinc-400 hover:border-white/[0.2] hover:text-white"
                       }`}
                     >
                       <img src={avatarUrl} alt={preset.label} className="w-6 h-6 rounded-lg bg-black/40" />
-                      <span className="text-xs font-medium">{preset.label}</span>
+                      <span className="text-xs font-mono font-medium">{preset.label}</span>
                     </button>
                   );
                 })}
@@ -542,46 +546,46 @@ const Profile = () => {
               <button
                 type="submit"
                 disabled={!isProfileDirty || isSavingProfile}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 ${
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-display font-semibold text-xs sm:text-sm min-h-[44px] transition-colors ${
                   isProfileDirty
-                    ? "bg-gradient-to-r from-[#ffa116] to-[#ff8c00] text-black shadow-lg shadow-orange-500/25 hover:brightness-110 cursor-pointer"
-                    : "bg-white/[0.04] border border-white/[0.08] text-gray-500 cursor-not-allowed opacity-60"
+                    ? "amber-specular-button text-black font-bold cursor-pointer"
+                    : "bg-white/[0.04] border border-white/[0.08] text-zinc-500 cursor-not-allowed"
                 }`}
               >
                 {isSavingProfile ? <InlineSpinner size={16} color="#000" /> : <FiSave />}
-                {isSavingProfile ? "Saving Changes..." : "Save Changes"}
+                {isSavingProfile ? "Saving Parameters..." : "Save Identity Changes"}
               </button>
             </div>
           </form>
         </div>
 
         {/* ── 3. Security & Authentication Card ── */}
-        <div className="bg-[#111] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-6">
-          <div>
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <FiShield className="text-[#ffa116]" /> Security & Authentication
+        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+          <div className="pb-4 border-b border-white/[0.06]">
+            <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
+              <FiShield className="text-[#ffa116]" /> Cryptographic Security & Credentials
             </h2>
-            <p className="text-xs text-gray-400 mt-1">Manage connected login methods and password verification.</p>
+            <p className="text-xs font-mono text-zinc-400 mt-1">Manage single sign-on OAuth linkages and password hashing.</p>
           </div>
 
           <div className="space-y-4">
             {/* Google Provider Row */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-white/[0.06] bg-[#0a0a0a] gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-white/[0.08] bg-[#121216] gap-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-gray-300 text-lg">
+                <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300 text-lg">
                   <FaGoogle />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white">Google Sign-In</p>
-                  <p className="text-xs text-gray-500">
-                    {isGoogleLinked ? "Linked for one-click OAuth login" : "Not connected to a Google account"}
+                  <p className="text-sm font-semibold text-white">Google Workspace OAuth</p>
+                  <p className="text-xs font-mono text-zinc-400">
+                    {isGoogleLinked ? "Linked for passwordless SSO login" : "No external Google account linked"}
                   </p>
                 </div>
               </div>
               
               {isGoogleLinked ? (
-                <div className="text-xs font-semibold px-3 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 self-start sm:self-auto flex items-center gap-1.5">
-                  <FiCheck /> Connected
+                <div className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 self-start sm:self-auto flex items-center gap-1.5">
+                  <FiCheck /> Linked & Verified
                 </div>
               ) : (
                 <div className="self-start sm:self-auto">
@@ -596,18 +600,18 @@ const Profile = () => {
             </div>
 
             {/* Password Row */}
-            <div className="p-4 rounded-xl border border-white/[0.06] bg-[#0a0a0a] space-y-4">
+            <div className="p-4 rounded-xl border border-white/[0.08] bg-[#121216] space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-gray-300 text-lg">
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300 text-lg">
                     <FiLock />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-white">Account Password</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs font-mono text-zinc-400">
                       {user.hasPassword 
-                        ? "Secure password is set for email login" 
-                        : "No password configured (managed with Google Sign-In)"}
+                        ? "Encrypted bcrypt password configured for direct login" 
+                        : "No password configured (SSO-only account)"}
                     </p>
                   </div>
                 </div>
@@ -618,41 +622,37 @@ const Profile = () => {
                     setShowPasswordSection(!showPasswordSection);
                     setPasswordError(null);
                   }}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/[0.06] border border-white/[0.08] text-white hover:bg-white/[0.12] transition-all self-start sm:self-auto cursor-pointer"
+                  className="px-4 py-2 text-xs font-mono font-semibold rounded-xl bg-white/[0.05] border border-white/[0.08] text-white hover:bg-white/[0.1] transition-colors self-start sm:self-auto cursor-pointer min-h-[44px]"
                 >
-                  {showPasswordSection ? "Hide Form" : user.hasPassword ? "Change Password" : "Set Password"}
+                  {showPasswordSection ? "Close Form" : user.hasPassword ? "Change Password" : "Set Password"}
                 </button>
               </div>
 
               {/* Expandable Password Form */}
               <AnimatePresence>
                 {showPasswordSection && (
-                  <motion.form
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
+                  <form
                     onSubmit={onPasswordSubmit}
-                    className="pt-4 border-t border-white/[0.06] space-y-4 overflow-hidden"
+                    className="pt-4 border-t border-white/[0.06] space-y-4"
                   >
                     <InlineErrorAlert message={passwordError} onDismiss={() => setPasswordError(null)} />
 
                     {user.hasPassword && (
                       <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-gray-300">Current Password</label>
-                        <div className="relative flex items-center bg-black/50 border border-white/[0.1] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
+                        <label className="text-xs font-mono font-medium text-zinc-300">Current Password</label>
+                        <div className="relative flex items-center bg-[#0c0c0e] border border-white/[0.08] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
                           <input
                             type={showCurrentPw ? "text" : "password"}
                             value={passwordForm.currentPassword}
                             onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
                             placeholder="Enter current password to verify"
-                            className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm pr-8"
+                            className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm pr-8"
                             required
                           />
                           <button
                             type="button"
                             onClick={() => setShowCurrentPw(!showCurrentPw)}
-                            className="absolute right-3 text-gray-400 hover:text-white cursor-pointer"
+                            className="absolute right-3 text-zinc-400 hover:text-white cursor-pointer"
                           >
                             {showCurrentPw ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
                           </button>
@@ -662,23 +662,23 @@ const Profile = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-gray-300">
+                        <label className="text-xs font-mono font-medium text-zinc-300">
                           {user.hasPassword ? "New Password" : "Create Password"}
                         </label>
-                        <div className="relative flex items-center bg-black/50 border border-white/[0.1] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
+                        <div className="relative flex items-center bg-[#0c0c0e] border border-white/[0.08] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
                           <input
                             type={showNewPw ? "text" : "password"}
                             value={passwordForm.newPassword}
                             onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                             placeholder="Min 8 characters"
-                            className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm pr-8"
+                            className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm pr-8"
                             required
                             minLength={8}
                           />
                           <button
                             type="button"
                             onClick={() => setShowNewPw(!showNewPw)}
-                            className="absolute right-3 text-gray-400 hover:text-white cursor-pointer"
+                            className="absolute right-3 text-zinc-400 hover:text-white cursor-pointer"
                           >
                             {showNewPw ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
                           </button>
@@ -686,14 +686,14 @@ const Profile = () => {
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-gray-300">Confirm New Password</label>
-                        <div className="flex items-center bg-black/50 border border-white/[0.1] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
+                        <label className="text-xs font-mono font-medium text-zinc-300">Confirm New Password</label>
+                        <div className="flex items-center bg-[#0c0c0e] border border-white/[0.08] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
                           <input
                             type="password"
                             value={passwordForm.confirmPassword}
                             onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                             placeholder="Confirm new password"
-                            className="w-full bg-transparent text-white placeholder-gray-600 outline-none text-sm"
+                            className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
                             required
                             minLength={8}
                           />
@@ -705,47 +705,45 @@ const Profile = () => {
                       <button
                         type="button"
                         onClick={() => setShowPasswordSection(false)}
-                        className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/[0.05] text-gray-400 hover:bg-white/[0.1] transition-all cursor-pointer"
+                        className="px-4 py-2 text-xs font-mono font-semibold rounded-xl bg-white/[0.05] text-zinc-400 hover:bg-white/[0.1] transition-colors cursor-pointer min-h-[44px]"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={isSubmittingPassword}
-                        className="px-5 py-2 text-xs font-semibold rounded-xl bg-[#ffa116] text-black hover:bg-[#ffb84d] transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer font-medium"
+                        className="px-5 py-2 text-xs font-display font-semibold rounded-xl amber-specular-button text-black transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold min-h-[44px]"
                       >
                         {isSubmittingPassword ? <InlineSpinner size={14} color="#000" /> : null}
                         {isSubmittingPassword ? "Saving..." : user.hasPassword ? "Verify & Update Password" : "Set Password"}
                       </button>
                     </div>
-                  </motion.form>
+                  </form>
                 )}
               </AnimatePresence>
             </div>
           </div>
         </div>
 
-        {/* ── 3.5. Active Devices & Sessions Manager ── */}
-        <div className="bg-[#111] border border-white/[0.08] rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+        {/* ── 4. Active Devices & Sessions Manager ── */}
+        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-white/[0.06]">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#ffa116]/10 text-[#ffa116] flex items-center justify-center text-base">
-                  <FiMonitor />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    Active Devices & Sessions
-                    {sessions.length > 0 && (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.06] text-gray-300 border border-white/[0.08]">
-                        {sessions.length} {sessions.length === 1 ? 'device' : 'devices'}
-                      </span>
-                    )}
-                  </h3>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    Manage active logins and revoke access from devices you no longer recognize.
-                  </p>
-                </div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#ffa116]/10 text-[#ffa116] flex items-center justify-center text-base border border-[#ffa116]/20">
+                <FiMonitor />
+              </div>
+              <div>
+                <h3 className="font-display text-sm font-bold text-white flex items-center gap-2">
+                  Active Devices & Cryptographic Sessions
+                  {sessions.length > 0 && (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.08]">
+                      {sessions.length} {sessions.length === 1 ? 'device' : 'devices'}
+                    </span>
+                  )}
+                </h3>
+                <p className="text-xs font-mono text-zinc-400 mt-0.5">
+                  Real-time active tokens hashed at rest. Revoke access from stale devices.
+                </p>
               </div>
             </div>
 
@@ -753,11 +751,11 @@ const Profile = () => {
               type="button"
               onClick={fetchSessions}
               disabled={loadingSessions}
-              className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs font-medium text-gray-300 hover:text-white hover:bg-white/[0.08] transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs font-mono font-medium text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[44px]"
               title="Refresh active sessions"
             >
-              <FiRefreshCw className={loadingSessions ? "animate-spin text-[#ffa116]" : "text-gray-400"} />
-              <span>{loadingSessions ? "Checking..." : "Refresh"}</span>
+              <FiRefreshCw className={loadingSessions ? "animate-spin text-[#ffa116]" : "text-zinc-400"} />
+              <span>{loadingSessions ? "Syncing..." : "Sync Sessions"}</span>
             </button>
           </div>
 
@@ -778,7 +776,7 @@ const Profile = () => {
                 ))}
               </div>
             ) : sessions.length === 0 ? (
-              <div className="text-center py-6 text-xs text-gray-500">
+              <div className="text-center py-6 text-xs font-mono text-zinc-500">
                 No active device records found.
               </div>
             ) : (
@@ -789,17 +787,17 @@ const Profile = () => {
                 return (
                   <div
                     key={session.id}
-                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border transition-all ${
+                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border transition-colors ${
                       session.isCurrent 
-                        ? "bg-[#ffa116]/[0.02] border-[#ffa116]/25" 
-                        : "bg-white/[0.02] border-white/[0.06] hover:border-white/[0.1]"
+                        ? "bg-[#ffa116]/[0.02] border-[#ffa116]/30" 
+                        : "bg-[#121216] border-white/[0.08] hover:border-white/[0.15]"
                     }`}
                   >
                     <div className="flex items-start sm:items-center gap-3.5 min-w-0">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 ${
                         session.isCurrent 
-                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
-                          : "bg-white/[0.04] text-gray-400 border border-white/[0.08]"
+                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25" 
+                          : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]"
                       }`}>
                         {isTablet ? <FiTablet /> : isMobile ? <FiSmartphone /> : <FiMonitor />}
                       </div>
@@ -810,20 +808,20 @@ const Profile = () => {
                             {session.device || "Unknown Device"}
                           </p>
                           {session.isCurrent ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                               Current Device
                             </span>
                           ) : (
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.04] text-gray-400 border border-white/[0.06]">
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.04] text-zinc-400 border border-white/[0.08]">
                               Remote Session
                             </span>
                           )}
                         </div>
 
-                        <p className="text-[11px] text-gray-500 mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
-                          <span className="font-mono text-gray-400">IP: {session.ip}</span>
-                          <span>•</span>
+                        <p className="text-[11px] font-mono text-zinc-400 mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+                          <span className="text-zinc-300">IP: {session.ip}</span>
+                          <span className="text-zinc-600">•</span>
                           <span>{formatRelativeTime(session.lastActive)}</span>
                         </p>
                       </div>
@@ -831,22 +829,22 @@ const Profile = () => {
 
                     <div className="self-end sm:self-center shrink-0">
                       {session.isCurrent ? (
-                        <span className="text-xs text-gray-500 italic px-3 py-1.5">
-                          This Browser
+                        <span className="text-xs font-mono text-zinc-500 px-3 py-1.5">
+                          Active Browser
                         </span>
                       ) : (
                         <button
                           type="button"
                           onClick={() => handleRevokeSession(session.id, false)}
                           disabled={revokingSessionId === session.id}
-                          className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 hover:border-red-500/40 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                          className="px-3 py-1.5 rounded-xl text-xs font-mono font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 hover:border-rose-500/40 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[36px]"
                         >
                           {revokingSessionId === session.id ? (
                             <InlineSpinner size={12} color="#f87171" />
                           ) : (
                             <FiTrash2 className="text-xs" />
                           )}
-                          {revokingSessionId === session.id ? "Revoking..." : "Revoke"}
+                          {revokingSessionId === session.id ? "Revoking..." : "Revoke Session"}
                         </button>
                       )}
                     </div>
@@ -857,20 +855,20 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* ── 4. Danger Zone / Logout ── */}
-        <div className="bg-[#111] border border-red-500/15 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        {/* ── 5. Session Termination & Danger Zone ── */}
+        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
           <div>
-            <h3 className="text-sm font-bold text-red-400 flex items-center gap-2">
-              <FiLogOut /> Session Management
+            <h3 className="font-display text-sm font-bold text-white flex items-center gap-2">
+              <FiLogOut className="text-[#ffa116]" /> Session Management
             </h3>
-            <p className="text-xs text-gray-500 mt-0.5">Safely terminate active sessions on this device or revoke all active devices.</p>
+            <p className="text-xs font-mono text-zinc-400 mt-0.5">Safely terminate authentication cookies or invalidate all active device tokens.</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
             <button
               onClick={logout}
               disabled={isLoggingOut || isLoggingOutAll}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.08] transition-all font-semibold text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors font-mono font-medium text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50 min-h-[44px]"
             >
               {isLoggingOut ? <InlineSpinner size={14} color="#fff" /> : <FiLogOut />}
               {isLoggingOut ? "Signing out..." : "Sign Out (This Device)"}
@@ -879,22 +877,22 @@ const Profile = () => {
             <button
               onClick={logoutAll}
               disabled={isLoggingOut || isLoggingOutAll}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/40 transition-all font-semibold text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/40 transition-colors font-mono font-semibold text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50 min-h-[44px]"
             >
               {isLoggingOutAll ? <InlineSpinner size={14} color="#f87171" /> : <FiShield />}
-              {isLoggingOutAll ? "Revoking all..." : "Sign Out of All Devices"}
+              {isLoggingOutAll ? "Revoking all..." : "Sign Out All Devices"}
             </button>
           </div>
         </div>
 
-        {/* ── 5. GDPR Privacy & Account Deletion ── */}
-        <div className="bg-[#111] border border-red-500/25 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden">
+        {/* ── 6. GDPR Privacy & Account Deletion ── */}
+        <div className="bg-rose-500/[0.02] border border-rose-500/20 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden shadow-xl">
           <div>
-            <h3 className="text-sm font-bold text-red-500 flex items-center gap-2">
-              <FiAlertTriangle /> Delete Account (GDPR Right to Erasure)
+            <h3 className="font-display text-sm font-bold text-rose-400 flex items-center gap-2">
+              <FiAlertTriangle /> Permanent Account Deletion (GDPR Right to Erasure)
             </h3>
-            <p className="text-xs text-gray-500 mt-0.5 max-w-xl">
-              Permanently wipe your profile, solved DSA practice tracker, and generated AI projects. This action cannot be undone.
+            <p className="text-xs font-mono text-zinc-400 mt-1 max-w-xl leading-relaxed">
+              Permanently wipe your identity profile, solved DSA practice tracker, and compiled architecture blueprints. This action is irreversible.
             </p>
           </div>
 
@@ -905,7 +903,7 @@ const Profile = () => {
               setDeleteConfirmation("");
               setShowDeleteModal(true);
             }}
-            className="px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 hover:border-red-500/50 transition-all font-semibold text-xs cursor-pointer shrink-0"
+            className="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 hover:border-rose-500/40 transition-colors font-mono font-semibold text-xs cursor-pointer shrink-0 min-h-[44px]"
           >
             Delete Account...
           </button>
@@ -915,15 +913,12 @@ const Profile = () => {
         <AnimatePresence>
           {showDeleteModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-md bg-[#121212] border border-red-500/30 rounded-2xl p-6 space-y-5 shadow-2xl relative"
+              <div
+                className="w-full max-w-md bg-[#0c0c0e] border border-rose-500/30 rounded-2xl p-6 space-y-5 shadow-2xl relative text-left"
               >
                 <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-                  <div className="flex items-center gap-2.5 text-red-400 font-bold text-sm">
-                    <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-base">
+                  <div className="flex items-center gap-2.5 text-rose-400 font-display font-bold text-sm">
+                    <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-base">
                       <FiAlertTriangle />
                     </div>
                     <span>Delete Account Permanently</span>
@@ -931,17 +926,17 @@ const Profile = () => {
                   <button
                     type="button"
                     onClick={() => setShowDeleteModal(false)}
-                    className="text-gray-400 hover:text-white p-1 cursor-pointer transition-colors"
+                    className="text-zinc-400 hover:text-white p-1 cursor-pointer transition-colors"
                   >
                     <FiX className="text-lg" />
                   </button>
                 </div>
 
-                <div className="text-xs text-gray-300 space-y-2 leading-relaxed">
+                <div className="text-xs text-zinc-300 space-y-2 leading-relaxed">
                   <p>This action is irreversible. The following data will be permanently wiped:</p>
-                  <ul className="list-disc list-inside space-y-1 text-gray-400 pl-1">
+                  <ul className="list-disc list-inside space-y-1 text-zinc-400 pl-1 font-mono text-[11px]">
                     <li>All solved DSA problem tracker entries across all sheets.</li>
-                    <li>All generated AI project ideas and history.</li>
+                    <li>All compiled system architecture blueprints.</li>
                     <li>All security credentials and active device sessions.</li>
                   </ul>
                 </div>
@@ -950,11 +945,11 @@ const Profile = () => {
 
                 <form onSubmit={handleDeleteAccount} className="space-y-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-gray-300">
+                    <label className="text-xs font-mono font-medium text-zinc-300">
                       {user.hasPassword ? (
-                        "Enter your password to confirm:"
+                        "Enter current password to verify:"
                       ) : (
-                        <span>Type your email <strong className="text-white select-all">{user.email}</strong> to confirm:</span>
+                        <span>Type email <strong className="text-white select-all">{user.email}</strong> to verify:</span>
                       )}
                     </label>
                     <input
@@ -963,7 +958,7 @@ const Profile = () => {
                       onChange={(e) => setDeleteConfirmation(e.target.value)}
                       placeholder={user.hasPassword ? "Enter current password" : user.email}
                       required
-                      className="w-full bg-black/60 border border-white/[0.1] focus:border-red-500/50 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-600 outline-none transition-colors"
+                      className="w-full bg-[#121216] border border-white/[0.08] focus:border-rose-500/50 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition-colors font-mono"
                     />
                   </div>
 
@@ -972,25 +967,25 @@ const Profile = () => {
                       type="button"
                       onClick={() => setShowDeleteModal(false)}
                       disabled={isDeletingAccount}
-                      className="px-4 py-2 text-xs font-semibold rounded-xl bg-white/[0.06] text-gray-300 hover:bg-white/[0.1] transition-all cursor-pointer"
+                      className="px-4 py-2 text-xs font-mono font-semibold rounded-xl bg-white/[0.05] text-zinc-300 hover:bg-white/[0.1] transition-colors cursor-pointer min-h-[44px]"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={isDeletingAccount}
-                      className="px-5 py-2 text-xs font-semibold rounded-xl bg-red-600 hover:bg-red-500 text-white transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-lg shadow-red-600/20"
+                      className="px-5 py-2 text-xs font-display font-semibold rounded-xl bg-rose-600 hover:bg-rose-500 text-white transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-lg shadow-rose-600/20 min-h-[44px]"
                     >
                       {isDeletingAccount && <InlineSpinner size={14} color="#fff" />}
                       {isDeletingAccount ? "Deleting..." : "Permanently Delete"}
                     </button>
                   </div>
                 </form>
-              </motion.div>
+              </div>
             </div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   );
 };

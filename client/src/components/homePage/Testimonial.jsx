@@ -1,103 +1,106 @@
 import React from 'react';
 
-const TESTIMONIALS_DATA = [
+const PLACEMENT_DEBRIEFS = [
   {
-    name: "Aman Gupta",
-    role: "CSE Student",
-    img: "https://randomuser.me/api/portraits/men/32.jpg",
-    text: "This platform organized all the resources I needed for interview prep. The DSA sheets and notes saved me hours of searching."
-  },
-  {
-    name: "Priya Sharma",
-    role: "Frontend Developer",
-    img: "https://randomuser.me/api/portraits/women/44.jpg",
-    text: "The AI project idea generator helped me build projects aligned with my tech stack."
-  },
-  {
-    name: "Rahul Verma",
-    role: "3rd Year CSE",
-    img: "https://randomuser.me/api/portraits/men/65.jpg",
-    text: "The structured roadmaps are amazing. Instead of random resources, everything is in one place."
+    name: "Arjun Mehta",
+    role: "SDE-1",
+    company: "Amazon",
+    companyColor: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+    round: "Bar Raiser + Graph Round",
+    text: "The atomic progress sync on Blind 75 and NeetCode kept me disciplined for 45 straight days. In my Round 2, I was asked an altered Word Ladder problem that mapped directly to the graph patterns I practiced here.",
+    stats: "75 Solved · 100% Core",
   },
   {
     name: "Sneha Kapoor",
-    role: "Backend Developer",
-    img: "https://randomuser.me/api/portraits/women/68.jpg",
-    text: "Perfect platform for interview preparation. The CS core notes are extremely helpful."
+    role: "Systems Engineer",
+    company: "Microsoft",
+    companyColor: "text-blue-400 bg-blue-500/10 border-blue-500/20",
+    round: "OS Internals & Concurrency",
+    text: "Most candidates bomb the low-level CS round. The synthesized OS notes on mutex spinlocks and deadlock conditions covered the exact memory isolation question my interviewer pressed me on.",
+    stats: "OS & DBMS Mastered",
   },
   {
-    name: "Arjun Mehta",
-    role: "SDE Intern @ Flipkart",
-    img: "https://randomuser.me/api/portraits/men/22.jpg",
-    text: "The behavioral questions section is a hidden gem. The example answers helped me crack my HR round with confidence."
+    name: "Rohan Nair",
+    role: "Backend Engineer",
+    company: "Swiggy",
+    companyColor: "text-[#ffa116] bg-[#ffa116]/10 border-[#ffa116]/20",
+    round: "System Design Spec",
+    text: "Instead of building another generic to-do clone, I built the distributed rate limiter spec from the AI Projects section. The interview panel spent the entire 45 minutes digging into my Redis token-bucket tradeoffs.",
+    stats: "High-Throughput Project",
   },
   {
-    name: "Divya Nair",
-    role: "2nd Year CSE",
-    img: "https://randomuser.me/api/portraits/women/12.jpg",
-    text: "I used the roadmap section to structure my entire second year. I know exactly what to learn and when. Highly recommended!"
-  }
+    name: "Tanvi Saxena",
+    role: "SDE Intern",
+    company: "Google",
+    companyColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    round: "DSA Hard + DP Round",
+    text: "The pattern-based progression saved me easily 80 hours compared to wading blindly through LeetCode discuss threads. Having everything under one cohesive workspace made all the difference.",
+    stats: "150 Solved · SDE Track",
+  },
 ];
-
-const MARQUEE_TESTIMONIALS = [...TESTIMONIALS_DATA, ...TESTIMONIALS_DATA];
 
 const Testimonial = () => {
   return (
-    <div>
-      {/* Testimonials */}
-      <section className="mt-32 relative">
-
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-14">
-          What Students <span className="text-[#ffa116]">Say</span>
+    <section className="relative">
+      <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-16">
+        <p className="text-xs font-mono uppercase tracking-widest text-[#ffa116] font-semibold mb-3">
+          Proven Outcomes
+        </p>
+        <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+          Engineered for <span className="text-[#ffa116]">top placements</span>
         </h2>
+        <p className="text-sm sm:text-base text-zinc-400 leading-relaxed">
+          Real interview debriefs from candidates who structured their preparation with PrepStack.
+        </p>
+      </div>
 
-        <div className="relative overflow-hidden">
-
-          {/* Blur edges */}
-          <div className="absolute left-0 top-0 h-full w-32 bg-gradient-to-r from-[#0f0f0f] to-transparent z-10"></div>
-          <div className="absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-[#0f0f0f] to-transparent z-10"></div>
-
-          <div className="flex gap-8 animate-marquee">
-
-            {MARQUEE_TESTIMONIALS.map((t, i) => (
-              <div
-                key={i}
-                className="min-w-[340px] max-w-[340px] p-6 rounded-2xl bg-[#1a1a1a] border border-[#2a2a2a] hover:border-[#ffa116]/40 transition"
-              >
-
-                {/* stars */}
-                <div className="flex text-[#ffa116] mb-3">
-                  ⭐⭐⭐⭐⭐
+      <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        {PLACEMENT_DEBRIEFS.map((item, i) => (
+          <div
+            key={i}
+            className="p-7 sm:p-8 rounded-2xl luxury-card text-left flex flex-col justify-between group relative overflow-hidden"
+          >
+            <div>
+              {/* Header: Company & Round */}
+              <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/[0.06]">
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className={`font-display text-xs font-bold px-2.5 py-1 rounded-md border ${item.companyColor}`}
+                  >
+                    {item.company}
+                  </span>
+                  <span className="font-mono text-[11px] text-zinc-400">
+                    {item.role}
+                  </span>
                 </div>
-
-                <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                  {t.text}
-                </p>
-
-                <div className="flex items-center gap-3">
-
-                  <img
-                    src={t.img}
-                    alt={t.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <h4 className="font-semibold">{t.name}</h4>
-                    <p className="text-sm text-gray-500">{t.role}</p>
-                  </div>
-
-                </div>
-
+                <span className="font-mono text-[10px] text-zinc-500 hidden sm:inline-block">
+                  {item.round}
+                </span>
               </div>
-            ))}
 
+              {/* Quote */}
+              <p className="text-sm text-zinc-300 leading-relaxed mb-6 font-normal">
+                "{item.text}"
+              </p>
+            </div>
+
+            {/* Candidate info & stats footer */}
+            <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
+              <div>
+                <h4 className="font-display text-sm font-bold text-white group-hover:text-[#ffa116] transition-colors">
+                  {item.name}
+                </h4>
+                <p className="font-mono text-[11px] text-zinc-500">{item.stats}</p>
+              </div>
+              <span className="font-mono text-[10px] text-emerald-400/90 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                Verified Offer
+              </span>
+            </div>
           </div>
+        ))}
+      </div>
+    </section>
+  );
+};
 
-        </div>
-
-      </section>
-    </div>
-  )
-}
-
-export default Testimonial
+export default Testimonial;

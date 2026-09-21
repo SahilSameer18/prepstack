@@ -1,76 +1,116 @@
 import React, { useState, useCallback, memo } from "react";
-import { FaChevronDown } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiChevronDown } from "react-icons/fi";
 
-const FAQS_DATA = [
+const TECHNICAL_FAQS = [
   {
-    question: "Who is this platform for?",
-    answer: "This platform is designed specifically for Computer Science students preparing for internships, placements, and software engineering interviews.",
+    idx: "01",
+    question: "How does PrepStack differ from solving directly on LeetCode?",
+    answer: "LeetCode has 3,000+ uncurated problems with noisy forums. PrepStack provides vetted pattern progressions (Blind 75, NeetCode 150, Striver SDE) with instant atomic progress tracking, low-level CS interview internals, and production project blueprints all in one unified cockpit.",
   },
   {
-    question: "Does it include core CS notes?",
-    answer: "Yes! We have comprehensive notes for Operating Systems, DBMS, OOPs, Computer Networks, and basic System Design concepts specifically tailored for interview prep.",
+    idx: "02",
+    question: "Which DSA sheet should I start with if I have 30 to 60 days?",
+    answer: "If you have under 60 days, we recommend starting with Blind 75 (FAANG essentials) followed by NeetCode 150. If you are building foundational mastery from scratch, Striver A2Z or Love Babbar 450 provides exhaustive topic-by-topic depth.",
   },
   {
-    question: "How do the behavioral question answers help?",
-    answer: "Our behavioral section provides strategic tips and STAR-method based example answers to help you structure your responses effectively and leave a great impression during HR interviews.",
+    idx: "03",
+    question: "How does the atomic progress sync work?",
+    answer: "Every time you toggle a problem or complete a topic, your client updates state optimistically in 0ms while silently persisting to the database. If your network hiccups, changes rollback gracefully with instant feedback.",
   },
   {
-    question: "Can I generate project ideas using AI?",
-    answer: "Absolutely! With our AI integration, you can generate unique project ideas tailored to your chosen tech stack, helping you build a standout portfolio.",
+    idx: "04",
+    question: "What makes the AI project specs recruiter-ready?",
+    answer: "Rather than spitting out generic to-do apps or weather widgets, our Gemini-backed architect designs high-throughput services (e.g. distributed rate limiters, write-ahead logs, cache-aside pipelines) with schema definitions, p99 latency targets, and talking points for technical rounds.",
   },
   {
-    question: "Are there structured roadmaps?",
-    answer: "Yes, you can explore domain-specific roadmaps (like Web Development, Data Science, Backend) and pre-built year-wise guides to navigate your college journey.",
-  },
-  {
-    question: "Are these resources free to use?",
-    answer: "Yes, our mission is to provide high-quality, curated interview preparation resources to all students for free to ensure equal opportunities for everyone.",
+    idx: "05",
+    question: "Is my progress and account data fully private?",
+    answer: "Yes. PrepStack is engineered with zero-knowledge token hashing at rest, enterprise multi-device session management with remote kill-switches, and full GDPR Article 17 self-service account erasure with cascading collection wipe.",
   },
 ];
 
-const FAQItem = memo(({ question, answer, isOpen, toggle }) => {
+const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
   return (
-    <div className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isOpen ? "border-[#ffa116] bg-[#1a1a1a]" : "border-[#2a2a2a] bg-[#1a1a1a]/40"}`}>
+    <div
+      className={`rounded-2xl transition-all duration-300 border overflow-hidden ${
+        isOpen
+          ? "luxury-card border-[#ffa116]/40 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)]"
+          : "bg-[#0c0c0e]/60 border-white/[0.06] hover:border-white/[0.12]"
+      }`}
+    >
       <button
+        type="button"
         onClick={toggle}
-        className="w-full p-5 flex justify-between items-center text-left focus:outline-none cursor-pointer"
+        className="w-full p-5 sm:p-6 flex items-center justify-between text-left focus:outline-none cursor-pointer group select-none"
       >
-        <span className="text-lg font-medium text-gray-200">{question}</span>
-        <FaChevronDown className={`text-[#ffa116] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+        <div className="flex items-center gap-3.5 sm:gap-4 pr-3">
+          <span className="font-mono text-xs font-semibold text-[#ffa116] shrink-0">
+            [{idx}]
+          </span>
+          <span className="font-display text-base sm:text-lg font-bold text-white group-hover:text-zinc-200 transition-colors">
+            {question}
+          </span>
+        </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className={`shrink-0 w-7 h-7 rounded-lg border flex items-center justify-center transition-colors ${
+            isOpen
+              ? "bg-[#ffa116]/10 border-[#ffa116]/30 text-[#ffa116]"
+              : "border-white/[0.08] text-zinc-400 group-hover:text-white"
+          }`}
+        >
+          <FiChevronDown className="text-sm" />
+        </motion.div>
       </button>
 
-      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
-        <div className="px-5 pb-5 text-gray-400 leading-relaxed border-t border-[#2a2a2a]/50 pt-4">
-          {answer}
-        </div>
-      </div>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="px-5 sm:px-6 pb-6 pt-1 text-zinc-400 text-sm leading-relaxed border-t border-white/[0.04] mt-1 pl-12 sm:pl-14">
+              {answer}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 });
 
 const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(0);
 
   const handleToggle = useCallback((index) => {
     setOpenIndex((prev) => (prev === index ? null : index));
   }, []);
 
   return (
-    <section className="mt-12">
-      <div className="max-w-4xl mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">
-            Got Questions? <span className="text-[#ffa116]">Answers Here</span>
+    <section className="relative">
+      <div className="max-w-3xl mx-auto text-left">
+        <div className="text-center mb-12 sm:mb-14">
+          <p className="text-xs font-mono uppercase tracking-widest text-[#ffa116] font-semibold mb-3">
+            Technical Briefing
+          </p>
+          <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+            Frequently asked <span className="text-[#ffa116]">questions</span>
           </h2>
-          <p className="text-gray-400">
-            Everything you need to know about the platform.
+          <p className="text-sm sm:text-base text-zinc-400 leading-relaxed">
+            Everything you need to know about the platform architecture and preparation workflow.
           </p>
         </div>
 
-        <div className="space-y-3">
-          {FAQS_DATA.map((faq, index) => (
+        <div className="space-y-3.5">
+          {TECHNICAL_FAQS.map((faq, index) => (
             <FAQItem
               key={index}
+              idx={faq.idx}
               question={faq.question}
               answer={faq.answer}
               isOpen={openIndex === index}

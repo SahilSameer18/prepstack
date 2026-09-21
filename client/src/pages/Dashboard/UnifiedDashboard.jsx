@@ -62,92 +62,92 @@ const UnifiedDashboard = () => {
   }, [fetchDashboard, getProjects]);
 
   return (
-    <div className="px-4 md:px-6 py-8 max-w-7xl mx-auto page-enter text-white">
+    <div className="px-4 sm:px-6 py-8 max-w-7xl mx-auto page-enter text-white text-left">
 
       {/* ── Page Header ────────────────────────────────────────────────── */}
       <motion.div
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.35 }}
+        transition={{ duration: 0.2 }}
       >
-        <div className="flex items-center gap-2 mb-2">
-          <FiGrid className="text-[#ffa116] text-lg" />
-          <span className="text-xs font-bold uppercase tracking-widest text-[#ffa116]">
-            {user?.username || "Coder"}'s Dashboard
-          </span>
+        <div className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 mb-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
+          <span className="tracking-wider uppercase font-semibold text-zinc-300">Developer Cockpit // Telemetry Synced</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-black text-white mb-2">
-          Welcome back,{" "}
-          <span className="text-[#ffa116]">{user?.username || "Coder"}</span>
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-[-0.035em] mb-2.5">
+          Welcome back, <span className="text-white">{user?.username || "Engineer"}</span>
         </h1>
-        <p className="text-gray-500 text-sm">
-          Track your DSA progress and manage your saved project ideas — all in
-          one place.
+        <p className="text-zinc-400 text-sm sm:text-base max-w-2xl leading-relaxed">
+          Algorithmic problem tracking, curated sheet mastery, and system architecture blueprints in a single engineering cockpit.
         </p>
       </motion.div>
 
-      {/* ── Key Stats Strip ────────────────────────────────────────────── */}
-      <section className="mb-10 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="border border-white/[0.06] rounded-2xl bg-[#111] px-4 py-5 flex flex-col items-center justify-center gap-3 text-center"
-            >
-              <div className="w-6 h-6 rounded-md skeleton-shine" />
-              <div className="w-16 h-8 rounded-lg skeleton-shine" />
-              <div className="w-24 h-3 rounded skeleton-shine" />
-            </div>
-          ))
-        ) : (
-          [
-            {
-              label: "Problems Solved",
-              value: stats.totalSolved,
-              icon: <FaCheckCircle className="text-emerald-400" />,
-              color: "text-emerald-400",
-              bg: "bg-emerald-500/10 border-emerald-500/20",
-            },
-            {
-              label: "Sheets In Progress",
-              value: stats.sheetsInProgress,
-              icon: <FiActivity className="text-blue-400" />,
-              color: "text-blue-400",
-              bg: "bg-blue-500/10 border-blue-500/20",
-            },
-            {
-              label: "Sheets Completed",
-              value: stats.sheetsCompleted,
-              icon: <FiAward className="text-[#ffa116]" />,
-              color: "text-[#ffa116]",
-              bg: "bg-[#ffa116]/10 border-[#ffa116]/20",
-            },
-            {
-              label: "Overall Progress",
-              value: `${stats.overallPct}%`,
-              icon: <FiTrendingUp className="text-purple-400" />,
-              color: "text-purple-400",
-              bg: "bg-purple-500/10 border-purple-500/20",
-            },
-          ].map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: i * 0.04 }}
-              className={`border rounded-2xl ${stat.bg} px-4 py-5 flex flex-col items-center justify-center gap-2 text-center backdrop-blur-sm hover:border-opacity-60 transition-all`}
-            >
-              <span className="text-xl">{stat.icon}</span>
-              <span className={`text-2xl md:text-3xl font-black ${stat.color}`}>
-                {stat.value}
-              </span>
-              <span className="text-[9px] text-gray-500 uppercase tracking-widest font-bold whitespace-nowrap">
-                {stat.label}
-              </span>
-            </motion.div>
-          ))
-        )}
+      {/* ── Executive Telemetry Strip ────────────────────────────────────── */}
+      <section className="mb-10">
+        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-5 sm:p-6 shadow-xl">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08]">
+            {loading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="p-4 flex flex-col gap-2">
+                  <div className="w-20 h-3 rounded bg-white/[0.06] animate-pulse" />
+                  <div className="w-16 h-8 rounded bg-white/[0.06] animate-pulse" />
+                  <div className="w-24 h-2 rounded bg-white/[0.04] animate-pulse" />
+                </div>
+              ))
+            ) : (
+              [
+                {
+                  label: "Problems Mastered",
+                  value: stats.totalSolved,
+                  sub: "Across all sheets",
+                  icon: <FaCheckCircle className="text-emerald-400 text-sm" />,
+                  color: "text-white",
+                },
+                {
+                  label: "Curricula In Flight",
+                  value: stats.sheetsInProgress,
+                  sub: "Active sheets",
+                  icon: <FiActivity className="text-blue-400 text-sm" />,
+                  color: "text-white",
+                },
+                {
+                  label: "Sheets Completed",
+                  value: stats.sheetsCompleted,
+                  sub: "100% finished",
+                  icon: <FiAward className="text-[#ffa116] text-sm" />,
+                  color: "text-white",
+                },
+                {
+                  label: "Readiness Index",
+                  value: `${stats.overallPct}%`,
+                  sub: "Overall curriculum coverage",
+                  icon: <FiTrendingUp className="text-purple-400 text-sm" />,
+                  color: "text-[#ffa116]",
+                },
+              ].map((stat, i) => (
+                <div key={stat.label} className={`flex flex-col justify-between ${i > 0 ? "pt-4 sm:pt-0 sm:pl-6" : ""}`}>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+                      {stat.label}
+                    </span>
+                    <div className="w-7 h-7 rounded-lg bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                      {stat.icon}
+                    </div>
+                  </div>
+                  <div>
+                    <div className={`font-mono text-2xl sm:text-3xl font-bold tracking-tight mb-1 ${stat.color}`}>
+                      {stat.value}
+                    </div>
+                    <p className="text-[11px] font-mono text-zinc-500 truncate">
+                      {stat.sub}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </section>
 
       {/* ── Sub-sections ──────────────────────────────────────────────── */}
