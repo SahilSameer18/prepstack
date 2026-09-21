@@ -59,7 +59,7 @@ app.use('/api/notes', notesRouter)
 app.use('/api/user', userRouter)
 
 
-// 404 — catch any unmatched routes and forward to error handler
+// 404: catch any unmatched routes and forward to error handler
 app.use((req, res, next) => {
   next(new AppError(404, `Cannot ${req.method} ${req.originalUrl}`));
 });

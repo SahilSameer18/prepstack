@@ -122,7 +122,7 @@ const getDashboardSummary = async (req, res, next) => {
   }
 };
 
-// ── Update user profile (username, avatar only — email is immutable) ───────────
+// ── Update user profile (username, avatar only, email is immutable) ───────────
 
 const updateProfile = async (req, res, next) => {
   try {

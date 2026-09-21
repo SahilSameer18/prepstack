@@ -1,5 +1,5 @@
 /**
- * AppError — a structured, operational error for use in controllers/services.
+ * AppError: a structured, operational error for use in controllers/services.
  *
  * Usage:
  *   throw new AppError(404, 'Project not found');

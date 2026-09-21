@@ -25,10 +25,10 @@ authRouter.post('/logout-all', authMiddleware, authController.logoutAllDevices);
 // get current user
 authRouter.get('/current-user', authMiddleware, authController.getCurrentUser);
 
-// Google OAuth — new login / registration
+// Google OAuth: new login / registration
 authRouter.post('/google', authLimiter, validate(googleLoginSchema), authController.googleLogin);
 
-// Google Account Linking — authenticated user only
+// Google Account Linking: authenticated user only
 authRouter.post('/link-google', linkGoogleLimiter, authMiddleware, validate(googleLoginSchema), authController.linkGoogle);
 
 // Set password for OAuth users

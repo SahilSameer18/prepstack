@@ -16,11 +16,11 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
-      // Access token expired — client should call /refresh
+      // Access token expired: client should call /refresh
       return res.status(401).json({ success: false, message: 'Token expired' });
     }
     if (error.name === 'JsonWebTokenError') {
-      // Token was tampered with — do not refresh
+      // Token was tampered with: do not refresh
       return res.status(403).json({ success: false, message: 'Invalid token' });
     }
     next(error);

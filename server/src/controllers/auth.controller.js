@@ -232,7 +232,7 @@ const refreshAccessToken = async (req, res, next) => {
       return next(new AppError(401, 'No refresh token provided'));
     }
 
-    // Will throw JsonWebTokenError or TokenExpiredError on bad/expired tokens —
+    // Will throw JsonWebTokenError or TokenExpiredError on bad/expired tokens:
     // the centralized error handler maps these to 403/401 automatically.
     const decoded = jwt.verify(token, process.env.REFRESH_SECRET);
 

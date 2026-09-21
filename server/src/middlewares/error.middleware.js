@@ -62,7 +62,7 @@ function sendProdError(err, res) {
       errors: err.errors || [err.message],
     });
   } else {
-    // Programmer or unknown error — don't leak details
+    // Programmer or unknown error: don't leak details
     console.error('UNEXPECTED ERROR 💥', err);
     res.status(500).json({
       success: false,

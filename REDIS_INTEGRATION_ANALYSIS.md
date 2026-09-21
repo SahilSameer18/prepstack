@@ -1,5 +1,5 @@
 # Comprehensive Architectural & Implementation Analysis
-# Redis Integration Plan — PrepStack Backend (Upstash · 3 Phases)
+# Redis Integration Plan: PrepStack Backend (Upstash · 3 Phases)
 
 **Date:** August 5, 2026  
 **Target Repository:** `prepstack/server`  
@@ -11,10 +11,10 @@
 1. [Executive Summary & Readiness Verdict](#1-executive-summary--readiness-verdict)
 2. [Codebase Architecture & Existing Integration Points](#2-codebase-architecture--existing-integration-points)
 3. [Deep-Dive Evaluation by Phase](#3-deep-dive-evaluation-by-phase)
-   - [Phase 0 — Upstash & TLS Setup](#phase-0--upstash--tls-setup)
-   - [Phase 1 — Redis Foundation Architecture](#phase-1--redis-foundation-architecture)
-   - [Phase 2 — Rate Limiting Strategy & Nuances](#phase-2--rate-limiting-strategy--nuances)
-   - [Phase 3 — Content & User Stats Caching](#phase-3--content--user-stats-caching)
+   - [Phase 0: Upstash & TLS Setup](#phase-0--upstash--tls-setup)
+   - [Phase 1: Redis Foundation Architecture](#phase-1--redis-foundation-architecture)
+   - [Phase 2: Rate Limiting Strategy & Nuances](#phase-2--rate-limiting-strategy--nuances)
+   - [Phase 3: Content & User Stats Caching](#phase-3--content--user-stats-caching)
 4. [Critical Gaps & Edge Cases Discovered](#4-critical-gaps--edge-cases-discovered)
    - [Gap 1: Incomplete User Stats Invalidation](#gap-1-incomplete-user-stats-invalidation-on-project-actions)
    - [Gap 2: Standalone Seed Scripts Invalidation Bug](#gap-2-standalone-seed-scripts-invalidation-bug)
@@ -29,7 +29,7 @@
 
 ## 1. Executive Summary & Readiness Verdict
 
-The **Redis Integration Plan** is well-conceived, modern, and fits the PrepStack architecture cleanly. It adheres to critical cloud design patterns—notably **fail-open resilience**, **bounded reconnect backoff**, and **clear separation of concerns**.
+The **Redis Integration Plan** is well-conceived, modern, and fits the PrepStack architecture cleanly. It adheres to critical cloud design patterns, notably **fail-open resilience**, **bounded reconnect backoff**, and **clear separation of concerns**.
 
 ### Readiness Scorecard
 | Dimension | Rating | Summary |
@@ -79,14 +79,14 @@ server/
 
 ## 3. Deep-Dive Evaluation by Phase
 
-### Phase 0 — Upstash & TLS Setup
+### Phase 0: Upstash & TLS Setup
 - **TLS Requirement**: Upstash requires TLS for all connections. Using `rediss://default:<password>@<endpoint>.upstash.io:6379` in `server/.env` is mandatory.
 - **Node.js TCP Client (`redis` package)**: Optimal choice over the REST API for socket reuse, lower overhead, and native compatibility with `rate-limit-redis`.
 - **Command Budgeting**: Upstash's free tier allows up to 10,000 commands/day. With 24-hour TTL on static sheets/notes, 5-minute TTL on user stats, and efficient rate-limiting, daily usage for standard traffic will remain well within the free quota.
 
 ---
 
-### Phase 1 — Redis Foundation Architecture
+### Phase 1: Redis Foundation Architecture
 
 #### `src/config/redis.js`
 - **Reconnection Strategy**: 
@@ -107,7 +107,7 @@ server/
 
 ---
 
-### Phase 2 — Rate Limiting Strategy & Nuances
+### Phase 2: Rate Limiting Strategy & Nuances
 
 #### `middlewares/rateLimit.middleware.js`
 - **Store**: Uses `rate-limit-redis` v6 with `createStore(prefix)`.
@@ -116,7 +116,7 @@ server/
 
 ---
 
-### Phase 3 — Content & User Stats Caching
+### Phase 3: Content & User Stats Caching
 
 #### `services/contentCache.service.js`
 - **Serialization**: Objects are stringified before storing and parsed upon retrieval.
