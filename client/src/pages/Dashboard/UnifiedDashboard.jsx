@@ -85,7 +85,8 @@ const UnifiedDashboard = () => {
 
       {/* ── Executive Telemetry Strip ────────────────────────────────────── */}
       <section className="mb-10">
-        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-5 sm:p-6 shadow-xl">
+        <div className="titanium-card rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08]">
             {loading ? (
               Array.from({ length: 4 }).map((_, i) => (

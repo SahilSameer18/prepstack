@@ -37,7 +37,7 @@ const subjects = [
     hoverColor: "#c084fc",   // purple-400
     bg: "bg-purple-500/10", border: "border-purple-500/20",
     topics: 30,
-    description: "Understand how the internet works — from OSI layers to TCP/IP, DNS, routing and sockets.",
+    description: "Understand how the internet works, from OSI layers to TCP/IP, DNS, routing and sockets.",
     topicList: ["OSI & TCP/IP Model", "HTTP/HTTPS", "DNS & DHCP", "TCP vs UDP", "Routing Protocols", "Socket Programming"],
     lastUpdated: "1 week ago",
     difficulty: "Core",
@@ -63,7 +63,7 @@ const subjects = [
     hoverColor: "#f472b6",   // pink-400
     bg: "bg-pink-500/10", border: "border-pink-500/20",
     topics: 12,
-    description: "Learn to architect scalable systems — load balancing, caching, microservices and API design.",
+    description: "Learn to architect scalable systems: load balancing, caching, microservices and API design.",
     topicList: ["Scalability", "Load Balancing", "Caching", "Database Design", "Microservices", "API Design"],
     lastUpdated: "In Progress",
     difficulty: "Advanced",
@@ -75,7 +75,7 @@ const subjects = [
 // NoteCard uses pure CSS hover for 60fps GPU performance without React state overhead
 const NoteCard = ({ s }) => {
   return (
-    <div className="group relative bg-[#0c0c0e] border border-white/[0.08] hover:border-white/[0.2] rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/70 text-left">
+    <div className="group relative titanium-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 text-left">
       {/* Top colour accent bar on hover */}
       <div
         className="absolute top-0 inset-x-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-200"
@@ -83,6 +83,8 @@ const NoteCard = ({ s }) => {
           background: `linear-gradient(to right, ${s.hoverColor}, transparent)`,
         }}
       />
+      {/* Specular hairline */}
+      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
 
       <div className="p-6 sm:p-7 flex flex-col flex-1">
         {/* Icon + badges row */}
@@ -99,7 +101,7 @@ const NoteCard = ({ s }) => {
                 In Review
               </span>
             ) : (
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#ffa116]/10 border border-[#ffa116]/20 text-[#ffa116]">
+              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/30 text-[#ffa116]">
                 {s.difficulty}
               </span>
             )}
@@ -128,12 +130,12 @@ const NoteCard = ({ s }) => {
         {/* Topic chips */}
         <div className="flex flex-wrap gap-1.5 mb-6">
           {s.topicList.slice(0, 4).map((t) => (
-            <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.06] text-zinc-300">
+            <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-300">
               {t}
             </span>
           ))}
           {s.topicList.length > 4 && (
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.06] text-zinc-400">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-400">
               +{s.topicList.length - 4} more
             </span>
           )}
@@ -150,7 +152,7 @@ const NoteCard = ({ s }) => {
         ) : (
           <Link to={`/notes/${s.slug}`} className="block">
             <button
-              className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 bg-white/[0.04] border border-white/[0.08] text-zinc-200 group-hover:bg-[#ffa116] group-hover:text-black group-hover:border-[#ffa116] cursor-pointer"
+              className="w-full py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 bg-white/[0.04] border border-white/[0.08] text-zinc-200 group-hover:amber-specular-button cursor-pointer select-none"
             >
               <span>Study Notes</span>
               <FiArrowRight className="text-xs group-hover:translate-x-0.5 transition-transform" />

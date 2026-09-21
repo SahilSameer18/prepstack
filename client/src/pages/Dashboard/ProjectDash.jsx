@@ -244,8 +244,9 @@ const ProjectDash = () => {
                   <div
                     key={project._id}
                     onClick={() => navigate(`/ai-projects/${project._id}`)}
-                    className="group relative bg-[#0c0c0e] border border-white/[0.08] hover:border-white/[0.2] rounded-2xl p-6 cursor-pointer transition-colors duration-200 flex flex-col h-full shadow-lg"
+                    className="group relative titanium-card rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:-translate-y-1 flex flex-col h-full shadow-lg overflow-hidden"
                   >
+                    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent group-hover:via-[#ffa116]/40 transition-all" />
                     {/* Complexity badge */}
                     <div className="flex items-center justify-between gap-2 mb-3">
                       {(project.techStack || project.domain) && (

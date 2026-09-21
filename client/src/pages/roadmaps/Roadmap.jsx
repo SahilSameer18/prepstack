@@ -31,8 +31,10 @@ const Roadmap = () => {
         {roadmaps.map((r, i) => (
           <div
             key={i}
-            className="luxury-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between group"
+            className="titanium-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between group transition-all duration-200 hover:-translate-y-1"
           >
+            <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent group-hover:via-[#ffa116]/40 transition-all" />
+
             {/* Top metadata row */}
             <div className="flex items-center justify-between mb-4">
               <div className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xl text-[#ffa116] flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
@@ -41,12 +43,12 @@ const Roadmap = () => {
 
               <div className="flex items-center gap-1.5">
                 {r.recommended && (
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#ffa116]/10 border border-[#ffa116]/30 text-[#ffa116]">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/30 text-[#ffa116]">
                     Core Track
                   </span>
                 )}
                 {r.isNew && (
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                     Updated
                   </span>
                 )}
@@ -73,7 +75,7 @@ const Roadmap = () => {
             {/* CTA */}
             <Link
               to={`/roadmaps/${r.slug}`}
-              className="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-display font-semibold flex items-center justify-center gap-2 bg-white/[0.03] border border-white/[0.08] text-zinc-200 hover:bg-[#ffa116] hover:text-black hover:border-[#ffa116] transition-all duration-200"
+              className="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-display font-semibold flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] text-zinc-200 hover:amber-specular-button transition-all duration-200 select-none"
             >
               Explore Curriculum <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
             </Link>

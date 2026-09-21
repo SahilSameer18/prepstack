@@ -123,14 +123,14 @@ export const behavioralQuestions = [
     question: "What do you do when you're stuck on a technical problem?",
     category: "Problem Solving",
     tip: "Explain your debugging process: Rubber ducking, checking docs, StackOverflow, and eventually asking for help.",
-    exampleAnswer: "I first try to isolate the issue. If I'm still stuck after 30 minutes of searching, I try 'Rubber Ducking'—explaining the code out loud. If that fails, I prepare a clear summary of what I've tried and ask a teammate for a quick 5-minute review."
+    exampleAnswer: "I first try to isolate the issue. If I'm still stuck after 30 minutes of searching, I try 'Rubber Ducking': explaining the code out loud. If that fails, I prepare a clear summary of what I've tried and ask a teammate for a quick 5-minute review."
   },
   {
     id: 19,
     question: "Tell me about a time you explained something complex to a non-technical person.",
     category: "Teamwork",
     tip: "Use analogies and avoid jargon. Show that you can communicate effectively with different stakeholders.",
-    exampleAnswer: "I once had to explain 'cloud hosting' to a client. I compared it to a utility service like electricity—you don't need your own generator (server); you just plug into a giant network and pay for what you use. They understood it immediately."
+    exampleAnswer: "I once had to explain 'cloud hosting' to a client. I compared it to a utility service like electricity: you don't need your own generator (server); you just plug into a giant network and pay for what you use. They understood it immediately."
   },
   {
     id: 20,

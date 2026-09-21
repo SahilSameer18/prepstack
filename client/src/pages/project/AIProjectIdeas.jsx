@@ -85,7 +85,8 @@ const AIProjectIdeas = () => {
       <div className="grid lg:grid-cols-[380px_1fr] gap-6 items-start text-left">
 
         {/* ─── LEFT PANEL: Controls ─── */}
-        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 space-y-5 sticky top-20 shadow-xl">
+        <div className="titanium-card rounded-2xl p-6 space-y-5 sticky top-20 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
 
           <div className="flex items-center gap-2.5 mb-2 pb-3 border-b border-white/[0.08]">
             <div className="w-8 h-8 bg-[#ffa116]/10 border border-[#ffa116]/25 rounded-lg flex items-center justify-center">
@@ -97,7 +98,7 @@ const AIProjectIdeas = () => {
             </div>
           </div>
 
-          {/* Tech Stack — grouped section */}
+          {/* Tech Stack: grouped section */}
           <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3.5 space-y-2.5">
             <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
               Tech Stack <span className="text-[#ffa116]">*</span>
@@ -119,7 +120,7 @@ const AIProjectIdeas = () => {
             </div>
           </div>
 
-          {/* Complexity — grouped section */}
+          {/* Complexity: grouped section */}
           <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3.5 space-y-2.5">
             <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
               Target Complexity <span className="text-[#ffa116]">*</span>
@@ -148,7 +149,7 @@ const AIProjectIdeas = () => {
             </div>
           </div>
 
-          {/* Domain + Notes — grouped section */}
+          {/* Domain + Notes: grouped section */}
           <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-3.5 space-y-3">
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-bold text-zinc-400 uppercase tracking-wider">Target Domain</label>
@@ -226,7 +227,8 @@ const AIProjectIdeas = () => {
         {/* ─── RIGHT PANEL: Generated Idea ─── */}
         <div className="min-h-[500px]">
           {!project && !loading && (
-            <div className="h-full min-h-[500px] flex flex-col items-center justify-center bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-8 sm:p-12 text-center">
+            <div className="h-full min-h-[500px] flex flex-col items-center justify-center titanium-card rounded-2xl p-8 sm:p-12 text-center relative overflow-hidden">
+              <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
               <div className="w-16 h-16 rounded-2xl bg-[#ffa116]/10 border border-[#ffa116]/25 flex items-center justify-center mb-4">
                 <FiCpu className="text-2xl text-[#ffa116]" />
               </div>

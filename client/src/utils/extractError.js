@@ -1,5 +1,5 @@
 /**
- * extractError — single utility to pull a human-readable message from any
+ * extractError: single utility to pull a human-readable message from any
  * thrown value (axios error, AppError shape, plain Error, string, etc.)
  *
  * @param {unknown} err      - The caught error value

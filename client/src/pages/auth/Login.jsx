@@ -149,7 +149,7 @@ const Login = () => {
               tech role.
             </h2>
             <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
-              DSA sheets, CS fundamentals, roadmaps, and AI project ideas — all in one place, built for students like you.
+              DSA sheets, CS fundamentals, roadmaps, and AI project ideas, all in one place, built for students like you.
             </p>
           </motion.div>
 

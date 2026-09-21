@@ -9,13 +9,19 @@ const STATS = [
 
 const MetricsStrip = () => {
   return (
-    <div className="relative mx-auto max-w-5xl w-full rounded-2xl border border-white/[0.08] bg-[#0c0c0e] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.1)] overflow-hidden transform-gpu">
-      <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.07]">
+    <div className="relative mx-auto max-w-5xl w-full rounded-2xl titanium-card overflow-hidden transform-gpu">
+      <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.08]">
         {STATS.map((stat, i) => (
           <div
             key={i}
-            className="p-6 sm:p-7 flex flex-col justify-center text-left group hover:bg-white/[0.02] transition-colors"
+            className="p-6 sm:p-7 flex flex-col justify-center text-left group hover:bg-white/[0.025] transition-all duration-150"
           >
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]/80 group-hover:scale-125 transition-transform" />
+              <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 group-hover:text-zinc-200 transition-colors">
+                METRIC 0{i + 1}
+              </span>
+            </div>
             <span className="font-display text-3xl sm:text-4xl font-black text-white tracking-tight group-hover:text-[#ffa116] transition-colors mb-1">
               {stat.value}
             </span>

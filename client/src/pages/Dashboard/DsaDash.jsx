@@ -136,8 +136,10 @@ const DSADash = ({ dsaData, loading, stats }) => {
                 >
                   <Link
                     to={`/dsa/${sheet.slug}`}
-                    className="group relative bg-[#0c0c0e] border border-white/[0.08] hover:border-white/[0.2] rounded-2xl p-5 flex gap-4 items-center transition-colors duration-200 overflow-hidden h-full shadow-lg"
+                    className="group relative titanium-card rounded-2xl p-5 flex gap-4 items-center transition-all duration-200 hover:-translate-y-0.5 overflow-hidden h-full shadow-lg"
                   >
+                    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent group-hover:via-[#ffa116]/40 transition-all" />
+
                     {/* Mini ring */}
                     <div className="relative flex-shrink-0">
                       <MiniRing pct={pct} color={meta.accentColor} />
@@ -158,7 +160,7 @@ const DSADash = ({ dsaData, loading, stats }) => {
                           {meta.badge}
                         </span>
                       </div>
-                      <h3 className="text-sm font-display font-bold text-white group-hover:text-zinc-100 truncate transition-colors">
+                      <h3 className="text-sm font-display font-bold text-white group-hover:text-[#ffa116] truncate transition-colors">
                         {sheet.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-2">
@@ -196,7 +198,8 @@ const DSADash = ({ dsaData, loading, stats }) => {
 
       {/* Telemetry readiness callout */}
       {!loading && stats.totalSolved > 0 && (
-        <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-5 shadow-lg">
+        <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 titanium-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffa116]/40 to-transparent" />
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-xl bg-[#ffa116]/10 border border-[#ffa116]/25 flex items-center justify-center flex-shrink-0">
               <FiAward className="text-[#ffa116] text-lg" />
@@ -214,7 +217,7 @@ const DSADash = ({ dsaData, loading, stats }) => {
           </div>
           <Link
             to="/dsa"
-            className="self-start sm:self-auto px-4 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] text-xs font-mono font-semibold text-zinc-200 transition-colors"
+            className="self-start sm:self-auto px-4 py-2 rounded-xl titanium-button text-xs font-mono font-semibold text-zinc-200 transition-colors"
           >
             Explore All Sheets →
           </Link>

@@ -36,7 +36,7 @@ api.interceptors.response.use(
     const is401 = error.response?.status === 401;
     const alreadyRetried = originalRequest._retry;
 
-    // Never attempt a refresh on these endpoints — a 401 here is a genuine
+    // Never attempt a refresh on these endpoints: a 401 here is a genuine
     // "credentials wrong" error, not an expired access token.
     const isRefreshEndpoint = originalRequest.url?.includes("/api/auth/refresh");
     const isLoginEndpoint   = originalRequest.url?.includes("/api/auth/login");

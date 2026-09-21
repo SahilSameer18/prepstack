@@ -80,22 +80,54 @@ body {
 
 /* ---------------- LUXURY & SPECULAR UTILITIES ---------------- */
 
+.bg-dot-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-line-grid {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.radial-mask-top {
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%);
+}
+
+.radial-mask-center {
+  mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 85%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 85%);
+}
+
 .luxury-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.008) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.038) 0%, rgba(255, 255, 255, 0.008) 100%), #0c0c0e;
   border: 1px solid var(--border-hairline);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 20px 45px -15px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .luxury-card:hover {
   border-color: var(--border-medium);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8), 0 25px 55px -12px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.titanium-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.006) 100%), #0a0a0d;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 24px 48px -12px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.titanium-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.9), 0 30px 60px -15px rgba(0, 0, 0, 0.98), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .luxury-glass {
   background: var(--surface-overlay);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border-hairline);
   box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
@@ -108,20 +140,55 @@ body {
 .amber-specular-button {
   background: linear-gradient(180deg, #ffa826 0%, #e68d05 100%);
   color: #050505;
-  box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease, background 0.12s ease;
   will-change: transform;
 }
 
 .amber-specular-button:hover {
   background: linear-gradient(180deg, #ffb342 0%, #f59508 100%);
-  box-shadow: 0 14px 30px -4px rgba(245, 158, 11, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  box-shadow: 0 12px 28px -3px rgba(245, 158, 11, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   transform: translateY(-1px);
 }
 
 .amber-specular-button:active {
-  transform: translateY(1px);
-  box-shadow: 0 6px 15px -3px rgba(245, 158, 11, 0.25);
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 4px 12px -2px rgba(245, 158, 11, 0.3);
+}
+
+.titanium-button {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), #121216;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  color: #e4e4e7;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+}
+
+.titanium-button:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.04) 100%), #16161b;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.titanium-button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.kbd-capsule {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: #121215;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #a1a1aa;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 /* ── SPOTLIGHT CARD (Zero layout-thrashing cursor glow) ── */

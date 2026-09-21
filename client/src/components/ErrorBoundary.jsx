@@ -2,7 +2,7 @@ import React from 'react';
 import { FiAlertTriangle, FiRefreshCw } from 'react-icons/fi';
 
 /**
- * ErrorBoundary — catches any uncaught render/lifecycle errors in the tree
+ * ErrorBoundary: catches any uncaught render/lifecycle errors in the tree
  * and shows a styled fallback UI instead of a blank white screen.
  *
  * Wrap your entire <App /> (in main.jsx) with this component.
@@ -65,7 +65,7 @@ class ErrorBoundary extends React.Component {
         {/* Copy */}
         <div>
           <h1 style={{ color: '#fff', fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
-            Oops — something went wrong
+            Something went wrong
           </h1>
           <p style={{ color: '#6b7280', fontSize: 14, maxWidth: 400, lineHeight: 1.6 }}>
             An unexpected error occurred. Our team has been notified. Try going

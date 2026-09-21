@@ -78,12 +78,12 @@ const SHEET_METADATA_MAP = {
 };
 
 const SheetCard = ({ sheet, cat }) => (
-  <div className="group bg-[#0c0c0e] border border-white/[0.08] hover:border-[#ffa116]/35 rounded-2xl p-6 sm:p-7 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/60 relative overflow-hidden flex flex-col justify-between text-left">
-    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.08] to-transparent group-hover:via-[#ffa116]/30 transition-all" />
+  <div className="group titanium-card rounded-2xl p-6 sm:p-7 transition-all duration-200 hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between text-left">
+    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent group-hover:via-[#ffa116]/50 transition-all" />
     
     {sheet.recommended && (
-      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-[#ffa116]/10 border border-[#ffa116]/25 rounded-full px-2.5 py-0.5">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
+      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-[#ffa116]/10 border border-[#ffa116]/30 rounded-full px-2.5 py-0.5 shadow-[0_0_10px_rgba(255,161,22,0.15)]">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116] shadow-[0_0_6px_#ffa116]" />
         <span className="text-[#ffa116] text-[10px] font-mono font-semibold uppercase tracking-wider">Top Pick</span>
       </div>
     )}
@@ -93,7 +93,7 @@ const SheetCard = ({ sheet, cat }) => (
         <div className={`p-2.5 rounded-xl w-fit ${cat.bg} border ${cat.border} transition-transform duration-200 group-hover:scale-105`}>
           {sheet.icon}
         </div>
-        <span className={`text-[10px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${cat.badge}`}>
+        <span className={`text-[10px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${cat.badge}`}>
           {cat.label.split(" ")[0]}
         </span>
       </div>
@@ -106,14 +106,14 @@ const SheetCard = ({ sheet, cat }) => (
       </p>
 
       <div className="flex items-center gap-2 mb-4 font-mono text-xs">
-        <span className="text-zinc-200 font-bold">{sheet.count} Problems</span>
+        <span className="text-white font-bold">{sheet.count} Problems</span>
         <span className="text-zinc-600">·</span>
         <span className="text-zinc-400">{sheet.difficulty}</span>
       </div>
 
       <div className="flex flex-wrap gap-1.5 mb-6">
         {(sheet.tags || []).map((tag, idx) => (
-          <span key={idx} className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.03] border border-white/[0.06] text-zinc-400">
+          <span key={idx} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-400">
             {tag}
           </span>
         ))}
@@ -122,7 +122,7 @@ const SheetCard = ({ sheet, cat }) => (
 
     <Link
       to={`/dsa/${sheet.slug}`}
-      className="w-full py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-200 group-hover:bg-[#ffa116] group-hover:text-black group-hover:border-[#ffa116] font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+      className="w-full py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-200 group-hover:amber-specular-button font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm select-none"
     >
       <span>Launch Sheet</span>
       <FaExternalLinkAlt className="text-[10px]" />
@@ -225,7 +225,7 @@ const Sheets = () => {
           DSA Problem <span className="text-[#ffa116]">Sheets</span>
         </h1>
         <p className="text-zinc-400 max-w-2xl text-sm sm:text-base leading-relaxed font-normal">
-          Curated algorithmic patterns organized by your preparation timeline—from zero-to-one fundamentals to fast pre-interview review sprints.
+          Curated algorithmic patterns organized by your preparation timeline, from zero-to-one fundamentals to fast pre-interview review sprints.
         </p>
       </div>
 
@@ -244,10 +244,10 @@ const Sheets = () => {
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setActiveCategory("all")}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all border cursor-pointer select-none ${
               activeCategory === "all"
-                ? "bg-[#ffa116] text-black font-semibold border-[#ffa116] shadow-sm"
-                : "bg-[#0c0c0e] border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.15]"
+                ? "amber-specular-button font-bold text-black border-[#ffa116]"
+                : "titanium-button text-zinc-400 hover:text-white"
             }`}
           >
             All Curriculums
@@ -256,10 +256,10 @@ const Sheets = () => {
             <button
               key={c.id}
               onClick={() => setActiveCategory(c.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all border cursor-pointer ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all border cursor-pointer select-none ${
                 activeCategory === c.id
-                  ? `${c.bg} ${c.color} ${c.activeBorder} shadow-sm font-semibold`
-                  : "bg-[#0c0c0e] border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.15]"
+                  ? `${c.bg} ${c.color} ${c.activeBorder} shadow-sm font-bold`
+                  : "titanium-button text-zinc-400 hover:text-white"
               }`}
             >
               {c.icon} {c.label}

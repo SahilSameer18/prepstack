@@ -44,13 +44,13 @@ const Testimonial = () => {
     <section className="relative">
       <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-16">
         <p className="text-xs font-mono uppercase tracking-widest text-[#ffa116] font-semibold mb-3">
-          Proven Outcomes
+          Candidate Case Studies
         </p>
         <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
-          Engineered for <span className="text-[#ffa116]">top placements</span>
+          Structured for <span className="text-[#ffa116]">top engineering rounds</span>
         </h2>
         <p className="text-sm sm:text-base text-zinc-400 leading-relaxed">
-          Real interview debriefs from candidates who structured their preparation with PrepStack.
+          Realistic preparation strategies and interview debriefs mapped directly to PrepStack's core curricula.
         </p>
       </div>
 
@@ -58,8 +58,9 @@ const Testimonial = () => {
         {PLACEMENT_DEBRIEFS.map((item, i) => (
           <div
             key={i}
-            className="p-7 sm:p-8 rounded-2xl luxury-card text-left flex flex-col justify-between group relative overflow-hidden"
+            className="p-7 sm:p-8 rounded-2xl titanium-card text-left flex flex-col justify-between group relative overflow-hidden"
           >
+            <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent group-hover:via-[#ffa116]/30 transition-all" />
             <div>
               {/* Header: Company & Round */}
               <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/[0.06]">
@@ -92,8 +93,8 @@ const Testimonial = () => {
                 </h4>
                 <p className="font-mono text-[11px] text-zinc-500">{item.stats}</p>
               </div>
-              <span className="font-mono text-[10px] text-emerald-400/90 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                Verified Offer
+              <span className="font-mono text-[10px] text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.08]">
+                Interview Case Study
               </span>
             </div>
           </div>

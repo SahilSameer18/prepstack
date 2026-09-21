@@ -33,12 +33,15 @@ const TECHNICAL_FAQS = [
 const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
   return (
     <div
-      className={`rounded-2xl transition-all duration-300 border overflow-hidden ${
+      className={`rounded-2xl transition-all duration-200 border overflow-hidden relative ${
         isOpen
-          ? "luxury-card border-[#ffa116]/40 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)]"
-          : "bg-[#0c0c0e]/60 border-white/[0.06] hover:border-white/[0.12]"
+          ? "titanium-card border-[#ffa116]/40 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.9)]"
+          : "bg-[#0b0b0e] border-white/[0.07] hover:border-white/[0.14] hover:bg-white/[0.015]"
       }`}
     >
+      {isOpen && (
+        <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffa116]/50 to-transparent" />
+      )}
       <button
         type="button"
         onClick={toggle}

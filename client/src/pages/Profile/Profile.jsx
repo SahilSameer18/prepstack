@@ -373,7 +373,8 @@ const Profile = () => {
       <div className="space-y-6">
         
         {/* ── 1. Hero Identity & Progress Banner ── */}
-        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 relative overflow-hidden shadow-2xl">
+        <div className="titanium-card rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.14] to-transparent" />
           {/* Ambient Glow - Hardware Accelerated */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#ffa116]/[0.03] rounded-full blur-[90px] -translate-y-1/2 translate-x-1/3 pointer-events-none transform-gpu" />
           
@@ -445,7 +446,8 @@ const Profile = () => {
         </div>
 
         {/* ── 2. Account Details & Developer Identicon ── */}
-        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 shadow-xl">
+        <div className="titanium-card rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.06]">
             <div>
               <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
@@ -560,7 +562,8 @@ const Profile = () => {
         </div>
 
         {/* ── 3. Security & Authentication Card ── */}
-        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+        <div className="titanium-card rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
           <div className="pb-4 border-b border-white/[0.06]">
             <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
               <FiShield className="text-[#ffa116]" /> Cryptographic Security & Credentials
@@ -726,7 +729,8 @@ const Profile = () => {
         </div>
 
         {/* ── 4. Active Devices & Sessions Manager ── */}
-        <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-xl">
+        <div className="titanium-card rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-xl">
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-white/[0.06]">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-[#ffa116]/10 text-[#ffa116] flex items-center justify-center text-base border border-[#ffa116]/20">
