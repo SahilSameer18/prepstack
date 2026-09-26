@@ -57,7 +57,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
         </div>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.25, ease: "easeInOut" }}
+          transition={{ type: "spring", damping: 20, stiffness: 320 }}
           className={`shrink-0 w-7 h-7 rounded-lg border flex items-center justify-center transition-colors ${
             isOpen
               ? "bg-[#ffa116]/10 border-[#ffa116]/30 text-[#ffa116]"
@@ -74,7 +74,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ type: "spring", damping: 28, stiffness: 320 }}
             className="overflow-hidden"
           >
             <div className="px-5 sm:px-6 pb-6 pt-1 text-zinc-400 text-sm leading-relaxed border-t border-white/[0.04] mt-1 pl-12 sm:pl-14">

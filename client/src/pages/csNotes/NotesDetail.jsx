@@ -18,7 +18,7 @@ const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderCla
         {items.map((item, idx) => (
           <li key={idx} className="flex items-start gap-3 text-zinc-200">
             <span className={`mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0 ${colorClass.replace('text-', 'bg-')}`} />
-            <span className="leading-relaxed text-sm">{item}</span>
+            <span className="leading-[1.7] text-[14.5px] sm:text-[15px]">{item}</span>
           </li>
         ))}
       </ul>
@@ -120,7 +120,7 @@ export default function NotesDetail() {
           border-r border-white/[0.08]
           z-50 md:z-auto
           flex flex-col
-          transition-transform duration-200 ease-in-out text-left
+          transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-left
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >

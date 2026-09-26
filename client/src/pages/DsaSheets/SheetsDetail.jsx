@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getSheetBySlug, getSheetProgress, toggleProblem } from '../../api/services/sheetService';
-import { FaCheckCircle, FaRegCircle, FaChevronDown, FaChevronUp, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaCheckCircle, FaRegCircle, FaChevronDown, FaExternalLinkAlt } from 'react-icons/fa';
 import { FiArrowLeft, FiTarget, FiAward, FiFileText, FiTrash2, FiCheck, FiCpu, FiClock, FiX } from 'react-icons/fi';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
 import { SkeletonSheetDetail } from '../../components/ui/Skeletons';
@@ -263,6 +264,13 @@ const SheetsDetail = () => {
 
   const handleToggleProblem = async (e, link) => {
     e.stopPropagation();
+    if (typeof window !== 'undefined' && typeof navigator?.vibrate === 'function') {
+      try {
+        navigator.vibrate(10);
+      } catch {
+        // Safe fallback for browsers/platforms without haptic vibration support
+      }
+    }
     const isSolved = solved.includes(link);
     setSolved((prev) => isSolved ? prev.filter(l => l !== link) : [...prev, link]);
     try {
@@ -356,9 +364,12 @@ const SheetsDetail = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-24 md:w-32 bg-white/[0.06] rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${progressPercentage}%`, background: meta.accentColor }}
+                    <motion.div
+                      className="h-full rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressPercentage}%` }}
+                      transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                      style={{ background: meta.accentColor }}
                     />
                   </div>
                   <span className="text-xs font-mono font-medium text-zinc-300">{progressPercentage}%</span>
@@ -426,15 +437,25 @@ const SheetsDetail = () => {
                     </div>
                   </div>
                 </div>
-                {isOpen
-                  ? <FaChevronUp className="text-zinc-400 text-xs flex-shrink-0" />
-                  : <FaChevronDown className="text-zinc-400 text-xs flex-shrink-0" />
-                }
+                <motion.span
+                  animate={{ rotate: isOpen ? 180 : 0 }}
+                  transition={{ type: "spring", damping: 20, stiffness: 320 }}
+                  className="text-zinc-400 text-xs flex-shrink-0"
+                >
+                  <FaChevronDown />
+                </motion.span>
               </button>
 
               {/* Accordion Body */}
-              {isOpen && (
-                <div className="border-t border-white/[0.06]">
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ type: "spring", damping: 30, stiffness: 350 }}
+                    className="border-t border-white/[0.06] overflow-hidden"
+                  >
                   {problems.map((problem, pIdx) => {
                     const isCompleted = solved.includes(problem.link);
                     const noteData = notesMap[problem.link] || null;
@@ -535,11 +556,13 @@ const SheetsDetail = () => {
                             >
                               <FiFileText className={`text-xs ${hasNote ? 'text-amber-400' : 'text-zinc-400'}`} />
                               <span className="hidden sm:inline">{hasNote ? 'Notes' : '+ Note'}</span>
-                              {isDrawerOpen ? (
-                                <FaChevronUp className="text-[9px]" />
-                              ) : (
-                                <FaChevronDown className="text-[9px]" />
-                              )}
+                              <motion.span
+                                animate={{ rotate: isDrawerOpen ? 180 : 0 }}
+                                transition={{ type: "spring", damping: 20, stiffness: 320 }}
+                                className="text-[9px]"
+                              >
+                                <FaChevronDown />
+                              </motion.span>
                             </button>
 
                             {/* Platform Link */}
@@ -556,8 +579,16 @@ const SheetsDetail = () => {
                         </div>
 
                         {/* ── Expandable Cockpit Approach & Invariants Drawer ── */}
-                        {isDrawerOpen && (
-                          <div className="bg-[#0b0b0f] border-t border-white/[0.06] px-5 py-4 space-y-3.5">
+                        <AnimatePresence initial={false}>
+                          {isDrawerOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ type: "spring", damping: 28, stiffness: 340 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="bg-[#0b0b0f] border-t border-white/[0.06] px-5 py-4 space-y-3.5">
                             <div className="flex items-center justify-between flex-wrap gap-2">
                               <div className="flex items-center gap-2">
                                 <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-amber-400/90 flex items-center gap-1.5">
@@ -707,12 +738,15 @@ const SheetsDetail = () => {
                               />
                             </div>
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
             </div>
           );
         })}

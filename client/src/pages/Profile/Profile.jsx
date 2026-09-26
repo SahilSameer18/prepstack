@@ -916,8 +916,18 @@ const Profile = () => {
         {/* ── Account Deletion Confirmation Modal ── */}
         <AnimatePresence>
           {showDeleteModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-              <div
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 8 }}
+                transition={{ type: "spring", damping: 26, stiffness: 360 }}
                 className="w-full max-w-md bg-[#0c0c0e] border border-rose-500/30 rounded-2xl p-6 space-y-5 shadow-2xl relative text-left"
               >
                 <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
@@ -985,8 +995,8 @@ const Profile = () => {
                     </button>
                   </div>
                 </form>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

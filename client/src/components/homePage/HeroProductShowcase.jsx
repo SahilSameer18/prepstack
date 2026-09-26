@@ -92,15 +92,15 @@ const HeroProductShowcase = () => {
 
       {/* ── WORKSPACE BODY ── */}
       <div className="p-4 sm:p-6 min-h-[340px] flex flex-col justify-between">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout" initial={false}>
           {/* Tab 0: DSA Tracker */}
           {activeTab === 0 && (
             <motion.div
               key="dsa"
-              initial={{ opacity: 0, y: 6 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.14 }}
               className="space-y-4"
             >
               <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
@@ -229,10 +229,10 @@ const HeroProductShowcase = () => {
           {activeTab === 1 && (
             <motion.div
               key="cs"
-              initial={{ opacity: 0, y: 6 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.14 }}
               className="space-y-4"
             >
               <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
@@ -315,10 +315,10 @@ const HeroProductShowcase = () => {
           {activeTab === 2 && (
             <motion.div
               key="ai"
-              initial={{ opacity: 0, y: 6 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.14 }}
               className="space-y-4"
             >
               <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">

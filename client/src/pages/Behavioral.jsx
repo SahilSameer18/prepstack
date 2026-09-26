@@ -50,11 +50,14 @@ const QuestionCard = ({ q }) => {
           </h3>
         </div>
 
-        <div className={`flex-shrink-0 mt-1 w-8 h-8 rounded-lg border flex items-center justify-center transition-colors duration-200
-          ${open ? "bg-[#ffa116]/15 border-[#ffa116]/30 text-[#ffa116]" : "bg-white/[0.04] border-white/[0.08] text-zinc-400 group-hover:text-white"}`}
+        <motion.div 
+          animate={{ rotate: open ? 180 : 0 }} 
+          transition={{ type: "spring", damping: 20, stiffness: 320 }}
+          className={`flex-shrink-0 mt-1 w-8 h-8 rounded-lg border flex items-center justify-center transition-colors duration-200
+            ${open ? "bg-[#ffa116]/15 border-[#ffa116]/30 text-[#ffa116]" : "bg-white/[0.04] border-white/[0.08] text-zinc-400 group-hover:text-white"}`}
         >
-          {open ? <FiChevronUp className="text-sm" /> : <FiChevronDown className="text-sm" />}
-        </div>
+          <FiChevronDown className="text-sm" />
+        </motion.div>
       </button>
 
       {/* Expanded content */}
@@ -65,7 +68,7 @@ const QuestionCard = ({ q }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ type: "spring", damping: 30, stiffness: 350 }}
             className="overflow-hidden"
           >
             <div className="border-t border-white/[0.06] px-5 sm:px-6 py-6 bg-[#0a0a0c]">
@@ -183,7 +186,7 @@ const Behavioral = () => {
               <button
                 key={cat.label}
                 onClick={() => setSelectedCategory(cat.label)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-semibold border transition-colors cursor-pointer min-h-[44px]
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-semibold border transition-all duration-150 active:scale-95 cursor-pointer min-h-[44px]
                   ${isActive
                     ? "bg-[#ffa116] text-black border-[#ffa116]"
                     : "bg-[#0c0c0e] border-white/[0.08] text-zinc-400 hover:border-white/[0.18] hover:text-white"

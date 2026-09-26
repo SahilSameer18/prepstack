@@ -83,7 +83,7 @@ const Navbar = () => {
                 to={link.path}
                 className={({ isActive }) =>
                   `relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                    isActive ? "text-[#ffa116]" : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
+                    isActive ? "text-[#ffa116]" : "text-zinc-300 hover:text-white hover:bg-white/[0.05]"
                   }`
                 }
               >
@@ -107,7 +107,7 @@ const Navbar = () => {
             <div className="relative" ref={exploreRef}>
               <button
                 onClick={() => setExploreOpen(!exploreOpen)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${exploreOpen ? "text-white bg-white/[0.06]" : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"}`}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${exploreOpen ? "text-white bg-white/[0.08]" : "text-zinc-300 hover:text-white hover:bg-white/[0.05]"}`}
               >
                 Explore
                 <motion.span animate={{ rotate: exploreOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
@@ -118,10 +118,11 @@ const Navbar = () => {
               <AnimatePresence>
                 {exploreOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    initial={{ opacity: 0, y: -6, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -6, scale: 0.97 }}
-                    transition={{ duration: 0.15 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 360 }}
+                    style={{ transformOrigin: "top center" }}
                     className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-72 bg-[#0c0c0e] border border-white/[0.1] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden backdrop-blur-2xl"
                   >
                     <div className="px-4 py-3 border-b border-white/[0.06]">
@@ -164,7 +165,7 @@ const Navbar = () => {
               <div className="relative" ref={userRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-zinc-200 hover:bg-white/[0.08] hover:border-white/[0.15] transition-all"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.05] border border-white/[0.08] text-sm text-zinc-300 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.15] transition-all"
                 >
                   <div className="w-6 h-6 rounded-full bg-[#ffa116] flex items-center justify-center overflow-hidden">
                     {user.avatar ? (
@@ -187,8 +188,11 @@ const Navbar = () => {
                 <AnimatePresence>
                   {userMenuOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-                      transition={{ duration: 0.15 }}
+                      initial={{ opacity: 0, y: -6, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                      transition={{ type: "spring", damping: 25, stiffness: 360 }}
+                      style={{ transformOrigin: "top right" }}
                       className="absolute right-0 top-[calc(100%+8px)] w-48 bg-[#0c0c0e] border border-white/[0.1] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden backdrop-blur-2xl"
                     >
                       <div className="px-4 py-2.5 border-b border-white/[0.06]">
@@ -232,7 +236,7 @@ const Navbar = () => {
             ) : (
               <NavLink
                 to="/login"
-                className="amber-specular-button flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
+                className="amber-specular-button flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
               >
                 Get Started <FiArrowRight className="text-xs" />
               </NavLink>
@@ -267,7 +271,7 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ type: "spring", damping: 28, stiffness: 320 }}
             className="md:hidden overflow-hidden bg-[#060608]/98 backdrop-blur-2xl border-t border-white/[0.08]"
           >
             <div className="px-5 py-4 space-y-1">

@@ -100,6 +100,7 @@ const ProjectDash = () => {
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ type: "spring", damping: 26, stiffness: 360 }}
               className="relative w-full max-w-md bg-[#0c0c0e] border border-white/[0.1] rounded-2xl p-6 sm:p-8 shadow-2xl text-left"
             >
               <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-5">

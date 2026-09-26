@@ -244,7 +244,7 @@ const Sheets = () => {
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setActiveCategory("all")}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all border cursor-pointer select-none ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-95 border cursor-pointer select-none ${
               activeCategory === "all"
                 ? "amber-specular-button font-bold text-black border-[#ffa116]"
                 : "titanium-button text-zinc-400 hover:text-white"
@@ -256,7 +256,7 @@ const Sheets = () => {
             <button
               key={c.id}
               onClick={() => setActiveCategory(c.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all border cursor-pointer select-none ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-95 border cursor-pointer select-none ${
                 activeCategory === c.id
                   ? `${c.bg} ${c.color} ${c.activeBorder} shadow-sm font-bold`
                   : "titanium-button text-zinc-400 hover:text-white"

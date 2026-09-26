@@ -127,12 +127,12 @@ const UnifiedDashboard = () => {
                   color: "text-[#ffa116]",
                 },
               ].map((stat, i) => (
-                <div key={stat.label} className={`flex flex-col justify-between ${i > 0 ? "pt-4 sm:pt-0 sm:pl-6" : ""}`}>
+                <div key={stat.label} className={`flex flex-col justify-between group p-2 sm:p-3 rounded-xl transition-all duration-200 hover:bg-white/[0.02] ${i > 0 ? "pt-4 sm:pt-0 sm:pl-6" : ""}`}>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 group-hover:text-zinc-200 transition-colors font-semibold">
                       {stat.label}
                     </span>
-                    <div className="w-7 h-7 rounded-lg bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-lg bg-white/[0.03] border border-white/[0.08] flex items-center justify-center group-hover:border-white/[0.2] transition-colors">
                       {stat.icon}
                     </div>
                   </div>
@@ -140,7 +140,7 @@ const UnifiedDashboard = () => {
                     <div className={`font-mono text-2xl sm:text-3xl font-bold tracking-tight mb-1 ${stat.color}`}>
                       {stat.value}
                     </div>
-                    <p className="text-[11px] font-mono text-zinc-500 truncate">
+                    <p className="text-[11px] font-mono text-zinc-500 group-hover:text-zinc-400 transition-colors truncate">
                       {stat.sub}
                     </p>
                   </div>

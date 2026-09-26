@@ -108,7 +108,7 @@ const AIProjectIdeas = () => {
                 <button
                   key={s}
                   onClick={() => handleChange("techStack", s)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-150 active:scale-95 cursor-pointer ${
                     form.techStack === s 
                       ? "bg-[#ffa116]/15 border-[#ffa116]/40 text-[#ffa116] font-semibold" 
                       : "bg-[#121216] border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.2]"
@@ -136,7 +136,7 @@ const AIProjectIdeas = () => {
                   <button
                     key={c}
                     onClick={() => handleChange("complexity", c)}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                    className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-all duration-150 active:scale-95 cursor-pointer ${
                       form.complexity === c 
                         ? activeColors[c] 
                         : "bg-[#121216] border-white/[0.08] text-zinc-400 hover:text-zinc-200"
@@ -158,7 +158,7 @@ const AIProjectIdeas = () => {
                   <button
                     key={d}
                     onClick={() => handleChange("domain", form.domain === d ? "" : d)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${
+                    className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-150 active:scale-95 cursor-pointer ${
                       form.domain === d 
                         ? "bg-purple-500/20 border-purple-500/40 text-purple-300 font-semibold" 
                         : "bg-[#121216] border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.2]"

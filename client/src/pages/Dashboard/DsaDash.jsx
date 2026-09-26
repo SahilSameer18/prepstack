@@ -136,7 +136,7 @@ const DSADash = ({ dsaData, loading, stats }) => {
                 >
                   <Link
                     to={`/dsa/${sheet.slug}`}
-                    className="group relative titanium-card rounded-2xl p-5 flex gap-4 items-center transition-all duration-200 hover:-translate-y-0.5 overflow-hidden h-full shadow-lg"
+                    className="group relative titanium-card rounded-2xl p-5 flex gap-4 items-center transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] overflow-hidden h-full shadow-lg"
                   >
                     <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent group-hover:via-[#ffa116]/40 transition-all" />
 
@@ -165,10 +165,12 @@ const DSADash = ({ dsaData, loading, stats }) => {
                       </h3>
                       <div className="flex items-center gap-2 mt-2">
                         <div className="flex-1 h-1 bg-white/[0.06] rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-500"
+                          <motion.div
+                            className="h-full rounded-full"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${pct}%` }}
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
                             style={{
-                              width: `${pct}%`,
                               background: meta.accentColor,
                             }}
                           />
