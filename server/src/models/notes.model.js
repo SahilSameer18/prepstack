@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+// Topic content varies wildly per note (concept/why/deepInsight/traps/pcbContains/flow/...),
+// so only the outer shape (title + topics array) is enforced; topic internals stay Mixed.
+const sectionSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  overview: [String],
+  topics: { type: [mongoose.Schema.Types.Mixed], default: [] }
+}, { _id: false, strict: false });
+
 const notesSchema = new mongoose.Schema({
   subject: {
     type: String,
@@ -11,7 +19,7 @@ const notesSchema = new mongoose.Schema({
     unique: true
   },
   sections: {
-    type: Array,
+    type: [sectionSchema],
     required: true,
     default: []
   }
@@ -20,3 +28,4 @@ const notesSchema = new mongoose.Schema({
 const notesModel = mongoose.model("Notes", notesSchema);
 
 module.exports = notesModel;
+

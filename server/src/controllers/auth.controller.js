@@ -112,7 +112,6 @@ const registerUser = async (req, res, next) => {
       success: true,
       message: 'User registered successfully',
       user: formatUserResponse(user),
-      tokens: { accessToken, refreshToken },
     });
   } catch (error) {
     next(error);
@@ -151,7 +150,6 @@ const loginUser = async (req, res, next) => {
       success: true,
       message: 'User logged in successfully',
       user: formatUserResponse(user),
-      tokens: { accessToken, refreshToken },
     });
   } catch (error) {
     next(error);
@@ -285,7 +283,6 @@ const refreshAccessToken = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Token refreshed',
-      tokens: { accessToken: newAccessToken, refreshToken: newRefreshToken },
     });
   } catch (error) {
     next(error);
@@ -373,7 +370,6 @@ const googleLogin = async (req, res, next) => {
       success: true,
       message: 'Logged in with Google successfully',
       user: formatUserResponse(user),
-      tokens: { accessToken, refreshToken },
     });
   } catch (error) {
     next(error);

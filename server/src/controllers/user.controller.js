@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const userModel = require('../models/auth.model');
 const projectModel = require('../models/project.model');
 const progressModel = require('../models/progress.model');
@@ -246,11 +247,16 @@ const deleteAccount = async (req, res, next) => {
     }
 
     // Atomic Cascade Deletion across all collections
-    await Promise.all([
-      progressModel.deleteMany({ user: userId }),
-      projectModel.deleteMany({ user: userId }),
-      userModel.findByIdAndDelete(userId)
-    ]);
+    const session = await mongoose.startSession();
+    try {
+      await session.withTransaction(async () => {
+        await progressModel.deleteMany({ user: userId }, { session });
+        await projectModel.deleteMany({ user: userId }, { session });
+        await userModel.findByIdAndDelete(userId, { session });
+      });
+    } finally {
+      await session.endSession();
+    }
 
     // Clear authentication cookies
     const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };

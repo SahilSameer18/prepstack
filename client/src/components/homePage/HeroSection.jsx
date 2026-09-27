@@ -10,9 +10,9 @@ const HeroSection = () => {
 
   return (
     <section className="pt-3 sm:pt-6 pb-6 sm:pb-12 text-left">
-      <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         {/* ── LEFT PANE: Mission, Editorial Typography, Direct CTA (5 Columns) ── */}
-        <div className="lg:col-span-5 flex flex-col justify-center space-y-6 sm:space-y-7">
+        <div className="min-w-0 lg:col-span-5 flex flex-col justify-center space-y-6 sm:space-y-7">
           {/* Product Purpose Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.1] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] w-fit text-left">
             <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
@@ -91,7 +91,7 @@ const HeroSection = () => {
         </div>
 
         {/* ── RIGHT PANE: Live Interactive IDE Workbench Cockpit (7 Columns) ── */}
-        <div className="lg:col-span-7 w-full">
+        <div className="min-w-0 lg:col-span-7 w-full">
           <HeroProductShowcase />
         </div>
       </div>
