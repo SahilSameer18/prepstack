@@ -63,6 +63,11 @@ PrepStack centralizes the workflow:
 - **Granular Route Rate Limiting:** Enforces tiered sliding-window rate limits (`authLimiter`, `refreshLimiter`, `linkGoogleLimiter`) with `skipFailedRequests: true` and Express `trust proxy` configuration.
 - **Robust OAuth 2.0 Integration:** Built-in Google Sign-In with advanced account linking, anti-hijacking conflict resolution, and automatic unique username generation for OAuth users.
 - **Interactive Live Avatar Customizer:** Integrates deterministic DiceBear bottts generation supporting live preset switching, randomized seed generation, and real-time reactive SVG previews.
+- **Strict Cookie-Only Auth Transport:** Stripped raw JWTs from JSON responses; enforced 100% `httpOnly`, `secure`, and `sameSite` cookie transport across all auth endpoints to prevent client-side token leakage and XSS vulnerabilities.
+- **Atomic Cascade Erasure:** MongoDB multi-document transactions (`session.withTransaction`) guarantee atomic deletion across user records, problem progress, and AI projects during GDPR account deletion.
+- **Startup Secret Validation:** Fail-fast environment checks on server boot enforce the presence and minimum cryptographic length (≥32 characters) for `ACCESS_SECRET` and `REFRESH_SECRET`.
+- **Typed CS Notes Schema:** Enforced explicit `sectionSchema` validation ensuring structured and predictable payloads across all CS fundamental revision topics.
+- **Apple Fluid Motion & Tactile Feedback:** Integrated physics-based spring curves across accordions, drawers, and modal sheets, paired with mobile-safe haptic taps (`navigator.vibrate(10)`) and full accessibility support (`prefers-reduced-motion`, `prefers-reduced-transparency`, `forced-colors`).
 - **Zero-CLS Skeletons & Fluid UX:** Custom pixel-matched skeleton loaders prevent Cumulative Layout Shift (CLS) during asynchronous data fetching, coupled with a full-screen animated logout transition overlay.
 
 ---
