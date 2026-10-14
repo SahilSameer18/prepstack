@@ -1,7 +1,7 @@
 import React from 'react'
 import ComingSoon from '../components/ComingSoon'
 
-const Aptitute = () => {
+const Aptitude = () => {
   return (
     <div>
       <ComingSoon />
@@ -9,4 +9,4 @@ const Aptitute = () => {
   )
 }
 
-export default Aptitute
+export default Aptitude

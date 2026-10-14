@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { generateProjectIdea } = require("../services/ai.service");
 const projectModel = require('../models/project.model');
 const AppError = require('../utils/AppError');
+const { sendSuccess, sanitizeDoc } = require('../utils/responseFormatter');
 
 // controller to generate project idea
 const generateProject = async (req, res, next) => {
@@ -24,11 +25,8 @@ const generateProject = async (req, res, next) => {
       user: userId
     });
 
-    return res.status(201).json({
-      success: true,
-      message: "Project idea generated successfully",
-      project
-    });
+    const sanitizedProject = sanitizeDoc(project);
+    return sendSuccess(res, 201, 'Project idea generated successfully', { project: sanitizedProject }, { project: sanitizedProject });
   } catch (error) {
     next(error);
   }
@@ -44,11 +42,8 @@ const getAllProjects = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .select('title tagline difficulty createdAt techStack domain features');
 
-    return res.status(200).json({
-      success: true,
-      message: "Projects fetched successfully",
-      projects
-    });
+    const sanitizedProjects = sanitizeDoc(projects);
+    return sendSuccess(res, 200, 'Projects fetched successfully', { projects: sanitizedProjects }, { projects: sanitizedProjects });
   } catch (error) {
     next(error);
   }
@@ -69,11 +64,8 @@ const getProjectById = async (req, res, next) => {
       return next(new AppError(404, "Project not found"));
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Project fetched successfully",
-      project
-    });
+    const sanitizedProject = sanitizeDoc(project);
+    return sendSuccess(res, 200, 'Project fetched successfully', { project: sanitizedProject }, { project: sanitizedProject });
   } catch (error) {
     next(error);
   }
@@ -94,10 +86,7 @@ const deleteProject = async (req, res, next) => {
       return next(new AppError(404, "Project not found"));
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Project deleted successfully"
-    });
+    return sendSuccess(res, 200, 'Project deleted successfully', null);
   } catch (error) {
     next(error);
   }

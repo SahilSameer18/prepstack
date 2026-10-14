@@ -1,6 +1,7 @@
 const DSASheet = require('../models/sheets.model');
 const Progress = require('../models/progress.model');
 const AppError = require('../utils/AppError');
+const { sendSuccess } = require('../utils/responseFormatter');
 
 // controller to get all the sheets with dynamic problem counts
 exports.getSheets = async (req, res, next) => {
@@ -42,10 +43,7 @@ exports.getSheets = async (req, res, next) => {
       };
     });
 
-    res.status(200).json({
-      success: true,
-      data: formattedSheets
-    });
+    sendSuccess(res, 200, 'DSA sheets fetched successfully', formattedSheets);
   } catch (error) {
     next(error);
   }
@@ -54,14 +52,11 @@ exports.getSheets = async (req, res, next) => {
 // controller to get sheet by slug
 exports.getSheetBySlug = async (req, res, next) => {
   try {
-    const sheet = await DSASheet.findOne({ slug: req.params.slug });
+    const sheet = await DSASheet.findOne({ slug: req.params.slug }).select('-__v');
     if (!sheet) {
       return next(new AppError(404, 'DSA Sheet not found'));
     }
-    res.status(200).json({
-      success: true,
-      data: sheet
-    });
+    sendSuccess(res, 200, 'DSA sheet fetched successfully', sheet);
   } catch (error) {
     next(error);
   }
@@ -79,10 +74,7 @@ exports.getUserSheetProgress = async (req, res, next) => {
       { returnDocument: 'after', upsert: true }
     );
 
-    res.status(200).json({
-      success: true,
-      data: progress
-    });
+    sendSuccess(res, 200, 'Sheet progress fetched successfully', progress);
   } catch (error) {
     next(error);
   }
@@ -112,10 +104,7 @@ exports.toggleProblemCompletion = async (req, res, next) => {
       { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
     );
 
-    res.status(200).json({
-      success: true,
-      data: progress
-    });
+    sendSuccess(res, 200, 'Problem completion toggled successfully', progress);
   } catch (error) {
     next(error);
   }

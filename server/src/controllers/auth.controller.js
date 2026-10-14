@@ -6,6 +6,7 @@ const AppError = require('../utils/AppError');
 const googleClient = require('../utils/googleClient');
 const { generateUniqueUsername } = require('../utils/usernameHelper');
 const { parseDeviceInfo } = require('../utils/deviceParser');
+const { sendSuccess } = require('../utils/responseFormatter');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -108,11 +109,8 @@ const registerUser = async (req, res, next) => {
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
 
-    res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      user: formatUserResponse(user),
-    });
+    const userResponse = formatUserResponse(user);
+    sendSuccess(res, 201, 'User registered successfully', { user: userResponse }, { user: userResponse });
   } catch (error) {
     next(error);
   }
@@ -146,11 +144,8 @@ const loginUser = async (req, res, next) => {
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
 
-    res.status(200).json({
-      success: true,
-      message: 'User logged in successfully',
-      user: formatUserResponse(user),
-    });
+    const userResponse = formatUserResponse(user);
+    sendSuccess(res, 200, 'User logged in successfully', { user: userResponse }, { user: userResponse });
   } catch (error) {
     next(error);
   }
@@ -176,7 +171,7 @@ const logoutUser = async (req, res, next) => {
     res.clearCookie('accessToken', CLEAR_OPTIONS);
     res.clearCookie('refreshToken', CLEAR_OPTIONS);
 
-    res.status(200).json({ success: true, message: 'User logged out successfully' });
+    sendSuccess(res, 200, 'User logged out successfully', null);
   } catch (error) {
     next(error);
   }
@@ -197,7 +192,7 @@ const logoutAllDevices = async (req, res, next) => {
     res.clearCookie('accessToken', CLEAR_OPTIONS);
     res.clearCookie('refreshToken', CLEAR_OPTIONS);
 
-    res.status(200).json({ success: true, message: 'Signed out of all devices successfully' });
+    sendSuccess(res, 200, 'Signed out of all devices successfully', null);
   } catch (error) {
     next(error);
   }
@@ -211,10 +206,8 @@ const getCurrentUser = async (req, res, next) => {
     if (!user) {
       return next(new AppError(404, 'User not found'));
     }
-    res.status(200).json({
-      success: true,
-      user: formatUserResponse(user),
-    });
+    const userResponse = formatUserResponse(user);
+    sendSuccess(res, 200, 'Current user fetched successfully', { user: userResponse }, { user: userResponse });
   } catch (error) {
     next(error);
   }
@@ -280,10 +273,7 @@ const refreshAccessToken = async (req, res, next) => {
     res.cookie('accessToken', newAccessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', newRefreshToken, REFRESH_COOKIE_OPTIONS);
 
-    res.status(200).json({
-      success: true,
-      message: 'Token refreshed',
-    });
+    sendSuccess(res, 200, 'Token refreshed', null);
   } catch (error) {
     next(error);
   }
@@ -366,11 +356,8 @@ const googleLogin = async (req, res, next) => {
     res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
 
-    res.status(200).json({
-      success: true,
-      message: 'Logged in with Google successfully',
-      user: formatUserResponse(user),
-    });
+    const userResponse = formatUserResponse(user);
+    sendSuccess(res, 200, 'Logged in with Google successfully', { user: userResponse }, { user: userResponse });
   } catch (error) {
     next(error);
   }
@@ -418,11 +405,8 @@ const linkGoogle = async (req, res, next) => {
     const isAlreadyLinkedToThis = user.providers && user.providers.some(p => p.providerName === 'google' && p.providerId === googleId);
 
     if (isAlreadyLinkedToThis) {
-      return res.status(200).json({
-        success: true,
-        message: 'Google account is already linked.',
-        user: formatUserResponse(user),
-      });
+      const userResponse = formatUserResponse(user);
+      return sendSuccess(res, 200, 'Google account is already linked.', { user: userResponse }, { user: userResponse });
     }
 
     if (!user.providers) {
@@ -437,11 +421,8 @@ const linkGoogle = async (req, res, next) => {
 
     await user.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Google account linked successfully.',
-      user: formatUserResponse(user),
-    });
+    const userResponse = formatUserResponse(user);
+    sendSuccess(res, 200, 'Google account linked successfully.', { user: userResponse }, { user: userResponse });
   } catch (error) {
     next(error);
   }
@@ -468,11 +449,8 @@ const setPassword = async (req, res, next) => {
     user.password = hash;
     await user.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Password set successfully',
-      user: formatUserResponse(user),
-    });
+    const userResponse = formatUserResponse(user);
+    sendSuccess(res, 200, 'Password set successfully', { user: userResponse }, { user: userResponse });
   } catch (error) {
     next(error);
   }

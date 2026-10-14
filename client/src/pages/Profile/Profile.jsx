@@ -107,8 +107,9 @@ const Profile = () => {
     const fetchStats = async () => {
       try {
         const response = await axiosInstance.get('/api/user/stats');
-        if (response.data && response.data.stats) {
-          setStats(response.data.stats);
+        const statsData = response?.data?.data?.stats || response?.data?.stats;
+        if (statsData) {
+          setStats(statsData);
         }
       } catch (error) {
         console.error("Failed to fetch user stats", error);
@@ -165,8 +166,9 @@ const Profile = () => {
         username: usernameClean,
         avatar: profileForm.avatar.trim(),
       });
-      if (response && response.user) {
-        setUser(response.user);
+      const updatedUser = response?.data?.user || response?.user;
+      if (updatedUser) {
+        setUser(updatedUser);
         toast.success("Profile updated successfully!");
       }
     } catch (err) {
@@ -207,8 +209,9 @@ const Profile = () => {
           currentPassword: passwordForm.currentPassword,
           newPassword: passwordForm.newPassword,
         });
-        if (response && response.user) {
-          setUser(response.user);
+        const updatedUser = response?.data?.user || response?.user;
+        if (updatedUser) {
+          setUser(updatedUser);
         }
         toast.success("Password changed successfully!");
         setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });

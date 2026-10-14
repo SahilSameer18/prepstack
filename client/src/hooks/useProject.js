@@ -16,7 +16,7 @@ export const useProject = () => {
     setLoading(true);
     try {
       const response = await generateProjectIdea(data);
-      const newProj = response?.project || response;
+      const newProj = response?.data?.project || response?.project || response;
       setProject(newProj);
       if (newProj && newProj._id) {
         setProjects((prev) => [newProj, ...(prev || [])]);
@@ -33,7 +33,7 @@ export const useProject = () => {
     setLoading(true);
     try {
       const response = await getAllProjects();
-      setProjects(response?.projects || response || []);
+      setProjects(response?.data?.projects || response?.projects || (Array.isArray(response) ? response : []));
       return response;
     } catch (error) {
       throw new Error(extractError(error, 'Failed to fetch projects. Please try again.'));
@@ -46,7 +46,7 @@ export const useProject = () => {
     setLoading(true);
     try {
       const response = await fetchProjectById(projectId);
-      setProject(response?.project || response);
+      setProject(response?.data?.project || response?.project || response);
       return response;
     } catch (error) {
       throw new Error(extractError(error, 'Failed to fetch project. Please try again.'));

@@ -8,7 +8,11 @@ const authMiddleware = async (req, res, next) => {
       : req.cookies?.accessToken;
 
     if (!token) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized',
+        errors: ['Unauthorized']
+      });
     }
     const decodedToken = jwt.verify(token, process.env.ACCESS_SECRET);
     req.user = decodedToken;
@@ -17,11 +21,19 @@ const authMiddleware = async (req, res, next) => {
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
       // Access token expired: client should call /refresh
-      return res.status(401).json({ success: false, message: 'Token expired' });
+      return res.status(401).json({
+        success: false,
+        message: 'Token expired',
+        errors: ['Token expired']
+      });
     }
     if (error.name === 'JsonWebTokenError') {
       // Token was tampered with: do not refresh
-      return res.status(403).json({ success: false, message: 'Invalid token' });
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid token',
+        errors: ['Invalid token']
+      });
     }
     next(error);
   }

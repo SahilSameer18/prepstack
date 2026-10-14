@@ -12,7 +12,7 @@ export const useAuth = () => {
     try {
       setLoading(true);
       const data = await login({ email, password });
-      setUser(data.user);
+      setUser(data?.data?.user || data?.user);
     } catch (error) {
       throw new Error(extractError(error, 'Login failed. Please try again.'));
     } finally {
@@ -61,7 +61,7 @@ export const useAuth = () => {
     try {
       setLoading(true);
       const data = await register({ name, email, password });
-      setUser(data.user);
+      setUser(data?.data?.user || data?.user);
     } catch (error) {
       throw new Error(extractError(error, 'Registration failed. Please try again.'));
     } finally {
@@ -73,7 +73,7 @@ export const useAuth = () => {
     try {
       setLoading(true);
       const data = await getCurrentUser();
-      setUser(data.user);
+      setUser(data?.data?.user || data?.user);
     } catch (error) {
       throw new Error(extractError(error, 'Failed to fetch user. Please try again.'));
     } finally {
@@ -85,7 +85,9 @@ export const useAuth = () => {
     try {
       setLoading(true);
       const data = await loginWithGoogle(idToken);
-      setUser(data.user);
+      setUser(data?.data?.user || data?.user);
+    } catch (error) {
+      throw new Error(extractError(error, "Google sign-in failed. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -95,7 +97,7 @@ export const useAuth = () => {
     try {
       setLoading(true);
       const data = await linkGoogle(idToken);
-      setUser(data.user);
+      setUser(data?.data?.user || data?.user);
     } catch (error) {
       throw new Error(extractError(error, "Linking Google account failed."));
     } finally {
@@ -107,7 +109,7 @@ export const useAuth = () => {
     try {
       setLoading(true);
       const data = await setPassword(password);
-      setUser(data.user);
+      setUser(data?.data?.user || data?.user);
     } catch (error) {
       throw new Error(extractError(error, "Setting password failed."));
     } finally {
@@ -132,3 +134,4 @@ export const useAuth = () => {
     handleSetPassword,
   };
 };
+

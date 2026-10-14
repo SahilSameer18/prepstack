@@ -6,6 +6,7 @@ const DSASheet = require('../models/sheets.model');
 const AppError = require('../utils/AppError');
 const bcrypt = require('bcrypt');
 const { hashToken } = require('../utils/tokens');
+const { sendSuccess } = require('../utils/responseFormatter');
 
 const formatUserResponse = (user) => {
   const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`;
@@ -36,13 +37,12 @@ const getUserStats = async (req, res, next) => {
       return total + (doc.solvedProblems ? doc.solvedProblems.length : 0);
     }, 0);
 
-    res.status(200).json({
-      success: true,
-      stats: {
-        generatedProjectsCount,
-        solvedDSACount
-      }
-    });
+    const stats = {
+      generatedProjectsCount,
+      solvedDSACount
+    };
+
+    sendSuccess(res, 200, 'User stats fetched successfully', { stats }, { stats });
   } catch (error) {
     next(error);
   }
@@ -104,19 +104,16 @@ const getDashboardSummary = async (req, res, next) => {
         ? 0
         : Math.round((totalSolved / totalQuestions) * 100);
 
-    res.status(200).json({
-      success: true,
-      data: {
-        stats: {
-          totalSolved,
-          totalQuestions,
-          sheetsInProgress,
-          sheetsCompleted,
-          overallPct,
-          generatedProjectsCount,
-        },
-        dsaSheets,
+    sendSuccess(res, 200, 'Dashboard summary fetched successfully', {
+      stats: {
+        totalSolved,
+        totalQuestions,
+        sheetsInProgress,
+        sheetsCompleted,
+        overallPct,
+        generatedProjectsCount,
       },
+      dsaSheets,
     });
   } catch (error) {
     next(error);
@@ -154,11 +151,8 @@ const updateProfile = async (req, res, next) => {
 
     await user.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Profile updated successfully',
-      user: formatUserResponse(user)
-    });
+    const userResponse = formatUserResponse(user);
+    sendSuccess(res, 200, 'Profile updated successfully', { user: userResponse }, { user: userResponse });
   } catch (error) {
     next(error);
   }
@@ -207,11 +201,8 @@ const changePassword = async (req, res, next) => {
 
     await user.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Password changed successfully. Other active devices have been signed out.',
-      user: formatUserResponse(user)
-    });
+    const userResponse = formatUserResponse(user);
+    sendSuccess(res, 200, 'Password changed successfully. Other active devices have been signed out.', { user: userResponse }, { user: userResponse });
   } catch (error) {
     next(error);
   }
@@ -254,6 +245,19 @@ const deleteAccount = async (req, res, next) => {
         await projectModel.deleteMany({ user: userId }, { session });
         await userModel.findByIdAndDelete(userId, { session });
       });
+    } catch (txError) {
+      // Fallback for standalone local MongoDB instances that do not support replica set transactions
+      if (
+        txError.message?.includes('replica set member') ||
+        txError.codeName === 'IllegalOperation' ||
+        txError.code === 20
+      ) {
+        await progressModel.deleteMany({ user: userId });
+        await projectModel.deleteMany({ user: userId });
+        await userModel.findByIdAndDelete(userId);
+      } else {
+        throw txError;
+      }
     } finally {
       await session.endSession();
     }
@@ -263,11 +267,7 @@ const deleteAccount = async (req, res, next) => {
     res.clearCookie('accessToken', CLEAR_OPTIONS);
     res.clearCookie('refreshToken', CLEAR_OPTIONS);
 
-    res.status(200).json({
-      success: true,
-      message: 'Your account and all associated data have been permanently deleted.',
-      data: null
-    });
+    sendSuccess(res, 200, 'Your account and all associated data have been permanently deleted.', null);
   } catch (error) {
     next(error);
   }

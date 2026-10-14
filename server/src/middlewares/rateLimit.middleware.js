@@ -18,7 +18,6 @@ const aiProjectLimiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // 10 login/register attempts per 15 min
-  skipFailedRequests: true, // if response is 4xx/5xx, don't count it
   message: {
     success: false,
     message: "Too many attempts. Please try again after 15 minutes.",
@@ -31,7 +30,6 @@ const authLimiter = rateLimit({
 const linkGoogleLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
   max: 5,                      // 5 attempts per 15 min per IP
-  skipFailedRequests: true,
   message: { 
     success: false, 
     message: "Too many linking attempts. Please try again later.",
@@ -44,7 +42,6 @@ const linkGoogleLimiter = rateLimit({
 const refreshLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 30, // 30 refresh attempts per 15 min per IP
-  skipFailedRequests: true,
   message: {
     success: false,
     message: "Too many session refresh attempts. Please log in again.",
@@ -55,7 +52,3 @@ const refreshLimiter = rateLimit({
 });
 
 module.exports = { authLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter };
-
-
-
-

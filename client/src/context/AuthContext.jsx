@@ -24,8 +24,9 @@ export const AuthProvider = ({ children }) => {
     const getAndSetUser = async () => {
       try {
         const data = await getCurrentUser();
-        if (data && data.user) {
-          setUser(data.user);
+        const userData = data?.data?.user || data?.user;
+        if (userData) {
+          setUser(userData);
         }
       } catch {
         // Expected for unauthenticated visitors (401 / refresh failure), no action needed.
