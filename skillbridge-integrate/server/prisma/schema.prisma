@@ -1,0 +1,147 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Severity {
+  low
+  medium
+  high
+}
+
+// USER
+
+model User {
+  id               String            @id @default(cuid())
+  username         String            @unique
+  email            String            @unique
+  password         String?           // Optional for password-less OAuth users
+  avatar           String?           // Google or custom profile image URL
+  providers        OAuthProvider[]
+  interviewReports InterviewReport[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model OAuthProvider {
+  id           String   @id @default(cuid())
+  providerName String   // e.g., "google"
+  providerId   String   // Provider unique identifier
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([providerName, providerId])
+  @@index([providerName, providerId])
+  @@index([userId])
+}
+
+// INTERVIEW REPORT
+
+model InterviewReport {
+  id                  String               @id @default(cuid())
+  jobDescription      String               @db.Text
+  resume              String?              @db.Text
+  matchScore          Int?
+  title               String?
+  technicalQuestions  TechnicalQuestion[]
+  behavioralQuestions BehavioralQuestion[]
+  skillGaps           SkillGap[]
+  preparationPlan     PreparationPlan[]
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+model TechnicalQuestion {
+  id                String          @id @default(cuid())
+  question          String          @db.Text
+  intention         String          @db.Text
+  answer            String          @db.Text
+  interviewReport   InterviewReport @relation(fields: [interviewReportId], references: [id], onDelete: Cascade)
+  interviewReportId String
+
+  @@index([interviewReportId])
+}
+
+model BehavioralQuestion {
+  id                String          @id @default(cuid())
+  question          String          @db.Text
+  intention         String          @db.Text
+  answer            String          @db.Text
+  interviewReport   InterviewReport @relation(fields: [interviewReportId], references: [id], onDelete: Cascade)
+  interviewReportId String
+
+  @@index([interviewReportId])
+}
+
+model SkillGap {
+  id                String          @id @default(cuid())
+  skill             String
+  severity          Severity
+  skillId           String?
+  skillRef          Skill?          @relation(fields: [skillId], references: [id], onDelete: SetNull)
+  interviewReport   InterviewReport @relation(fields: [interviewReportId], references: [id], onDelete: Cascade)
+  interviewReportId String
+
+  @@index([interviewReportId])
+  @@index([skillId])
+}
+
+model PreparationPlan {
+  id                String          @id @default(cuid())
+  day               Int
+  focus             String
+  tasks             Json            @default("[]")
+  interviewReport   InterviewReport @relation(fields: [interviewReportId], references: [id], onDelete: Cascade)
+  interviewReportId String
+
+  @@index([interviewReportId])
+}
+
+// SKILL Resources
+
+enum ResourceType {
+  DOCUMENTATION
+  VIDEO
+}
+
+model Skill {
+  id        String             @id @default(cuid())
+  name      String             @unique
+  aliases   String[]           @default([])
+  resources LearningResource[]
+  skillGaps SkillGap[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model LearningResource {
+  id      String       @id @default(cuid())
+  type    ResourceType
+  title   String
+  url     String
+  skill   Skill        @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  skillId String
+
+  @@index([skillId])
+}
+
+model TokenBlacklist {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime @default(dbgenerated("NOW() + INTERVAL '1 day'"))
+}
