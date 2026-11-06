@@ -42,8 +42,10 @@ const DeleteAccountCard = () => {
       await deleteUserAccount(payload);
       toast.success("Your account and all data have been permanently deleted.");
       setShowDeleteModal(false);
+      // Go to /register first (flushSync commits the route change immediately), then clear the user. Clearing the
+      // user while still on this page lets the route guard redirect to /login, so /register was never reached.
+      await navigate("/register", { flushSync: true });
       setUser(null);
-      navigate("/register");
     } catch (err) {
       setDeleteError(
         err?.response?.data?.message || err.message || "Failed to delete account. Please check your credentials."

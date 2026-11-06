@@ -22,7 +22,7 @@ const PrivacyPolicy = () => {
           Privacy Policy
         </h1>
         <p className="text-sm text-gray-400">
-          Last updated: March 2026 · Effective for all registered students and visitors
+          Last updated: November 2026 · Effective for all registered students and visitors
         </p>
       </div>
 
@@ -37,7 +37,7 @@ const PrivacyPolicy = () => {
             PrepStack (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) operates an engineered interview preparation platform designed to help engineering students and software developers prepare for technical rounds, DSA assessments, and behavioral interviews.
           </p>
           <p>
-            We are committed to transparent, privacy-first data practices. We do not sell your personal data, run invasive third-party ad trackers, or share your practice history with recruiters without your explicit consent.
+            We are committed to transparent, privacy-first data practices. We do not sell your personal data, run advertising or analytics trackers, or share your practice history with recruiters without your explicit consent.
           </p>
         </section>
 
@@ -52,7 +52,7 @@ const PrivacyPolicy = () => {
                 <FiUserCheck className="text-[#ffa116]" /> Account Details
               </div>
               <p className="text-xs text-gray-400">
-                When registering, we collect your name, email address, and a securely salted bcrypt hash (12 rounds) of your password. For Google OAuth users, we receive your verified email and public avatar.
+                When registering, we collect your username, email address, and a securely salted bcrypt hash (12 rounds) of your password. If you sign in with Google, we receive your verified email, your Google account ID and your profile picture link. Your avatar is stored as an image link (an auto-generated avatar by default).
               </p>
             </div>
             <div className="bg-[#111] border border-white/[0.08] rounded-xl p-4 space-y-2">
@@ -60,7 +60,7 @@ const PrivacyPolicy = () => {
                 <FiDatabase className="text-cyan-400" /> Practice & Learning Progress
               </div>
               <p className="text-xs text-gray-400">
-                We store your problem completion statuses, sheet progress across Striver/NeetCode tracks, quiz attempts, and saved AI project blueprints to synchronize your progress across devices.
+                We store which DSA problems you have marked as solved on each sheet, and the AI project ideas generated for you (title, description, features, tech stack, difficulty, time estimate and the domain you chose), so your progress is available on all your devices.
               </p>
             </div>
             <div className="bg-[#111] border border-white/[0.08] rounded-xl p-4 space-y-2 sm:col-span-2">
@@ -68,7 +68,23 @@ const PrivacyPolicy = () => {
                 <FiShield className="text-emerald-400" /> Device Telemetry & Active Sessions
               </div>
               <p className="text-xs text-gray-400">
-                To protect against unauthorized access and power your **Active Devices & Sessions Manager**, we record your client User-Agent (browser name, operating system, device classification) and IP address alongside rolling session tokens. This telemetry is strictly used for authentication security and account fraud prevention.
+                To protect against unauthorized access and power your Active Devices & Sessions Manager, we record your browser name, operating system and device type (taken from your User-Agent), your IP address and the time of last activity alongside a hashed session token. This is used for authentication security and account fraud prevention. A session record is kept until you sign out, revoke that device, or it expires (7 days after its last renewal).
+              </p>
+            </div>
+            <div className="bg-[#111] border border-white/[0.08] rounded-xl p-4 space-y-2">
+              <div className="flex items-center gap-2 text-white font-semibold text-xs">
+                <FiLock className="text-purple-400" /> Notes Stored in Your Browser
+              </div>
+              <p className="text-xs text-gray-400">
+                The approach notes you write on DSA problems (pattern, complexity, free text) are saved only in your own browser. They are never sent to our servers, so we cannot see or recover them.
+              </p>
+            </div>
+            <div className="bg-[#111] border border-white/[0.08] rounded-xl p-4 space-y-2">
+              <div className="flex items-center gap-2 text-white font-semibold text-xs">
+                <FiDatabase className="text-amber-400" /> Server Logs
+              </div>
+              <p className="text-xs text-gray-400">
+                Our server writes a short log line for each request: the method, the page address without any query string, the status code and how long it took. Request bodies, passwords and tokens are not logged. Our hosting providers may also keep standard connection logs, which include IP addresses.
               </p>
             </div>
           </div>
@@ -81,56 +97,83 @@ const PrivacyPolicy = () => {
           </h2>
           <ul className="list-disc pl-5 space-y-2 text-gray-400">
             <li>To authenticate your sessions and manage secure token renewal across up to 10 concurrent devices.</li>
-            <li>To persist and display your DSA problem progress and completion statistics in real-time.</li>
-            <li>To power AI-driven project recommendations tailored to your selected tech stack via the Google Gemini API.</li>
+            <li>To persist and display your DSA problem progress and completion statistics.</li>
+            <li>To generate AI project ideas: the options you enter on the AI Projects page (tech stack, complexity, domain and any extra notes) are sent to the Google Gemini API. Please do not put personal information in the extra notes.</li>
             <li>To detect abuse, enforce rate limits, and protect user accounts from credential stuffing attacks.</li>
+            <li>To operate and debug the service using the request logs described above.</li>
           </ul>
         </section>
 
         {/* Section 4 */}
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="text-[#ffa116]">4.</span> Security Architecture
+            <span className="text-[#ffa116]">4.</span> Cookies & Browser Storage
           </h2>
           <p>
-            We implement defense-in-depth security standards across all application layers:
+            We use only the cookies needed to keep you signed in. We do not use advertising or analytics cookies.
           </p>
-          <div className="bg-[#0b0b0b] border border-white/[0.06] rounded-xl p-4 space-y-2 text-xs font-mono text-gray-400">
-            <div className="text-emerald-400 font-semibold">Enterprise Security Highlights:</div>
-            <div>• Passwords salted and hashed with bcrypt (12 rounds)</div>
-            <div>• Refresh tokens cryptographically hashed with SHA-256 at rest (zero plaintext storage)</div>
-            <div>• Multi-device session isolation capped at 10 active devices with individual revocation</div>
-            <div>• Authentication cookies served with HttpOnly, SameSite=None, and Secure flags</div>
-            <div>• Granular IP-based rate limiting on sensitive login, refresh, and Google linking endpoints</div>
-            <div>• Global session revocation: Changing your password purges all other active devices instantly</div>
-          </div>
+          <ul className="list-disc pl-5 space-y-1 text-gray-400">
+            <li><strong className="text-white">Access cookie:</strong> proves who you are for 15 minutes at a time.</li>
+            <li><strong className="text-white">Refresh cookie:</strong> renews your access for up to 7 days, and is replaced every time it is used.</li>
+            <li>Both cookies are HttpOnly (page scripts cannot read them) and Secure.</li>
+            <li><strong className="text-white">Browser storage:</strong> your approach notes (see above) are kept in your browser&apos;s local storage until you clear your browser data.</li>
+          </ul>
         </section>
 
         {/* Section 5 */}
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="text-[#ffa116]">5.</span> Third-Party Service Providers
+            <span className="text-[#ffa116]">5.</span> Security Architecture
           </h2>
           <p>
-            We rely on trusted third-party cloud infrastructure to deliver our services:
+            We implement defense-in-depth security standards across all application layers:
           </p>
-          <ul className="list-disc pl-5 space-y-1 text-gray-400">
-            <li><strong className="text-white">Google OAuth 2.0:</strong> Identity provider for single sign-on.</li>
-            <li><strong className="text-white">Google Gemini API:</strong> Generative AI engine for portfolio architecture blueprints.</li>
-            <li><strong className="text-white">MongoDB Atlas:</strong> Encrypted cloud database for progress and session storage.</li>
-          </ul>
+          <div className="bg-[#0b0b0b] border border-white/[0.06] rounded-xl p-4 space-y-2 text-xs font-mono text-gray-400">
+            <div className="text-emerald-400 font-semibold">Security Highlights:</div>
+            <div>• Passwords salted and hashed with bcrypt (12 rounds)</div>
+            <div>• Refresh tokens cryptographically hashed with SHA-256 at rest (zero plaintext storage)</div>
+            <div>• Short-lived access (15 minutes) and rotating refresh tokens (7 days)</div>
+            <div>• Multi-device session isolation capped at 10 active devices with individual revocation</div>
+            <div>• Authentication cookies served with HttpOnly, SameSite=None, and Secure flags</div>
+            <div>• Granular IP-based rate limiting on sensitive login, refresh, and Google linking endpoints</div>
+            <div>• Immediate revocation: signing out, removing a device, changing your password or deleting your account ends the affected sessions at once</div>
+          </div>
         </section>
 
         {/* Section 6 */}
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span className="text-[#ffa116]">6.</span> Your Rights & Self-Service Account Erasure (GDPR Article 17)
+            <span className="text-[#ffa116]">6.</span> Third-Party Service Providers
+          </h2>
+          <p>
+            We rely on trusted third-party services to deliver PrepStack:
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-gray-400">
+            <li><strong className="text-white">Google OAuth 2.0:</strong> Identity provider for single sign-on.</li>
+            <li><strong className="text-white">Google Gemini API:</strong> Generative AI engine for project ideas. It receives the options you enter when you generate an idea.</li>
+            <li><strong className="text-white">MongoDB Atlas:</strong> Encrypted cloud database for accounts, progress and sessions.</li>
+            <li><strong className="text-white">Our hosting providers:</strong> serve the website and the API and keep standard server logs.</li>
+            <li><strong className="text-white">DiceBear (api.dicebear.com):</strong> generates the default avatar image. Your browser requests it directly, and the request contains your username as the image seed.</li>
+            <li><strong className="text-white">Google Fonts:</strong> your browser loads page fonts from Google&apos;s font servers.</li>
+          </ul>
+          <p className="text-xs text-gray-400">
+            Problem links on DSA sheets open third-party websites (such as LeetCode, GeeksforGeeks and takeUforward). Those sites have their own privacy practices.
+          </p>
+        </section>
+
+        {/* Section 7 */}
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <span className="text-[#ffa116]">7.</span> Your Rights & Self-Service Account Erasure (GDPR Article 17)
           </h2>
           <p>
             You have full ownership of your data under GDPR Article 17 (Right to Erasure). You can permanently and irreversibly delete your account, solved DSA problem history, and generated projects at any moment directly from your <strong className="text-white">Profile &gt; Delete Account</strong> dashboard.
           </p>
           <p className="text-xs text-gray-400">
-            Upon confirmation, our backend executes an atomic cascade deletion across all databases, purges your session credentials, and clears all client-side authentication cookies.
+            Upon confirmation, our backend deletes your account record, solved-problem history, saved AI project ideas and all session records from our database in one operation, and clears your authentication cookies.
+          </p>
+          <p className="text-xs text-gray-400">
+            Notes stored in your own browser are not removed by account deletion because we cannot access them. Clear your browser&apos;s site data to remove them.
           </p>
         </section>
 
@@ -153,5 +196,3 @@ const PrivacyPolicy = () => {
 };
 
 export default PrivacyPolicy;
-
-
