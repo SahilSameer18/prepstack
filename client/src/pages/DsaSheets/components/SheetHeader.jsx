@@ -63,7 +63,7 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
               href={meta.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.15] transition-all w-max shadow-sm"
+              className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-2.5 sm:py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.15] transition-all w-max shadow-sm"
             >
               <span>Official Source: {meta.sourceName}</span>
               <FaExternalLinkAlt className="text-[10px] text-zinc-400" />

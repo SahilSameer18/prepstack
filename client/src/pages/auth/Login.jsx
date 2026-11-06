@@ -198,7 +198,7 @@ const Login = () => {
           <motion.div variants={formItem} className="mb-6">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 text-xs font-mono text-gray-400 hover:text-white transition-colors group"
+              className="inline-flex items-center gap-2 min-h-[44px] text-xs font-mono text-gray-400 hover:text-white transition-colors group"
             >
               <span className="w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.08] group-hover:border-[#ffa116]/40 group-hover:text-[#ffa116] transition-all">
                 <FiArrowLeft className="text-xs" />

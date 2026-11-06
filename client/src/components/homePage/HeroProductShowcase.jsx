@@ -50,7 +50,7 @@ const HeroProductShowcase = () => {
   return (
     <div className="relative w-full rounded-2xl titanium-card overflow-hidden text-left transform-gpu">
       {/* ── WINDOW CHROME ── */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/[0.08] bg-[#0e0e12]">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 sm:px-6 py-3.5 border-b border-white/[0.08] bg-[#0e0e12]">
         {/* Workspace status / file path header */}
         <div className="flex items-center gap-2.5">
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] text-zinc-400">
@@ -63,7 +63,7 @@ const HeroProductShowcase = () => {
         </div>
 
         {/* ── SILKY SEGMENTED CONTROL ── */}
-        <div className="relative flex items-center bg-black/60 p-1 rounded-xl border border-white/[0.08]">
+        <div className="relative flex items-center w-full sm:w-auto bg-black/60 p-1 rounded-xl border border-white/[0.08]">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -71,7 +71,7 @@ const HeroProductShowcase = () => {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative z-10 flex items-center gap-1.5 py-1.5 px-2.5 sm:px-3.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`relative z-10 flex flex-1 sm:flex-none items-center justify-center gap-1.5 min-h-[40px] sm:min-h-0 py-1.5 px-2.5 sm:px-3.5 rounded-lg text-xs font-medium transition-colors ${
                   isActive ? "text-[#ffa116]" : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
@@ -187,19 +187,20 @@ const HeroProductShowcase = () => {
 
               {/* Interactive Execution Trigger */}
               <div className="pt-2">
-                <div className="flex items-center justify-between">
+                {/* Wraps (with a real gap) so the engine note drops below the button on narrow phones instead of crowding it */}
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5">
                   <button
                     type="button"
                     onClick={runTestBenchmark}
                     disabled={isRunningTest}
-                    className="titanium-button text-xs font-mono py-1.5 px-3 rounded-lg flex items-center gap-2 cursor-pointer select-none"
+                    className="titanium-button text-xs font-mono py-2.5 sm:py-1.5 px-3.5 sm:px-3 min-h-[44px] sm:min-h-0 rounded-lg flex items-center gap-2 whitespace-nowrap cursor-pointer select-none"
                   >
                     <FaPlay className={`text-[9px] text-[#ffa116] ${isRunningTest ? "animate-spin" : ""}`} />
                     <span>{isRunningTest ? "Running Benchmark..." : "Run Test Benchmark"}</span>
-                    <span className="kbd-capsule">⌘↵</span>
+                    <span className="hidden sm:inline-flex"><span className="kbd-capsule">⌘↵</span></span>
                   </button>
 
-                  <span className="text-[11px] font-mono text-zinc-500">
+                  <span className="text-[11px] font-mono text-zinc-500 whitespace-nowrap">
                     Engine: V8 Subprocess
                   </span>
                 </div>
@@ -378,14 +379,14 @@ const HeroProductShowcase = () => {
         </AnimatePresence>
 
         {/* ── WORKSPACE FOOTER ── */}
-        <div className="pt-3.5 border-t border-white/[0.07] flex items-center justify-between text-xs text-zinc-500 mt-3">
-          <span className="font-mono text-[11px] flex items-center gap-2 text-zinc-400">
+        <div className="pt-3.5 border-t border-white/[0.07] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-zinc-500 mt-3">
+          <span className="font-mono text-[11px] flex items-center gap-2 text-zinc-400 whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Telemetry: <span className="text-zinc-300">60 FPS · 0ms sync lag</span>
           </span>
           <Link
             to={activeTab === 0 ? "/dsa" : activeTab === 1 ? "/notes" : "/ai-projects"}
-            className="inline-flex items-center gap-1.5 text-[#ffa116] hover:text-[#ffb84d] font-semibold transition-colors text-xs shrink-0 select-none group"
+            className="inline-flex items-center gap-1.5 py-2.5 sm:py-0 min-h-[44px] sm:min-h-0 text-[#ffa116] hover:text-[#ffb84d] font-semibold transition-colors text-xs shrink-0 whitespace-nowrap select-none group"
           >
             Launch Full Tool{" "}
             <FaArrowRight className="text-[10px] transition-transform duration-150 group-hover:translate-x-0.5" />

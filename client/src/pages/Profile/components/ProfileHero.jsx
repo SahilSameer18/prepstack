@@ -53,7 +53,7 @@ const ProfileHero = ({ user, avatarUrl }) => {
         </div>
       </div>
 
-      <div className="flex-1 text-center sm:text-left z-10 min-w-0">
+      <div className="flex-1 w-full text-center sm:text-left z-10 min-w-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight truncate">
             {user.username}
@@ -66,8 +66,8 @@ const ProfileHero = ({ user, avatarUrl }) => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-xs sm:text-sm text-zinc-400 font-mono mb-6">
-          <span className="flex items-center justify-center sm:justify-start gap-2 text-zinc-300">
-            <FaEnvelope className="text-zinc-500 text-xs" /> {user.email}
+          <span className="flex items-center justify-center sm:justify-start gap-2 text-zinc-300 min-w-0 break-all">
+            <FaEnvelope className="text-zinc-500 text-xs shrink-0" /> {user.email}
           </span>
           <span className="flex items-center justify-center sm:justify-start gap-2">
             <FiCalendar className="text-zinc-500 text-xs" /> Joined {joinDate}

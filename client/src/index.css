@@ -461,3 +461,32 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: white !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+
+/* ---------------- RESPONSIVE POLISH ---------------- */
+
+/* Rows that push two things to opposite ends (justify-between) had no minimum gap, so on narrow screens their
+   contents touched (e.g. "lagLaunch Full Tool"). Kept in the base layer so any explicit gap-* utility still wins. */
+@layer base {
+  .justify-between {
+    column-gap: 0.75rem;
+  }
+}
+
+/* Phones only */
+@media (max-width: 639px) {
+  /* The smallest labels are hard to read at arm's length: lift them one step */
+  [class*="text-[9px]"] {
+    font-size: 10px;
+  }
+  [class*="text-[10px]"] {
+    font-size: 11px;
+  }
+
+  /* 16px form fields stop iOS Safari from zooming the whole page in when a field is focused */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}

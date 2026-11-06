@@ -81,7 +81,7 @@ export default function NotesDetail() {
       {/* ── Mobile Top Bar ── */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-[#0c0c0e] sticky top-0 z-40">
         <div className="flex items-center gap-3 min-w-0">
-          <Link to="/notes" className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors">
+          <Link to="/notes" aria-label="Back to all subjects" className="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors">
             <FiChevronLeft className="text-base" />
           </Link>
           <div className="min-w-0 text-left">
@@ -91,7 +91,7 @@ export default function NotesDetail() {
         </div>
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition-colors"
+          className="flex-shrink-0 flex items-center gap-1.5 px-3.5 min-h-[44px] rounded-lg bg-white/[0.06] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition-colors"
         >
           <FiMenu className="text-sm" />
           Topics
@@ -128,7 +128,7 @@ export default function NotesDetail() {
         <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.08] flex-shrink-0">
           <Link
             to="/notes"
-            className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-sm group"
+            className="flex items-center gap-2 min-h-[44px] text-zinc-400 hover:text-white transition-colors text-sm group"
           >
             <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
               <FiChevronLeft className="text-sm" />
@@ -137,7 +137,7 @@ export default function NotesDetail() {
           </Link>
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="md:hidden flex items-center justify-center w-7 h-7 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="md:hidden flex items-center justify-center w-11 h-11 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
           >
             <FiX className="text-sm" />
           </button>

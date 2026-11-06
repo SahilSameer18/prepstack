@@ -8,7 +8,7 @@ const PrivacyPolicy = () => {
       {/* Back navigation */}
       <Link
         to="/"
-        className="inline-flex items-center gap-2 text-xs font-mono text-gray-400 hover:text-[#ffa116] transition-colors mb-8"
+        className="inline-flex items-center gap-2 min-h-[44px] text-xs font-mono text-gray-400 hover:text-[#ffa116] transition-colors mb-4"
       >
         <FiArrowLeft /> Back to PrepStack
       </Link>
@@ -185,7 +185,7 @@ const PrivacyPolicy = () => {
           </p>
           <a
             href="mailto:sahilsameer.dev18@gmail.com"
-            className="inline-flex items-center gap-2 text-sm text-[#ffa116] hover:underline"
+            className="inline-flex items-center gap-2 min-h-[44px] text-sm text-[#ffa116] hover:underline"
           >
             <FiMail /> sahilsameer.dev18@gmail.com
           </a>

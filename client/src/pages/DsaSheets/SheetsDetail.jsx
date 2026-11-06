@@ -116,7 +116,7 @@ const SheetsDetail = () => {
     <div className="px-4 md:px-6 py-8 max-w-5xl mx-auto page-enter text-white">
 
       {/* Back link */}
-      <Link to="/dsa" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white text-sm mb-6 transition-colors group">
+      <Link to="/dsa" className="inline-flex items-center gap-2 min-h-[44px] text-zinc-400 hover:text-white text-sm mb-3 transition-colors group">
         <FiArrowLeft className="transition-transform group-hover:-translate-x-0.5" />
         Back to Sheets
       </Link>

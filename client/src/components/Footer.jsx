@@ -26,7 +26,7 @@ const Footer = () => {
         <div className="grid md:grid-cols-[1.2fr_1fr_auto] gap-10 pb-12 border-b border-white/[0.06]">
           {/* Brand Column */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2 group">
+            <Link to="/" className="flex items-center gap-2 min-h-[44px] group">
               <span className="font-display text-xl font-bold tracking-tight text-white group-hover:opacity-90 transition-opacity">
                 Prep<span className="text-[#ffa116]">Stack</span>
               </span>
@@ -63,7 +63,7 @@ const Footer = () => {
                 <li key={r.name}>
                   <Link
                     to={r.url}
-                    className="text-sm text-zinc-400 hover:text-[#ffa116] transition-colors py-1 inline-block"
+                    className="text-sm text-zinc-400 hover:text-[#ffa116] transition-colors py-3 sm:py-1 inline-block"
                   >
                     {r.name}
                   </Link>
@@ -86,7 +86,7 @@ const Footer = () => {
                   <li key={l.name}>
                     <Link
                       to={l.url}
-                      className="text-sm text-zinc-400 hover:text-[#ffa116] transition-colors py-1 inline-block"
+                      className="text-sm text-zinc-400 hover:text-[#ffa116] transition-colors py-3 sm:py-1 inline-block"
                     >
                       {l.name}
                     </Link>

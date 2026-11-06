@@ -39,7 +39,7 @@ const BentoGrid = () => {
               </span>
               <Link
                 to="/dsa"
-                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 transition-colors select-none"
+                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 min-h-[44px] transition-colors select-none"
               >
                 View Sheets <FiExternalLink className="text-xs text-[#ffa116]" />
               </Link>
@@ -110,7 +110,7 @@ const BentoGrid = () => {
               </span>
               <Link
                 to="/ai-projects"
-                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 transition-colors select-none"
+                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 min-h-[44px] transition-colors select-none"
               >
                 Generate <FiExternalLink className="text-xs text-[#ffa116]" />
               </Link>
@@ -155,7 +155,7 @@ const BentoGrid = () => {
               </span>
               <Link
                 to="/notes"
-                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 transition-colors select-none"
+                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 min-h-[44px] transition-colors select-none"
               >
                 Explore <FiExternalLink className="text-xs text-cyan-400" />
               </Link>
@@ -193,7 +193,7 @@ const BentoGrid = () => {
               </span>
               <Link
                 to="/roadmaps"
-                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 transition-colors select-none"
+                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 min-h-[44px] transition-colors select-none"
               >
                 Roadmaps <FiExternalLink className="text-xs text-purple-400" />
               </Link>
@@ -232,7 +232,7 @@ const BentoGrid = () => {
               </span>
               <Link
                 to="/behavioral"
-                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 transition-colors select-none"
+                className="font-mono text-xs text-zinc-400 group-hover:text-white flex items-center gap-1.5 min-h-[44px] transition-colors select-none"
               >
                 Prepare <FiExternalLink className="text-xs text-emerald-400" />
               </Link>

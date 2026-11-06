@@ -69,7 +69,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
 
           {/* ── Logo (text only) ── */}
-          <NavLink to="/" className="flex items-center group">
+          <NavLink to="/" className="flex items-center min-h-[44px] group">
             <span className="text-xl font-display font-bold tracking-tight text-white group-hover:opacity-90 transition-opacity">
               Prep<span className="text-[#ffa116]">Stack</span>
             </span>
