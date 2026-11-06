@@ -240,6 +240,7 @@ const deleteAccount = async (req, res, next) => {
       // Fallback for standalone local MongoDB instances that do not support replica set transactions
       if (
         txError.message?.includes('replica set member') ||
+        txError.message?.includes('retryable writes') || // wording used by newer MongoDB drivers
         txError.codeName === 'IllegalOperation' ||
         txError.code === 20
       ) {
