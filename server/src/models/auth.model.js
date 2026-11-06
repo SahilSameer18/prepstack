@@ -55,6 +55,14 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: true
     },
+    // Previous token's hash + when it was rotated: lets a second tab that refreshed at the same
+    // moment get through for a few seconds instead of being logged out (see refreshAccessToken)
+    prevTokenHash: {
+      type: String
+    },
+    rotatedAt: {
+      type: Date
+    },
     device: {
       type: String,
       default: 'Unknown Device'

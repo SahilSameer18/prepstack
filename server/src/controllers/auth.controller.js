@@ -1,4 +1,5 @@
 const userModel = require('../models/auth.model')
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { generateAccessToken, generateRefreshToken, hashToken } = require('../utils/tokens');
@@ -24,38 +25,45 @@ const formatUserResponse = (user) => {
   };
 };
 
-// Cryptographically hashes and appends a refresh token to the user's multi-device active session pool with device telemetry
-const storeSessionToken = async (user, refreshToken, req) => {
-  const tokenHash = hashToken(refreshToken);
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const MAX_SESSIONS = 10;
+// After a refresh token is rotated, the previous one still works for this long. Two tabs that refresh
+// at the same moment both send the same old token; without this the slower tab is logged out.
+const REFRESH_GRACE_MS = 10 * 1000;
+
+// Adds a login session (hashed refresh token + device telemetry) to the user's multi-device pool.
+// Atomic updates on purpose: load-then-save of the whole array loses data (or throws a VersionError)
+// when two requests for the same user overlap.
+const createSession = async (userId, sid, refreshToken, req) => {
   const deviceInfo = req ? parseDeviceInfo(req) : {
     device: "Unknown Device",
     browser: "Unknown Browser",
     os: "Unknown OS",
     ip: "Unknown IP"
   };
+  const now = new Date();
 
   // Prune expired sessions
-  let activeTokens = (user.refreshTokens || []).filter(
-    (t) => t.expiresAt && t.expiresAt > new Date()
-  );
+  await userModel.updateOne({ _id: userId }, { $pull: { refreshTokens: { expiresAt: { $lte: now } } } });
 
-  // Cap maximum concurrent sessions to 10 devices
-  if (activeTokens.length >= 10) {
-    activeTokens = activeTokens.slice(activeTokens.length - 9);
-  }
-
-  activeTokens.push({
-    tokenHash,
-    device: deviceInfo.device,
-    browser: deviceInfo.browser,
-    os: deviceInfo.os,
-    ip: deviceInfo.ip,
-    lastActive: new Date(),
-    expiresAt
+  // Add the new session; $slice keeps only the newest MAX_SESSIONS devices
+  await userModel.updateOne({ _id: userId }, {
+    $push: {
+      refreshTokens: {
+        $each: [{
+          _id: sid,
+          tokenHash: hashToken(refreshToken),
+          device: deviceInfo.device,
+          browser: deviceInfo.browser,
+          os: deviceInfo.os,
+          ip: deviceInfo.ip,
+          lastActive: now,
+          expiresAt: new Date(now.getTime() + SESSION_TTL_MS)
+        }],
+        $slice: -MAX_SESSIONS
+      }
+    }
   });
-  user.refreshTokens = activeTokens;
-  await user.save();
 };
 
 // ── Cookie options (DRY) ──────────────────────────────────────────────────────
@@ -72,6 +80,18 @@ const REFRESH_COOKIE_OPTIONS = {
   secure: true,
   sameSite: 'none',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+// Starts a new login session for `user` and sets both auth cookies (used by register, login, Google login)
+const startSession = async (user, req, res) => {
+  const sid = new mongoose.Types.ObjectId();
+  const accessToken = generateAccessToken(user, sid);
+  const refreshToken = generateRefreshToken(user);
+
+  await createSession(user._id, sid, refreshToken, req);
+
+  res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
+  res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
 };
 
 // ── Register ──────────────────────────────────────────────────────────────────
@@ -101,13 +121,7 @@ const registerUser = async (req, res, next) => {
       avatar: dicebearAvatar 
     });
 
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    await storeSessionToken(user, refreshToken, req);
-
-    res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
-    res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
+    await startSession(user, req, res);
 
     const userResponse = formatUserResponse(user);
     sendSuccess(res, 201, 'User registered successfully', { user: userResponse }, { user: userResponse });
@@ -136,13 +150,7 @@ const loginUser = async (req, res, next) => {
       return next(new AppError(401, 'Invalid email or password'));
     }
 
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    await storeSessionToken(user, refreshToken, req);
-
-    res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
-    res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
+    await startSession(user, req, res);
 
     const userResponse = formatUserResponse(user);
     sendSuccess(res, 200, 'User logged in successfully', { user: userResponse }, { user: userResponse });
@@ -155,17 +163,8 @@ const loginUser = async (req, res, next) => {
 
 const logoutUser = async (req, res, next) => {
   try {
-    const incomingToken = req.cookies?.refreshToken;
-    const user = await userModel.findById(req.user.id);
-
-    if (user && incomingToken) {
-      const incomingHash = hashToken(incomingToken);
-      // Remove only the current device's session hash, leaving other devices active
-      user.refreshTokens = (user.refreshTokens || []).filter(
-        (t) => t.tokenHash !== incomingHash
-      );
-      await user.save();
-    }
+    // Remove only the current device's session (identified by the access token), leaving other devices active
+    await userModel.updateOne({ _id: req.user.id }, { $pull: { refreshTokens: { _id: req.user.sid } } });
 
     const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
     res.clearCookie('accessToken', CLEAR_OPTIONS);
@@ -181,12 +180,8 @@ const logoutUser = async (req, res, next) => {
 
 const logoutAllDevices = async (req, res, next) => {
   try {
-    const user = await userModel.findById(req.user.id);
-    if (user) {
-      // Invalidate all active device sessions globally
-      user.refreshTokens = [];
-      await user.save();
-    }
+    // Invalidate all active device sessions globally
+    await userModel.updateOne({ _id: req.user.id }, { $set: { refreshTokens: [] } });
 
     const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
     res.clearCookie('accessToken', CLEAR_OPTIONS);
@@ -227,52 +222,57 @@ const refreshAccessToken = async (req, res, next) => {
     // the centralized error handler maps these to 403/401 automatically.
     const decoded = jwt.verify(token, process.env.REFRESH_SECRET);
 
-    const user = await userModel.findById(decoded.id);
-    if (!user || !user.refreshTokens || user.refreshTokens.length === 0) {
-      return next(new AppError(403, 'Invalid or expired session. Please log in again.'));
-    }
-
     const incomingHash = hashToken(token);
-    const matchedIndex = user.refreshTokens.findIndex(
-      (t) => t.tokenHash === incomingHash && t.expiresAt && t.expiresAt > new Date()
+    const now = new Date();
+    const newRefreshToken = generateRefreshToken({ _id: decoded.id, username: decoded.username });
+
+    // Single-use rotation as ONE atomic compare-and-swap: the session is only updated if it still holds
+    // the token we were sent. If two requests race with the same token, exactly one wins; the old
+    // load-modify-save version let both read it and the loser crashed with a VersionError (500).
+    // The session keeps its _id, so the access token's session id stays valid across rotations.
+    const rotated = await userModel.findOneAndUpdate(
+      { _id: decoded.id, refreshTokens: { $elemMatch: { tokenHash: incomingHash, expiresAt: { $gt: now } } } },
+      {
+        $set: {
+          'refreshTokens.$.tokenHash': hashToken(newRefreshToken),
+          'refreshTokens.$.prevTokenHash': incomingHash,
+          'refreshTokens.$.rotatedAt': now,
+          'refreshTokens.$.lastActive': now,
+          'refreshTokens.$.expiresAt': new Date(now.getTime() + SESSION_TTL_MS),
+        },
+      },
+      { returnDocument: 'after', projection: { username: 1, refreshTokens: 1 } }
     );
 
-    if (matchedIndex === -1) {
+    if (rotated) {
+      const session = rotated.refreshTokens.find((t) => t.tokenHash === hashToken(newRefreshToken));
+      res.cookie('accessToken', generateAccessToken(rotated, session._id), ACCESS_COOKIE_OPTIONS);
+      res.cookie('refreshToken', newRefreshToken, REFRESH_COOKIE_OPTIONS);
+      return sendSuccess(res, 200, 'Token refreshed', null);
+    }
+
+    // Lost the race (or an old token was replayed). If this exact token was rotated just now, the browser
+    // already received the winner's new refresh cookie, so only hand out a fresh access token and leave the
+    // refresh cookie alone. Anything older than the grace window is rejected.
+    const justRotated = await userModel.findOne(
+      {
+        _id: decoded.id,
+        refreshTokens: {
+          $elemMatch: {
+            prevTokenHash: incomingHash,
+            rotatedAt: { $gt: new Date(now.getTime() - REFRESH_GRACE_MS) },
+            expiresAt: { $gt: now },
+          },
+        },
+      },
+      { username: 1, 'refreshTokens.$': 1 }
+    );
+
+    if (!justRotated) {
       return next(new AppError(403, 'Invalid or expired refresh token'));
     }
 
-    const matchedSession = user.refreshTokens[matchedIndex];
-
-    // Single-use token consumption: remove the consumed token
-    user.refreshTokens.splice(matchedIndex, 1);
-
-    // Prune any expired sessions
-    user.refreshTokens = user.refreshTokens.filter(
-      (t) => t.expiresAt && t.expiresAt > new Date()
-    );
-
-    // Issue fresh token pair
-    const newAccessToken = generateAccessToken(user);
-    const newRefreshToken = generateRefreshToken(user);
-    const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const newTokenHash = hashToken(newRefreshToken);
-
-    // Preserve device info and update lastActive timestamp
-    user.refreshTokens.push({
-      tokenHash: newTokenHash,
-      device: matchedSession.device || 'Unknown Device',
-      browser: matchedSession.browser || 'Unknown Browser',
-      os: matchedSession.os || 'Unknown OS',
-      ip: matchedSession.ip || 'Unknown IP',
-      lastActive: new Date(),
-      createdAt: matchedSession.createdAt || new Date(),
-      expiresAt: newExpiresAt
-    });
-    await user.save();
-
-    res.cookie('accessToken', newAccessToken, ACCESS_COOKIE_OPTIONS);
-    res.cookie('refreshToken', newRefreshToken, REFRESH_COOKIE_OPTIONS);
-
+    res.cookie('accessToken', generateAccessToken(justRotated, justRotated.refreshTokens[0]._id), ACCESS_COOKIE_OPTIONS);
     sendSuccess(res, 200, 'Token refreshed', null);
   } catch (error) {
     next(error);
@@ -348,13 +348,7 @@ const googleLogin = async (req, res, next) => {
       }
     }
 
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-
-    await storeSessionToken(user, refreshToken, req);
-
-    res.cookie('accessToken', accessToken, ACCESS_COOKIE_OPTIONS);
-    res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
+    await startSession(user, req, res);
 
     const userResponse = formatUserResponse(user);
     sendSuccess(res, 200, 'Logged in with Google successfully', { user: userResponse }, { user: userResponse });
@@ -465,8 +459,6 @@ const getActiveSessions = async (req, res, next) => {
       return next(new AppError(404, 'User not found'));
     }
 
-    const currentRefreshToken = req.cookies?.refreshToken;
-    const currentHash = currentRefreshToken ? hashToken(currentRefreshToken) : null;
     const now = new Date();
 
     const activeSessions = (user.refreshTokens || [])
@@ -479,7 +471,7 @@ const getActiveSessions = async (req, res, next) => {
         ip: t.ip || 'Unknown IP',
         lastActive: t.lastActive || t.createdAt,
         createdAt: t.createdAt,
-        isCurrent: Boolean(currentHash && t.tokenHash === currentHash)
+        isCurrent: String(t._id) === req.user.sid
       }))
       .sort((a, b) => (b.isCurrent ? 1 : 0) - (a.isCurrent ? 1 : 0) || new Date(b.lastActive) - new Date(a.lastActive));
 
@@ -500,27 +492,22 @@ const getActiveSessions = async (req, res, next) => {
 const revokeSession = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    const user = await userModel.findById(req.user.id);
-    if (!user) {
-      return next(new AppError(404, 'User not found'));
-    }
 
-    const sessionIndex = (user.refreshTokens || []).findIndex(
-      (t) => t._id && t._id.toString() === sessionId
-    );
+    // Remove the selected session (own sessions only: the query is scoped to the logged-in user).
+    // Match on the session in the filter and check matchedCount: modifiedCount is useless here because
+    // mongoose timestamps make every updateOne "modify" updatedAt.
+    const result = mongoose.isValidObjectId(sessionId)
+      ? await userModel.updateOne(
+          { _id: req.user.id, 'refreshTokens._id': sessionId },
+          { $pull: { refreshTokens: { _id: sessionId } } }
+        )
+      : { matchedCount: 0 };
 
-    if (sessionIndex === -1) {
+    if (result.matchedCount === 0) {
       return next(new AppError(404, 'Session not found or already revoked'));
     }
 
-    const targetSession = user.refreshTokens[sessionIndex];
-    const currentRefreshToken = req.cookies?.refreshToken;
-    const currentHash = currentRefreshToken ? hashToken(currentRefreshToken) : null;
-    const isCurrentRevoked = Boolean(currentHash && targetSession.tokenHash === currentHash);
-
-    // Remove the selected session
-    user.refreshTokens.splice(sessionIndex, 1);
-    await user.save();
+    const isCurrentRevoked = sessionId === req.user.sid;
 
     // If the user revoked their own current session, clear their cookies
     if (isCurrentRevoked) {

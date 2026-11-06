@@ -5,7 +5,6 @@ const progressModel = require('../models/progress.model');
 const DSASheet = require('../models/sheets.model');
 const AppError = require('../utils/AppError');
 const bcrypt = require('bcrypt');
-const { hashToken } = require('../utils/tokens');
 const { sendSuccess } = require('../utils/responseFormatter');
 
 const formatUserResponse = (user) => {
@@ -185,21 +184,13 @@ const changePassword = async (req, res, next) => {
     }
 
     const hash = await bcrypt.hash(newPassword, 12);
-    user.password = hash;
 
-    // Multi-device security revocation:
-    // Invalidate all other active device sessions, retaining only the current device's session
-    const currentRefreshToken = req.cookies?.refreshToken;
-    if (currentRefreshToken) {
-      const currentHash = hashToken(currentRefreshToken);
-      user.refreshTokens = (user.refreshTokens || []).filter(
-        (t) => t.tokenHash === currentHash && t.expiresAt > new Date()
-      );
-    } else {
-      user.refreshTokens = [];
-    }
-
-    await user.save();
+    // One atomic write: set the new password and sign out every other device (keep only this session,
+    // identified by the access token). Their access tokens stop working immediately too.
+    await userModel.updateOne(
+      { _id: userId },
+      { $set: { password: hash }, $pull: { refreshTokens: { _id: { $ne: req.user.sid } } } }
+    );
 
     const userResponse = formatUserResponse(user);
     sendSuccess(res, 200, 'Password changed successfully. Other active devices have been signed out.', { user: userResponse }, { user: userResponse });

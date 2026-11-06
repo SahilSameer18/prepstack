@@ -13,26 +13,23 @@ app.set('trust proxy', 1)
 // use the middleware
 app.use(express.json())
 app.use(cookieParser())
-// CORS configuration supporting localhost, production domain, Vercel previews, and custom env origins
+// CORS: exact-match allowlist only. Add preview/extra origins via ALLOWED_ORIGINS (comma separated).
+// Never use a pattern like prepstack*.vercel.app: anyone can register a matching Vercel project.
 const defaultOrigins = ["http://localhost:5173", "https://prepstack-ss.vercel.app"];
 const extraOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
-  : (process.env.CLIENT_URL ? [process.env.CLIENT_URL.trim()] : []);
-const allowedOrigins = Array.from(new Set([...defaultOrigins, ...extraOrigins]));
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : (process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []);
+const allowedOrigins = new Set(
+  [...defaultOrigins, ...extraOrigins].map((o) => o.trim()).filter(Boolean)
+);
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow non-browser requests with no origin (e.g., Postman, server-to-server)
-    if (!origin) return callback(null, true);
+    if (!origin || allowedOrigins.has(origin)) return callback(null, true);
 
-    if (
-      allowedOrigins.includes(origin) ||
-      /^https:\/\/prepstack[a-z0-9-]*\.vercel\.app$/.test(origin)
-    ) {
-      return callback(null, true);
-    }
-
-    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+    // Clean 403 (not a 500) and the handlers never run for a disallowed origin
+    return callback(new AppError(403, 'Origin not allowed'));
   },
   credentials: true,
 }))
