@@ -1,7 +1,6 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/google96af618381030c41.html", "destination": "/gsc/google96af618381030c41.txt" },
     { "source": "/dsa/:slug", "destination": "/app-shell.html" },
     { "source": "/notes/:subject", "destination": "/app-shell.html" },
     { "source": "/roadmaps/:slug", "destination": "/app-shell.html" },
