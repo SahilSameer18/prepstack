@@ -316,7 +316,7 @@ const Register = () => {
               <div className="flex-1 h-px bg-white/[0.07]" />
             </motion.div>
 
-            <motion.div variants={formItem} className="w-full flex justify-center pb-2">
+            <motion.div variants={formItem} className="w-full flex justify-center pb-2" style={{ colorScheme: "light" }}>
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}

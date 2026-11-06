@@ -132,7 +132,7 @@ const SecurityCard = () => {
               <FiCheck /> Linked & Verified
             </div>
           ) : (
-            <div className="self-start sm:self-auto">
+            <div className="self-start sm:self-auto" style={{ colorScheme: "light" }}>
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 theme="filled_black"
