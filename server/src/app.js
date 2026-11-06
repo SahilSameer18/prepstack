@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const helmet = require('helmet')
 const errorMiddleware = require('./middlewares/error.middleware')
 const AppError = require('./utils/AppError')
 
@@ -11,6 +12,7 @@ const app = express()
 app.set('trust proxy', 1)
 
 // use the middleware
+app.use(helmet()) // standard security headers, removes X-Powered-By
 app.use(express.json())
 app.use(cookieParser())
 // CORS: exact-match allowlist only. Add preview/extra origins via ALLOWED_ORIGINS (comma separated).

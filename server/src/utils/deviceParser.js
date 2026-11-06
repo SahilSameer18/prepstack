@@ -44,20 +44,12 @@ function parseUserAgent(userAgent = "") {
   };
 }
 
-function extractClientIp(req) {
-  const forwarded = req.headers["x-forwarded-for"];
-  if (forwarded) {
-    // Return the first IP in the list (client IP before proxies)
-    const ip = forwarded.split(",")[0].trim();
-    if (ip) return ip;
-  }
-  return req.ip || req.connection?.remoteAddress || "Unknown IP";
-}
-
 function parseDeviceInfo(req) {
   const userAgent = req.headers["user-agent"] || "";
   const parsed = parseUserAgent(userAgent);
-  const ip = extractClientIp(req);
+  // req.ip follows the "trust proxy" setting in app.js (one proxy hop), so it is the address our own proxy
+  // saw. Never read X-Forwarded-For directly: its first value is whatever the client chose to send.
+  const ip = (req.ip || "").replace(/^::ffff:/, "") || "Unknown IP";
 
   return {
     device: parsed.device,
@@ -70,7 +62,6 @@ function parseDeviceInfo(req) {
 
 module.exports = {
   parseUserAgent,
-  extractClientIp,
   parseDeviceInfo
 };
 

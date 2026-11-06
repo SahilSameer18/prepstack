@@ -60,7 +60,9 @@ PrepStack centralizes the workflow:
 - **GDPR Self-Service Data Erasure:** Full GDPR Article 17 compliance via `DELETE /api/user/account` featuring dual-mode credential verification (password check or email confirmation) and an atomic cascade wipeout across user progress, saved AI projects, and credentials.
 - **Layered Request Validation:** Custom Express middleware `validate(schema)` intercepts and validates incoming HTTP requests using Zod schemas before hitting controllers, returning structured `422` field-specific errors.
 - **Centralized Error Middleware:** Uniform error handler intercepts Zod validation errors, Mongoose validator/CastErrors (preventing internal DB leaks on invalid object IDs), JWT errors, and duplicate key constraints.
-- **Granular Route Rate Limiting:** Enforces tiered sliding-window rate limits (`authLimiter`, `refreshLimiter`, `linkGoogleLimiter`) with `skipFailedRequests: true` and Express `trust proxy` configuration.
+- **Route Rate Limiting:** In-memory, fixed-window limits via `express-rate-limit`, keyed by client IP (`req.ip`, using Express `trust proxy`) for `authLimiter` (10 / 15 min), `linkGoogleLimiter` (5 / 15 min) and `refreshLimiter` (30 / 15 min), and by user id for the AI generator (4 / hour). Failed requests **count** against the auth limiters (so wrong-password guessing is throttled); only the AI limiter skips failed requests. Counters live in the server process: they reset on restart and are not shared between instances, so run a single instance or move them to a shared store (e.g. Redis) before scaling out.
+- **Security Headers:** `helmet` sets standard hardening headers (`X-Content-Type-Options`, `Strict-Transport-Security`, `X-Frame-Options`, ...) and removes `X-Powered-By`.
+- **Safe Startup & Shutdown:** The server listens only after MongoDB is connected, and `SIGTERM`/`SIGINT`/unhandled errors close the HTTP server and the database connection before exiting.
 - **Robust OAuth 2.0 Integration:** Built-in Google Sign-In with advanced account linking, anti-hijacking conflict resolution, and automatic unique username generation for OAuth users.
 - **Interactive Live Avatar Customizer:** Integrates deterministic DiceBear bottts generation supporting live preset switching, randomized seed generation, and real-time reactive SVG previews.
 - **Strict Cookie-Only Auth Transport:** Stripped raw JWTs from JSON responses; enforced 100% `httpOnly`, `secure`, and `sameSite` cookie transport across all auth endpoints to prevent client-side token leakage and XSS vulnerabilities.
@@ -285,7 +287,7 @@ sequenceDiagram
 | Node.js + Express   | 5.2     | Web app framework (native async errors)               |
 | Mongoose            | 9       | MongoDB Object Document Mapper (ODM)                  |
 | Zod                 | 4       | Server validation and structured schema config        |
-| zod-to-json-schema  | 3       | Translates Zod structures into JSON Schemas           |
+| helmet              | 8       | Standard HTTP security headers                        |
 | @google/genai       | 1.47    | Official SDK client for Gemini integrations           |
 | jsonwebtoken        | 9       | Cryptographic user session tokens                     |
 | bcrypt              | 6       | Salted security hashing (12 rounds)                   |

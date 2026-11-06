@@ -62,17 +62,19 @@ exports.getSheetBySlug = async (req, res, next) => {
   }
 };
 
-// get user progress for a sheet
+// get user progress for a sheet (read-only: never writes)
 exports.getUserSheetProgress = async (req, res, next) => {
   try {
-    const { slug } = req.params;
+    const slug = req.params.slug.toLowerCase(); // sheet slugs are stored lowercase
     const userId = req.user._id;
 
-    const progress = await Progress.findOneAndUpdate(
-      { user: userId, sheetSlug: slug },
-      { $setOnInsert: { solvedProblems: [] } },
-      { returnDocument: 'after', upsert: true }
-    );
+    if (!(await DSASheet.exists({ slug }))) {
+      return next(new AppError(404, 'DSA Sheet not found'));
+    }
+
+    // A sheet the user has not touched yet is simply an empty list; no record is created until they solve something
+    const progress = await Progress.findOne({ user: userId, sheetSlug: slug }).lean()
+      ?? { user: userId, sheetSlug: slug, solvedProblems: [] };
 
     sendSuccess(res, 200, 'Sheet progress fetched successfully', progress);
   } catch (error) {
@@ -83,26 +85,62 @@ exports.getUserSheetProgress = async (req, res, next) => {
 // toggle problem completion atomically
 exports.toggleProblemCompletion = async (req, res, next) => {
   try {
-    const { slug } = req.params;
+    const slug = req.params.slug.toLowerCase();
     const { problemLink } = req.body;
     const userId = req.user._id;
 
-    // Check if the problem is already marked as solved
-    const existing = await Progress.findOne({
-      user: userId,
-      sheetSlug: slug,
-      solvedProblems: problemLink
-    });
+    if (!(await DSASheet.exists({ slug }))) {
+      return next(new AppError(404, 'DSA Sheet not found'));
+    }
 
-    const updateOperation = existing
-      ? { $pull: { solvedProblems: problemLink } }
-      : { $addToSet: { solvedProblems: problemLink } };
+    const filter = { user: userId, sheetSlug: slug };
 
-    const progress = await Progress.findOneAndUpdate(
-      { user: userId, sheetSlug: slug },
-      updateOperation,
-      { returnDocument: 'after', upsert: true, setDefaultsOnInsert: true }
-    );
+    // Only links that belong to this sheet can be added, which also caps the list at the sheet's size.
+    // A stale link the user already has (removed from the sheet by a later re-seed) can still be removed.
+    const inSheet = await DSASheet.exists({ slug, 'topics.problems.link': problemLink });
+    if (!inSheet) {
+      const removed = await Progress.findOneAndUpdate(
+        { ...filter, solvedProblems: problemLink },
+        { $pull: { solvedProblems: problemLink } },
+        { returnDocument: 'after' }
+      );
+      if (!removed) {
+        return next(new AppError(400, 'This problem is not part of this sheet'));
+      }
+      return sendSuccess(res, 200, 'Problem completion toggled successfully', removed);
+    }
+
+    // Add-or-remove in ONE atomic update, so a double click or two tabs can never read a stale state.
+    // $literal keeps the link a plain string (a value starting with "$" would be read as a field path).
+    const link = { $literal: problemLink };
+    const toggle = [{
+      $set: {
+        solvedProblems: {
+          $let: {
+            vars: { list: { $ifNull: ['$solvedProblems', []] } },
+            in: {
+              $cond: [
+                { $in: [link, '$$list'] },
+                { $filter: { input: '$$list', cond: { $ne: ['$$this', link] } } },
+                { $concatArrays: ['$$list', [link]] }
+              ]
+            }
+          }
+        },
+        // mongoose adds updatedAt to pipeline updates by itself, but not createdAt
+        createdAt: { $ifNull: ['$createdAt', '$$NOW'] }
+      }
+    }];
+    const options = { returnDocument: 'after', upsert: true, updatePipeline: true };
+
+    let progress;
+    try {
+      progress = await Progress.findOneAndUpdate(filter, toggle, options);
+    } catch (err) {
+      if (err.code !== 11000) throw err;
+      // Two first-ever toggles raced on the unique (user, sheet) index. The record exists now, so retry once.
+      progress = await Progress.findOneAndUpdate(filter, toggle, options);
+    }
 
     sendSuccess(res, 200, 'Problem completion toggled successfully', progress);
   } catch (error) {

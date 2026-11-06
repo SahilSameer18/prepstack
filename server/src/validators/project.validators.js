@@ -4,13 +4,13 @@ const VALID_COMPLEXITIES = ['beginner', 'intermediate', 'advanced'];
 
 const generateProjectSchema = z.object({
   techStack: z
-    .string({ required_error: 'Tech stack is required' })
+    .string({ error: 'Tech stack is required' })
     .trim()
     .min(2, 'Tech stack must be at least 2 characters')
     .max(200, 'Tech stack cannot exceed 200 characters'),
 
   complexity: z
-    .string({ required_error: 'Complexity is required' })
+    .string({ error: 'Complexity is required' })
     .trim()
     .toLowerCase()
     .refine(
