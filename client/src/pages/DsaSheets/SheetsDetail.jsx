@@ -595,8 +595,11 @@ const SheetsDetail = () => {
                                   <FiFileText className="text-amber-400" />
                                   Approach & Invariants Vault
                                 </span>
-                                <span className="text-[10px] font-mono text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
-                                  Browser Local Storage
+                                <span
+                                  className="text-[10px] font-mono text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]"
+                                  title="Notes are saved only in this browser on this device. They won't appear on other devices and are lost if you clear your browser data."
+                                >
+                                  This device only
                                 </span>
                               </div>
 

@@ -3,7 +3,8 @@ import api from '../axios';
 
 // service to generate project idea based on techstack , compexity , domain and notes
 export const generateProjectIdea = async (data) => {
-  const response = await api.post('/api/project/generate', data);
+  // Gemini can take a while, so allow longer than the default 30s
+  const response = await api.post('/api/project/generate', data, { timeout: 90000 });
   return response.data;
 }
 

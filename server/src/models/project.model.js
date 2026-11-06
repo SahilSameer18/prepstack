@@ -14,6 +14,7 @@ const projectSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true, // an ownerless project could never be deleted with its user
     },
   },
   { timestamps: true },

@@ -14,6 +14,14 @@ const dns = require('dns');
 const app = require('./src/app');
 const connectToDB = require('./src/config/database')
 
+// Indexes are built in the background when the DB connects. If one fails (e.g. old data already breaks a unique
+// rule), the app keeps running, so say so loudly instead of staying silent.
+for (const name of mongoose.modelNames()) {
+  mongoose.model(name).on('index', (err) => {
+    if (err) console.error(`⚠️  Could not build an index on "${name}": ${err.message} (fix the conflicting data, then restart)`);
+  });
+}
+
 // Force public DNS (works around ISPs that cannot resolve mongodb+srv SRV records).
 // Opt-in only, so a production host can never pick it up by accident.
 if (process.env.ENABLE_CUSTOM_DNS === 'true') {

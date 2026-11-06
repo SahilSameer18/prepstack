@@ -1,3 +1,13 @@
+// Usernames are unique ignoring case ("Admin" and "admin" are the same name). Mongo's collation compares
+// case-insensitively, and the unique index in auth.model.js uses the same collation.
+const USERNAME_COLLATION = { locale: 'en', strength: 2 };
+
+// Finds a user by username ignoring case. Pass `excludeId` to ignore one user (e.g. when renaming yourself).
+const findUserByUsername = (userModel, username, excludeId) => {
+  const filter = excludeId ? { username, _id: { $ne: excludeId } } : { username };
+  return userModel.findOne(filter).collation(USERNAME_COLLATION);
+};
+
 /**
  * Helper to generate a unique username based on the Google display name.
  */
@@ -8,7 +18,7 @@ const generateUniqueUsername = async (displayName, userModel) => {
     .trim()
     .replace(/\s+/g, '_')
     .toLowerCase();
-  
+
   // 2. Ensure it starts with a letter, and truncate to 15 chars (leaving room for suffix)
   baseUsername = baseUsername.replace(/^[^a-z]+/, '');
   baseUsername = baseUsername.substring(0, 15);
@@ -25,7 +35,7 @@ const generateUniqueUsername = async (displayName, userModel) => {
   let attempts = 0;
 
   while (!isUnique && attempts < 10) {
-    const existingUser = await userModel.findOne({ username: uniqueUsername });
+    const existingUser = await findUserByUsername(userModel, uniqueUsername);
     if (!existingUser) {
       isUnique = true;
     } else {
@@ -44,4 +54,4 @@ const generateUniqueUsername = async (displayName, userModel) => {
   return uniqueUsername;
 };
 
-module.exports = { generateUniqueUsername };
+module.exports = { USERNAME_COLLATION, findUserByUsername, generateUniqueUsername };

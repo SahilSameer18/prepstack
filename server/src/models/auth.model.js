@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
+const { USERNAME_COLLATION } = require('../utils/usernameHelper');
 
 const userSchema = new mongoose.Schema({
 
   username: {
     type: String,
     required: [true, 'Username is required'],
-    unique: [true, 'Username already exists'],
+    // plain `unique: true` on purpose: with a [true, 'message'] array mongoose swallows the duplicate-key error code,
+    // so the error handler (409) and the Google sign-up retry (which look for code 11000) never recognise it
+    unique: true,
     trim: true,
     minLength: [4, 'Username must be at least 4 characters'],
     maxLength: [30, 'Username cannot exceed 30 characters']
@@ -13,7 +16,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, 'Email is required'],
-    unique: [true, 'Email already exists'],
+    unique: true,
     trim: true,
     lowercase: true,
     validate: {
@@ -27,10 +30,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     // Password is only required when the user has no linked OAuth providers.
     // Google-only users will have providers.length > 0 and no password set.
+    // The stored value is a bcrypt hash, so password length/strength is enforced in the zod validators instead.
     required: function() {
       return !this.providers || this.providers.length === 0;
-    },
-    minLength: [8, 'Password must be at least 8 characters']
+    }
   },
   // Supports multiple OAuth providers (Google, GitHub, etc.) for future expansion
   providers: [{
@@ -96,6 +99,10 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Case-insensitive unique usernames ("Admin" == "admin"), enforced by the database so parallel sign-ups can't both win.
+// If old data already has two names that differ only by case, MongoDB refuses to build this index (the app keeps
+// running and still checks case-insensitively in code); rename one of them, then restart to build it.
+userSchema.index({ username: 1 }, { unique: true, collation: USERNAME_COLLATION, name: 'username_ci_unique' });
 // Index for fast OAuth provider lookups
 userSchema.index({ 'providers.providerName': 1, 'providers.providerId': 1 });
 // Index for fast token hash lookups during session rotation

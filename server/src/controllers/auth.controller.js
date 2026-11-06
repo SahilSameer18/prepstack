@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { generateAccessToken, generateRefreshToken, hashToken } = require('../utils/tokens');
 const AppError = require('../utils/AppError');
 const googleClient = require('../utils/googleClient');
-const { generateUniqueUsername } = require('../utils/usernameHelper');
+const { generateUniqueUsername, findUserByUsername } = require('../utils/usernameHelper');
 const { parseDeviceInfo } = require('../utils/deviceParser');
 const { sendSuccess } = require('../utils/responseFormatter');
 
@@ -105,7 +105,7 @@ const registerUser = async (req, res, next) => {
       return next(new AppError(409, 'An account with this email already exists'));
     }
 
-    const existingUsername = await userModel.findOne({ username });
+    const existingUsername = await findUserByUsername(userModel, username);
     if (existingUsername) {
       return next(new AppError(409, 'Username is already taken. Please choose another.'));
     }

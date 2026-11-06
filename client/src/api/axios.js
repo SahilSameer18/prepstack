@@ -5,6 +5,8 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
+  // Without a timeout a hung request keeps the UI loading forever. Slow calls (AI) override this per request.
+  timeout: 30000,
 });
 
 // ─── Logout callback ───────────────────────────────────────────────────────────
@@ -67,7 +69,10 @@ api.interceptors.response.use(
         return api(originalRequest);      // retry the original request
       } catch (refreshError) {
         processQueue(refreshError);       // reject all queued requests
-        if (logoutCallback) logoutCallback();   // clear user from React state
+        // Only sign the user out when the server rejected the refresh token. A timeout or lost connection
+        // says nothing about the session, so keep the user logged in and let them retry.
+        const status = refreshError.response?.status;
+        if (logoutCallback && (status === 401 || status === 403)) logoutCallback();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
