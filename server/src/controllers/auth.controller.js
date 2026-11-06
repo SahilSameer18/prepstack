@@ -264,18 +264,24 @@ const refreshAccessToken = async (req, res, next) => {
   }
 };
 
+// Verifies a Google ID token and returns its payload. An invalid, expired or wrongly-targeted token is the
+// caller's problem (401), not a server error (500).
+const verifyGoogleToken = async (idToken) => {
+  try {
+    const ticket = await googleClient.verifyIdToken({ idToken, audience: process.env.GOOGLE_CLIENT_ID });
+    return ticket.getPayload();
+  } catch {
+    throw new AppError(401, 'Invalid Google sign-in token. Please try again.');
+  }
+};
+
 // ── Google OAuth ──────────────────────────────────────────────────────────────
 
 const googleLogin = async (req, res, next) => {
   try {
     const { idToken } = req.body;
 
-    const ticket = await googleClient.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    
-    const payload = ticket.getPayload();
+    const payload = await verifyGoogleToken(idToken);
     const { email, email_verified, name, sub: googleId, picture } = payload;
 
     if (!email_verified) {
@@ -345,12 +351,7 @@ const linkGoogle = async (req, res, next) => {
   try {
     const { idToken } = req.body;
 
-    const ticket = await googleClient.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    
-    const payload = ticket.getPayload();
+    const payload = await verifyGoogleToken(idToken);
     const { email, email_verified, sub: googleId, picture } = payload;
 
     if (!email_verified) {
