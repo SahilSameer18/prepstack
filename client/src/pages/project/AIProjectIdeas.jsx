@@ -236,7 +236,7 @@ const AIProjectIdeas = () => {
               <p className="text-zinc-400 text-sm max-w-sm leading-relaxed">
                 Configure your system parameters on the left to compile an industry-grade architecture blueprint with realistic distributed challenges.
               </p>
-              <div className="mt-8 grid grid-cols-3 gap-3 w-full max-w-sm">
+              <div className="mt-8 grid grid-cols-1 min-[420px]:grid-cols-3 gap-3 w-full max-w-sm">
                 {[
                   { label: "Production Scale", sub: "Distributed" },
                   { label: "Benchmarked", sub: "Latency & RPS" },

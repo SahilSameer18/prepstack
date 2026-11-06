@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.mjs && node scripts/seo-check.mjs",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:app": "vite build"
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.5",
@@ -34,4 +35,3 @@
     "vite": "^7.3.1"
   }
 }
-

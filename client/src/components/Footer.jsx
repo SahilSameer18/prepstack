@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { FiMail, FiGithub, FiLinkedin, FiInstagram, FiTerminal } from "react-icons/fi";
+import LogoMark from "./ui/LogoMark";
 
 const Footer = () => {
   const resources = [
@@ -26,7 +27,8 @@ const Footer = () => {
         <div className="grid md:grid-cols-[1.2fr_1fr_auto] gap-10 pb-12 border-b border-white/[0.06]">
           {/* Brand Column */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2 min-h-[44px] group">
+            <Link to="/" className="flex items-center gap-2.5 min-h-[44px] group" aria-label="PrepStack home">
+              <LogoMark className="w-8 h-8 shrink-0" />
               <span className="font-display text-xl font-bold tracking-tight text-white group-hover:opacity-90 transition-opacity">
                 Prep<span className="text-[#ffa116]">Stack</span>
               </span>

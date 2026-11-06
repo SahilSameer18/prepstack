@@ -8,6 +8,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { InlineSpinner } from "../components/ui/Skeletons";
+import LogoMark from "./ui/LogoMark";
 
 const Navbar = () => {
 
@@ -69,7 +70,8 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
 
           {/* ── Logo (text only) ── */}
-          <NavLink to="/" className="flex items-center min-h-[44px] group">
+          <NavLink to="/" className="flex items-center gap-2.5 min-h-[44px] group" aria-label="PrepStack home">
+            <LogoMark className="w-8 h-8 shrink-0" />
             <span className="text-xl font-display font-bold tracking-tight text-white group-hover:opacity-90 transition-opacity">
               Prep<span className="text-[#ffa116]">Stack</span>
             </span>

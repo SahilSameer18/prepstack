@@ -6,6 +6,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import NotFound from './pages/NotFound';
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import RouteSeo from "./seo/Seo";
 
 
 // Lazy Loaded Routes
@@ -127,7 +128,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  { path: '/login', element: <Login /> },
-  { path: '/register', element: <Register /> },
-  { path: '*', element: <NotFound /> },
+  { path: '/login', element: <><RouteSeo /><Login /></> },
+  { path: '/register', element: <><RouteSeo /><Register /></> },
+  { path: '*', element: <><RouteSeo /><NotFound /></> },
 ])

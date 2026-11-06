@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
 import PageLoader from "../components/ui/PageLoader";
+import RouteSeo from "../seo/Seo";
 
 const MainLayout = () => {
   return (
@@ -27,6 +28,7 @@ const MainLayout = () => {
         <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
       </div>
 
+      <RouteSeo />
       <ScrollToTop />
       <Navbar />
       <main className="flex-grow pt-20 sm:pt-24 px-4 pb-12 overflow-x-hidden relative z-10">
