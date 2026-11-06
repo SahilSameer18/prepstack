@@ -6,21 +6,8 @@ const DSASheet = require('../models/sheets.model');
 const AppError = require('../utils/AppError');
 const { findUserByUsername } = require('../utils/usernameHelper');
 const bcrypt = require('bcrypt');
+const { formatUserResponse } = require('../utils/userResponse');
 const { sendSuccess } = require('../utils/responseFormatter');
-
-const formatUserResponse = (user) => {
-  const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`;
-  
-  return {
-    id: user._id,
-    username: user.username,
-    email: user.email,
-    avatar: user.avatar || dicebearAvatar,
-    providers: user.providers || [],
-    hasPassword: !!user.password,
-    createdAt: user.createdAt
-  };
-};
 
 // The ONE place that decides how many problems a user has solved: only links that still exist in a sheet,
 // each counted once (a link repeated in two topics is one problem). Used by both stats endpoints so they agree.
@@ -73,7 +60,7 @@ const loadProgressData = (userId) => Promise.all([
 
 const getUserStats = async (req, res, next) => {
   try {
-    const userId = req.user._id || req.user.id;
+    const userId = req.user._id;
 
     const [sheets, userProgress, generatedProjectsCount] = await loadProgressData(userId);
     const { totalSolved } = summarizeProgress(sheets, userProgress);
@@ -93,7 +80,7 @@ const getUserStats = async (req, res, next) => {
 
 const getDashboardSummary = async (req, res, next) => {
   try {
-    const userId = req.user._id || req.user.id;
+    const userId = req.user._id;
 
     const [sheets, userProgress, generatedProjectsCount] = await loadProgressData(userId);
     const { totalSolved, totalQuestions, sheetsInProgress, sheetsCompleted, dsaSheets } =
@@ -124,7 +111,7 @@ const getDashboardSummary = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
   try {
-    const userId = req.user._id || req.user.id;
+    const userId = req.user._id;
     const { username, avatar } = req.body;
 
     const user = await userModel.findById(userId);
@@ -159,7 +146,7 @@ const updateProfile = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
   try {
-    const userId = req.user._id || req.user.id;
+    const userId = req.user._id;
     const { currentPassword, newPassword } = req.body;
 
     const user = await userModel.findById(userId);
@@ -215,7 +202,7 @@ const wipeUserData = async (userId, session) => {
 
 const deleteAccount = async (req, res, next) => {
   try {
-    const userId = req.user._id || req.user.id;
+    const userId = req.user._id;
     const { password, confirmationEmail } = req.body;
 
     const user = await userModel.findById(userId);

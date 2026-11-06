@@ -1,5 +1,3 @@
-const { ZodError } = require('zod');
-
 /**
  * Returns an Express middleware that validates req.body against the given Zod schema.
  * On success, req.body is replaced with the parsed (and coerced/trimmed) data.

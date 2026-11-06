@@ -1,0 +1,20 @@
+# Repo-wide safety net (client/ and server/ also have their own .gitignore)
+
+# Dependencies and build output
+node_modules/
+dist/
+
+# Secrets: real env files are never committed (the .example templates stay tracked)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

@@ -8,22 +8,9 @@ const googleClient = require('../utils/googleClient');
 const { generateUniqueUsername, findUserByUsername } = require('../utils/usernameHelper');
 const { parseDeviceInfo } = require('../utils/deviceParser');
 const { sendSuccess } = require('../utils/responseFormatter');
+const { formatUserResponse, defaultAvatar } = require('../utils/userResponse');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-const formatUserResponse = (user) => {
-  const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(user.username)}`;
-  
-  return {
-    id: user._id,
-    username: user.username,
-    email: user.email,
-    avatar: user.avatar || dicebearAvatar,
-    providers: user.providers || [],
-    hasPassword: !!user.password,
-    createdAt: user.createdAt
-  };
-};
 
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const MAX_SESSIONS = 10;
@@ -112,13 +99,11 @@ const registerUser = async (req, res, next) => {
 
     const hash = await bcrypt.hash(password, 12);
 
-    const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
-
     const user = await userModel.create({ 
       username, 
       email, 
       password: hash,
-      avatar: dicebearAvatar 
+      avatar: defaultAvatar(username) 
     });
 
     await startSession(user, req, res);
@@ -164,7 +149,7 @@ const loginUser = async (req, res, next) => {
 const logoutUser = async (req, res, next) => {
   try {
     // Remove only the current device's session (identified by the access token), leaving other devices active
-    await userModel.updateOne({ _id: req.user.id }, { $pull: { refreshTokens: { _id: req.user.sid } } });
+    await userModel.updateOne({ _id: req.user._id }, { $pull: { refreshTokens: { _id: req.user.sid } } });
 
     const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
     res.clearCookie('accessToken', CLEAR_OPTIONS);
@@ -181,7 +166,7 @@ const logoutUser = async (req, res, next) => {
 const logoutAllDevices = async (req, res, next) => {
   try {
     // Invalidate all active device sessions globally
-    await userModel.updateOne({ _id: req.user.id }, { $set: { refreshTokens: [] } });
+    await userModel.updateOne({ _id: req.user._id }, { $set: { refreshTokens: [] } });
 
     const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
     res.clearCookie('accessToken', CLEAR_OPTIONS);
@@ -197,7 +182,7 @@ const logoutAllDevices = async (req, res, next) => {
 
 const getCurrentUser = async (req, res, next) => {
   try {
-    const user = await userModel.findById(req.user.id);
+    const user = await userModel.findById(req.user._id);
     if (!user) {
       return next(new AppError(404, 'User not found'));
     }
@@ -324,11 +309,10 @@ const googleLogin = async (req, res, next) => {
 
         while (!created && attempts < 2) {
           try {
-            const dicebearAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
             user = await userModel.create({
               username,
               email,
-              avatar: validGooglePicture || dicebearAvatar,
+              avatar: validGooglePicture || defaultAvatar(username),
               providers: [{ providerName: 'google', providerId: googleId }]
             });
             created = true;
@@ -377,7 +361,7 @@ const linkGoogle = async (req, res, next) => {
     const isDefaultGooglePic = !picture || picture.includes('default-user');
     const validGooglePicture = isDefaultGooglePic ? null : picture;
 
-    const user = await userModel.findById(req.user.id);
+    const user = await userModel.findById(req.user._id);
     if (!user) {
       return next(new AppError(404, "User not found."));
     }
@@ -389,7 +373,7 @@ const linkGoogle = async (req, res, next) => {
     const existingLink = await userModel.findOne({ 
       'providers.providerName': 'google', 
       'providers.providerId': googleId, 
-      _id: { $ne: req.user.id } 
+      _id: { $ne: req.user._id } 
     });
 
     if (existingLink) {
@@ -430,7 +414,7 @@ const setPassword = async (req, res, next) => {
       return next(new AppError(400, "Password must be at least 8 characters long"));
     }
 
-    const user = await userModel.findById(req.user.id);
+    const user = await userModel.findById(req.user._id);
     if (!user) {
       return next(new AppError(404, "User not found"));
     }
@@ -454,7 +438,7 @@ const setPassword = async (req, res, next) => {
 
 const getActiveSessions = async (req, res, next) => {
   try {
-    const user = await userModel.findById(req.user.id);
+    const user = await userModel.findById(req.user._id);
     if (!user) {
       return next(new AppError(404, 'User not found'));
     }
@@ -498,7 +482,7 @@ const revokeSession = async (req, res, next) => {
     // mongoose timestamps make every updateOne "modify" updatedAt.
     const result = mongoose.isValidObjectId(sessionId)
       ? await userModel.updateOne(
-          { _id: req.user.id, 'refreshTokens._id': sessionId },
+          { _id: req.user._id, 'refreshTokens._id': sessionId },
           { $pull: { refreshTokens: { _id: sessionId } } }
         )
       : { matchedCount: 0 };

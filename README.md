@@ -78,6 +78,7 @@ PrepStack centralizes the workflow:
 
 ```text
 prepstack/
+├── docs/                   # Design notes, debugging labs and audit write-ups
 ├── client/                 # React 19 Frontend
 │   ├── public/             # Static public assets
 │   ├── src/
@@ -443,7 +444,14 @@ ACCESS_SECRET=your_ultra_secure_access_token_secret
 REFRESH_SECRET=your_ultra_secure_refresh_token_secret
 GOOGLE_API_KEY=AIzaSyYourGeminiApiKeyHere
 GOOGLE_CLIENT_ID=your_google_oauth_client_id
+
+# Optional (all explained in server/.env.example)
+NODE_ENV=development
+ALLOWED_ORIGINS=
+ENABLE_CUSTOM_DNS=
 ```
+
+`ALLOWED_ORIGINS` is a comma-separated list of extra front-end URLs allowed by CORS (exact match). Set `ENABLE_CUSTOM_DNS=true` only if your ISP cannot resolve `mongodb+srv://` addresses. On a production host set `NODE_ENV=production` and add your deployed front-end URL to `ALLOWED_ORIGINS`.
 
 Boot Express server:
 

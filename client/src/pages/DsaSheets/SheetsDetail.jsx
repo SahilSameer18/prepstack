@@ -1,183 +1,15 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSheetBySlug, getSheetProgress, toggleProblem } from '../../api/services/sheetService';
-import { FaCheckCircle, FaRegCircle, FaChevronDown, FaExternalLinkAlt } from 'react-icons/fa';
-import { FiArrowLeft, FiTarget, FiAward, FiFileText, FiTrash2, FiCheck, FiCpu, FiClock, FiX } from 'react-icons/fi';
+import { FaChevronDown } from 'react-icons/fa';
+import { FiArrowLeft } from 'react-icons/fi';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
 import { SkeletonSheetDetail } from '../../components/ui/Skeletons';
-
-// ── Cockpit Approach Drawer Constants ─────────────────────────────────────
-const TIME_COMPLEXITIES = ['O(1)', 'O(log N)', 'O(N)', 'O(N log N)', 'O(N²)', 'O(2ⁿ)'];
-const SPACE_COMPLEXITIES = ['O(1)', 'O(log N)', 'O(N)', 'O(N²)'];
-const COMMON_PATTERNS = [
-  'Two Pointers',
-  'Sliding Window',
-  'Binary Search',
-  'Monotonic Stack',
-  'Fast & Slow Pointers',
-  'DFS / Backtracking',
-  'BFS / Level Order',
-  'Dynamic Programming',
-  'Prefix Sums',
-  'Greedy',
-  'Union Find / Graph',
-  'Trie',
-  'Bit Manipulation',
-];
-
-// ── Unique sheet metadata ──────────────────────────────────────────────────
-const SHEET_META = {
-  'blind-75': {
-    description: 'A curated list of 75 essential LeetCode problems hand-picked to cover every core pattern. The go-to list for FAANG prep - if you can solve these, you can handle most coding rounds.',
-    badge: 'FAANG Favourite',
-    badgeColor: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-    accentColor: '#3b82f6',
-    sourceName: 'LeetCode Discuss',
-    sourceUrl: 'https://leetcode.com/discuss/general-discussion/460599/blind-75-leetcode-questions'
-  },
-  'neetcode-150': {
-    description: 'NeetCode\'s expertly curated 150 problems - a superset of Blind 75 with added depth. Covers every key algorithmic pattern with optimised solutions and video explanations.',
-    badge: 'Community Favourite',
-    badgeColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
-    accentColor: '#a855f7',
-    sourceName: 'NeetCode.io',
-    sourceUrl: 'https://neetcode.io/practice'
-  },
-  'striver-sde': {
-    description: 'Striver\'s legendary SDE sheet - 191 handpicked problems to take you from beginner to job-ready. Follows a structured topic-by-topic progression, perfect for systematic interview prep.',
-    badge: 'Most Popular',
-    badgeColor: 'text-[#ffa116] bg-[#ffa116]/10 border-[#ffa116]/20',
-    accentColor: '#ffa116',
-    sourceName: 'takeUforward',
-    sourceUrl: 'https://takeuforward.org/interviews/strivers-sde-sheet-top-coding-interview-problems/'
-  },
-  'striver-a2z': {
-    description: 'The ultimate A-to-Z DSA course by Striver covering 450+ problems from absolute basics to advanced. Best for those starting from scratch and building a rock-solid foundation.',
-    badge: 'Beginner Friendly',
-    badgeColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-    accentColor: '#10b981',
-    sourceName: 'takeUforward',
-    sourceUrl: 'https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/'
-  },
-  'love-babbar': {
-    description: 'Love Babbar\'s comprehensive 450-problem DSA sheet - a thorough grind ensuring complete coverage of every data structure and algorithm needed to crack top tech companies.',
-    badge: 'Complete Coverage',
-    badgeColor: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
-    accentColor: '#ec4899',
-    sourceName: 'CodeHelp / GFG',
-    sourceUrl: 'https://practice.geeksforgeeks.org/explore?page=1&sprint=a663236c31453b969852f9ea22507634'
-  },
-};
-
-const getSheetMeta = (slug) =>
-  SHEET_META[slug] || {
-    description: 'A comprehensive DSA problem sheet to master your interview preparation and crack top tech companies.',
-    badge: 'Popular',
-    badgeColor: 'text-gray-400 bg-white/5 border-white/10',
-    accentColor: '#ffa116',
-    sourceName: 'Official Source',
-    sourceUrl: '#'
-  };
-
-// ── Platform icon resolver ─────────────────────────────────────────────────
-const getPlatformIcon = (link) => {
-  if (!link) return null;
-  const l = link.toLowerCase();
-  if (l.includes('leetcode.com')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#ffa116]/10 text-[#ffa116] border border-[#ffa116]/20">
-        LC
-      </span>
-    );
-  }
-  if (l.includes('geeksforgeeks.org')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-        GFG
-      </span>
-    );
-  }
-  if (l.includes('codingninjas.com')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-        CN
-      </span>
-    );
-  }
-  if (l.includes('takeuforward.org') || l.includes('tuf')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-        TUF
-      </span>
-    );
-  }
-  if (l.includes('interviewbit.com')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-        IB
-      </span>
-    );
-  }
-  return <FaExternalLinkAlt className="text-zinc-400 text-xs" />;
-};
-
-const getDifficultyColor = (diff) => {
-  if (!diff) return 'text-zinc-400';
-  const d = diff.toLowerCase();
-  if (d === 'easy') return 'text-emerald-400';
-  if (d === 'medium') return 'text-yellow-400';
-  if (d === 'hard') return 'text-red-400';
-  return 'text-zinc-400';
-};
-
-const getDifficultyBg = (diff) => {
-  if (!diff) return 'bg-white/[0.04] border-white/[0.07]';
-  const d = diff.toLowerCase();
-  if (d === 'easy') return 'bg-emerald-500/[0.08] border-emerald-500/20';
-  if (d === 'medium') return 'bg-yellow-500/[0.08] border-yellow-500/20';
-  if (d === 'hard') return 'bg-red-500/[0.08] border-red-500/20';
-  return 'bg-white/[0.04] border-white/[0.07]';
-};
-
-// ── Circular Progress Ring ─────────────────────────────────────────────────
-const ProgressRing = ({ percentage, solved, total, accentColor }) => {
-  const radius = 52;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
-
-  return (
-    <div className="relative flex flex-col items-center justify-center">
-      <svg width="136" height="136" viewBox="0 0 136 136" className="-rotate-90">
-        {/* Background track */}
-        <circle
-          cx="68" cy="68" r={radius}
-          fill="none"
-          stroke="rgba(255,255,255,0.06)"
-          strokeWidth="8"
-          strokeLinecap="round"
-        />
-        {/* Progress arc */}
-        <circle
-          cx="68" cy="68" r={radius}
-          fill="none"
-          stroke={accentColor}
-          strokeWidth="8"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          style={{ transition: 'stroke-dashoffset 0.6s ease', filter: `drop-shadow(0 0 6px ${accentColor}80)` }}
-        />
-      </svg>
-      {/* Center label */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-3xl font-black text-white leading-none">{solved}</span>
-        <span className="text-[11px] text-gray-500 font-semibold mt-0.5">/ {total}</span>
-        <span className="text-[9px] text-gray-600 uppercase tracking-widest mt-1 font-bold">Solved</span>
-      </div>
-    </div>
-  );
-};
+import { getSheetMeta } from '../../data/sheetMeta';
+import { useProblemNotes } from '../../hooks/useProblemNotes';
+import SheetHeader from './components/SheetHeader';
+import ProblemRow from './components/ProblemRow';
 
 // ── Main Component ─────────────────────────────────────────────────────────
 const SheetsDetail = () => {
@@ -187,45 +19,11 @@ const SheetsDetail = () => {
   const [fetchError, setFetchError] = useState(null);
   const [solved, setSolved] = useState([]);
   const [openTopics, setOpenTopics] = useState(new Set());
-  const [notesMap, setNotesMap] = useState(() => {
-    try {
-      const raw = localStorage.getItem('prepstack_problem_notes_v1');
-      return raw ? JSON.parse(raw) : {};
-    } catch {
-      return {};
-    }
-  });
+  const { notesMap, updateNote, clearNote } = useProblemNotes();
   const [activeNoteLink, setActiveNoteLink] = useState(null);
 
   const toggleNoteDrawer = (link) => {
     setActiveNoteLink((prev) => (prev === link ? null : link));
-  };
-
-  const handleUpdateNote = (link, updates) => {
-    setNotesMap((prev) => {
-      const current = prev[link] || {};
-      const updated = { ...current, ...updates, updatedAt: Date.now() };
-      const nextMap = { ...prev, [link]: updated };
-      try {
-        localStorage.setItem('prepstack_problem_notes_v1', JSON.stringify(nextMap));
-      } catch (e) {
-        console.error('Failed saving note to localStorage', e);
-      }
-      return nextMap;
-    });
-  };
-
-  const handleClearNote = (link) => {
-    setNotesMap((prev) => {
-      const nextMap = { ...prev };
-      delete nextMap[link];
-      try {
-        localStorage.setItem('prepstack_problem_notes_v1', JSON.stringify(nextMap));
-      } catch (e) {
-        console.error('Failed saving note to localStorage', e);
-      }
-      return nextMap;
-    });
   };
 
   const meta = getSheetMeta(slug);
@@ -285,7 +83,7 @@ const SheetsDetail = () => {
     if (!sheet) return { totalProblems: 0, totalSolvedCount: 0, progressPercentage: 0 };
     const linkSet = new Set();
     (sheet.topics || []).forEach((t) => {
-      (t.problems || t.questions || []).forEach((p) => {
+      (t.problems || []).forEach((p) => {
         if (p.link) linkSet.add(p.link);
       });
     });
@@ -323,92 +121,19 @@ const SheetsDetail = () => {
         Back to Sheets
       </Link>
 
-      {/* ── Header Card ── */}
-      <div className="relative bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 md:p-8 mb-8 overflow-hidden shadow-2xl">
-        {/* Subtle glow blob */}
-        <div
-          className="absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-10 blur-3xl pointer-events-none"
-          style={{ background: meta.accentColor }}
-        />
-
-        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between relative z-10">
-          {/* Left: info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-3 flex-wrap">
-              <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${meta.badgeColor}`}>
-                {meta.badge}
-              </span>
-              <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 uppercase tracking-wider font-mono">
-                {totalProblems} Problems
-              </span>
-            </div>
-
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-3 leading-tight tracking-tight text-white">
-              {sheet.name}
-            </h1>
-
-            <p className="text-zinc-400 text-sm leading-relaxed max-w-2xl mb-5">
-              {meta.description}
-            </p>
-
-            {/* Stats row & Source */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-5 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <FiTarget className="text-sm" style={{ color: meta.accentColor }} />
-                  <span className="text-sm text-zinc-200 font-medium">{totalSolvedCount} solved</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FiAward className="text-sm text-zinc-400" />
-                  <span className="text-sm text-zinc-400">{totalProblems - totalSolvedCount} remaining</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-24 md:w-32 bg-white/[0.06] rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progressPercentage}%` }}
-                      transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                      style={{ background: meta.accentColor }}
-                    />
-                  </div>
-                  <span className="text-xs font-mono font-medium text-zinc-300">{progressPercentage}%</span>
-                </div>
-              </div>
-
-              {/* SOURCE LINK (Downside of status bar) */}
-              {meta.sourceUrl && meta.sourceUrl !== '#' && (
-                <a 
-                  href={meta.sourceUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.15] transition-all w-max shadow-sm"
-                >
-                  <span>Official Source: {meta.sourceName}</span>
-                  <FaExternalLinkAlt className="text-[10px] text-zinc-400" />
-                </a>
-              )}
-            </div>
-          </div>
-
-          {/* Right: circular progress */}
-          <div className="flex flex-col items-center gap-2 flex-shrink-0">
-            <ProgressRing
-              percentage={progressPercentage}
-              solved={totalSolvedCount}
-              total={totalProblems}
-              accentColor={meta.accentColor}
-            />
-            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">Progress</span>
-          </div>
-        </div>
-      </div>
+      <SheetHeader
+        meta={meta}
+        name={sheet.name}
+        totalProblems={totalProblems}
+        totalSolvedCount={totalSolvedCount}
+        progressPercentage={progressPercentage}
+      />
 
       {/* ── Topics Accordion ── */}
       <div className="space-y-3">
         {(sheet.topics || []).map((topic, index) => {
           const isOpen = openTopics.has(index);
-          const problems = topic.problems || topic.questions || [];
+          const problems = topic.problems || [];
           const topicSolvedCount = problems.filter(p => solved.includes(p.link)).length;
           const topicTotal = problems.length;
           const topicPct = topicTotal === 0 ? 0 : Math.round((topicSolvedCount / topicTotal) * 100);
@@ -456,300 +181,24 @@ const SheetsDetail = () => {
                     transition={{ type: "spring", damping: 30, stiffness: 350 }}
                     className="border-t border-white/[0.06] overflow-hidden"
                   >
-                  {problems.map((problem, pIdx) => {
-                    const isCompleted = solved.includes(problem.link);
-                    const noteData = notesMap[problem.link] || null;
-                    const hasNote = Boolean(
-                      noteData && (noteData.approach || noteData.pattern || noteData.timeComplexity || noteData.spaceComplexity)
-                    );
-                    const isDrawerOpen = activeNoteLink === problem.link;
-
-                    return (
-                      <div
+                    {problems.map((problem, pIdx) => (
+                      <ProblemRow
                         key={pIdx}
-                        className={`border-b border-white/[0.03] last:border-b-0 transition-colors ${
-                          isCompleted ? 'bg-emerald-500/[0.02]' : ''
-                        }`}
-                      >
-                        <div
-                          className={`group flex flex-col md:flex-row md:items-center justify-between px-5 py-3.5 transition-colors gap-3 ${
-                            isDrawerOpen ? 'bg-white/[0.03]' : 'hover:bg-white/[0.02]'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            {/* Toggle */}
-                            <button
-                              onClick={(e) => handleToggleProblem(e, problem.link)}
-                              className="flex-shrink-0 text-lg text-zinc-500 hover:text-zinc-300 hover:scale-110 transition-all cursor-pointer"
-                              style={isCompleted ? { color: '#10b981' } : {}}
-                              title={isCompleted ? 'Mark as unsolved' : 'Mark as solved'}
-                            >
-                              {isCompleted ? <FaCheckCircle /> : <FaRegCircle />}
-                            </button>
-
-                            {/* Title */}
-                            <span
-                              className={`text-sm font-medium truncate transition-colors ${
-                                isCompleted ? 'text-zinc-500 line-through' : 'text-zinc-200 group-hover:text-white'
-                              }`}
-                            >
-                              {pIdx + 1}. {problem.title}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center flex-wrap gap-2.5 pl-9 md:pl-0 flex-shrink-0">
-                            {/* Quick Note Badges if note exists */}
-                            {noteData?.pattern && (
-                              <span className="text-[10px] font-mono font-medium text-amber-300/90 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-md">
-                                {noteData.pattern}
-                              </span>
-                            )}
-                            {noteData?.timeComplexity && (
-                              <span className="text-[10px] font-mono font-medium text-blue-300/90 bg-blue-500/10 border border-blue-500/25 px-1.5 py-0.5 rounded-md">
-                                {noteData.timeComplexity}
-                              </span>
-                            )}
-
-                            {/* Tags */}
-                            {problem.tags && problem.tags.length > 0 && (
-                              <div className="flex items-center gap-1">
-                                {problem.tags.slice(0, 2).map((tag, tIdx) => (
-                                  <span
-                                    key={tIdx}
-                                    className="text-[10px] font-mono text-zinc-400 bg-white/[0.04] border border-white/[0.07] px-1.5 py-0.5 rounded-md"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                                {problem.tags.length > 2 && (
-                                  <span className="text-[10px] font-mono text-zinc-400">
-                                    +{problem.tags.length - 2}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-
-                            {/* Difficulty */}
-                            <span
-                              className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${getDifficultyColor(
-                                problem.difficulty
-                              )} ${getDifficultyBg(problem.difficulty)}`}
-                            >
-                              {problem.difficulty || 'Medium'}
-                            </span>
-
-                            {/* Approach & Invariant Notes Toggle Button */}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleNoteDrawer(problem.link);
-                              }}
-                              title={hasNote ? 'View or edit approach & invariant notes' : 'Add approach notes'}
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-medium border transition-all cursor-pointer ${
-                                hasNote
-                                  ? 'bg-amber-500/15 border-amber-500/35 text-amber-300 hover:bg-amber-500/25'
-                                  : isDrawerOpen
-                                  ? 'bg-white/[0.08] border-white/20 text-white'
-                                  : 'bg-white/[0.04] border-white/[0.08] text-zinc-400 hover:text-zinc-200 hover:border-white/15'
-                              }`}
-                            >
-                              <FiFileText className={`text-xs ${hasNote ? 'text-amber-400' : 'text-zinc-400'}`} />
-                              <span className="hidden sm:inline">{hasNote ? 'Notes' : '+ Note'}</span>
-                              <motion.span
-                                animate={{ rotate: isDrawerOpen ? 180 : 0 }}
-                                transition={{ type: "spring", damping: 20, stiffness: 320 }}
-                                className="text-[9px]"
-                              >
-                                <FaChevronDown />
-                              </motion.span>
-                            </button>
-
-                            {/* Platform Link */}
-                            <a
-                              href={problem.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title="View Problem on External Platform"
-                              className="flex items-center justify-center p-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] hover:border-white/20 transition-all cursor-pointer"
-                            >
-                              {getPlatformIcon(problem.link)}
-                            </a>
-                          </div>
-                        </div>
-
-                        {/* ── Expandable Cockpit Approach & Invariants Drawer ── */}
-                        <AnimatePresence initial={false}>
-                          {isDrawerOpen && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ type: "spring", damping: 28, stiffness: 340 }}
-                              className="overflow-hidden"
-                            >
-                              <div className="bg-[#0b0b0f] border-t border-white/[0.06] px-5 py-4 space-y-3.5">
-                            <div className="flex items-center justify-between flex-wrap gap-2">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-amber-400/90 flex items-center gap-1.5">
-                                  <FiFileText className="text-amber-400" />
-                                  Approach & Invariants Vault
-                                </span>
-                                <span
-                                  className="text-[10px] font-mono text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]"
-                                  title="Notes are saved only in this browser on this device. They won't appear on other devices and are lost if you clear your browser data."
-                                >
-                                  This device only
-                                </span>
-                              </div>
-
-                              <div className="flex items-center gap-3">
-                                {hasNote && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleClearNote(problem.link)}
-                                    className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
-                                    title="Clear note for this problem"
-                                  >
-                                    <FiTrash2 className="text-xs" />
-                                    Clear
-                                  </button>
-                                )}
-                                <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400/80">
-                                  <FiCheck className="text-xs text-emerald-400" />
-                                  Auto-saved
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => setActiveNoteLink(null)}
-                                  className="text-zinc-400 hover:text-white p-1 rounded hover:bg-white/[0.05] transition-colors cursor-pointer"
-                                  title="Close drawer"
-                                >
-                                  <FiX className="text-sm" />
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Pattern Chips */}
-                            <div className="space-y-1.5">
-                              <label className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-                                Algorithmic Pattern
-                              </label>
-                              <div className="flex flex-wrap gap-1.5">
-                                {COMMON_PATTERNS.map((p) => {
-                                  const isSelected = noteData?.pattern === p;
-                                  return (
-                                    <button
-                                      key={p}
-                                      type="button"
-                                      onClick={() =>
-                                        handleUpdateNote(problem.link, {
-                                          pattern: isSelected ? '' : p,
-                                        })
-                                      }
-                                      className={`text-[11px] font-mono px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
-                                        isSelected
-                                          ? 'bg-amber-500/20 border-amber-500/50 text-amber-300 font-semibold'
-                                          : 'bg-white/[0.03] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/15'
-                                      }`}
-                                    >
-                                      {p}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
-
-                            {/* Complexity Row */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
-                              {/* Time Complexity */}
-                              <div className="space-y-1.5">
-                                <label className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                                  <FiClock className="text-[10px] text-zinc-400" />
-                                  Time Complexity
-                                </label>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {TIME_COMPLEXITIES.map((tc) => {
-                                    const isSelected = noteData?.timeComplexity === tc;
-                                    return (
-                                      <button
-                                        key={tc}
-                                        type="button"
-                                        onClick={() =>
-                                          handleUpdateNote(problem.link, {
-                                            timeComplexity: isSelected ? '' : tc,
-                                          })
-                                        }
-                                        className={`text-[11px] font-mono px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
-                                          isSelected
-                                            ? 'bg-blue-500/20 border-blue-500/50 text-blue-300 font-semibold'
-                                            : 'bg-white/[0.03] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/15'
-                                        }`}
-                                      >
-                                        {tc}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-
-                              {/* Space Complexity */}
-                              <div className="space-y-1.5">
-                                <label className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                                  <FiCpu className="text-[10px] text-zinc-400" />
-                                  Space Complexity
-                                </label>
-                                <div className="flex flex-wrap gap-1.5">
-                                  {SPACE_COMPLEXITIES.map((sc) => {
-                                    const isSelected = noteData?.spaceComplexity === sc;
-                                    return (
-                                      <button
-                                        key={sc}
-                                        type="button"
-                                        onClick={() =>
-                                          handleUpdateNote(problem.link, {
-                                            spaceComplexity: isSelected ? '' : sc,
-                                          })
-                                        }
-                                        className={`text-[11px] font-mono px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
-                                          isSelected
-                                            ? 'bg-purple-500/20 border-purple-500/50 text-purple-300 font-semibold'
-                                            : 'bg-white/[0.03] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/15'
-                                        }`}
-                                      >
-                                        {sc}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Approach & Invariant Textarea */}
-                            <div className="space-y-1.5 pt-0.5">
-                              <label className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-                                Core Approach, Loop Invariants & Edge Cases
-                              </label>
-                              <textarea
-                                rows={3}
-                                value={noteData?.approach || ''}
-                                onChange={(e) =>
-                                  handleUpdateNote(problem.link, { approach: e.target.value })
-                                }
-                                placeholder="e.g. Invariant: Maintain a monotonically decreasing stack of indices. When current element exceeds stack top, pop and compute trapped water width/height. Edge cases: empty array, strictly decreasing values."
-                                className="w-full bg-[#131317] border border-white/[0.08] focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 rounded-lg p-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-all resize-y font-mono leading-relaxed"
-                              />
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
+                        problem={problem}
+                        index={pIdx}
+                        isCompleted={solved.includes(problem.link)}
+                        noteData={notesMap[problem.link] || null}
+                        isDrawerOpen={activeNoteLink === problem.link}
+                        onToggleSolved={handleToggleProblem}
+                        onToggleDrawer={toggleNoteDrawer}
+                        onUpdateNote={updateNote}
+                        onClearNote={clearNote}
+                        onCloseDrawer={() => setActiveNoteLink(null)}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}

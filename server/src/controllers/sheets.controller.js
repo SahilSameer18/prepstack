@@ -6,7 +6,7 @@ const { sendSuccess } = require('../utils/responseFormatter');
 // controller to get all the sheets with dynamic problem counts
 exports.getSheets = async (req, res, next) => {
   try {
-    const sheets = await DSASheet.find({}, 'name slug description topics.problems.link topics.problems.difficulty topics.problems.tags topics.questions.link');
+    const sheets = await DSASheet.find({}, 'name slug description topics.problems.link topics.problems.difficulty topics.problems.tags');
     
     const formattedSheets = sheets.map(sheet => {
       const linkSet = new Set();
@@ -14,7 +14,7 @@ exports.getSheets = async (req, res, next) => {
       let hasEasy = false, hasMedium = false, hasHard = false;
 
       (sheet.topics || []).forEach(t => {
-        (t.problems || t.questions || []).forEach(p => {
+        (t.problems || []).forEach(p => {
           if (p.link) linkSet.add(p.link);
           if (p.difficulty) {
             const d = p.difficulty.toLowerCase();

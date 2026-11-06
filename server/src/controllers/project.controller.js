@@ -8,7 +8,7 @@ const { sendSuccess, sanitizeDoc } = require('../utils/responseFormatter');
 const generateProject = async (req, res, next) => {
   try {
     const { techStack, complexity, domain, notes } = req.body;
-    const userId = req.user._id || req.user.id;
+    const userId = req.user._id;
 
     const projectIdea = await generateProjectIdea({ techStack, complexity, domain, notes });
 
@@ -35,7 +35,7 @@ const generateProject = async (req, res, next) => {
 // controller to get all the project idea of the logged in user
 const getAllProjects = async (req, res, next) => {
   try {
-    const userId = req.user._id || req.user.id;
+    const userId = req.user._id;
 
     const projects = await projectModel
       .find({ user: userId })
@@ -53,7 +53,7 @@ const getAllProjects = async (req, res, next) => {
 const getProjectById = async (req, res, next) => {
   try {
     const { projectId } = req.params;
-    const userId = req.user._id || req.user.id;
+    const userId = req.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
       return next(new AppError(400, "Invalid project ID format"));
@@ -75,7 +75,7 @@ const getProjectById = async (req, res, next) => {
 const deleteProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
-    const userId = req.user._id || req.user.id;
+    const userId = req.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
       return next(new AppError(400, "Invalid project ID format"));
