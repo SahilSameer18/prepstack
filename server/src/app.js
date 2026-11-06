@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const helmet = require('helmet')
+const mongoose = require('mongoose')
 const errorMiddleware = require('./middlewares/error.middleware')
 const AppError = require('./utils/AppError')
 
@@ -13,6 +14,18 @@ app.set('trust proxy', 1)
 
 // use the middleware
 app.use(helmet()) // standard security headers, removes X-Powered-By
+
+// One access-log line per request. Path only: never the query string or body, which can hold tokens.
+if (process.env.NODE_ENV !== 'test') {
+  app.use((req, res, next) => {
+    if (req.path === '/health') return next(); // health checks run every few seconds, keep them out of the log
+    const start = Date.now();
+    // originalUrl, not req.path: routers rewrite req.path to be relative to their mount point
+    const path = req.originalUrl.split('?')[0];
+    res.on('finish', () => console.log(`${req.method} ${path} ${res.statusCode} ${Date.now() - start}ms`));
+    next();
+  });
+}
 app.use(express.json())
 app.use(cookieParser())
 // CORS: exact-match allowlist only. Add preview/extra origins via ALLOWED_ORIGINS (comma separated).
@@ -36,11 +49,11 @@ app.use(cors({
   credentials: true,
 }))
 
-// test route
-// app.get('/', (req, res) => {
-//   console.log('first')
-//   res.send('Hii from the prepstack')
-// })
+// Health check for hosts and uptime monitors: 200 only when the database connection is up
+app.get('/health', (req, res) => {
+  const dbUp = mongoose.connection.readyState === 1;
+  res.status(dbUp ? 200 : 503).json({ status: dbUp ? 'ok' : 'unavailable', db: dbUp ? 'up' : 'down' });
+});
 
 // require all the routes here
 const authRouter = require('./routes/auth.routes')

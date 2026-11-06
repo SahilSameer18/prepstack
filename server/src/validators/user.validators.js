@@ -1,5 +1,13 @@
 const { z } = require('zod');
 
+const isHttpsUrl = (value) => {
+  try {
+    return new URL(value).protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 const updateProfileSchema = z.object({
   username: z
     .string({ error: 'Username is required' })
@@ -12,6 +20,8 @@ const updateProfileSchema = z.object({
     .string()
     .trim()
     .max(500, 'Avatar URL cannot exceed 500 characters')
+    // only real https links (blank means "use the default avatar"): no javascript:/data:/http: values
+    .refine((value) => value === '' || isHttpsUrl(value), 'Avatar must be a valid https:// URL')
     .optional(),
 });
 

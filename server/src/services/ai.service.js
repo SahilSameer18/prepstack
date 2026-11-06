@@ -6,8 +6,7 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_API_KEY
 });
 
-// Same values the client renders (AIProjectIdeas.jsx) and the form offers
-const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'];
+const { DIFFICULTIES } = require('../models/project.model');
 
 const projectSchema = z.object({
   title: z.string().min(1),

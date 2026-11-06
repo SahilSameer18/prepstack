@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 
+// The only difficulty values the app uses (the form offers them, the AI output is checked against them,
+// and the client renders exactly these)
+const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];
+
 const projectSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
@@ -7,7 +11,7 @@ const projectSchema = new mongoose.Schema(
     description: { type: String, required: true },
     features: { type: [String], default: [] },
     techStack: { type: String, required: true },
-    difficulty: { type: String, required: true },
+    difficulty: { type: String, enum: DIFFICULTIES, required: true },
     estimatedTime: String,
     resumeValue: String,
     domain: { type: String, default: "" },
@@ -24,5 +28,6 @@ const projectSchema = new mongoose.Schema(
 projectSchema.index({ user: 1, createdAt: -1 });
 
 const projectModel = mongoose.model("Project", projectSchema);
+projectModel.DIFFICULTIES = DIFFICULTIES;
 
 module.exports = projectModel;
