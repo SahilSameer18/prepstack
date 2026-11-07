@@ -148,6 +148,43 @@ function call(method, urlPath, { cookies, body, ip, headers = {}, bearer } = {})
   for (const [k, v] of Object.entries(headers)) r = r.set(k, v);
   return body === undefined ? r : r.send(body);
 }
+// A multipart form (a file upload): fields are plain text values, `file` is { buffer, filename, contentType }
+function postForm(urlPath, { cookies, fields = {}, file, ip, headers = {} } = {}) {
+  let r = request(app).post(urlPath).set('X-Forwarded-For', ip || nextIp());
+  if (cookies) r = r.set('Cookie', cookieHeader(cookies));
+  for (const [k, v] of Object.entries(headers)) r = r.set(k, v);
+  for (const [k, v] of Object.entries(fields)) r = r.field(k, String(v));
+  if (file) r = r.attach(file.field || 'resume', file.buffer, { filename: file.filename || 'resume.pdf', contentType: file.contentType || 'application/pdf' });
+  return r;
+}
+
+// A small but REAL PDF made in memory, so the real PDF reader is exercised. `pages` is an array of pages, each an array of
+// text lines. A page with no lines is drawn as a filled box only, which is what a scanned (image-only) page looks like.
+function makePdf(pages) {
+  const esc = (s) => s.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+  const objects = [];
+  const add = (body) => { objects.push(body); return objects.length; };
+  const catalog = add('<< /Type /Catalog /Pages 2 0 R >>');
+  const pagesId = add('PAGES_PLACEHOLDER');
+  const font = add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+  const kids = [];
+  for (const lines of pages) {
+    const body = lines.length
+      ? `BT /F1 11 Tf 40 780 Td 14 TL ${lines.map((l) => `(${esc(l)}) Tj T*`).join(' ')} ET`
+      : '0.8 g 40 40 500 700 re f';
+    const content = add(`<< /Length ${Buffer.byteLength(body)} >>\nstream\n${body}\nendstream`);
+    kids.push(add(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 595 842] /Contents ${content} 0 R /Resources << /Font << /F1 ${font} 0 R >> >> >>`));
+  }
+  objects[pagesId - 1] = `<< /Type /Pages /Kids [${kids.map((k) => `${k} 0 R`).join(' ')}] /Count ${kids.length} >>`;
+  let out = '%PDF-1.4\n';
+  const offsets = [];
+  objects.forEach((body, i) => { offsets.push(Buffer.byteLength(out)); out += `${i + 1} 0 obj\n${body}\nendobj\n`; });
+  const xref = Buffer.byteLength(out);
+  out += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n${offsets.map((o) => `${String(o).padStart(10, '0')} 00000 n \n`).join('')}`;
+  out += `trailer\n<< /Size ${objects.length + 1} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+  return Buffer.from(out, 'latin1');
+}
+
 const api = { get: (p, o) => call('get', p, o), post: (p, o) => call('post', p, o), put: (p, o) => call('put', p, o), del: (p, o) => call('delete', p, o), options: (p, o) => call('options', p, o) };
 
 // ── account helpers ──
@@ -196,5 +233,5 @@ const countAt = async (Model, filter) => Model.countDocuments(filter);
 
 module.exports = {
   SERVER_ROOT, env, start, stop, resetData, getModels, mongoose, gemini, groq, MODELS, apiError, goodIdea, google,
-  api, register, login, parseCookies, cookieHeader, UA, PASSWORD, L, seedSheets, sleep, countAt, nextIp,
+  api, postForm, makePdf, register, login, parseCookies, cookieHeader, UA, PASSWORD, L, seedSheets, sleep, countAt, nextIp,
 };

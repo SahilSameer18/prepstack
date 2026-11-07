@@ -1,0 +1,832 @@
+[
+  {
+    "name": "JavaScript",
+    "aliases": [
+      "javascript",
+      "ecmascript",
+      "js"
+    ]
+  },
+  {
+    "name": "TypeScript",
+    "aliases": [
+      "typescript",
+      "ts",
+      "ts language",
+      "typescript language"
+    ]
+  },
+  {
+    "name": "Python",
+    "aliases": [
+      "python",
+      "py",
+      "python3",
+      "python programming"
+    ]
+  },
+  {
+    "name": "Java",
+    "aliases": [
+      "java",
+      "java programming",
+      "java language",
+      "jdk",
+      "jvm",
+      "jvm internals",
+      "garbage collection",
+      "concurrency in java",
+      "multithreading in java",
+      "multithreading and concurrency in java"
+    ]
+  },
+  {
+    "name": "C++",
+    "aliases": [
+      "c++",
+      "cpp"
+    ]
+  },
+  {
+    "name": "Go",
+    "aliases": [
+      "golang",
+      "go programming",
+      "go language",
+      "golang dev"
+    ]
+  },
+  {
+    "name": "PHP",
+    "aliases": [
+      "php",
+      "php8",
+      "php programming",
+      "modern php",
+      "php / laravel"
+    ]
+  },
+  {
+    "name": "React",
+    "aliases": [
+      "react.js",
+      "reactjs",
+      "react"
+    ]
+  },
+  {
+    "name": "Vue.js",
+    "aliases": [
+      "vue.js",
+      "vuejs",
+      "vue"
+    ]
+  },
+  {
+    "name": "Angular",
+    "aliases": [
+      "angular",
+      "angularjs",
+      "angular.js",
+      "angular 2+",
+      "angular framework"
+    ]
+  },
+  {
+    "name": "Tailwind CSS",
+    "aliases": [
+      "tailwindcss",
+      "tailwind",
+      "tailwind css"
+    ]
+  },
+  {
+    "name": "Redux",
+    "aliases": [
+      "redux",
+      "redux toolkit",
+      "rtk",
+      "redux state management"
+    ]
+  },
+  {
+    "name": "Zustand",
+    "aliases": [
+      "zustand"
+    ]
+  },
+  {
+    "name": "React Query",
+    "aliases": [
+      "react query",
+      "tanstack query",
+      "tanstack react query",
+      "@tanstack/react-query",
+      "react-query"
+    ]
+  },
+  {
+    "name": "Material UI",
+    "aliases": [
+      "material ui",
+      "mui",
+      "@mui"
+    ]
+  },
+  {
+    "name": "Bootstrap",
+    "aliases": [
+      "bootstrap",
+      "bootstrap 5"
+    ]
+  },
+  {
+    "name": "Next.js",
+    "aliases": [
+      "next",
+      "nextjs",
+      "next.js",
+      "nextjs framework",
+      "next.js framework"
+    ]
+  },
+  {
+    "name": "Node.js",
+    "aliases": [
+      "node.js",
+      "nodejs",
+      "node",
+      "node runtime",
+      "node.js runtime"
+    ]
+  },
+  {
+    "name": "Express.js",
+    "aliases": [
+      "express.js",
+      "expressjs",
+      "express",
+      "express framework",
+      "express.js framework"
+    ]
+  },
+  {
+    "name": "Django",
+    "aliases": [
+      "django"
+    ]
+  },
+  {
+    "name": "Spring Boot",
+    "aliases": [
+      "spring boot",
+      "springboot",
+      "spring",
+      "spring boot framework",
+      "spring framework",
+      "spring boot/hibernate",
+      "spring boot / hibernate",
+      "java ecosystem"
+    ]
+  },
+  {
+    "name": "Hibernate / JPA",
+    "aliases": [
+      "hibernate",
+      "jpa",
+      "java persistence api",
+      "spring data jpa",
+      "orm hibernate"
+    ]
+  },
+  {
+    "name": "Build Tools (Maven/Gradle)",
+    "aliases": [
+      "maven",
+      "gradle",
+      "java-based build tools",
+      "java build tools",
+      "build tools (maven/gradle)"
+    ]
+  },
+  {
+    "name": "REST APIs",
+    "aliases": [
+      "restful",
+      "rest api",
+      "rest apis",
+      "restful apis",
+      "rest"
+    ]
+  },
+  {
+    "name": "GraphQL",
+    "aliases": [
+      "graphql",
+      "gql",
+      "graphql api"
+    ]
+  },
+  {
+    "name": "Socket.io",
+    "aliases": [
+      "socket.io",
+      "socketio",
+      "websockets",
+      "websocket",
+      "web socket",
+      "web sockets",
+      "real-time communication",
+      "real time communication"
+    ]
+  },
+  {
+    "name": "NestJS",
+    "aliases": [
+      "nestjs",
+      "nest",
+      "nest.js"
+    ]
+  },
+  {
+    "name": "FastAPI",
+    "aliases": [
+      "fastapi"
+    ]
+  },
+  {
+    "name": "Flask",
+    "aliases": [
+      "flask"
+    ]
+  },
+  {
+    "name": "ASP.NET Core",
+    "aliases": [
+      "asp.net core",
+      "asp.net",
+      "dotnet",
+      ".net",
+      ".net core"
+    ]
+  },
+  {
+    "name": "Laravel",
+    "aliases": [
+      "laravel"
+    ]
+  },
+  {
+    "name": "Ruby on Rails",
+    "aliases": [
+      "ruby on rails",
+      "rails",
+      "ror"
+    ]
+  },
+  {
+    "name": "SQL",
+    "aliases": [
+      "sql"
+    ]
+  },
+  {
+    "name": "PostgreSQL",
+    "aliases": [
+      "postgresql",
+      "postgres",
+      "postgres database"
+    ]
+  },
+  {
+    "name": "MongoDB",
+    "aliases": [
+      "mongodb",
+      "mongo",
+      "mongodb database"
+    ]
+  },
+  {
+    "name": "Redis",
+    "aliases": [
+      "redis",
+      "redis cache",
+      "redis caching",
+      "redis caching implementation",
+      "redis (caching & pub/sub)",
+      "caching strategies",
+      "caching strategies (redis/memcached)"
+    ]
+  },
+  {
+    "name": "Oracle Database",
+    "aliases": [
+      "oracle",
+      "oracle db",
+      "oracle database"
+    ]
+  },
+  {
+    "name": "Firebase",
+    "aliases": [
+      "firebase",
+      "cloud firestore",
+      "firestore"
+    ]
+  },
+  {
+    "name": "Prisma",
+    "aliases": [
+      "prisma",
+      "prisma orm",
+      "prisma client"
+    ]
+  },
+  {
+    "name": "MySQL",
+    "aliases": [
+      "mysql",
+      "mysql database"
+    ]
+  },
+  {
+    "name": "SQLite",
+    "aliases": [
+      "sqlite",
+      "sqlite database"
+    ]
+  },
+  {
+    "name": "Docker",
+    "aliases": [
+      "docker",
+      "docker containers",
+      "containerization",
+      "docker containerization",
+      "docker & containerization",
+      "containerization (docker)",
+      "containerization (docker/kubernetes)"
+    ]
+  },
+  {
+    "name": "Kubernetes",
+    "aliases": [
+      "kubernetes",
+      "k8s",
+      "k8s cluster",
+      "kubernetes orchestration"
+    ]
+  },
+  {
+    "name": "AWS",
+    "aliases": [
+      "amazon web services",
+      "aws",
+      "aws services",
+      "amazon cloud"
+    ]
+  },
+  {
+    "name": "Azure",
+    "aliases": [
+      "azure"
+    ]
+  },
+  {
+    "name": "GCP",
+    "aliases": [
+      "google cloud",
+      "gcp"
+    ]
+  },
+  {
+    "name": "CI/CD",
+    "aliases": [
+      "continuous integration",
+      "continuous deployment",
+      "ci/cd",
+      "ci cd",
+      "cicd",
+      "deployment pipeline",
+      "deployment pipelines",
+      "devops",
+      "cloud infrastructure & devops",
+      "ci/cd pipeline",
+      "ci/cd pipeline implementation",
+      "ci/cd pipeline configuration"
+    ]
+  },
+  {
+    "name": "Terraform",
+    "aliases": [
+      "terraform",
+      "infrastructure as code",
+      "iac",
+      "hashicorp terraform",
+      "infrastructure as code (terraform)"
+    ]
+  },
+  {
+    "name": "Git",
+    "aliases": [
+      "version control",
+      "git",
+      "github",
+      "gitlab"
+    ]
+  },
+  {
+    "name": "Linux/Bash",
+    "aliases": [
+      "shell scripting",
+      "bash",
+      "linux",
+      "linux system administration",
+      "bash scripting",
+      "linux administration"
+    ]
+  },
+  {
+    "name": "GitHub Actions",
+    "aliases": [
+      "github actions",
+      "github workflows",
+      "github action"
+    ]
+  },
+  {
+    "name": "Apache Kafka",
+    "aliases": [
+      "kafka",
+      "apache kafka"
+    ]
+  },
+  {
+    "name": "RabbitMQ",
+    "aliases": [
+      "rabbitmq"
+    ]
+  },
+  {
+    "name": "Unit Testing",
+    "aliases": [
+      "unit testing",
+      "unit-testing",
+      "automated testing",
+      "integration testing",
+      "unit/integration",
+      "testing",
+      "software testing",
+      "automated testing (unit/integration)",
+      "automated testing (unit/e2e)",
+      "unit and integration testing",
+      "professional software testing"
+    ]
+  },
+  {
+    "name": "Jest",
+    "aliases": [
+      "jest",
+      "jest testing",
+      "jest/cypress",
+      "jest/mocha",
+      "jest/react testing library"
+    ]
+  },
+  {
+    "name": "Cypress",
+    "aliases": [
+      "cypress"
+    ]
+  },
+  {
+    "name": "Playwright",
+    "aliases": [
+      "playwright"
+    ]
+  },
+  {
+    "name": "Mocha",
+    "aliases": [
+      "mocha"
+    ]
+  },
+  {
+    "name": "Test-Driven Development",
+    "aliases": [
+      "test driven development",
+      "test-driven development",
+      "tdd"
+    ]
+  },
+  {
+    "name": "Selenium",
+    "aliases": [
+      "selenium",
+      "selenium webdriver"
+    ]
+  },
+  {
+    "name": "Postman",
+    "aliases": [
+      "postman",
+      "postman api testing"
+    ]
+  },
+  {
+    "name": "API Testing",
+    "aliases": [
+      "api testing",
+      "rest api testing",
+      "api automation testing"
+    ]
+  },
+  {
+    "name": "Swagger / OpenAPI",
+    "aliases": [
+      "swagger",
+      "swagger ui",
+      "openapi",
+      "openapi specification"
+    ]
+  },
+  {
+    "name": "Data Structures",
+    "aliases": [
+      "data structures",
+      "data structure",
+      "dsa",
+      "competitive programming",
+      "advanced competitive programming",
+      "data structures and algorithms"
+    ]
+  },
+  {
+    "name": "Algorithms",
+    "aliases": [
+      "algorithm",
+      "algorithms",
+      "algorithmic problem solving",
+      "algorithm design"
+    ]
+  },
+  {
+    "name": "System Design",
+    "aliases": [
+      "system design",
+      "systems design",
+      "architecting systems",
+      "system design & scalability",
+      "scalability"
+    ]
+  },
+  {
+    "name": "Object-Oriented Programming",
+    "aliases": [
+      "object oriented programming",
+      "object-oriented",
+      "oop"
+    ]
+  },
+  {
+    "name": "Design Patterns",
+    "aliases": [
+      "design patterns",
+      "design pattern"
+    ]
+  },
+  {
+    "name": "Big O / Time Complexity",
+    "aliases": [
+      "space complexity",
+      "time complexity",
+      "big o"
+    ]
+  },
+  {
+    "name": "Microservices",
+    "aliases": [
+      "microservice",
+      "microservices"
+    ]
+  },
+  {
+    "name": "Load Balancing",
+    "aliases": [
+      "load balancer",
+      "load balancing",
+      "load-balancer",
+      "load-balancing"
+    ]
+  },
+  {
+    "name": "Message Queues",
+    "aliases": [
+      "message queues",
+      "message queue",
+      "queue systems"
+    ]
+  },
+  {
+    "name": "Authentication & Authorization",
+    "aliases": [
+      "authorization",
+      "authentication",
+      "auth",
+      "authn",
+      "authz"
+    ]
+  },
+  {
+    "name": "JWT",
+    "aliases": [
+      "json web token",
+      "jwt",
+      "jwts",
+      "json web tokens"
+    ]
+  },
+  {
+    "name": "OAuth 2.0",
+    "aliases": [
+      "oauth2",
+      "oauth 2.0",
+      "oauth"
+    ]
+  },
+  {
+    "name": "Web Security (OWASP)",
+    "aliases": [
+      "sql injection",
+      "csrf",
+      "xss",
+      "owasp",
+      "web security",
+      "cybersecurity",
+      "application security"
+    ]
+  },
+  {
+    "name": "React Native",
+    "aliases": [
+      "react native",
+      "reactnative"
+    ]
+  },
+  {
+    "name": "Flutter",
+    "aliases": [
+      "flutter"
+    ]
+  },
+  {
+    "name": "Android Development",
+    "aliases": [
+      "android",
+      "android development"
+    ]
+  },
+  {
+    "name": "iOS Development",
+    "aliases": [
+      "ios",
+      "ios development",
+      "iphone development"
+    ]
+  },
+  {
+    "name": "Swift",
+    "aliases": [
+      "swift",
+      "swift language"
+    ]
+  },
+  {
+    "name": "SwiftUI",
+    "aliases": [
+      "swiftui",
+      "swift ui"
+    ]
+  },
+  {
+    "name": "Kotlin",
+    "aliases": [
+      "kotlin"
+    ]
+  },
+  {
+    "name": "Android SDK",
+    "aliases": [
+      "android sdk",
+      "sdk android"
+    ]
+  },
+  {
+    "name": "Firebase Mobile",
+    "aliases": [
+      "firebase mobile",
+      "firebase android",
+      "firebase ios"
+    ]
+  },
+  {
+    "name": "UI/UX Design",
+    "aliases": [
+      "ui/ux",
+      "ux research",
+      "user testing",
+      "visual hierarchy",
+      "typography",
+      "user experience",
+      "user interface",
+      "design theory",
+      "advanced ux research",
+      "visual hierarchy and typography",
+      "typography theory",
+      "visual hierarchy and typography theory"
+    ]
+  },
+  {
+    "name": "Figma",
+    "aliases": [
+      "figma",
+      "figma mastery",
+      "figma prototyping",
+      "figma design",
+      "professional figma",
+      "prototyping & design",
+      "professional figma mastery"
+    ]
+  },
+  {
+    "name": "Operating Systems",
+    "aliases": [
+      "operating systems",
+      "os concepts",
+      "operating system fundamentals",
+      "concurrency and threading",
+      "process scheduling"
+    ]
+  },
+  {
+    "name": "Computer Networks",
+    "aliases": [
+      "computer networks",
+      "networking",
+      "tcp/ip",
+      "osi model",
+      "http/https",
+      "dns networking"
+    ]
+  },
+  {
+    "name": "Database Indexing & Optimization",
+    "aliases": [
+      "database indexing",
+      "db indexing",
+      "b-tree indexing",
+      "indexing strategies",
+      "query optimization",
+      "explain analyze"
+    ]
+  },
+  {
+    "name": "Apache Cassandra & NoSQL",
+    "aliases": [
+      "cassandra",
+      "apache cassandra",
+      "nosql databases",
+      "wide-column store",
+      "nosql modeling"
+    ]
+  },
+  {
+    "name": "Machine Learning Fundamentals",
+    "aliases": [
+      "machine learning",
+      "ml fundamentals",
+      "scikit-learn",
+      "deep learning",
+      "ai and ml"
+    ]
+  },
+  {
+    "name": "gRPC & Protocol Buffers",
+    "aliases": [
+      "grpc",
+      "protocol buffers",
+      "protobuf",
+      "grpc microservices"
+    ]
+  },
+  {
+    "name": "Agile & Scrum",
+    "aliases": [
+      "agile",
+      "scrum",
+      "agile development",
+      "kanban",
+      "sprint planning"
+    ]
+  }
+]

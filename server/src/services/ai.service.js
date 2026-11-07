@@ -118,11 +118,11 @@ const buildProviders = () => {
     for (const model of models) {
       providers.push({
         name: `gemini:${model}`,
-        run: async (prompt, signal, jsonSchema = responseJsonSchema) => {
+        run: async (prompt, signal, jsonSchema = responseJsonSchema, maxOutputTokens) => {
           const res = await gemini.models.generateContent({
             model,
             contents: prompt,
-            config: { responseMimeType: 'application/json', responseJsonSchema: jsonSchema, abortSignal: signal },
+            config: { responseMimeType: 'application/json', responseJsonSchema: jsonSchema, abortSignal: signal, ...(maxOutputTokens ? { maxOutputTokens } : {}) },
           });
           return res.text;
         },
@@ -134,13 +134,13 @@ const buildProviders = () => {
     const model = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
     providers.push({
       name: `groq:${model}`,
-      run: async (prompt, signal, jsonSchema = responseJsonSchema) => {
+      run: async (prompt, signal, jsonSchema = responseJsonSchema, maxOutputTokens) => {
         const res = await groq.chat.completions.create({
           model,
           messages: [{ role: 'user', content: prompt }],
           response_format: { type: 'json_schema', json_schema: { name: 'reply', schema: jsonSchema } },
           reasoning_effort: 'low', // gpt-oss "thinks" first; keep it short so one call cannot use the whole minute's token budget
-          max_completion_tokens: 1800,
+          max_completion_tokens: maxOutputTokens || 1800,
         }, { signal });
         return res.choices?.[0]?.message?.content;
       },
@@ -229,7 +229,7 @@ const log = (fn, ...args) => { if (process.env.NODE_ENV !== 'test') fn(...args);
 // ── the cascade: try the providers in order until one gives a reply that `parse` accepts ──
 // `prompt`, `jsonSchema` and `parse` say what to ask and how to check the answer, so the same loop serves the
 // project idea and the small "is this a real technology?" question. Returns { value, provider } or throws an AppError.
-const runCascade = async ({ prompt, jsonSchema, parse, budgetMs, callMs, reserveMs, label = 'idea' }) => {
+const runCascade = async ({ prompt, jsonSchema, parse, budgetMs, callMs, reserveMs, maxOutputTokens, label = 'idea' }) => {
   const providers = buildProviders();
   if (!providers.length) throw new AppError(503, 'AI is not available right now.');
 
@@ -258,7 +258,7 @@ const runCascade = async ({ prompt, jsonSchema, parse, budgetMs, callMs, reserve
       if (allowed < enough) break; // no time left for this one without starving the last provider: skip to the next
       calls += 1;
       try {
-        const raw = await withTimeout((signal) => provider.run(prompt, signal, jsonSchema), allowed);
+        const raw = await withTimeout((signal) => provider.run(prompt, signal, jsonSchema, maxOutputTokens), allowed);
         const value = parse(raw);
         recordSuccess(provider.name);
         log(console.log, `AI ${label} ok provider=${provider.name} calls=${calls} ms=${Date.now() - started}${reasons.length ? ` earlier=${reasons.join(',')}` : ''}`);
@@ -358,4 +358,5 @@ const describeProviders = () => buildProviders().map((p) => p.name);
 const resetState = () => { breakers.clear(); stackAnswers.clear(); };
 
 // buildPrompt, buildProviders and parseIdea are exported for scripts/compare-models.js, which tries each provider on its own
-module.exports = { generateProjectIdea, describeProviders, resetState, buildPrompt, buildProviders, parseIdea };
+// runCascade is also used by the Role Analyzer (services/analyzer.service.js); settings() gives it the shared time limits
+module.exports = { generateProjectIdea, describeProviders, resetState, buildPrompt, buildProviders, parseIdea, runCascade, settings, BadOutput };

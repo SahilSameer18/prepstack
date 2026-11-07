@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "question": "Tell me about yourself."
+  },
+  {
+    "id": 2,
+    "question": "What is your greatest strength?"
+  },
+  {
+    "id": 3,
+    "question": "What is your greatest weakness?"
+  },
+  {
+    "id": 4,
+    "question": "Describe a time you dealt with a conflict in a team."
+  },
+  {
+    "id": 5,
+    "question": "Tell me about a time you failed."
+  },
+  {
+    "id": 6,
+    "question": "Why should we hire you?"
+  },
+  {
+    "id": 7,
+    "question": "Where do you see yourself in five years?"
+  },
+  {
+    "id": 8,
+    "question": "Tell me about a technical challenge you faced."
+  },
+  {
+    "id": 9,
+    "question": "How do you handle high-pressure situations?"
+  },
+  {
+    "id": 10,
+    "question": "Tell me about a time you had to learn a new technology quickly."
+  },
+  {
+    "id": 11,
+    "question": "What motivates you to work?"
+  },
+  {
+    "id": 12,
+    "question": "How do you prioritize your tasks with multiple deadlines?"
+  },
+  {
+    "id": 13,
+    "question": "Describe a time you went above and beyond for a project."
+  },
+  {
+    "id": 14,
+    "question": "What would you do if you disagreed with your manager's decision?"
+  },
+  {
+    "id": 15,
+    "question": "Tell me about a time you showed leadership."
+  },
+  {
+    "id": 16,
+    "question": "How do you handle feedback or criticism?"
+  },
+  {
+    "id": 17,
+    "question": "Describe your ideal work environment."
+  },
+  {
+    "id": 18,
+    "question": "What do you do when you're stuck on a technical problem?"
+  },
+  {
+    "id": 19,
+    "question": "Tell me about a time you explained something complex to a non-technical person."
+  },
+  {
+    "id": 20,
+    "question": "Where do you think the future of software engineering is headed?"
+  },
+  {
+    "id": 21,
+    "question": "What's the most interesting project you've ever worked on?"
+  },
+  {
+    "id": 22,
+    "question": "How do you stay updated with the latest trends in technology?"
+  }
+]

@@ -61,6 +61,7 @@ const sheetsRouter = require('./routes/sheets.routes')
 const projectRouter = require('./routes/project.routes')
 const notesRouter = require('./routes/notes.routes')
 const userRouter = require('./routes/user.routes')
+const analyzerRouter = require('./routes/analyzer.routes')
 
 
 // use all the routes here
@@ -69,6 +70,7 @@ app.use('/api/sheets', sheetsRouter)
 app.use('/api/project', projectRouter)
 app.use('/api/notes', notesRouter)
 app.use('/api/user', userRouter)
+app.use('/api/analyzer', analyzerRouter)
 
 
 // 404: catch any unmatched routes and forward to error handler

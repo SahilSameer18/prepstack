@@ -72,6 +72,23 @@ const accountActionLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Role Analyzer reports: 3 per hour per signed-in user. Only SAVED reports count (a failed attempt is free), because a
+// report is a large AI call and the free AI quota is shared by everyone.
+const analyzerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 3,
+  skipFailedRequests: true,
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip,
+  validate: { keyGeneratorIpFallback: false },
+  message: {
+    success: false,
+    message: "You've created several reports in the last hour. Please try again later.",
+    errors: ["Rate limit exceeded. Maximum 3 reports per hour."],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const refreshLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 30, // 30 refresh attempts per 15 min per IP
@@ -84,4 +101,4 @@ const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, registerLimiter, accountActionLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter };
+module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter };

@@ -33,6 +33,11 @@ function handleDuplicateKeyError(err) {
   return new AppError(409, `An account with that ${field} already exists`);
 }
 
+function handleUploadError(err) {
+  if (err.code === 'LIMIT_FILE_SIZE') return new AppError(413, 'The PDF is too large. The limit is 3 MB.');
+  if (err.code === 'LIMIT_UNEXPECTED_FILE') return new AppError(400, 'Upload the resume in the "resume" field only.');
+  return new AppError(400, 'The upload was not accepted. Please check the file and try again.');
+}
 function handleJWTError() {
   return new AppError(403, 'Invalid token. Please log in again.');
 }
@@ -75,6 +80,9 @@ function sendProdError(err, res) {
 // ── Main middleware ────────────────────────────────────────────────────────────
 
 const errorMiddleware = (err, req, res, next) => {
+  // An upload problem (file too big, wrong field) is the caller's mistake in every mode, never a 500
+  if (err.name === 'MulterError') err = handleUploadError(err);
+
   // Default to 500 if statusCode wasn't set
   err.statusCode = err.statusCode || 500;
   err.message = err.message || 'Internal Server Error';
