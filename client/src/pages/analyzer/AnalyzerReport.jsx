@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiArrowRight, FiFlag, FiLoader } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiDownload, FiFlag, FiLoader } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { getReport, deleteReport } from "../../api/services/analyzerService";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
@@ -30,6 +30,7 @@ const AnalyzerReport = () => {
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
   const [tab, setTab] = useState("plan");
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     let live = true;
@@ -38,6 +39,18 @@ const AnalyzerReport = () => {
       .catch((err) => live && setError(extractError(err, "Could not load this report.")));
     return () => { live = false; };
   }, [id]);
+
+  const download = async () => {
+    setDownloading(true);
+    try {
+      const { exportReportPdf } = await import("../../utils/exportReportPdf");
+      await exportReportPdf(report);
+    } catch {
+      toast.error("Could not create the PDF. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const remove = async () => {
     if (!window.confirm("Delete this report? This cannot be undone.")) return;
@@ -76,7 +89,12 @@ const AnalyzerReport = () => {
     <div className="px-4 sm:px-6 pb-16 max-w-5xl mx-auto page-enter text-left">
       <div className="flex items-center justify-between gap-3 pt-2 mb-4">
         <Link to="/analyzer" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white min-h-[44px]"><FiArrowLeft /> New report</Link>
-        <button onClick={remove} className="text-xs text-zinc-400 hover:text-rose-400 min-h-[44px] px-2 cursor-pointer">Delete report</button>
+        <div className="flex items-center gap-1">
+          <button onClick={download} disabled={downloading} className="inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white min-h-[44px] px-2 cursor-pointer disabled:opacity-60">
+            {downloading ? <FiLoader className="animate-spin" /> : <FiDownload />} {downloading ? "Preparing..." : "Download PDF"}
+          </button>
+          <button onClick={remove} className="text-xs text-zinc-400 hover:text-rose-400 min-h-[44px] px-2 cursor-pointer">Delete report</button>
+        </div>
       </div>
 
       {/* Summary */}

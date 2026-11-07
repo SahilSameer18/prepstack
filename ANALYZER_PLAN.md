@@ -173,7 +173,15 @@ Original plan for this phase:
 - `server/src/services/skillMatcher.service.js` (port with the closed-list step, the careful fuzzy rule, and "did you mean" results), `server/test/skillMatcher.test.js` (include "Flash" must not match "Flask", "Shift" must not match "Swift", "k8s" must match Kubernetes).
 **Modify:** `server/src/seed/masterSeed.js` (idempotent), `server/src/controllers/analyzer.controller.js` (attach the matched skill and its PrepStack action to each gap).
 
-### Phase 3: client (about 3 days)
+### Phase 3: client (about 3 days) — DONE 2026-11-07
+Built and checked in a browser (phone and desktop width, against a throwaway backend with an in-memory database; lint, build and SEO check pass). What differs from the plan below:
+- **Fewer components:** `ScoreRing`, `RequirementRow`, `SkillGapCard` and a new `RecentReports` (dashboard strip) in `client/src/components/analyzer/`. The upload box and the job description box are part of `Analyzer.jsx` itself (one file, no props to pass around).
+- **The report page is tabbed** (Plan first, then Skills, Questions, Resume tips), with a summary strip, a "Start here" bar and, on desktop only, a side column with the skill gaps. This replaces the long single page in the first build. Each skill's resume quote, the "weaker because the quote was not found" note and the learning links live under the Skills tab.
+- **Not done:** a card in `BentoGrid.jsx` (a text link in the hero was added instead), and the report count in `ProfileHero.jsx`. The Profile count can follow later.
+- **Quiz and Aptitude are hidden** from the navbar and footer (routes kept so old links work); Roadmaps moved into the Explore menu; "Role Analyzer" is in the main bar. `/analyzer` and `/analyzer/:id` are noindex.
+- **Not verified:** generating a real report from the browser (the AI side was verified live in Phase 2), the Questions and Resume tips tabs on screen, and a real 375 px phone width after the tabbed redesign.
+
+Original plan for this phase:
 **Create**
 - `client/src/pages/analyzer/Analyzer.jsx` (job description, PDF upload or paste, days until interview, consent checkbox).
 - `client/src/pages/analyzer/AnalyzerReport.jsx` (verdict and top 3, requirements checklist, gaps with PrepStack actions, questions, plan, resume tweaks, estimate label on the score).
@@ -181,7 +189,11 @@ Original plan for this phase:
 - `client/src/api/services/analyzerService.js`.
 **Modify:** `client/src/app.routes.jsx` (two protected routes), `client/src/components/Navbar.jsx` (main-bar link; hide Quiz and Aptitude), `client/src/components/Footer.jsx`, `client/src/components/homePage/BentoGrid.jsx` and `HeroSection.jsx` (card and button), `client/src/pages/Dashboard/UnifiedDashboard.jsx` (recent reports strip), `client/src/pages/Resume.jsx` and `client/src/pages/Behavioral.jsx` (links), `client/src/pages/project/AIProjectIdeas.jsx` (accept `?stack=`), `client/src/pages/Profile/components/ProfileHero.jsx` (report count), `client/src/seo/pages.js`, `client/src/pages/legal/PrivacyPolicy.jsx` and `TermsOfUse.jsx`.
 
-### Phase 4: PDF export, docs, live check (about 1.5 days)
+### Phase 4: PDF export, docs, live check (about 1.5 days) — PDF and docs DONE 2026-11-07; live check is yours to run
+Done: `AnalyzerReportPDF.jsx`, `exportReportPdf.js` (library loaded only on click), a Download PDF button on the report page, `README.md` and `TESTING.md`. Checked in a browser: a valid 2-page PDF with 18 clickable links was produced, named after the report. Not checked: how the pages look when printed or opened in a PDF viewer (only the file's structure was checked), and long reports with many pages.
+Still open: the live check below, with real keys on your deployed server.
+
+Original plan for this phase:
 **Create:** `client/src/components/pdf/AnalyzerReportPDF.jsx`, `client/src/utils/exportReportPdf.js` (ported from SkillBridge, PrepStack branding, links to PrepStack pages, loaded only on click).
 **Modify:** `client/package.json` (add `@react-pdf/renderer`), `README.md`, `TESTING.md`.
 **Live check (you run it with real keys):** a real PDF resume, a pasted resume, a scanned PDF (rejected), a prompt-injection resume, every provider failing, the PDF download, and the same input three times to see the score spread.
