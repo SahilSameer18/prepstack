@@ -179,6 +179,7 @@ const AIProjectIdeas = () => {
                 onChange={(e) => handleChange("notes", e.target.value)}
                 className="w-full bg-[#121216] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] focus:ring-1 focus:ring-[#ffa116] rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none resize-none transition-colors"
               />
+              <p className="text-xs text-zinc-400">Please don&apos;t include personal information. What you type here is sent to our AI providers (Google and Groq) to write your idea.</p>
             </div>
           </div>
 

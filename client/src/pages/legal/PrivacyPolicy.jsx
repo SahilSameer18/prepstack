@@ -98,7 +98,7 @@ const PrivacyPolicy = () => {
           <ul className="list-disc pl-5 space-y-2 text-gray-400">
             <li>To authenticate your sessions and manage secure token renewal across up to 10 concurrent devices.</li>
             <li>To persist and display your DSA problem progress and completion statistics.</li>
-            <li>To generate AI project ideas: the options you enter on the AI Projects page (tech stack, complexity, domain and any extra notes) are sent to the Google Gemini API. Please do not put personal information in the extra notes.</li>
+            <li>To generate AI project ideas: the options you enter on the AI Projects page (tech stack, complexity, domain and any extra notes) are sent to Google's Gemini API and, if Gemini is busy or unavailable, to Groq's API. Please do not put personal information in the extra notes.</li>
             <li>To detect abuse, enforce rate limits, and protect user accounts from credential stuffing attacks.</li>
             <li>To operate and debug the service using the request logs described above.</li>
           </ul>
@@ -151,6 +151,7 @@ const PrivacyPolicy = () => {
           <ul className="list-disc pl-5 space-y-1 text-gray-400">
             <li><strong className="text-white">Google OAuth 2.0:</strong> Identity provider for single sign-on.</li>
             <li><strong className="text-white">Google Gemini API:</strong> Generative AI engine for project ideas. It receives the options you enter when you generate an idea.</li>
+            <li><strong className="text-white">Groq API:</strong> Backup AI engine used only when Gemini is busy or unavailable. It receives the same options. We use the free plans of both AI services, and under their own terms they may use what is sent to them to improve their services, so please keep personal information out of the extra notes.</li>
             <li><strong className="text-white">MongoDB Atlas:</strong> Encrypted cloud database for accounts, progress and sessions.</li>
             <li><strong className="text-white">Our hosting providers:</strong> serve the website and the API and keep standard server logs.</li>
             <li><strong className="text-white">DiceBear (api.dicebear.com):</strong> generates the default avatar image. Your browser requests it directly, and the request contains your username as the image seed.</li>

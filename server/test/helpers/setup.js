@@ -13,12 +13,13 @@ process.env.GOOGLE_API_KEY = 'fake-gemini-key';
 process.env.GOOGLE_CLIENT_ID = 'fake-google-client-id';
 for (const k of ['ALLOWED_ORIGINS', 'CLIENT_URL', 'ENABLE_CUSTOM_DNS', 'MONGO_URI', 'GROQ_API_KEY', 'GEMINI_PRIMARY_MODEL', 'GEMINI_FALLBACK_MODEL', 'GEMINI_FALLBACK_2_MODEL', 'GROQ_MODEL', 'AI_DAILY_LIMIT']) delete process.env[k];
 process.env.AI_RETRY_DELAY_MS = '1'; // the AI retry wait is 1 s in real life; keep tests fast
+process.env.AI_RESERVE_MS = '1'; // the time kept for the last provider is 8 s in real life; the tests that check it set their own
 
 // ── fake AI providers (Gemini and Groq) ──
 // Two ways to drive a fake:
 //   simple:    set `.reply` (object or raw string) or `.error`; every model answers the same way
 //   per model: `.script[modelId] = [step1, step2, ...]`, used on that model's 1st, 2nd... call (the last step repeats);
-//              a step is { reply } | { error } | { hang: true }
+//              a step is { reply } | { error } | { hang: true }, and may add { delayMs } to answer slowly
 // `.models` lists the model IDs that were called, in order; `.calls` counts all calls.
 const aiServicePath = path.join(SERVER_ROOT, 'src', 'services', 'ai.service.js');
 const resetAiState = () => { const m = require.cache[aiServicePath]; if (m && m.exports.resetState) m.exports.resetState(); };
@@ -36,6 +37,7 @@ function makeFake() {
       const steps = this.script[model];
       const step = steps ? steps[Math.min(n, steps.length) - 1] : { reply: this.reply, error: this.error };
       if (step.hang) await new Promise(() => {});
+      if (step.delayMs) await new Promise((r) => setTimeout(r, step.delayMs)); // a slow but working provider
       if (step.error) throw step.error;
       const r = step.reply;
       return typeof r === 'string' || r === undefined ? r : JSON.stringify(r);

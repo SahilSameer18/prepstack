@@ -1,3 +1,7 @@
+What exists today (updated 2026-11-07)
+Server: 256 API tests run with `cd server && npm test` (node:test, supertest, in-memory MongoDB, fake Gemini, Groq and Google sign-in; no network, no cost). Files are in server/test/, including ai-fallback.test.js for the AI provider cascade, the one-at-a-time rule, the daily limit and the hidden provider field.
+Not built yet: client tests, server unit and startup tests, the load test and the manual QA checklist. Everything below this section is the original PLAN, not a description of what exists.
+
 PrepStack: Full Testing Plan (close the "no tests" gap)
 Context
 The app now has ~25 API endpoints, 33 server files and ~60 client files, but npm test prints "no test specified". Every fix so far was verified with throwaway scripts that live outside the repo, so any future change can break them silently (this already happened during the work: a 500 after a package upgrade, a wrong log path, a redirect fix that failed first). Goal: turn that verification into permanent, repeatable tests, plus a load test and a manual QA checklist for what automation cannot cover.

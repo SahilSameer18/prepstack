@@ -23,6 +23,9 @@ function sanitizeDoc(doc) {
     delete obj.__v;
   }
 
+  // Internal field on projects (which AI model answered): never sent to the browser
+  delete obj.aiProvider;
+
   return obj;
 }
 

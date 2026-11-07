@@ -1,6 +1,6 @@
 # Reliable AI service: plan (Gemini, Gemini fallback, then Groq)
 
-Status: plan agreed, all decisions made, no code changed yet. Date: 2026-11-07. This replaces the earlier draft code in this file. Start with Step 0 (verify model names).
+Status (2026-11-07): Phases 1 to 3 are built (model IDs verified, the cascade, the 409 and daily limit). Phase 4 is built except the live check with real keys, which you run (steps are at the end of this file). This replaces the earlier draft code in this file.
 
 ## Goal
 

@@ -15,6 +15,8 @@ const projectSchema = new mongoose.Schema(
     estimatedTime: String,
     resumeValue: String,
     domain: { type: String, default: "" },
+    // which AI model answered (for debugging); hidden from queries unless asked for with select('+aiProvider')
+    aiProvider: { type: String, select: false },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

@@ -4,11 +4,39 @@ const projectModel = require('../models/project.model');
 const AppError = require('../utils/AppError');
 const { sendSuccess, sanitizeDoc } = require('../utils/responseFormatter');
 
+// Users with an idea being generated right now. Kept in server memory, so it resets on restart and is per
+// server process (fine for a single instance).
+const generatingNow = new Set();
+
+// Most ideas one user may save in any 24 hours (the hourly limit of 4 stays as well). The AI quota is shared by
+// everyone on the free plan, so this stops one user from using it all up. Counted from the database, so it
+// survives restarts. Deleting ideas lowers the count; the hourly limit still caps total use.
+const DAY_MS = 24 * 60 * 60 * 1000;
+const dailyLimit = () => {
+  const n = Number(process.env.AI_DAILY_LIMIT);
+  return Number.isInteger(n) && n > 0 ? n : 15;
+};
+
 // controller to generate project idea
 const generateProject = async (req, res, next) => {
+  const userId = req.user._id;
+  const key = String(userId);
+
+  // A double click or a second tab must never cost a second AI call. Set before any await so two requests
+  // arriving in the same instant cannot both get past this line.
+  if (generatingNow.has(key)) {
+    return next(new AppError(409, 'Your last project idea is still being generated. Please wait for it to finish.'));
+  }
+  generatingNow.add(key);
+
   try {
     const { techStack, complexity, domain, notes } = req.body;
-    const userId = req.user._id;
+
+    const limit = dailyLimit();
+    const recent = await projectModel.countDocuments({ user: userId, createdAt: { $gte: new Date(Date.now() - DAY_MS) } });
+    if (recent >= limit) {
+      return next(new AppError(429, `You've reached the limit of ${limit} project ideas per 24 hours. Please try again later.`));
+    }
 
     const projectIdea = await generateProjectIdea({ techStack, complexity, domain, notes });
 
@@ -22,6 +50,7 @@ const generateProject = async (req, res, next) => {
       estimatedTime: projectIdea.estimatedTime,
       resumeValue: projectIdea.resumeValue,
       domain: domain || '',
+      aiProvider: projectIdea.aiProvider, // which model answered: for debugging only, never sent to the browser
       user: userId
     });
 
@@ -29,6 +58,8 @@ const generateProject = async (req, res, next) => {
     return sendSuccess(res, 201, 'Project idea generated successfully', { project: sanitizedProject }, { project: sanitizedProject });
   } catch (error) {
     next(error);
+  } finally {
+    generatingNow.delete(key); // always cleared: success, failure or the early returns above
   }
 };
 

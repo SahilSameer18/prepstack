@@ -53,7 +53,7 @@ PrepStack centralizes the workflow:
 ## ⚡ High-Yield Technical Highlights
 
 - **Single-Roundtrip Dashboard Engine:** Aggregates all sheet progress, problem statistics, and AI project metrics into a single optimized `/api/user/dashboard-summary` endpoint using parallel Mongoose lookups and O(1) in-memory progress mapping.
-- **Type-Safe GenAI Pipeline:** Builds the response schema with Zod's built-in `z.toJSONSchema` and sends it to the Gemini SDK. The reply is then checked again with `safeParse` before anything is saved; a malformed or incomplete reply returns a clean `502` and nothing is stored.
+- **Type-Safe GenAI Pipeline:** Builds the response schema with Zod's built-in `z.toJSONSchema` and sends it to the Gemini SDK. The reply is then checked again with `safeParse` before anything is saved; a malformed or incomplete reply never reaches the database.
 - **Enterprise Multi-Device Hashed Auth:** Refresh tokens are never stored in plaintext: they are stored at rest as cryptographic **SHA-256 hashes** (`crypto.createHash('sha256')`), delivering sub-millisecond OpenSSL performance without blocking the Node.js event loop. Supports up to 10 simultaneous active devices with single-device logout and global session flushing (`/logout-all`).
 - **Device Fingerprinting & Active Sessions Manager:** Native, zero-dependency User-Agent and client IP resolution utility mapping active sessions into human-readable device identifiers (*"Chrome on Windows 11"*, *"Safari on iPhone"*) with an interactive Profile UI supporting granular remote revocation.
 - **Automated Password Revocation Policy:** Changing an account password immediately purges all *other* active device sessions from the database while seamlessly preserving the user's current device session.
@@ -235,7 +235,8 @@ sequenceDiagram
 
 - **Dynamic Prompts:** Accepts tech stack, domain (FinTech, SaaS, Web3), complexity level (`beginner`/`intermediate`/`advanced`), and extra constraints.
 - **Recruiter-Ready Output:** Gemini generates project descriptions, tagging, estimated timeline, and STAR resume bullets.
-- **Abuse Protection:** Limited to 4 project requests per hour per signed-in user (failed requests are not counted).
+- **Reliable AI cascade (free tier only):** idea generation tries `gemini-3-flash-preview`, then `gemini-3.5-flash-lite`, then `gemini-3.1-flash-lite`, then Groq `openai/gpt-oss-120b`. One retry for "overloaded" errors (never for quota errors), 20 s per call, 55 s in total, at most 5 calls, and a circuit breaker that skips a provider that keeps failing. Model names and keys are settings (`GEMINI_*_MODEL`, `GROQ_MODEL`, `GROQ_API_KEY`), so retiring a model is a config change. If every provider fails the user gets a clear message and the attempt does not count. Full design and limits: `GROQ.md`.
+- **Abuse Protection:** 4 project requests per hour and 15 saved ideas per 24 hours per signed-in user (failed requests are not counted), and only one idea can be generated at a time per user (a second request gets `409`).
 
 ### 📈 Dynamic DSA Trackers
 
@@ -292,6 +293,7 @@ sequenceDiagram
 | Zod                 | 4       | Server validation and structured schema config        |
 | helmet              | 8       | Standard HTTP security headers                        |
 | @google/genai       | 1.47    | Official SDK client for Gemini integrations           |
+| groq-sdk            | 1.6     | Backup AI provider when Gemini is busy                |
 | jsonwebtoken        | 9       | Cryptographic user session tokens                     |
 | bcrypt              | 6       | Salted security hashing (12 rounds)                   |
 | cookie-parser       | 1.4     | Secure browser cookie management                      |
@@ -397,7 +399,7 @@ erDiagram
 
 | Method   | Endpoint      | Auth   | Description                                          |
 | -------- | ------------- | ------ | ---------------------------------------------------- |
-| `POST`   | `/generate`   | ✅ JWT | Triggers Gemini AI generation _(rate-limited: 4/hr)_ |
+| `POST`   | `/generate`   | ✅ JWT | Generates an idea with the AI cascade _(4/hr, 15/24h, one at a time)_ |
 | `GET`    | `/`           | ✅ JWT | Returns all saved projects                           |
 | `GET`    | `/:projectId` | ✅ JWT | Returns specific project metadata                    |
 | `DELETE` | `/:projectId` | ✅ JWT | Deletes project profile                              |
@@ -446,6 +448,14 @@ ACCESS_SECRET=your_ultra_secure_access_token_secret
 REFRESH_SECRET=your_ultra_secure_refresh_token_secret
 GOOGLE_API_KEY=AIzaSyYourGeminiApiKeyHere
 GOOGLE_CLIENT_ID=your_google_oauth_client_id
+
+# Optional AI fallbacks (all in server/.env.example): a Groq key and the model names tried, in order
+GROQ_API_KEY=
+GEMINI_PRIMARY_MODEL=gemini-3-flash-preview
+GEMINI_FALLBACK_MODEL=gemini-3.5-flash-lite
+GEMINI_FALLBACK_2_MODEL=gemini-3.1-flash-lite
+GROQ_MODEL=openai/gpt-oss-120b
+AI_DAILY_LIMIT=15
 
 # Optional (all explained in server/.env.example)
 NODE_ENV=development
