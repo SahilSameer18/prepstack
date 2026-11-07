@@ -19,15 +19,15 @@ const NotFound = () => {
       <div className="absolute bottom-10 left-10 w-[200px] h-[200px] bg-blue-500/10 blur-[90px] rounded-full -z-10" />
 
       {/* Floating icons */}
-      <FaLaptopCode className="absolute top-[20%] left-[10%] text-gray-600 text-3xl animate-bounce opacity-30" />
-      <FaServer className="absolute top-[70%] right-[15%] text-gray-600 text-3xl animate-bounce delay-200 opacity-30" />
-      <FaDatabase className="absolute bottom-[15%] left-[20%] text-gray-600 text-3xl animate-bounce delay-500 opacity-30" />
+      <FaLaptopCode className="absolute top-[20%] left-[10%] text-zinc-400 text-3xl animate-bounce opacity-30" />
+      <FaServer className="absolute top-[70%] right-[15%] text-zinc-400 text-3xl animate-bounce delay-200 opacity-30" />
+      <FaDatabase className="absolute bottom-[15%] left-[20%] text-zinc-400 text-3xl animate-bounce delay-500 opacity-30" />
       <FaRocket className="absolute top-[30%] right-[10%] text-[#ffa116] text-4xl animate-bounce opacity-40" />
 
       {/* Logo */}
       <Link
         to="/"
-        className="flex items-center gap-2 mb-16 transition-transform hover:scale-105"
+        className="flex items-center gap-2 mb-16 min-h-[44px] transition-transform hover:scale-105"
       >
         <span className="text-xl font-bold tracking-tight text-white">
           Prep<span className="text-[#ffa116]">Stack</span>

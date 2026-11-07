@@ -107,11 +107,11 @@ const ProjectDash = () => {
                 <FiTrash2 className="text-xl text-rose-400" />
               </div>
               <h3 className="font-display text-lg font-bold text-white mb-2">
-                Delete Architecture Blueprint?
+                Delete this project idea?
               </h3>
               <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed mb-6">
                 Are you sure you want to permanently delete{" "}
-                <span className="text-white font-semibold font-mono">
+                <span className="text-white font-semibold font-ui">
                   "{selectedProject?.title}"
                 </span>
                 ? This specification cannot be recovered.
@@ -142,7 +142,7 @@ const ProjectDash = () => {
                   {isDeleting ? (
                     <FiLoader className="animate-spin text-sm" />
                   ) : (
-                    "Delete Blueprint"
+                    "Delete project idea"
                   )}
                 </button>
               </div>
@@ -160,9 +160,9 @@ const ProjectDash = () => {
               <FiCpu className="text-[#ffa116] text-lg" />
             </div>
             <div>
-              <h2 className="text-xl font-display font-bold text-white">System Architecture Blueprints</h2>
-              <p className="text-xs font-mono text-zinc-400 mt-0.5">
-                Saved engineering specifications and portfolio architectures
+              <h2 className="text-xl font-display font-bold text-white">Project ideas</h2>
+              <p className="text-xs font-ui text-zinc-400 mt-0.5">
+                Project ideas you generated and saved
               </p>
             </div>
           </div>
@@ -171,7 +171,7 @@ const ProjectDash = () => {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl amber-specular-button text-black font-bold text-xs sm:text-sm self-start sm:self-auto min-h-[44px]"
           >
             <FiPlus className="text-sm" />
-            <span>Compile Blueprint</span>
+            <span>Generate idea</span>
           </Link>
         </div>
 
@@ -179,10 +179,10 @@ const ProjectDash = () => {
         {projects.length > 0 && (
           <div className="mb-6 flex flex-col md:flex-row gap-3 md:items-center">
             <div className="relative flex-1">
-              <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm" />
+              <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-sm" />
               <input
                 type="text"
-                placeholder="Search blueprints by title or stack..."
+                placeholder="Search ideas by title or stack..."
                 value={projectSearch}
                 onChange={(e) => setProjectSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#0c0c0e] border border-white/[0.08] text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#ffa116] transition-colors"
@@ -206,7 +206,7 @@ const ProjectDash = () => {
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
-                <option value="difficulty">Complexity Tier</option>
+                <option value="difficulty">Difficulty</option>
               </select>
             </div>
           </div>
@@ -219,16 +219,16 @@ const ProjectDash = () => {
               <FiCpu className="text-2xl text-zinc-400" />
             </div>
             <h3 className="font-display text-lg font-bold text-white mb-2">
-              No blueprints compiled yet
+              No project ideas yet
             </h3>
             <p className="text-zinc-400 text-xs sm:text-sm max-w-sm mb-6 leading-relaxed">
-              Compile production-ready architectural project specifications tailored to your target tech stack with distributed systems challenges.
+              Generate a project idea for your tech stack and level, with real-world challenges to solve.
             </p>
             <Link
               to="/ai-projects"
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl amber-specular-button text-black font-bold text-xs sm:text-sm min-h-[44px]"
             >
-              <FiZap className="text-xs" /> Compile First Blueprint
+              <FiZap className="text-xs" /> Generate your first idea
             </Link>
           </div>
         ) : projectsLoading && projects.length === 0 ? (
@@ -253,19 +253,19 @@ const ProjectDash = () => {
                       {(project.techStack || project.domain) && (
                         <div className="flex flex-wrap gap-1.5">
                           {project.techStack && (
-                            <span className="text-[9px] font-mono font-bold tracking-wider text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/25 rounded px-2 py-0.5 uppercase">
+                            <span className="text-xs font-ui font-bold tracking-wider text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/25 rounded px-2 py-0.5 uppercase">
                               {project.techStack}
                             </span>
                           )}
                           {project.domain && (
-                            <span className="text-[9px] font-mono font-semibold tracking-wider text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded px-2 py-0.5 uppercase">
+                            <span className="text-xs font-ui font-semibold tracking-wider text-purple-400 bg-purple-500/10 border border-purple-500/20 rounded px-2 py-0.5">
                               {project.domain}
                             </span>
                           )}
                         </div>
                       )}
                       <span
-                        className={`text-[9px] font-mono uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md border ml-auto ${
+                        className={`text-xs font-ui uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md border ml-auto ${
                           project.difficulty === "Beginner"
                             ? "text-emerald-400 border-emerald-500/25 bg-emerald-500/10"
                             : project.difficulty === "Intermediate"
@@ -302,7 +302,7 @@ const ProjectDash = () => {
 
                     {/* Footer */}
                     <div className="mt-auto pt-4 border-t border-white/[0.06] flex items-center justify-between">
-                      <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+                      <p className="text-xs font-ui text-zinc-400">
                         {new Date(project.createdAt).toLocaleDateString(
                           undefined,
                           { month: "short", day: "numeric", year: "numeric" },
@@ -311,13 +311,13 @@ const ProjectDash = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={(e) => openDeleteModal(e, project)}
-                          className="w-8 h-8 rounded-lg bg-rose-500/5 border border-rose-500/15 flex items-center justify-center text-rose-400 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer"
-                          title="Delete Blueprint"
+                          className="w-11 h-11 sm:w-8 sm:h-8 rounded-lg bg-rose-500/5 border border-rose-500/15 flex items-center justify-center text-rose-400 hover:bg-rose-500 hover:text-white transition-colors cursor-pointer"
+                          title="Delete project idea"
                         >
                           <FiTrash2 className="text-xs" />
                         </button>
-                        <div className="px-3 py-1.5 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] group-hover:border-white/[0.2] flex items-center gap-1.5 text-[11px] font-mono font-semibold text-zinc-300 group-hover:text-white transition-colors">
-                          VIEW <FiExternalLink className="text-[10px]" />
+                        <div className="px-3 py-1.5 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] group-hover:border-white/[0.2] flex items-center gap-1.5 text-xs font-ui font-semibold text-zinc-300 group-hover:text-white transition-colors">
+                          VIEW <FiExternalLink className="text-xs" />
                         </div>
                       </div>
                     </div>
@@ -325,9 +325,9 @@ const ProjectDash = () => {
                 ))
               ) : (
                 <div className="col-span-full text-center py-10 bg-[#0c0c0e] border border-white/[0.08] rounded-2xl">
-                  <FiAlertCircle className="mx-auto text-2xl text-zinc-500 mb-2" />
-                  <p className="text-zinc-400 text-xs sm:text-sm font-mono">
-                    No blueprints match current search query or tier filters.
+                  <FiAlertCircle className="mx-auto text-2xl text-zinc-400 mb-2" />
+                  <p className="text-zinc-400 text-xs sm:text-sm font-ui">
+                    No project ideas match your search or filters.
                   </p>
                 </div>
               )}

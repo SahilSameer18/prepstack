@@ -18,7 +18,7 @@ const ComingSoon = ({ feature = "This Feature" }) => {
           <FaRocket className="text-4xl text-[#ffa116]" />
         </div>
         <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#ffa116] flex items-center justify-center">
-          <FiClock className="text-black text-[10px]" />
+          <FiClock className="text-black text-xs" />
         </div>
       </div>
 
@@ -58,7 +58,7 @@ const ComingSoon = ({ feature = "This Feature" }) => {
 
       {/* Other available resources */}
       <div className="max-w-sm w-full">
-        <p className="text-[11px] text-gray-600 font-semibold uppercase tracking-wider mb-3">Meanwhile, explore these</p>
+        <p className="text-xs text-zinc-400 font-semibold uppercase tracking-wider mb-3">Meanwhile, explore these</p>
         <div className="grid grid-cols-3 gap-2">
           {[
             { name: "DSA Sheets", icon: <FaCode />, path: "/dsa" },
@@ -71,7 +71,7 @@ const ComingSoon = ({ feature = "This Feature" }) => {
               className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3 text-center hover:bg-white/[0.06] hover:border-white/[0.12] transition-all group"
             >
               <div className="text-[#ffa116] text-lg mx-auto mb-1.5 group-hover:scale-110 transition-transform">{item.icon}</div>
-              <p className="text-[11px] text-gray-500 font-medium">{item.name}</p>
+              <p className="text-xs text-zinc-400 font-medium">{item.name}</p>
             </Link>
           ))}
         </div>

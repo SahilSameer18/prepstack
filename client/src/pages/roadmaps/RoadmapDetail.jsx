@@ -53,13 +53,13 @@ const RoadmapDetail = () => {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-3 mb-3">
-              <span className={`text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1 rounded-full ${roadmap.bg} ${roadmap.color} border border-white/[0.08]`}>
+              <span className={`text-xs font-ui font-bold uppercase tracking-widest px-3 py-1 rounded-full ${roadmap.bg} ${roadmap.color} border border-white/[0.08]`}>
                 {roadmap.level}
               </span>
-              <span className="flex items-center gap-1.5 text-xs text-zinc-300 font-mono">
+              <span className="flex items-center gap-1.5 text-xs text-zinc-300 font-ui">
                 <FiClock className="text-zinc-400" /> {roadmap.duration}
               </span>
-              <span className="flex items-center gap-1.5 text-xs text-zinc-300 font-mono">
+              <span className="flex items-center gap-1.5 text-xs text-zinc-300 font-ui">
                 <FiBookOpen className={roadmap.color} /> {roadmap.details.length} Modules
               </span>
             </div>
@@ -76,9 +76,9 @@ const RoadmapDetail = () => {
       {/* ── Curriculum ── */}
       <div>
         <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-xl font-display font-bold text-white shrink-0">Step-by-Step Curriculum</h2>
+          <h2 className="text-xl font-display font-bold text-white shrink-0">Step-by-step path</h2>
           <div className="h-px bg-white/[0.08] flex-1" />
-          <span className="text-[11px] font-mono font-semibold text-zinc-400 uppercase tracking-wider shrink-0">
+          <span className="text-xs font-ui font-semibold text-zinc-400 shrink-0">
             {roadmap.details.length} phases
           </span>
         </div>
@@ -115,7 +115,7 @@ const RoadmapDetail = () => {
                   >
                     <div className="flex items-center gap-4 min-w-0">
                       {/* Step number */}
-                      <span className={`text-[11px] font-mono font-bold tracking-wider px-2 py-1 rounded-lg shrink-0 border ${
+                      <span className={`text-xs font-ui font-bold tracking-wider px-2 py-1 rounded-lg shrink-0 border ${
                         isOpen
                           ? `${roadmap.bg} ${roadmap.color} border-white/[0.1]`
                           : 'bg-white/[0.03] border-white/[0.06] text-zinc-400'
@@ -143,14 +143,14 @@ const RoadmapDetail = () => {
                     <div className="px-5 pb-6 border-t border-white/[0.06]">
                       {/* Big number watermark */}
                       <div className="relative overflow-hidden">
-                        <div className="absolute -right-2 -top-6 text-white/[0.02] text-[100px] font-mono font-bold pointer-events-none select-none leading-none">
+                        <div className="absolute -right-2 -top-6 text-white/[0.02] text-[100px] font-ui font-bold pointer-events-none select-none leading-none">
                           {num}
                         </div>
                       </div>
 
                       {/* Phase label */}
                       <div className="flex items-center gap-2 mt-4 mb-3">
-                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider font-semibold px-2.5 py-1 rounded-lg border ${roadmap.bg} ${roadmap.color} border-white/[0.08]`}>
+                        <span className={`inline-flex items-center gap-1.5 text-xs font-ui uppercase tracking-wider font-semibold px-2.5 py-1 rounded-lg border ${roadmap.bg} ${roadmap.color} border-white/[0.08]`}>
                           <FiCheckCircle className="opacity-90" /> Phase {num}
                         </span>
                       </div>
@@ -163,7 +163,7 @@ const RoadmapDetail = () => {
                       {/* Resources */}
                       {detail.resources && detail.resources.length > 0 && (
                         <div>
-                          <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2">
+                          <p className="text-xs font-ui font-bold text-zinc-400 mb-3 flex items-center gap-2">
                             <FiBookOpen className={roadmap.color} />
                             Curated Resources
                           </p>
@@ -177,7 +177,7 @@ const RoadmapDetail = () => {
                                 className="group/res flex items-start gap-2.5 p-3 rounded-xl bg-[#121216] border border-white/[0.08] hover:border-white/[0.18] hover:bg-white/[0.03] transition-colors"
                               >
                                 <div className={`shrink-0 w-6 h-6 rounded-md ${roadmap.bg} border border-white/[0.08] flex items-center justify-center mt-0.5`}>
-                                  <FiExternalLink className={`${roadmap.color} text-[10px]`} />
+                                  <FiExternalLink className={`${roadmap.color} text-xs`} />
                                 </div>
                                 <span className="text-xs text-zinc-300 group-hover/res:text-white transition-colors leading-snug font-medium">
                                   {res.label}

@@ -84,7 +84,7 @@ const SheetCard = ({ sheet, cat }) => (
     {sheet.recommended && (
       <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-[#ffa116]/10 border border-[#ffa116]/30 rounded-full px-2.5 py-0.5 shadow-[0_0_10px_rgba(255,161,22,0.15)]">
         <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116] shadow-[0_0_6px_#ffa116]" />
-        <span className="text-[#ffa116] text-[10px] font-mono font-semibold uppercase tracking-wider">Top Pick</span>
+        <span className="text-[#ffa116] text-xs font-ui font-semibold uppercase tracking-wider">Top Pick</span>
       </div>
     )}
 
@@ -93,7 +93,7 @@ const SheetCard = ({ sheet, cat }) => (
         <div className={`p-2.5 rounded-xl w-fit ${cat.bg} border ${cat.border} transition-transform duration-200 group-hover:scale-105`}>
           {sheet.icon}
         </div>
-        <span className={`text-[10px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${cat.badge}`}>
+        <span className={`text-xs font-ui font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${cat.badge}`}>
           {cat.label.split(" ")[0]}
         </span>
       </div>
@@ -105,15 +105,15 @@ const SheetCard = ({ sheet, cat }) => (
         {sheet.highlight}
       </p>
 
-      <div className="flex items-center gap-2 mb-4 font-mono text-xs">
+      <div className="flex items-center gap-2 mb-4 font-ui text-xs">
         <span className="text-white font-bold">{sheet.count} Problems</span>
-        <span className="text-zinc-600">·</span>
+        <span className="text-zinc-400">·</span>
         <span className="text-zinc-400">{sheet.difficulty}</span>
       </div>
 
       <div className="flex flex-wrap gap-1.5 mb-6">
         {(sheet.tags || []).map((tag, idx) => (
-          <span key={idx} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-400">
+          <span key={idx} className="text-xs font-ui px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-400">
             {tag}
           </span>
         ))}
@@ -125,7 +125,7 @@ const SheetCard = ({ sheet, cat }) => (
       className="w-full py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-200 group-hover:amber-specular-button font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm select-none"
     >
       <span>Launch Sheet</span>
-      <FaExternalLinkAlt className="text-[10px]" />
+      <FaExternalLinkAlt className="text-xs" />
     </Link>
   </div>
 );
@@ -218,7 +218,7 @@ const Sheets = () => {
     <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto page-enter text-left">
       {/* ── HEADER ── */}
       <div className="mb-10 pt-2">
-        <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-3 py-1 mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-3 py-1 mb-4">
           <FaCode /> {totalProblemCount > 0 ? `${totalProblemCount}+ Problems` : "1,200+ Problems"}
         </div>
         <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
@@ -232,7 +232,7 @@ const Sheets = () => {
       {/* ── SEARCH & FILTER CONTROLS ── */}
       <div className="flex flex-col md:flex-row gap-4 mb-10">
         <div className="relative w-full md:w-80">
-          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm" />
+          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm" />
           <input
             type="text"
             placeholder="Search sheets or patterns..."
@@ -250,7 +250,7 @@ const Sheets = () => {
                 : "titanium-button text-zinc-400 hover:text-white"
             }`}
           >
-            All Curriculums
+            All sheets
           </button>
           {categories.map((c) => (
             <button
@@ -287,7 +287,7 @@ const Sheets = () => {
                   <h2 className={`font-display text-lg font-bold ${cat.color}`}>{cat.label}</h2>
                   <p className="text-zinc-400 text-xs sm:text-sm mt-0.5 leading-relaxed">{cat.desc}</p>
                 </div>
-                <div className={`hidden sm:flex items-center gap-1.5 text-xs font-mono font-semibold px-3 py-1 rounded-full border ${cat.badge} shrink-0`}>
+                <div className={`hidden sm:flex items-center gap-1.5 text-xs font-ui font-semibold px-3 py-1 rounded-full border ${cat.badge} shrink-0`}>
                   {cat.sheets.length} {cat.sheets.length === 1 ? "track" : "tracks"}
                 </div>
               </div>
@@ -299,7 +299,7 @@ const Sheets = () => {
         </div>
       ) : (
         <div>
-          <p className="text-zinc-400 font-mono text-sm mb-6">{filtered.length} result{filtered.length !== 1 ? "s" : ""} found</p>
+          <p className="text-zinc-400 font-ui text-sm mb-6">{filtered.length} result{filtered.length !== 1 ? "s" : ""} found</p>
           {filtered.length > 0 ? (
             <div className="grid md:grid-cols-2 gap-6">
               {filtered.map((sheet, i) => {

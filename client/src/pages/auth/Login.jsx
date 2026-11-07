@@ -139,10 +139,7 @@ const Login = () => {
           animate="show"
         >
           <motion.div variants={formItem}>
-            <div className="inline-flex items-center gap-2 bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-4 py-1.5 mb-5 font-mono text-xs font-semibold text-[#ffa116]">
-              <span className="w-2 h-2 bg-[#ffa116] rounded-full animate-pulse" />
-              <span className="text-[#ffa116] text-xs font-semibold tracking-widest uppercase">Interview Ready</span>
-            </div>
+            <p className="mb-5 font-ui text-sm font-semibold text-[#ffa116]">Interview ready</p>
             <h2 className="text-3xl xl:text-4xl font-bold text-white leading-snug mb-3">
               Everything you need<br />
               to <span className="text-[#ffa116]">crack your dream</span><br />
@@ -155,7 +152,7 @@ const Login = () => {
 
           <motion.div className="grid grid-cols-3 gap-3" variants={formItem}>
             {stats.map((s) => (
-              <div key={s.label} className="bg-white/[0.04] border border-white/[0.07] rounded-2xl p-4">
+              <div key={s.label} className="bg-white/[0.04] rounded-2xl p-4">
                 <div className="text-xl font-bold text-[#ffa116]">{s.value}</div>
                 <div className="text-xs text-gray-400 mt-1">{s.label}</div>
               </div>
@@ -172,7 +169,7 @@ const Login = () => {
         </motion.div>
 
         <div className="relative z-10 mt-8 shrink-0">
-          <p className="text-gray-600 text-xs italic">&ldquo;Preparation is the key that unlocks the door to opportunity.&rdquo;</p>
+          <p className="text-zinc-400 text-xs italic">&ldquo;Preparation is the key that unlocks the door to opportunity.&rdquo;</p>
         </div>
       </motion.div>
 
@@ -198,7 +195,7 @@ const Login = () => {
           <motion.div variants={formItem} className="mb-6">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 min-h-[44px] text-xs font-mono text-gray-400 hover:text-white transition-colors group"
+              className="inline-flex items-center gap-2 min-h-[44px] text-xs font-ui text-gray-400 hover:text-white transition-colors group"
             >
               <span className="w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.08] group-hover:border-[#ffa116]/40 group-hover:text-[#ffa116] transition-all">
                 <FiArrowLeft className="text-xs" />
@@ -221,7 +218,7 @@ const Login = () => {
             <motion.div className="space-y-1.5" variants={formItem}>
               <label className="text-sm font-medium text-zinc-300">Email address</label>
               <div className={`flex items-center gap-3 w-full bg-[#0c0c0e] border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "email" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
-                <FiMail className={`text-lg flex-shrink-0 transition-colors ${focusedField === "email" ? "text-[#ffa116]" : "text-zinc-500"}`} />
+                <FiMail className={`text-lg flex-shrink-0 transition-colors ${focusedField === "email" ? "text-[#ffa116]" : "text-zinc-400"}`} />
                 <input
                   type="email" name="email" placeholder="you@example.com"
                   className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
@@ -235,14 +232,14 @@ const Login = () => {
             <motion.div className="space-y-1.5" variants={formItem}>
               <label className="text-sm font-medium text-zinc-300">Password</label>
               <div className={`flex items-center gap-3 w-full bg-[#0c0c0e] border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "password" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
-                <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-[#ffa116]" : "text-zinc-500"}`} />
+                <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-[#ffa116]" : "text-zinc-400"}`} />
                 <input
                   type={showPassword ? "text" : "password"} name="password" placeholder="Enter your password"
                   className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
                   value={formData.password} onChange={handleChange}
                   onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)} required
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-zinc-500 hover:text-zinc-300 transition-colors flex-shrink-0">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-zinc-400 hover:text-zinc-300 transition-colors flex-shrink-0">
                   {showPassword ? <FiEye className="text-lg" /> : <FiEyeOff className="text-lg" />}
                 </button>
               </div>
@@ -271,7 +268,7 @@ const Login = () => {
               <>
                 <motion.div className="flex items-center gap-3 py-2" variants={formItem}>
                   <div className="flex-1 h-px bg-white/[0.07]" />
-                  <span className="text-gray-500 text-xs">or</span>
+                  <span className="text-zinc-400 text-xs">or</span>
                   <div className="flex-1 h-px bg-white/[0.07]" />
                 </motion.div>
 

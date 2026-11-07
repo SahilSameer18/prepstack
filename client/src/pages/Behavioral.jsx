@@ -33,14 +33,14 @@ const QuestionCard = ({ q }) => {
         className="w-full text-left px-5 sm:px-6 py-5 flex items-start gap-4 focus:outline-none cursor-pointer"
       >
         {/* Number badge */}
-        <span className="flex-shrink-0 mt-0.5 w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-xs font-mono font-bold text-zinc-400">
+        <span className="flex-shrink-0 mt-0.5 w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-xs font-ui font-bold text-zinc-400">
           {String(q.id).padStart(2, "0")}
         </span>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
             <span
-              className={`text-[9px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${catStyle.text} ${catStyle.bg} ${catStyle.border}`}
+              className={`text-xs font-ui font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${catStyle.text} ${catStyle.bg} ${catStyle.border}`}
             >
               {q.category}
             </span>
@@ -79,7 +79,7 @@ const QuestionCard = ({ q }) => {
                     <div className="w-6 h-6 rounded-md bg-[#ffa116]/15 flex items-center justify-center">
                       <FiZap className="text-[#ffa116] text-xs" />
                     </div>
-                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#ffa116]">Evaluation Strategy</span>
+                    <span className="text-xs font-ui font-bold uppercase tracking-wider text-[#ffa116]">Evaluation Strategy</span>
                   </div>
                   <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{q.tip}</p>
                 </div>
@@ -90,7 +90,7 @@ const QuestionCard = ({ q }) => {
                     <div className="w-6 h-6 rounded-md bg-emerald-500/15 flex items-center justify-center">
                       <FiMessageSquare className="text-emerald-400 text-xs" />
                     </div>
-                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-400">STAR Model Answer</span>
+                    <span className="text-xs font-ui font-bold text-emerald-400">STAR Model Answer</span>
                   </div>
                   <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed italic">"{q.exampleAnswer}"</p>
                 </div>
@@ -121,9 +121,9 @@ const Behavioral = () => {
 
       {/* ── Header ── */}
       <div className="mb-8 pt-2">
-        <div className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 mb-3">
+        <div className="inline-flex items-center gap-2 text-xs font-ui text-zinc-400 mb-3">
           <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
-          <span className="tracking-wider uppercase font-semibold text-zinc-300">
+          <span className="tracking-wider font-semibold text-zinc-300">
             {behavioralQuestions.length} Curated Questions // STAR Methodology
           </span>
         </div>
@@ -144,7 +144,7 @@ const Behavioral = () => {
           <div>
             <p className="font-display font-bold text-white text-base mb-1">The STAR Formulation Model</p>
             <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">
-              Structure every response cleanly: <strong className="text-white font-mono">Situation → Task → Action → Result</strong>.
+              Structure every response cleanly: <strong className="text-white font-ui">Situation → Task → Action → Result</strong>.
               Always quantify the delta impact (e.g., latency dropped by 42%, incident resolution time halved).
             </p>
             <div className="flex flex-wrap gap-2 mt-3.5">
@@ -155,7 +155,7 @@ const Behavioral = () => {
                 { name: "Result", desc: "Quantified metric" }
               ].map((s) => (
                 <div key={s.name} className="px-3 py-1.5 rounded-lg bg-[#121216] border border-white/[0.08] text-xs">
-                  <span className="font-mono font-bold text-[#ffa116] mr-1.5">{s.name}:</span>
+                  <span className="font-ui font-bold text-[#ffa116] mr-1.5">{s.name}:</span>
                   <span className="text-zinc-400">{s.desc}</span>
                 </div>
               ))}
@@ -168,11 +168,11 @@ const Behavioral = () => {
       <div className="flex flex-col gap-3.5 mb-8">
         {/* Search bar */}
         <div className="relative w-full">
-          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm" />
+          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm" />
           <input
             type="text"
             placeholder="Search interview question archetypes..."
-            className="w-full bg-[#0c0c0e] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] rounded-xl py-3 pl-11 pr-4 outline-none transition-colors text-sm text-white placeholder-zinc-500 font-mono"
+            className="w-full bg-[#0c0c0e] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] rounded-xl py-3 pl-11 pr-4 outline-none transition-colors text-sm text-white placeholder-zinc-500 font-ui"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -186,7 +186,7 @@ const Behavioral = () => {
               <button
                 key={cat.label}
                 onClick={() => setSelectedCategory(cat.label)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono font-semibold border transition-all duration-150 active:scale-95 cursor-pointer min-h-[44px]
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-ui font-semibold border transition-all duration-150 active:scale-95 cursor-pointer min-h-[44px]
                   ${isActive
                     ? "bg-[#ffa116] text-black border-[#ffa116]"
                     : "bg-[#0c0c0e] border-white/[0.08] text-zinc-400 hover:border-white/[0.18] hover:text-white"
@@ -194,7 +194,7 @@ const Behavioral = () => {
               >
                 {cat.icon}
                 <span>{cat.label}</span>
-                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md
+                <span className={`text-xs font-ui font-bold px-1.5 py-0.5 rounded-md
                   ${isActive ? "bg-black/20 text-black" : "bg-white/[0.06] text-zinc-400"}`}>
                   {totalByCategory(cat.label)}
                 </span>
@@ -212,9 +212,9 @@ const Behavioral = () => {
 
         {filteredQuestions.length === 0 && (
           <div className="py-16 text-center text-zinc-400 border border-white/[0.08] rounded-2xl bg-[#0c0c0e]">
-            <FiSearch className="text-3xl mx-auto mb-2 text-zinc-600" />
+            <FiSearch className="text-3xl mx-auto mb-2 text-zinc-400" />
             <p className="text-base font-semibold text-white mb-1">No questions match criteria</p>
-            <p className="text-xs font-mono text-zinc-500">Try adjusting your search keywords or switching category filters.</p>
+            <p className="text-xs font-ui text-zinc-400">Try adjusting your search keywords or switching category filters.</p>
           </div>
         )}
       </div>

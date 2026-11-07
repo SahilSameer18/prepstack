@@ -48,7 +48,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
         className="w-full p-5 sm:p-6 flex items-center justify-between text-left focus:outline-none cursor-pointer group select-none"
       >
         <div className="flex items-center gap-3.5 sm:gap-4 pr-3">
-          <span className="font-mono text-xs font-semibold text-[#ffa116] shrink-0">
+          <span className="font-ui text-xs font-semibold text-[#ffa116] shrink-0">
             [{idx}]
           </span>
           <span className="font-display text-base sm:text-lg font-bold text-white group-hover:text-zinc-200 transition-colors">
@@ -98,7 +98,7 @@ const FAQ = () => {
     <section className="relative">
       <div className="max-w-3xl mx-auto text-left">
         <div className="text-center mb-12 sm:mb-14">
-          <p className="text-xs font-mono uppercase tracking-widest text-[#ffa116] font-semibold mb-3">
+          <p className="text-xs font-ui uppercase tracking-widest text-[#ffa116] font-semibold mb-3">
             Technical Briefing
           </p>
           <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">

@@ -90,10 +90,10 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.06]">
         <div>
           <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
-            <FiUser className="text-[#ffa116]" /> Developer Identity & Handle
+            <FiUser className="text-[#ffa116]" /> Your profile
           </h2>
-          <p className="text-xs font-mono text-zinc-400 mt-1">
-            Configure your unique platform handle and cryptographic identicon.
+          <p className="text-xs font-ui text-zinc-400 mt-1">
+            Choose your username and avatar.
           </p>
         </div>
       </div>
@@ -104,58 +104,58 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Username (Unique & Editable) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">Handle / Username</label>
+            <label className="text-xs font-ui font-semibold text-zinc-400">Username</label>
             <div className="flex items-center gap-3 bg-[#121216] border border-white/[0.08] focus-within:border-[#ffa116] rounded-xl px-4 h-12 transition-colors">
-              <FiUser className="text-zinc-500 text-base shrink-0" />
+              <FiUser className="text-zinc-400 text-base shrink-0" />
               <input
                 type="text"
                 value={profileForm.username}
                 onChange={(e) => handleProfileChange("username", e.target.value)}
-                placeholder="Unique handle"
-                className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm font-mono font-medium"
+                placeholder="Username"
+                className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm font-ui font-medium"
                 required
                 minLength={4}
                 maxLength={30}
               />
               {profileForm.username.trim().length >= 4 && <FiCheck className="text-emerald-400 shrink-0" />}
             </div>
-            <p className="text-[11px] font-mono text-zinc-500 pl-1">Unique handle • 4–30 alphanumeric & underscore characters</p>
+            <p className="text-xs font-ui text-zinc-400 pl-1">4–30 letters, numbers or underscores</p>
           </div>
 
           {/* Email (Read-Only with Copy Action) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">Primary Email</label>
-            <div className="flex items-center justify-between gap-3 bg-[#121216] border border-white/[0.08] rounded-xl px-4 h-12 transition-colors">
+            <label className="text-xs font-ui font-semibold text-zinc-400">Primary Email</label>
+            <div className="flex items-center justify-between gap-3 bg-[#121216] rounded-xl px-4 h-12 transition-colors">
               <div className="flex items-center gap-3 overflow-hidden">
-                <FiMail className="text-zinc-500 text-base shrink-0" />
-                <span className="text-zinc-300 text-sm font-mono font-medium truncate select-all">{user.email}</span>
+                <FiMail className="text-zinc-400 text-base shrink-0" />
+                <span className="text-zinc-300 text-sm font-ui font-medium truncate select-all">{user.email}</span>
               </div>
               <button
                 type="button"
                 onClick={handleCopyEmail}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] text-zinc-300 hover:text-white text-xs font-mono transition-colors shrink-0 cursor-pointer min-h-[36px]"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-zinc-300 hover:text-white text-xs font-ui transition-colors shrink-0 cursor-pointer min-h-[36px]"
                 title="Copy Email"
               >
                 {copiedEmail ? <FiCheck className="text-emerald-400 text-xs" /> : <FiCopy className="text-xs" />}
                 <span>{copiedEmail ? "Copied" : "Copy"}</span>
               </button>
             </div>
-            <p className="text-[11px] font-mono text-zinc-500 pl-1">Primary authentication credential</p>
+            <p className="text-xs font-ui text-zinc-400 pl-1">The email you sign in with</p>
           </div>
         </div>
 
         {/* Identicon Presets */}
         <div className="pt-4 border-t border-white/[0.06] space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">
-              Cryptographic Identicons
+            <label className="text-xs font-ui font-semibold text-zinc-400">
+              Choose your avatar
             </label>
             <button
               type="button"
               onClick={handleRandomizeAvatar}
-              className="flex items-center gap-1.5 text-xs font-mono text-[#ffa116] hover:text-[#ffb84d] transition-colors font-medium cursor-pointer min-h-[44px]"
+              className="flex items-center gap-1.5 text-xs font-ui text-[#ffa116] hover:text-[#ffb84d] transition-colors font-medium cursor-pointer min-h-[44px]"
             >
-              <FiRefreshCw className="text-xs" /> Randomize Seed
+              <FiRefreshCw className="text-xs" /> Shuffle
             </button>
           </div>
 
@@ -175,7 +175,7 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
                   }`}
                 >
                   <img src={avatarUrl} alt={preset.label} className="w-6 h-6 rounded-lg bg-black/40" />
-                  <span className="text-xs font-mono font-medium">{preset.label}</span>
+                  <span className="text-xs font-ui font-medium">{preset.label}</span>
                 </button>
               );
             })}
@@ -190,11 +190,11 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-display font-semibold text-xs sm:text-sm min-h-[44px] transition-colors ${
               isProfileDirty
                 ? "amber-specular-button text-black font-bold cursor-pointer"
-                : "bg-white/[0.04] border border-white/[0.08] text-zinc-500 cursor-not-allowed"
+                : "bg-white/[0.04] border border-white/[0.08] text-zinc-400 cursor-not-allowed"
             }`}
           >
             {isSavingProfile ? <InlineSpinner size={16} color="#000" /> : <FiSave />}
-            {isSavingProfile ? "Saving Parameters..." : "Save Identity Changes"}
+            {isSavingProfile ? "Saving..." : "Save changes"}
           </button>
         </div>
       </form>

@@ -39,7 +39,7 @@ const SHEET_META = {
 const getSheetMeta = (slug) =>
   SHEET_META[slug] || {
     accentColor: "#ffa116",
-    badge: "Curriculum",
+    badge: "Sheet",
     badgeColor: "text-zinc-300 bg-white/[0.04] border-white/[0.08]",
   };
 
@@ -107,16 +107,16 @@ const DSADash = ({ dsaData, loading, stats }) => {
           </div>
           <div>
             <h2 className="text-xl font-display font-bold text-white">DSA Practice Workspace</h2>
-            <p className="text-xs font-mono text-zinc-400 mt-0.5">
-              Curated interview question sets and algorithmic mastery tracking
+            <p className="text-xs font-ui text-zinc-400 mt-0.5">
+              Your progress on each DSA sheet
             </p>
           </div>
         </div>
         <Link
           to="/dsa"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.18] text-xs font-mono font-semibold text-zinc-300 hover:text-white transition-colors self-start sm:self-auto min-h-[44px]"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.18] text-xs font-ui font-semibold text-zinc-300 hover:text-white transition-colors self-start sm:self-auto min-h-[44px]"
         >
-          <span>All Curricula</span>
+          <span>All sheets</span>
           <FiExternalLink className="text-xs text-zinc-400" />
         </Link>
       </div>
@@ -144,7 +144,7 @@ const DSADash = ({ dsaData, loading, stats }) => {
                     <div className="relative flex-shrink-0">
                       <MiniRing pct={pct} color={meta.accentColor} />
                       <span
-                        className="absolute inset-0 flex items-center justify-center text-[11px] font-mono font-bold"
+                        className="absolute inset-0 flex items-center justify-center text-xs font-ui font-bold"
                         style={{ color: meta.accentColor }}
                       >
                         {pct}%
@@ -155,7 +155,7 @@ const DSADash = ({ dsaData, loading, stats }) => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span
-                          className={`text-[9px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${meta.badgeColor}`}
+                          className={`text-xs font-ui font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${meta.badgeColor}`}
                         >
                           {meta.badge}
                         </span>
@@ -175,20 +175,20 @@ const DSADash = ({ dsaData, loading, stats }) => {
                             }}
                           />
                         </div>
-                        <span className="text-xs font-mono text-zinc-300 font-semibold whitespace-nowrap flex-shrink-0">
+                        <span className="text-xs font-ui text-zinc-300 font-semibold whitespace-nowrap flex-shrink-0">
                           {solved} / {total}
                         </span>
                       </div>
                       {remaining > 0 ? (
-                        <p className="text-[11px] font-mono text-zinc-500 mt-2">
+                        <p className="text-xs font-ui text-zinc-400 mt-2">
                           <span className="text-zinc-300 font-medium">
                             {remaining}
                           </span>{" "}
                           problems remaining
                         </p>
                       ) : (
-                        <p className="text-[11px] font-mono text-emerald-400 mt-2 font-medium">
-                          Curriculum Completed
+                        <p className="text-xs font-ui text-emerald-400 mt-2 font-medium">
+                          Sheets completed
                         </p>
                       )}
                     </div>
@@ -208,18 +208,18 @@ const DSADash = ({ dsaData, loading, stats }) => {
             </div>
             <div>
               <p className="text-sm font-semibold text-white">
-                {stats.totalSolved} Algorithmic Problems Mastered
+                {stats.totalSolved} problems solved
               </p>
-              <p className="text-xs font-mono text-zinc-400 mt-0.5">
+              <p className="text-xs font-ui text-zinc-400 mt-0.5">
                 {stats.sheetsCompleted > 0
                   ? `${stats.sheetsCompleted} complete curriculum finished · Placement ready`
-                  : "Consistent practice across top curated company question patterns"}
+                  : "Keep going: a little practice every day adds up"}
               </p>
             </div>
           </div>
           <Link
             to="/dsa"
-            className="self-start sm:self-auto px-4 py-2 rounded-xl titanium-button text-xs font-mono font-semibold text-zinc-200 transition-colors"
+            className="self-start sm:self-auto px-4 py-2 min-h-[44px] sm:min-h-0 inline-flex items-center rounded-xl titanium-button text-xs font-ui font-semibold text-zinc-200 transition-colors"
           >
             Explore All Sheets →
           </Link>

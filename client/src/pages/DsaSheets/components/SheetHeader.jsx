@@ -16,10 +16,10 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
       {/* Left: info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${meta.badgeColor}`}>
+          <span className={`text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${meta.badgeColor}`}>
             {meta.badge}
           </span>
-          <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 uppercase tracking-wider font-mono">
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-zinc-300 font-ui">
             {totalProblems} Problems
           </span>
         </div>
@@ -53,7 +53,7 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
                   style={{ background: meta.accentColor }}
                 />
               </div>
-              <span className="text-xs font-mono font-medium text-zinc-300">{progressPercentage}%</span>
+              <span className="text-xs font-ui font-medium text-zinc-300">{progressPercentage}%</span>
             </div>
           </div>
 
@@ -63,10 +63,10 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
               href={meta.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-2.5 sm:py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.15] transition-all w-max shadow-sm"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2.5 sm:py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.15] transition-all w-max shadow-sm"
             >
               <span>Official Source: {meta.sourceName}</span>
-              <FaExternalLinkAlt className="text-[10px] text-zinc-400" />
+              <FaExternalLinkAlt className="text-xs text-zinc-400" />
             </a>
           )}
         </div>
@@ -80,7 +80,7 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
           total={totalProblems}
           accentColor={meta.accentColor}
         />
-        <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400">Progress</span>
+        <span className="text-xs font-ui text-zinc-400">Progress</span>
       </div>
     </div>
   </div>

@@ -8,14 +8,14 @@ const TermsOfUse = () => {
       {/* Back navigation */}
       <Link
         to="/"
-        className="inline-flex items-center gap-2 min-h-[44px] text-xs font-mono text-gray-400 hover:text-[#ffa116] transition-colors mb-4"
+        className="inline-flex items-center gap-2 min-h-[44px] text-xs font-ui text-gray-400 hover:text-[#ffa116] transition-colors mb-4"
       >
         <FiArrowLeft /> Back to PrepStack
       </Link>
 
       {/* Header */}
       <div className="border-b border-white/[0.08] pb-8 mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffa116]/10 border border-[#ffa116]/20 text-[#ffa116] text-xs font-mono mb-4">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffa116]/10 border border-[#ffa116]/20 text-[#ffa116] text-xs font-ui mb-4">
           <FiFileText /> Agreement
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">

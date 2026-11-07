@@ -30,8 +30,8 @@ const ProgressRing = ({ percentage, solved, total, accentColor }) => {
       {/* Center label */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-3xl font-black text-white leading-none">{solved}</span>
-        <span className="text-[11px] text-gray-500 font-semibold mt-0.5">/ {total}</span>
-        <span className="text-[9px] text-gray-600 uppercase tracking-widest mt-1 font-bold">Solved</span>
+        <span className="text-xs text-zinc-400 font-semibold mt-0.5">/ {total}</span>
+        <span className="text-xs text-zinc-400 mt-1 font-bold">Solved</span>
       </div>
     </div>
   );

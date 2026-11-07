@@ -113,7 +113,7 @@ const Navbar = () => {
               >
                 Explore
                 <motion.span animate={{ rotate: exploreOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <FaChevronDown className="text-[10px]" />
+                  <FaChevronDown className="text-xs" />
                 </motion.span>
               </button>
 
@@ -128,7 +128,7 @@ const Navbar = () => {
                     className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-72 bg-[#0c0c0e] border border-white/[0.1] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden backdrop-blur-2xl"
                   >
                     <div className="px-4 py-3 border-b border-white/[0.06]">
-                      <p className="text-[11px] font-mono text-zinc-400 font-semibold uppercase tracking-wider">More Resources</p>
+                      <p className="text-xs font-ui text-zinc-400 font-semibold uppercase tracking-wider">More Resources</p>
                     </div>
                     <div className="p-2 space-y-0.5">
                       {exploreLinks.map((link) => (
@@ -185,7 +185,7 @@ const Navbar = () => {
                     )}
                   </div>
                   {user.username}
-                  <FaChevronDown className="text-[10px] text-zinc-400" />
+                  <FaChevronDown className="text-xs text-zinc-400" />
                 </button>
                 <AnimatePresence>
                   {userMenuOpen && (
@@ -198,7 +198,7 @@ const Navbar = () => {
                       className="absolute right-0 top-[calc(100%+8px)] w-48 bg-[#0c0c0e] border border-white/[0.1] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] overflow-hidden backdrop-blur-2xl"
                     >
                       <div className="px-4 py-2.5 border-b border-white/[0.06]">
-                        <p className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">Signed in as</p>
+                        <p className="text-xs font-ui text-zinc-400 uppercase tracking-wider">Signed in as</p>
                         <p className="text-sm font-semibold text-white truncate">{user.username}</p>
                       </div>
                       <Link

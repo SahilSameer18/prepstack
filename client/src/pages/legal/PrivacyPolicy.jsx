@@ -8,14 +8,14 @@ const PrivacyPolicy = () => {
       {/* Back navigation */}
       <Link
         to="/"
-        className="inline-flex items-center gap-2 min-h-[44px] text-xs font-mono text-gray-400 hover:text-[#ffa116] transition-colors mb-4"
+        className="inline-flex items-center gap-2 min-h-[44px] text-xs font-ui text-gray-400 hover:text-[#ffa116] transition-colors mb-4"
       >
         <FiArrowLeft /> Back to PrepStack
       </Link>
 
       {/* Header */}
       <div className="border-b border-white/[0.08] pb-8 mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffa116]/10 border border-[#ffa116]/20 text-[#ffa116] text-xs font-mono mb-4">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffa116]/10 border border-[#ffa116]/20 text-[#ffa116] text-xs font-ui mb-4">
           <FiShield /> Legal & Governance
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
@@ -65,7 +65,7 @@ const PrivacyPolicy = () => {
             </div>
             <div className="bg-[#111] border border-white/[0.08] rounded-xl p-4 space-y-2 sm:col-span-2">
               <div className="flex items-center gap-2 text-white font-semibold text-xs">
-                <FiShield className="text-emerald-400" /> Device Telemetry & Active Sessions
+                <FiShield className="text-emerald-400" /> Devices & active sessions
               </div>
               <p className="text-xs text-gray-400">
                 To protect against unauthorized access and power your Active Devices & Sessions Manager, we record your browser name, operating system and device type (taken from your User-Agent), your IP address and the time of last activity alongside a hashed session token. This is used for authentication security and account fraud prevention. A session record is kept until you sign out, revoke that device, or it expires (7 days after its last renewal).
@@ -128,7 +128,7 @@ const PrivacyPolicy = () => {
           <p>
             We implement defense-in-depth security standards across all application layers:
           </p>
-          <div className="bg-[#0b0b0b] border border-white/[0.06] rounded-xl p-4 space-y-2 text-xs font-mono text-gray-400">
+          <div className="bg-[#0b0b0b] border border-white/[0.06] rounded-xl p-4 space-y-2 text-xs font-ui text-gray-400">
             <div className="text-emerald-400 font-semibold">Security Highlights:</div>
             <div>• Passwords salted and hashed with bcrypt (12 rounds)</div>
             <div>• Refresh tokens cryptographically hashed with SHA-256 at rest (zero plaintext storage)</div>

@@ -71,15 +71,15 @@ const UnifiedDashboard = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.2 }}
       >
-        <div className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 mb-3">
+        <div className="inline-flex items-center gap-2 text-xs font-ui text-zinc-400 mb-3">
           <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
-          <span className="tracking-wider uppercase font-semibold text-zinc-300">Developer Cockpit // Telemetry Synced</span>
+          <span className="tracking-wider font-semibold text-zinc-300">Your dashboard</span>
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-[-0.035em] mb-2.5">
           Welcome back, <span className="text-white">{user?.username || "Engineer"}</span>
         </h1>
         <p className="text-zinc-400 text-sm sm:text-base max-w-2xl leading-relaxed">
-          Algorithmic problem tracking, curated sheet mastery, and system architecture blueprints in a single engineering cockpit.
+          Your DSA progress and saved project ideas in one place.
         </p>
       </motion.div>
 
@@ -99,14 +99,14 @@ const UnifiedDashboard = () => {
             ) : (
               [
                 {
-                  label: "Problems Mastered",
+                  label: "Problems solved",
                   value: stats.totalSolved,
                   sub: "Across all sheets",
                   icon: <FaCheckCircle className="text-emerald-400 text-sm" />,
                   color: "text-white",
                 },
                 {
-                  label: "Curricula In Flight",
+                  label: "Sheets in progress",
                   value: stats.sheetsInProgress,
                   sub: "Active sheets",
                   icon: <FiActivity className="text-blue-400 text-sm" />,
@@ -120,16 +120,16 @@ const UnifiedDashboard = () => {
                   color: "text-white",
                 },
                 {
-                  label: "Readiness Index",
+                  label: "Overall progress",
                   value: `${stats.overallPct}%`,
-                  sub: "Overall curriculum coverage",
+                  sub: "Of all problems",
                   icon: <FiTrendingUp className="text-purple-400 text-sm" />,
                   color: "text-[#ffa116]",
                 },
               ].map((stat, i) => (
                 <div key={stat.label} className={`flex flex-col justify-between group p-2 sm:p-3 rounded-xl transition-all duration-200 hover:bg-white/[0.02] ${i > 0 ? "pt-4 sm:pt-0 sm:pl-6" : ""}`}>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 group-hover:text-zinc-200 transition-colors font-semibold">
+                    <span className="text-xs font-ui text-zinc-400 group-hover:text-zinc-200 transition-colors font-semibold">
                       {stat.label}
                     </span>
                     <div className="w-7 h-7 rounded-lg bg-white/[0.03] border border-white/[0.08] flex items-center justify-center group-hover:border-white/[0.2] transition-colors">
@@ -137,10 +137,10 @@ const UnifiedDashboard = () => {
                     </div>
                   </div>
                   <div>
-                    <div className={`font-mono text-2xl sm:text-3xl font-bold tracking-tight mb-1 ${stat.color}`}>
+                    <div className={`font-ui text-2xl sm:text-3xl font-bold tracking-tight mb-1 ${stat.color}`}>
                       {stat.value}
                     </div>
-                    <p className="text-[11px] font-mono text-zinc-500 group-hover:text-zinc-400 transition-colors truncate">
+                    <p className="text-xs font-ui text-zinc-400 group-hover:text-zinc-400 transition-colors truncate">
                       {stat.sub}
                     </p>
                   </div>

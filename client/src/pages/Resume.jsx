@@ -151,7 +151,7 @@ const SectionCard = ({ section }) => {
         </div>
         <span className="font-display text-base sm:text-lg font-bold text-white flex-1">{section.title}</span>
         <FaChevronDown
-          className={`text-zinc-500 transition-transform duration-300 ${open ? "rotate-180 text-[#ffa116]" : ""}`}
+          className={`text-zinc-400 transition-transform duration-300 ${open ? "rotate-180 text-[#ffa116]" : ""}`}
         />
       </button>
       <div
@@ -172,10 +172,10 @@ const SectionCard = ({ section }) => {
 
           {/* Example */}
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-wider text-[#ffa116] font-semibold mb-2">
+            <p className="font-ui text-xs uppercase tracking-wider text-[#ffa116] font-semibold mb-2">
               Verified Production Example
             </p>
-            <pre className="bg-black/60 border border-white/[0.08] rounded-xl p-4 text-zinc-300 text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap font-mono selection:bg-[#ffa116]/30">
+            <pre className="bg-black/60 border border-white/[0.08] rounded-xl p-4 text-zinc-300 text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap font-ui selection:bg-[#ffa116]/30">
               {section.example}
             </pre>
           </div>
@@ -216,7 +216,7 @@ const Resume = () => {
       {/* Section-by-section guide */}
       <div className="mb-14">
         <h2 className="font-display text-2xl font-bold text-white tracking-tight mb-1">
-          Curated Section Blueprint
+          Recommended section order
         </h2>
         <p className="text-zinc-400 text-xs sm:text-sm mb-6">
           Inspect each section's structural rules and verified high-signal examples.
@@ -290,9 +290,9 @@ const Resume = () => {
                 <span className="font-display text-sm font-bold text-white group-hover:text-[#ffa116] transition-colors">
                   {tool.name}
                 </span>
-                <FiExternalLink className="text-xs text-zinc-500 group-hover:text-white transition-colors" />
+                <FiExternalLink className="text-xs text-zinc-400 group-hover:text-white transition-colors" />
               </div>
-              <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">{tool.desc}</p>
+              <p className="text-xs text-zinc-400 leading-relaxed font-sans">{tool.desc}</p>
             </a>
           ))}
         </div>

@@ -13,15 +13,11 @@ const HeroSection = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         {/* ── LEFT PANE: Mission, Editorial Typography, Direct CTA (5 Columns) ── */}
         <div className="min-w-0 lg:col-span-5 flex flex-col justify-center space-y-6 sm:space-y-7">
-          {/* Product Purpose Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.1] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] w-fit text-left">
+          {/* Eyebrow */}
+          <p className="flex items-center gap-2 font-ui text-sm font-medium text-zinc-300">
             <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
-            <span className="font-mono text-[10.5px] uppercase tracking-wider text-zinc-300 font-semibold">
-              Software Engineering Placement Suite
-            </span>
-            <span className="text-zinc-600">·</span>
-            <span className="text-[11px] text-zinc-400 font-medium">DSA · Systems · CS Core</span>
-          </div>
+            Interview prep for software engineers
+          </p>
 
           {/* Left-Aligned High-Contrast Display Headline with Specular Sheen */}
           <h1 className="font-display text-4xl sm:text-5xl lg:text-[54px] font-black tracking-[-0.035em] text-white leading-[1.06]">
@@ -33,24 +29,8 @@ const HeroSection = () => {
 
           {/* Authoritative Subtitle */}
           <p className="text-sm sm:text-base text-zinc-400 leading-relaxed font-normal max-w-lg">
-            A unified technical cockpit replacing 15 scattered tabs. Vetted algorithmic patterns, low-level CS internals, and production-grade system blueprints engineered for real technical rounds.
+            One place for interview prep: curated DSA sheets, CS notes, roadmaps and AI project ideas, instead of 15 scattered tabs.
           </p>
-
-          {/* Capability Tags */}
-          <div className="flex flex-wrap items-center gap-2 pt-1 font-mono text-[11px]">
-            <span className="px-2.5 py-1 rounded-lg bg-zinc-900/80 border border-white/[0.08] text-zinc-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
-              75 Core Patterns
-            </span>
-            <span className="px-2.5 py-1 rounded-lg bg-zinc-900/80 border border-white/[0.08] text-zinc-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-              Atomic DB Sync
-            </span>
-            <span className="px-2.5 py-1 rounded-lg bg-zinc-900/80 border border-white/[0.08] text-zinc-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              Low-Level CS
-            </span>
-          </div>
 
           {/* Action Strip with Hardware Physics */}
           <div className="flex flex-wrap items-center gap-3.5 pt-2">
@@ -82,9 +62,9 @@ const HeroSection = () => {
           </div>
 
           {/* Target Placement Ticker */}
-          <div className="pt-4 border-t border-white/[0.07] flex flex-wrap items-center gap-2 font-mono text-[11px] text-zinc-400">
-            <span className="text-zinc-500 uppercase tracking-wider font-semibold flex items-center gap-1">
-              <FiShield className="text-[#ffa116]" /> Curriculum Scope:
+          <div className="pt-2 flex flex-wrap items-center gap-2 font-ui text-xs text-zinc-400">
+            <span className="text-zinc-300 font-semibold flex items-center gap-1">
+              <FiShield className="text-[#ffa116]" /> What's covered:
             </span>
             <span className="text-zinc-300 font-medium">Blind 75 · NeetCode 150 · Striver SDE · Low-Level CS</span>
           </div>

@@ -43,12 +43,12 @@ const Roadmap = () => {
 
               <div className="flex items-center gap-1.5">
                 {r.recommended && (
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/30 text-[#ffa116]">
+                  <span className="font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/30 text-[#ffa116]">
                     Core Track
                   </span>
                 )}
                 {r.isNew && (
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                  <span className="font-ui text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                     Updated
                   </span>
                 )}
@@ -61,7 +61,7 @@ const Roadmap = () => {
                 {r.title}
               </h3>
 
-              <div className="flex items-center gap-2 font-mono text-xs text-zinc-400 mb-3">
+              <div className="flex items-center gap-2 font-ui text-xs text-zinc-400 mb-3">
                 <span>{r.duration}</span>
                 <span className="text-white/20">/</span>
                 <span>{r.level}</span>
@@ -75,9 +75,9 @@ const Roadmap = () => {
             {/* CTA */}
             <Link
               to={`/roadmaps/${r.slug}`}
-              className="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-display font-semibold flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] text-zinc-200 hover:amber-specular-button transition-all duration-200 select-none"
+              className="w-full py-2.5 px-4 min-h-[44px] rounded-xl text-xs sm:text-sm font-display font-semibold flex items-center justify-center gap-2 bg-white/[0.04] border border-white/[0.08] text-zinc-200 hover:amber-specular-button transition-all duration-200 select-none"
             >
-              Explore Curriculum <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
+              Explore roadmap <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         ))}

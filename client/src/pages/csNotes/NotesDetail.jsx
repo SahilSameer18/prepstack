@@ -10,7 +10,7 @@ const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderCla
   
   return (
     <div className={`mb-6 p-5 sm:p-6 rounded-2xl border ${bgClass} ${borderClass} shadow-sm text-left`}>
-      <h4 className={`flex items-center gap-2 text-xs font-mono font-bold mb-3 uppercase tracking-wider ${colorClass}`}>
+      <h4 className={`flex items-center gap-2 text-xs font-ui font-bold mb-3 uppercase tracking-wider ${colorClass}`}>
         {Icon && <Icon className="text-sm" />}
         {title}
       </h4>
@@ -85,7 +85,7 @@ export default function NotesDetail() {
             <FiChevronLeft className="text-base" />
           </Link>
           <div className="min-w-0 text-left">
-            <p className="text-[10px] text-zinc-400 font-mono uppercase tracking-widest font-semibold">{subjectTitle}</p>
+            <p className="text-xs text-zinc-400 font-ui font-semibold">{subjectTitle}</p>
             <p className="text-sm font-semibold text-white truncate">{activeTopic?.name || 'Select topic'}</p>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function NotesDetail() {
       {/* ── Sidebar ── */}
       <div
         className={`
-          fixed md:sticky top-0 md:top-[80px]
+          fixed left-0 md:left-auto md:sticky top-0 md:top-[80px]
           h-screen md:h-[calc(100vh-80px)]
           w-[280px] md:w-64
           bg-[#0c0c0e]
@@ -146,7 +146,7 @@ export default function NotesDetail() {
         {/* Subject Title */}
         <div className="px-4 pt-4 pb-3 border-b border-white/[0.06] flex-shrink-0">
           <h2 className="font-display text-base font-bold text-white mb-0.5">{subjectTitle}</h2>
-          <p className="font-mono text-xs text-zinc-400">{totalTopics} topics</p>
+          <p className="font-ui text-xs text-zinc-400">{totalTopics} topics</p>
         </div>
 
         {/* Topic List */}
@@ -154,7 +154,7 @@ export default function NotesDetail() {
           <div className="px-3 space-y-5">
             {sections.map((section, sIdx) => (
               <div key={sIdx}>
-                <p className="text-[10px] font-mono font-semibold text-zinc-400 uppercase tracking-wider mb-1.5 px-2">
+                <p className="text-xs font-ui font-semibold text-zinc-400 mb-1.5 px-2">
                   {section.title}
                 </p>
                 <ul className="space-y-0.5">
@@ -197,9 +197,9 @@ export default function NotesDetail() {
               transition={{ duration: 0.15 }}
             >
               {/* Breadcrumb */}
-              <div className="flex items-center gap-1.5 text-xs text-zinc-400 mb-5 font-mono">
+              <div className="flex items-center gap-1.5 text-xs text-zinc-400 mb-5 font-ui">
                 <Link to="/notes" className="hover:text-zinc-200 transition-colors">{subjectTitle}</Link>
-                <FiChevronRight className="text-xs text-zinc-600" />
+                <FiChevronRight className="text-xs text-zinc-400" />
                 <span className="text-zinc-200 truncate">{activeTopic.name}</span>
               </div>
 
@@ -290,7 +290,7 @@ export default function NotesDetail() {
 
               {activeTopic.followUps && (
                 <div className="mt-8 pt-6 border-t border-white/[0.08] text-left">
-                  <h4 className="text-[11px] font-mono font-bold text-zinc-400 uppercase tracking-wider mb-3.5">
+                  <h4 className="text-xs font-ui font-bold text-zinc-400 mb-3.5">
                     Interview Follow-up Questions
                   </h4>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -325,7 +325,7 @@ export default function NotesDetail() {
                         }}
                         className="group flex flex-col items-start p-4 rounded-xl border border-white/[0.08] bg-[#0c0c0e] hover:border-white/[0.2] hover:bg-white/[0.02] transition-colors text-left"
                       >
-                        <span className="flex items-center gap-1.5 text-xs text-zinc-400 font-mono mb-1">
+                        <span className="flex items-center gap-1.5 text-xs text-zinc-400 font-ui mb-1">
                           <FiChevronLeft className="group-hover:-translate-x-0.5 transition-transform" />
                           Previous Topic
                         </span>
@@ -343,7 +343,7 @@ export default function NotesDetail() {
                         }}
                         className="group flex flex-col items-end p-4 rounded-xl border border-white/[0.08] bg-[#0c0c0e] hover:border-[#ffa116]/30 hover:bg-[#ffa116]/[0.02] transition-colors text-right sm:col-start-2"
                       >
-                        <span className="flex items-center gap-1.5 text-xs text-zinc-400 font-mono mb-1">
+                        <span className="flex items-center gap-1.5 text-xs text-zinc-400 font-ui mb-1">
                           Next Topic
                           <FiChevronRight className="group-hover:translate-x-0.5 transition-transform text-[#ffa116]" />
                         </span>
@@ -358,7 +358,7 @@ export default function NotesDetail() {
 
             </motion.div>
           ) : (
-            <div className="flex items-center justify-center h-64 text-zinc-400 text-sm font-mono">
+            <div className="flex items-center justify-center h-64 text-zinc-400 text-sm font-ui">
               Select a topic from the sidebar to start reading.
             </div>
           )}

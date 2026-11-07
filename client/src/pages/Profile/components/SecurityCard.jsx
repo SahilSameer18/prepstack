@@ -107,28 +107,28 @@ const SecurityCard = () => {
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
       <div className="pb-4 border-b border-white/[0.06]">
         <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
-          <FiShield className="text-[#ffa116]" /> Cryptographic Security & Credentials
+          <FiShield className="text-[#ffa116]" /> Sign-in & security
         </h2>
-        <p className="text-xs font-mono text-zinc-400 mt-1">Manage single sign-on OAuth linkages and password hashing.</p>
+        <p className="text-xs font-ui text-zinc-400 mt-1">Link your Google account and manage your password.</p>
       </div>
 
       <div className="space-y-4">
         {/* Google Provider Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-white/[0.08] bg-[#121216] gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-[#121216] gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300 text-lg">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center text-zinc-300 text-lg">
               <FaGoogle />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Google Workspace OAuth</p>
-              <p className="text-xs font-mono text-zinc-400">
+              <p className="text-sm font-semibold text-white">Google account</p>
+              <p className="text-xs font-ui text-zinc-400">
                 {isGoogleLinked ? "Linked for passwordless SSO login" : "No external Google account linked"}
               </p>
             </div>
           </div>
 
           {isGoogleLinked ? (
-            <div className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 self-start sm:self-auto flex items-center gap-1.5">
+            <div className="text-xs font-ui font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 self-start sm:self-auto flex items-center gap-1.5">
               <FiCheck /> Linked & Verified
             </div>
           ) : (
@@ -144,15 +144,15 @@ const SecurityCard = () => {
         </div>
 
         {/* Password Row */}
-        <div className="p-4 rounded-xl border border-white/[0.08] bg-[#121216] space-y-4">
+        <div className="p-4 rounded-xl bg-[#121216] space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300 text-lg">
+              <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center text-zinc-300 text-lg">
                 <FiLock />
               </div>
               <div>
                 <p className="text-sm font-semibold text-white">Account Password</p>
-                <p className="text-xs font-mono text-zinc-400">
+                <p className="text-xs font-ui text-zinc-400">
                   {user.hasPassword
                     ? "Encrypted bcrypt password configured for direct login"
                     : "No password configured (SSO-only account)"}
@@ -166,7 +166,7 @@ const SecurityCard = () => {
                 setShowPasswordSection(!showPasswordSection);
                 setPasswordError(null);
               }}
-              className="px-4 py-2 text-xs font-mono font-semibold rounded-xl bg-white/[0.05] border border-white/[0.08] text-white hover:bg-white/[0.1] transition-colors self-start sm:self-auto cursor-pointer min-h-[44px]"
+              className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-white/[0.05] text-white hover:bg-white/[0.1] transition-colors self-start sm:self-auto cursor-pointer min-h-[44px]"
             >
               {showPasswordSection ? "Close Form" : user.hasPassword ? "Change Password" : "Set Password"}
             </button>
@@ -183,7 +183,7 @@ const SecurityCard = () => {
 
                 {user.hasPassword && (
                   <div className="space-y-1.5">
-                    <label className="text-xs font-mono font-medium text-zinc-300">Current Password</label>
+                    <label className="text-xs font-ui font-medium text-zinc-300">Current Password</label>
                     <div className="relative flex items-center bg-[#0c0c0e] border border-white/[0.08] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
                       <input
                         type={showCurrentPw ? "text" : "password"}
@@ -206,7 +206,7 @@ const SecurityCard = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-mono font-medium text-zinc-300">
+                    <label className="text-xs font-ui font-medium text-zinc-300">
                       {user.hasPassword ? "New Password" : "Create Password"}
                     </label>
                     <div className="relative flex items-center bg-[#0c0c0e] border border-white/[0.08] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
@@ -230,7 +230,7 @@ const SecurityCard = () => {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-mono font-medium text-zinc-300">Confirm New Password</label>
+                    <label className="text-xs font-ui font-medium text-zinc-300">Confirm New Password</label>
                     <div className="flex items-center bg-[#0c0c0e] border border-white/[0.08] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
                       <input
                         type="password"
@@ -249,7 +249,7 @@ const SecurityCard = () => {
                   <button
                     type="button"
                     onClick={() => setShowPasswordSection(false)}
-                    className="px-4 py-2 text-xs font-mono font-semibold rounded-xl bg-white/[0.05] text-zinc-400 hover:bg-white/[0.1] transition-colors cursor-pointer min-h-[44px]"
+                    className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-white/[0.05] text-zinc-400 hover:bg-white/[0.1] transition-colors cursor-pointer min-h-[44px]"
                   >
                     Cancel
                   </button>

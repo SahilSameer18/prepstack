@@ -17,7 +17,7 @@ const PLACEMENT_DEBRIEFS = [
     companyColor: "text-blue-400 bg-blue-500/10 border-blue-500/20",
     round: "OS Internals & Concurrency",
     text: "Most candidates bomb the low-level CS round. The synthesized OS notes on mutex spinlocks and deadlock conditions covered the exact memory isolation question my interviewer pressed me on.",
-    stats: "OS & DBMS Mastered",
+    stats: "OS & DBMS covered",
   },
   {
     name: "Rohan Nair",
@@ -43,7 +43,7 @@ const Testimonial = () => {
   return (
     <section className="relative">
       <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-16">
-        <p className="text-xs font-mono uppercase tracking-widest text-[#ffa116] font-semibold mb-3">
+        <p className="text-xs font-ui uppercase tracking-widest text-[#ffa116] font-semibold mb-3">
           Candidate Case Studies
         </p>
         <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
@@ -70,11 +70,11 @@ const Testimonial = () => {
                   >
                     {item.company}
                   </span>
-                  <span className="font-mono text-[11px] text-zinc-400">
+                  <span className="font-ui text-xs text-zinc-400">
                     {item.role}
                   </span>
                 </div>
-                <span className="font-mono text-[10px] text-zinc-500 hidden sm:inline-block">
+                <span className="font-ui text-xs text-zinc-400 hidden sm:inline-block">
                   {item.round}
                 </span>
               </div>
@@ -91,9 +91,9 @@ const Testimonial = () => {
                 <h4 className="font-display text-sm font-bold text-white group-hover:text-[#ffa116] transition-colors">
                   {item.name}
                 </h4>
-                <p className="font-mono text-[11px] text-zinc-500">{item.stats}</p>
+                <p className="font-ui text-xs text-zinc-400">{item.stats}</p>
               </div>
-              <span className="font-mono text-[10px] text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.08]">
+              <span className="font-ui text-xs text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded">
                 Interview Case Study
               </span>
             </div>

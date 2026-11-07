@@ -20,7 +20,7 @@ const COMMON_PATTERNS = [
   'Bit Manipulation',
 ];
 
-const LABEL_CLASS = 'text-[10px] font-mono text-zinc-400 uppercase tracking-wider';
+const LABEL_CLASS = 'text-xs font-ui text-zinc-400 uppercase tracking-wider';
 
 // A row of toggle chips (pattern / time complexity / space complexity). `selectedClass` is a full literal
 // class string so Tailwind can see it.
@@ -35,7 +35,7 @@ const ChipGroup = ({ label, labelClassName, options, selected, onSelect, selecte
             key={option}
             type="button"
             onClick={() => onSelect(isSelected ? '' : option)}
-            className={`text-[11px] font-mono px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
+            className={`text-xs font-ui px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
               isSelected
                 ? selectedClass
                 : 'bg-white/[0.03] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/15'
@@ -63,12 +63,12 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
         <div className="bg-[#0b0b0f] border-t border-white/[0.06] px-5 py-4 space-y-3.5">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-amber-400/90 flex items-center gap-1.5">
+              <span className="text-xs font-ui font-semibold text-amber-400/90 flex items-center gap-1.5">
                 <FiFileText className="text-amber-400" />
-                Approach & Invariants Vault
+                Your notes
               </span>
               <span
-                className="text-[10px] font-mono text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]"
+                className="text-xs font-ui text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded"
                 title="Notes are saved only in this browser on this device. They won't appear on other devices and are lost if you clear your browser data."
               >
                 This device only
@@ -80,14 +80,14 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
                 <button
                   type="button"
                   onClick={onClear}
-                  className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs font-ui text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
                   title="Clear note for this problem"
                 >
                   <FiTrash2 className="text-xs" />
                   Clear
                 </button>
               )}
-              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400/80">
+              <span className="inline-flex items-center gap-1 text-xs font-ui text-emerald-400/80">
                 <FiCheck className="text-xs text-emerald-400" />
                 Auto-saved
               </span>
@@ -104,7 +104,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
 
           {/* Pattern Chips */}
           <ChipGroup
-            label="Algorithmic Pattern"
+            label="Pattern"
             labelClassName={LABEL_CLASS}
             options={COMMON_PATTERNS}
             selected={noteData?.pattern}
@@ -115,7 +115,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
           {/* Complexity Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
             <ChipGroup
-              label={<><FiClock className="text-[10px] text-zinc-400" />Time Complexity</>}
+              label={<><FiClock className="text-xs text-zinc-400" />Time Complexity</>}
               labelClassName={`${LABEL_CLASS} flex items-center gap-1`}
               options={TIME_COMPLEXITIES}
               selected={noteData?.timeComplexity}
@@ -123,7 +123,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
               selectedClass="bg-blue-500/20 border-blue-500/50 text-blue-300 font-semibold"
             />
             <ChipGroup
-              label={<><FiCpu className="text-[10px] text-zinc-400" />Space Complexity</>}
+              label={<><FiCpu className="text-xs text-zinc-400" />Space Complexity</>}
               labelClassName={`${LABEL_CLASS} flex items-center gap-1`}
               options={SPACE_COMPLEXITIES}
               selected={noteData?.spaceComplexity}
@@ -135,14 +135,14 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
           {/* Approach & Invariant Textarea */}
           <div className="space-y-1.5 pt-0.5">
             <label className={LABEL_CLASS}>
-              Core Approach, Loop Invariants & Edge Cases
+              Approach, edge cases and things to remember
             </label>
             <textarea
               rows={3}
               value={noteData?.approach || ''}
               onChange={(e) => onUpdate({ approach: e.target.value })}
               placeholder="e.g. Invariant: Maintain a monotonically decreasing stack of indices. When current element exceeds stack top, pop and compute trapped water width/height. Edge cases: empty array, strictly decreasing values."
-              className="w-full bg-[#131317] border border-white/[0.08] focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 rounded-lg p-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none transition-all resize-y font-mono leading-relaxed"
+              className="w-full bg-[#131317] border border-white/[0.08] focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 rounded-lg p-3 text-xs text-zinc-200 placeholder:text-zinc-400 focus:outline-none transition-all resize-y font-ui leading-relaxed"
             />
           </div>
         </div>

@@ -146,8 +146,8 @@ const SheetsDetail = () => {
                 className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
               >
                 <div className="flex items-center gap-4 min-w-0">
-                  <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex-shrink-0">
-                    <span className="text-sm font-bold text-white font-mono">{index + 1}</span>
+                  <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-white/[0.04] flex-shrink-0">
+                    <span className="text-sm font-bold text-white font-ui">{index + 1}</span>
                   </div>
                   <div className="min-w-0 text-left">
                     <h2 className="text-sm md:text-base font-semibold text-zinc-100 truncate">{topic.title || topic.topic || `Topic ${index + 1}`}</h2>
@@ -158,7 +158,7 @@ const SheetsDetail = () => {
                           style={{ width: `${topicPct}%`, background: meta.accentColor, opacity: 0.8 }}
                         />
                       </div>
-                      <span className="text-[11px] text-zinc-400 font-mono">{topicSolvedCount}/{topicTotal}</span>
+                      <span className="text-xs text-zinc-400 font-ui">{topicSolvedCount}/{topicTotal}</span>
                     </div>
                   </div>
                 </div>

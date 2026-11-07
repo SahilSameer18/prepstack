@@ -80,15 +80,15 @@ const SessionsCard = () => {
           </div>
           <div>
             <h3 className="font-display text-sm font-bold text-white flex items-center gap-2">
-              Active Devices & Cryptographic Sessions
+              Devices signed in to your account
               {sessions.length > 0 && (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.08]">
+                <span className="text-xs font-ui px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.08]">
                   {sessions.length} {sessions.length === 1 ? 'device' : 'devices'}
                 </span>
               )}
             </h3>
-            <p className="text-xs font-mono text-zinc-400 mt-0.5">
-              Real-time active tokens hashed at rest. Revoke access from stale devices.
+            <p className="text-xs font-ui text-zinc-400 mt-0.5">
+              Sign out any device you don't use or recognise.
             </p>
           </div>
         </div>
@@ -97,11 +97,11 @@ const SessionsCard = () => {
           type="button"
           onClick={fetchSessions}
           disabled={loadingSessions}
-          className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs font-mono font-medium text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[44px]"
+          className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-white/[0.04] text-xs font-ui font-medium text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[44px]"
           title="Refresh active sessions"
         >
           <FiRefreshCw className={loadingSessions ? "animate-spin text-[#ffa116]" : "text-zinc-400"} />
-          <span>{loadingSessions ? "Syncing..." : "Sync Sessions"}</span>
+          <span>{loadingSessions ? "Refreshing..." : "Refresh"}</span>
         </button>
       </div>
 
@@ -109,7 +109,7 @@ const SessionsCard = () => {
         {loadingSessions ? (
           <div className="space-y-3">
             {[1, 2].map((i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] animate-pulse">
+              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] animate-pulse">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-white/[0.05]" />
                   <div className="space-y-1.5">
@@ -122,7 +122,7 @@ const SessionsCard = () => {
             ))}
           </div>
         ) : sessions.length === 0 ? (
-          <div className="text-center py-6 text-xs font-mono text-zinc-500">
+          <div className="text-center py-6 text-xs font-ui text-zinc-400">
             No active device records found.
           </div>
         ) : (
@@ -154,20 +154,20 @@ const SessionsCard = () => {
                         {session.device || "Unknown Device"}
                       </p>
                       {session.isCurrent ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-ui font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                           Current Device
                         </span>
                       ) : (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.04] text-zinc-400 border border-white/[0.08]">
-                          Remote Session
+                        <span className="text-xs font-ui px-2 py-0.5 rounded-full bg-white/[0.04] text-zinc-400 border border-white/[0.08]">
+                          Other device
                         </span>
                       )}
                     </div>
 
-                    <p className="text-[11px] font-mono text-zinc-400 mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+                    <p className="text-xs font-ui text-zinc-400 mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
                       <span className="text-zinc-300">IP: {session.ip}</span>
-                      <span className="text-zinc-600">•</span>
+                      <span className="text-zinc-400">•</span>
                       <span>{formatRelativeTime(session.lastActive)}</span>
                     </p>
                   </div>
@@ -175,22 +175,22 @@ const SessionsCard = () => {
 
                 <div className="self-end sm:self-center shrink-0">
                   {session.isCurrent ? (
-                    <span className="text-xs font-mono text-zinc-500 px-3 py-1.5">
-                      Active Browser
+                    <span className="text-xs font-ui text-zinc-400 px-3 py-1.5">
+                      This browser
                     </span>
                   ) : (
                     <button
                       type="button"
                       onClick={() => handleRevokeSession(session.id, false)}
                       disabled={revokingSessionId === session.id}
-                      className="px-3 py-1.5 rounded-xl text-xs font-mono font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 hover:border-rose-500/40 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[36px]"
+                      className="px-3 py-1.5 min-h-[44px] sm:min-h-0 rounded-xl text-xs font-ui font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 hover:border-rose-500/40 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[36px]"
                     >
                       {revokingSessionId === session.id ? (
                         <InlineSpinner size={12} color="#f87171" />
                       ) : (
                         <FiTrash2 className="text-xs" />
                       )}
-                      {revokingSessionId === session.id ? "Revoking..." : "Revoke Session"}
+                      {revokingSessionId === session.id ? "Signing out..." : "Sign out device"}
                     </button>
                   )}
                 </div>

@@ -60,10 +60,10 @@ const DeleteAccountCard = () => {
       <div className="bg-rose-500/[0.02] border border-rose-500/20 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden shadow-xl">
         <div>
           <h3 className="font-display text-sm font-bold text-rose-400 flex items-center gap-2">
-            <FiAlertTriangle /> Permanent Account Deletion (GDPR Right to Erasure)
+            <FiAlertTriangle /> Delete account
           </h3>
-          <p className="text-xs font-mono text-zinc-400 mt-1 max-w-xl leading-relaxed">
-            Permanently wipe your identity profile, solved DSA practice tracker, and compiled architecture blueprints. This action is irreversible.
+          <p className="text-xs font-ui text-zinc-400 mt-1 max-w-xl leading-relaxed">
+            Permanently delete your profile, your solved-problem progress and your saved project ideas. This action is irreversible.
           </p>
         </div>
 
@@ -74,7 +74,7 @@ const DeleteAccountCard = () => {
             setDeleteConfirmation("");
             setShowDeleteModal(true);
           }}
-          className="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 hover:border-rose-500/40 transition-colors font-mono font-semibold text-xs cursor-pointer shrink-0 min-h-[44px]"
+          className="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 hover:border-rose-500/40 transition-colors font-ui font-semibold text-xs cursor-pointer shrink-0 min-h-[44px]"
         >
           Delete Account...
         </button>
@@ -115,10 +115,10 @@ const DeleteAccountCard = () => {
 
               <div className="text-xs text-zinc-300 space-y-2 leading-relaxed">
                 <p>This action is irreversible. The following data will be permanently wiped:</p>
-                <ul className="list-disc list-inside space-y-1 text-zinc-400 pl-1 font-mono text-[11px]">
+                <ul className="list-disc list-inside space-y-1 text-zinc-400 pl-1 font-ui text-xs">
                   <li>All solved DSA problem tracker entries across all sheets.</li>
                   <li>All compiled system architecture blueprints.</li>
-                  <li>All security credentials and active device sessions.</li>
+                  <li>Your sign-in details and all signed-in devices.</li>
                 </ul>
               </div>
 
@@ -126,7 +126,7 @@ const DeleteAccountCard = () => {
 
               <form onSubmit={handleDeleteAccount} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-mono font-medium text-zinc-300">
+                  <label className="text-xs font-ui font-medium text-zinc-300">
                     {user.hasPassword ? (
                       "Enter current password to verify:"
                     ) : (
@@ -139,7 +139,7 @@ const DeleteAccountCard = () => {
                     onChange={(e) => setDeleteConfirmation(e.target.value)}
                     placeholder={user.hasPassword ? "Enter current password" : user.email}
                     required
-                    className="w-full bg-[#121216] border border-white/[0.08] focus:border-rose-500/50 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition-colors font-mono"
+                    className="w-full bg-[#121216] border border-white/[0.08] focus:border-rose-500/50 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition-colors font-ui"
                   />
                 </div>
 
@@ -148,7 +148,7 @@ const DeleteAccountCard = () => {
                     type="button"
                     onClick={() => setShowDeleteModal(false)}
                     disabled={isDeletingAccount}
-                    className="px-4 py-2 text-xs font-mono font-semibold rounded-xl bg-white/[0.05] text-zinc-300 hover:bg-white/[0.1] transition-colors cursor-pointer min-h-[44px]"
+                    className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-white/[0.05] text-zinc-300 hover:bg-white/[0.1] transition-colors cursor-pointer min-h-[44px]"
                   >
                     Cancel
                   </button>

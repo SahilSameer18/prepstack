@@ -53,17 +53,17 @@ const HeroProductShowcase = () => {
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 sm:px-6 py-3.5 border-b border-white/[0.08] bg-[#0e0e12]">
         {/* Workspace status / file path header */}
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.08] text-zinc-400">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/[0.04] text-zinc-400">
             <FiTerminal className="text-xs text-[#ffa116]" />
-            <span className="text-[10px] font-mono tracking-wider text-zinc-300 font-semibold uppercase">RUNTIME</span>
+            <span className="text-xs font-ui tracking-wider text-zinc-300 font-semibold">Demo</span>
           </div>
-          <span className="hidden sm:inline-block font-mono text-[11px] text-zinc-400 font-medium">
+          <span className="hidden sm:inline-block font-ui text-xs text-zinc-400 font-medium">
             prepstack-workspace / <span className="text-zinc-200">{TABS[activeTab].file}</span>
           </span>
         </div>
 
         {/* ── SILKY SEGMENTED CONTROL ── */}
-        <div className="relative flex items-center w-full sm:w-auto bg-black/60 p-1 rounded-xl border border-white/[0.08]">
+        <div className="relative flex items-center w-full sm:w-auto bg-black/60 p-1 rounded-xl">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -83,7 +83,7 @@ const HeroProductShowcase = () => {
                   />
                 )}
                 {tab.icon}
-                <span className="font-display text-[11px] sm:text-xs">{tab.name}</span>
+                <span className="font-display text-xs sm:text-xs">{tab.name}</span>
               </button>
             );
           })}
@@ -105,16 +105,16 @@ const HeroProductShowcase = () => {
             >
               <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
                 <div>
-                  <p className="text-[10.5px] font-mono uppercase tracking-widest text-[#ffa116] font-semibold flex items-center gap-1.5">
+                  <p className="text-xs font-ui uppercase tracking-widest text-[#ffa116] font-semibold flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
-                    Interactive Cockpit · Click to toggle
+                    Try it: click a problem to mark it solved
                   </p>
                   <h3 className="font-display text-white text-sm sm:text-base font-bold tracking-tight mt-0.5">
                     Blind 75 Core Placement Patterns
                   </h3>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="font-mono text-xs text-zinc-400">
+                  <span className="font-ui text-xs text-zinc-400">
                     <span className="text-white font-bold">{solvedCount}</span>/{demoProblems.length} Solved
                   </span>
                   <div className="w-20 sm:w-28 h-1.5 bg-white/[0.08] rounded-full mt-1.5 overflow-hidden">
@@ -156,27 +156,27 @@ const HeroProductShowcase = () => {
                               : "border-white/25 group-hover:border-white/50"
                           }`}
                         >
-                          {problem.solved && <FaCheck className="text-[9px]" />}
+                          {problem.solved && <FaCheck className="text-xs" />}
                         </div>
                         <span
                           className={`text-xs sm:text-sm font-medium transition-colors truncate ${
                             problem.solved
-                              ? "line-through text-zinc-500"
+                              ? "line-through text-zinc-400"
                               : "text-zinc-200 group-hover:text-white"
                           }`}
                         >
                           {problem.title}
                         </span>
-                        <span className="hidden sm:inline-block font-mono text-[10.5px] text-zinc-500">
+                        <span className="hidden sm:inline-block font-ui text-xs text-zinc-400">
                           {problem.category}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="font-mono text-[10px] text-zinc-400 bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">
+                        <span className="font-ui text-xs text-zinc-400 bg-white/[0.04] px-1.5 py-0.5 rounded">
                           {problem.time}
                         </span>
-                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${diffBadge}`}>
+                        <span className={`text-xs font-ui px-2 py-0.5 rounded-md border ${diffBadge}`}>
                           {problem.diff}
                         </span>
                       </div>
@@ -193,15 +193,15 @@ const HeroProductShowcase = () => {
                     type="button"
                     onClick={runTestBenchmark}
                     disabled={isRunningTest}
-                    className="titanium-button text-xs font-mono py-2.5 sm:py-1.5 px-3.5 sm:px-3 min-h-[44px] sm:min-h-0 rounded-lg flex items-center gap-2 whitespace-nowrap cursor-pointer select-none"
+                    className="titanium-button text-xs font-ui py-2.5 sm:py-1.5 px-3.5 sm:px-3 min-h-[44px] sm:min-h-0 rounded-lg flex items-center gap-2 whitespace-nowrap cursor-pointer select-none"
                   >
-                    <FaPlay className={`text-[9px] text-[#ffa116] ${isRunningTest ? "animate-spin" : ""}`} />
+                    <FaPlay className={`text-xs text-[#ffa116] ${isRunningTest ? "animate-spin" : ""}`} />
                     <span>{isRunningTest ? "Running Benchmark..." : "Run Test Benchmark"}</span>
                     <span className="hidden sm:inline-flex"><span className="kbd-capsule">⌘↵</span></span>
                   </button>
 
-                  <span className="text-[11px] font-mono text-zinc-500 whitespace-nowrap">
-                    Engine: V8 Subprocess
+                  <span className="text-xs font-ui text-zinc-400 whitespace-nowrap">
+                    Demo only
                   </span>
                 </div>
 
@@ -210,13 +210,13 @@ const HeroProductShowcase = () => {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    className="mt-2.5 p-2.5 rounded-lg bg-emerald-950/25 border border-emerald-500/25 font-mono text-[11px] text-emerald-300 flex flex-wrap items-center justify-between gap-2"
+                    className="mt-2.5 p-2.5 rounded-lg bg-emerald-950/25 border border-emerald-500/25 font-ui text-xs text-emerald-300 flex flex-wrap items-center justify-between gap-2"
                   >
                     <div className="flex items-center gap-2">
                       <FaCheckCircle className="text-emerald-400 text-xs shrink-0" />
                       <span>Passed {testResult.casesPassed} test cases</span>
                     </div>
-                    <div className="flex items-center gap-3 text-[10.5px] text-zinc-400">
+                    <div className="flex items-center gap-3 text-xs text-zinc-400">
                       <span>Runtime: <strong className="text-emerald-300">{testResult.runtime}</strong> (Beats {testResult.runtimePercentile})</span>
                       <span>Memory: <strong className="text-emerald-300">{testResult.memory}</strong></span>
                     </div>
@@ -238,7 +238,7 @@ const HeroProductShowcase = () => {
             >
               <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
                 <div>
-                  <p className="text-[10.5px] font-mono uppercase tracking-widest text-cyan-400 font-semibold flex items-center gap-1.5">
+                  <p className="text-xs font-ui text-cyan-400 font-semibold flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
                     Interactive Kernel Simulator
                   </p>
@@ -248,7 +248,7 @@ const HeroProductShowcase = () => {
                 </div>
 
                 {/* Concurrency Selector */}
-                <div className="flex items-center bg-black/60 p-0.5 rounded-lg border border-white/[0.08] text-[10px] font-mono">
+                <div className="flex items-center bg-black/60 p-0.5 rounded-lg text-xs font-ui">
                   <button
                     type="button"
                     onClick={() => setConcurrencyMode("mutex")}
@@ -271,30 +271,30 @@ const HeroProductShowcase = () => {
               </div>
 
               {/* Simulation Architecture Diagram */}
-              <div className="bg-black/50 border border-white/[0.08] rounded-xl p-3.5 space-y-3 font-mono text-xs">
-                <div className="grid grid-cols-3 gap-2 text-center text-[10.5px]">
+              <div className="bg-black/50 rounded-xl p-3.5 space-y-3 font-ui text-xs">
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="p-2 rounded-lg bg-zinc-900/80 border border-white/[0.06]">
-                    <div className="text-zinc-500 text-[9px] uppercase">Thread 0 (Producer)</div>
+                    <div className="text-zinc-400 text-xs">Thread 0 (Producer)</div>
                     <div className="text-emerald-400 font-bold mt-1">EMIT_PACKET</div>
-                    <div className="text-[9px] text-zinc-400 mt-0.5">CPU Core 0</div>
+                    <div className="text-xs text-zinc-400 mt-0.5">CPU Core 0</div>
                   </div>
                   <div className="p-2 rounded-lg bg-zinc-900/80 border border-cyan-500/30 bg-cyan-950/10">
-                    <div className="text-zinc-500 text-[9px] uppercase">Shared Barrier</div>
+                    <div className="text-zinc-400 text-xs">Shared Barrier</div>
                     <div className="text-cyan-300 font-bold mt-1">
                       {concurrencyMode === "mutex" ? "MUTEX_HELD" : "CAS_EXCHANGE"}
                     </div>
-                    <div className="text-[9px] text-zinc-400 mt-0.5">[0x7ffd8a04]</div>
+                    <div className="text-xs text-zinc-400 mt-0.5">[0x7ffd8a04]</div>
                   </div>
                   <div className="p-2 rounded-lg bg-zinc-900/80 border border-white/[0.06]">
-                    <div className="text-zinc-500 text-[9px] uppercase">Thread 1 (Consumer)</div>
+                    <div className="text-zinc-400 text-xs">Thread 1 (Consumer)</div>
                     <div className={concurrencyMode === "mutex" ? "text-amber-400 font-bold mt-1" : "text-emerald-400 font-bold mt-1"}>
                       {concurrencyMode === "mutex" ? "BLOCKED_WAIT" : "DRAIN_BUFFER"}
                     </div>
-                    <div className="text-[9px] text-zinc-400 mt-0.5">CPU Core 1</div>
+                    <div className="text-xs text-zinc-400 mt-0.5">CPU Core 1</div>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.06] text-[11px] leading-relaxed flex items-center justify-between text-zinc-300">
+                <div className="p-2.5 rounded-lg bg-white/[0.02] text-xs leading-relaxed flex items-center justify-between text-zinc-300">
                   <span>
                     {concurrencyMode === "mutex"
                       ? "⚠️ Kernel context switch triggered: ~1,420ns latency penalty"
@@ -305,7 +305,7 @@ const HeroProductShowcase = () => {
                   </span>
                 </div>
 
-                <div className="text-[10px] text-zinc-500 pt-1 border-t border-white/[0.05]">
+                <div className="text-xs text-zinc-400 pt-1 border-t border-white/[0.05]">
                   <strong className="text-zinc-400">FAANG Question:</strong> "Explain how ring buffers prevent cache bouncing across L1/L2 data lines."
                 </div>
               </div>
@@ -324,7 +324,7 @@ const HeroProductShowcase = () => {
             >
               <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
                 <div>
-                  <p className="text-[10.5px] font-mono uppercase tracking-widest text-[#ffa116] font-semibold flex items-center gap-1.5">
+                  <p className="text-xs font-ui uppercase tracking-widest text-[#ffa116] font-semibold flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
                     Production Architecture Spec
                   </p>
@@ -332,19 +332,19 @@ const HeroProductShowcase = () => {
                     Distributed Sliding-Window Rate Limiter
                   </h3>
                 </div>
-                <span className="text-[10.5px] font-mono px-2.5 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/25 text-[#ffa116] font-bold">
+                <span className="text-xs font-ui px-2.5 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/25 text-[#ffa116] font-bold">
                   Scale: 100k req/s
                 </span>
               </div>
 
               {/* Topology Layers */}
-              <div className="space-y-2 font-mono text-xs">
-                <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.08] flex items-center justify-between">
+              <div className="space-y-2 font-ui text-xs">
+                <div className="p-2.5 rounded-xl bg-white/[0.02] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FiLayers className="text-[#ffa116] text-xs" />
                     <span className="text-zinc-200 text-xs">Edge API Gateway</span>
                   </div>
-                  <span className="text-[10px] text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded border border-white/[0.06]">
+                  <span className="text-xs text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded">
                     TLS 1.3 Termination · Envoy Proxy
                   </span>
                 </div>
@@ -354,22 +354,22 @@ const HeroProductShowcase = () => {
                     <FiShield className="text-[#ffa116] text-xs" />
                     <span className="text-white text-xs font-semibold">Sliding Window Core</span>
                   </div>
-                  <span className="text-[10px] text-[#ffa116] font-mono">
+                  <span className="text-xs text-[#ffa116] font-ui">
                     Redis Cluster + Lua Script Atomic Eval
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.08] flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-white/[0.02] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FiDatabase className="text-cyan-400 text-xs" />
                     <span className="text-zinc-200 text-xs">PostgreSQL WAL Logging</span>
                   </div>
-                  <span className="text-[10px] text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded border border-white/[0.06]">
+                  <span className="text-xs text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded">
                     Partitioned by User UUID · Async Sync
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 px-1 text-[11px] text-zinc-400">
+                <div className="flex items-center justify-between pt-1 px-1 text-xs text-zinc-400">
                   <span>Latency SLA: <strong className="text-white">p99 &lt; 2.4ms</strong></span>
                   <span>Fault Tolerance: <strong className="text-white">Multi-AZ Failover</strong></span>
                 </div>
@@ -379,17 +379,16 @@ const HeroProductShowcase = () => {
         </AnimatePresence>
 
         {/* ── WORKSPACE FOOTER ── */}
-        <div className="pt-3.5 border-t border-white/[0.07] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-zinc-500 mt-3">
-          <span className="font-mono text-[11px] flex items-center gap-2 text-zinc-400 whitespace-nowrap">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Telemetry: <span className="text-zinc-300">60 FPS · 0ms sync lag</span>
+        <div className="pt-3.5 border-t border-white/[0.07] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-zinc-400 mt-3">
+          <span className="font-ui text-xs flex items-center gap-2 text-zinc-400 whitespace-nowrap">
+            Interactive demo
           </span>
           <Link
             to={activeTab === 0 ? "/dsa" : activeTab === 1 ? "/notes" : "/ai-projects"}
             className="inline-flex items-center gap-1.5 py-2.5 sm:py-0 min-h-[44px] sm:min-h-0 text-[#ffa116] hover:text-[#ffb84d] font-semibold transition-colors text-xs shrink-0 whitespace-nowrap select-none group"
           >
             Launch Full Tool{" "}
-            <FaArrowRight className="text-[10px] transition-transform duration-150 group-hover:translate-x-0.5" />
+            <FaArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-0.5" />
           </Link>
         </div>
       </div>

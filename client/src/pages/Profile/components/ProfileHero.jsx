@@ -58,43 +58,38 @@ const ProfileHero = ({ user, avatarUrl }) => {
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight truncate">
             {user.username}
           </h1>
-          {user.hasPassword && (
-            <span className="self-center sm:self-auto text-[10px] font-mono font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-              Verified Identity
-            </span>
-          )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-xs sm:text-sm text-zinc-400 font-mono mb-6">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-xs sm:text-sm text-zinc-400 font-ui mb-6">
           <span className="flex items-center justify-center sm:justify-start gap-2 text-zinc-300 min-w-0 break-all">
-            <FaEnvelope className="text-zinc-500 text-xs shrink-0" /> {user.email}
+            <FaEnvelope className="text-zinc-400 text-xs shrink-0" /> {user.email}
           </span>
           <span className="flex items-center justify-center sm:justify-start gap-2">
-            <FiCalendar className="text-zinc-500 text-xs" /> Joined {joinDate}
+            <FiCalendar className="text-zinc-400 text-xs" /> Joined {joinDate}
           </span>
         </div>
 
         {/* Quick Stat Chips */}
         <div className="grid grid-cols-2 gap-3 max-w-md">
-          <div className="bg-[#121216] border border-white/[0.08] rounded-xl px-4 py-3 flex items-center gap-3">
+          <div className="bg-[#121216] rounded-xl px-3 sm:px-4 py-3 flex items-center gap-2.5 sm:gap-3 min-w-0">
             <div className="w-8 h-8 rounded-lg bg-[#ffa116]/10 text-[#ffa116] flex items-center justify-center text-sm shrink-0 border border-[#ffa116]/20">
               <FiCode />
             </div>
             <div>
-              <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase tracking-wider">DSA Mastered</div>
-              <div className="text-base font-mono font-bold text-white">
+              <div className="text-xs font-ui text-zinc-300 font-medium leading-tight">Problems solved</div>
+              <div className="text-base font-ui font-bold text-white">
                 {loadingStats ? <SkeletonStat width="w-8" height="h-5" /> : stats.solvedDSACount}
               </div>
             </div>
           </div>
 
-          <div className="bg-[#121216] border border-white/[0.08] rounded-xl px-4 py-3 flex items-center gap-3">
+          <div className="bg-[#121216] rounded-xl px-3 sm:px-4 py-3 flex items-center gap-2.5 sm:gap-3 min-w-0">
             <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-sm shrink-0 border border-blue-500/20">
               <FiGrid />
             </div>
             <div>
-              <div className="text-[10px] font-mono text-zinc-400 font-semibold uppercase tracking-wider">Blueprints</div>
-              <div className="text-base font-mono font-bold text-white">
+              <div className="text-xs font-ui text-zinc-300 font-medium leading-tight">Project ideas</div>
+              <div className="text-base font-ui font-bold text-white">
                 {loadingStats ? <SkeletonStat width="w-8" height="h-5" /> : stats.generatedProjectsCount}
               </div>
             </div>

@@ -18,17 +18,17 @@ const MetricsStrip = () => {
           >
             <div className="flex items-center gap-2 mb-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]/80 group-hover:scale-125 transition-transform" />
-              <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 group-hover:text-zinc-200 transition-colors">
+              <span className="font-ui text-xs text-zinc-400 group-hover:text-zinc-200 transition-colors">
                 METRIC 0{i + 1}
               </span>
             </div>
             <span className="font-display text-3xl sm:text-4xl font-black text-white tracking-tight group-hover:text-[#ffa116] transition-colors mb-1">
               {stat.value}
             </span>
-            <span className="font-display text-xs font-bold text-zinc-200 uppercase tracking-wider mb-1">
+            <span className="font-display text-xs font-bold text-zinc-200 mb-1">
               {stat.label}
             </span>
-            <span className="font-mono text-[11px] text-zinc-400 truncate">
+            <span className="font-ui text-xs text-zinc-400 truncate">
               {stat.detail}
             </span>
           </div>

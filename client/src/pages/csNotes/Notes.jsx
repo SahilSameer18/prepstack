@@ -97,11 +97,11 @@ const NoteCard = ({ s }) => {
           </div>
           <div className="flex items-center gap-1.5">
             {s.comingSoon ? (
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400">
+              <span className="text-xs font-ui font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400">
                 In Review
               </span>
             ) : (
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/30 text-[#ffa116]">
+              <span className="text-xs font-ui font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/30 text-[#ffa116]">
                 {s.difficulty}
               </span>
             )}
@@ -119,23 +119,23 @@ const NoteCard = ({ s }) => {
         </p>
 
         {/* Telemetry metadata */}
-        <div className="flex items-center gap-3 text-xs font-mono text-zinc-400 mb-4 flex-wrap">
+        <div className="flex items-center gap-3 text-xs font-ui text-zinc-400 mb-4 flex-wrap">
           <span className="flex items-center gap-1.5"><FiLayers className="text-xs text-zinc-400" />{s.topics} Topics</span>
-          <span className="text-zinc-700">•</span>
+          <span className="text-zinc-400">•</span>
           <span className="flex items-center gap-1.5"><FiClock className="text-xs text-zinc-400" />{s.readTime}</span>
-          <span className="text-zinc-700">•</span>
+          <span className="text-zinc-400">•</span>
           <span className="text-zinc-400">{s.lastUpdated}</span>
         </div>
 
         {/* Topic chips */}
         <div className="flex flex-wrap gap-1.5 mb-6">
           {s.topicList.slice(0, 4).map((t) => (
-            <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-300">
+            <span key={t} className="text-xs font-ui px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-300">
               {t}
             </span>
           ))}
           {s.topicList.length > 4 && (
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-400">
+            <span className="text-xs font-ui px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-400">
               +{s.topicList.length - 4} more
             </span>
           )}
@@ -145,7 +145,7 @@ const NoteCard = ({ s }) => {
         {s.comingSoon ? (
           <button
             disabled
-            className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-white/[0.02] border border-white/[0.06] text-zinc-500 cursor-not-allowed"
+            className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-white/[0.02] text-zinc-400 cursor-not-allowed"
           >
             Coming Soon
           </button>
@@ -177,7 +177,7 @@ const Notes = () => {
 
       {/* ── HEADER ── */}
       <div className="mb-10 pt-2">
-        <div className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-3 py-1 mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-3 py-1 mb-4">
           <FiBook /> 5 Core Engineering Tracks
         </div>
         <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
@@ -190,7 +190,7 @@ const Notes = () => {
 
       {/* ── SEARCH ── */}
       <div className="relative w-full md:w-96 mb-10">
-        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" />
         <input
           type="text"
           placeholder="Search subjects or topics..."

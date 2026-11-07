@@ -31,7 +31,7 @@ const PageLoader = ({ message = "Loading..." }) => {
           <p className="text-white font-bold text-xl tracking-tight">
             Prep<span className="text-[#ffa116]">Stack</span>
           </p>
-          <p className="text-gray-500 text-sm mt-1 animate-pulse">{message}</p>
+          <p className="text-zinc-400 text-sm mt-1 animate-pulse">{message}</p>
         </div>
 
         {/* Dot loader bar */}

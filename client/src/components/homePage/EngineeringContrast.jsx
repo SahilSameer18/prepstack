@@ -34,7 +34,7 @@ const EngineeringContrast = () => {
       <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.1] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] mb-4">
           <FiLayers className="text-xs text-[#ffa116]" />
-          <span className="text-[11px] font-mono uppercase tracking-widest text-[#ffa116] font-semibold">
+          <span className="text-xs font-ui uppercase tracking-widest text-[#ffa116] font-semibold">
             System Architecture Contrast
           </span>
         </div>
@@ -53,11 +53,11 @@ const EngineeringContrast = () => {
 
           <div>
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.06]">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-rose-400 font-semibold">
+              <div className="flex items-center gap-2 text-xs font-ui text-rose-400 font-semibold">
                 <FiAlertTriangle className="text-sm" />
                 Fragmented Legacy Grind
               </div>
-              <span className="text-[10px] font-mono text-zinc-400 px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">
+              <span className="text-xs font-ui text-zinc-400 px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">
                 Low Conversion
               </span>
             </div>
@@ -90,9 +90,9 @@ const EngineeringContrast = () => {
             </ul>
           </div>
 
-          <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between font-mono text-[11px] text-zinc-500">
+          <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between font-ui text-xs text-zinc-400">
             <span>Friction: Context switching &amp; zero persistence</span>
-            <span className="text-rose-400 font-mono text-[10.5px] bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+            <span className="text-rose-400 font-ui text-xs bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
               High Friction
             </span>
           </div>
@@ -105,11 +105,11 @@ const EngineeringContrast = () => {
 
           <div>
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.08]">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#ffa116] font-semibold">
+              <div className="flex items-center gap-2 text-xs font-ui uppercase tracking-wider text-[#ffa116] font-semibold">
                 <FiZap className="text-sm text-[#ffa116]" />
                 The PrepStack Pipeline
               </div>
-              <span className="text-[10px] font-mono font-semibold bg-[#ffa116]/10 px-2 py-0.5 rounded border border-[#ffa116]/25 text-[#ffa116]">
+              <span className="text-xs font-ui font-semibold bg-[#ffa116]/10 px-2 py-0.5 rounded border border-[#ffa116]/25 text-[#ffa116]">
                 Engineered High-Signal
               </span>
             </div>
@@ -142,9 +142,9 @@ const EngineeringContrast = () => {
             </ul>
           </div>
 
-          <div className="mt-8 pt-4 border-t border-white/[0.08] flex items-center justify-between font-mono text-[11px] text-[#ffa116]">
+          <div className="mt-8 pt-4 border-t border-white/[0.08] flex items-center justify-between font-ui text-xs text-[#ffa116]">
             <span>Advantage: Atomic DB sync &amp; structured patterns</span>
-            <span className="font-bold text-[#ffa116] bg-[#ffa116]/10 px-2 py-0.5 rounded border border-[#ffa116]/20 text-[10.5px]">
+            <span className="font-bold text-[#ffa116] bg-[#ffa116]/10 px-2 py-0.5 rounded border border-[#ffa116]/20 text-xs">
               Single Source of Truth
             </span>
           </div>
@@ -154,20 +154,20 @@ const EngineeringContrast = () => {
       {/* ── Architectural Diff Breakdown ── */}
       <div className="mt-8 max-w-5xl mx-auto rounded-2xl titanium-card overflow-hidden">
         <div className="px-5 py-3.5 border-b border-white/[0.08] bg-[#0e0e12] flex items-center justify-between">
-          <span className="font-mono text-xs uppercase tracking-wider text-zinc-300 font-semibold flex items-center gap-2">
+          <span className="font-ui text-xs text-zinc-300 font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#ffa116]" />
             Feature-by-Feature Benchmark
           </span>
-          <span className="font-mono text-[11px] text-zinc-500">Linear Architecture Standard</span>
+          <span className="font-ui text-xs text-zinc-400">Linear Architecture Standard</span>
         </div>
         <div className="divide-y divide-white/[0.06]">
           {COMPARISON_ROWS.map((row, idx) => (
             <div key={idx} className="p-4 sm:p-5 grid sm:grid-cols-12 gap-3 sm:gap-6 items-center hover:bg-white/[0.02] transition-colors">
               <div className="sm:col-span-3">
                 <span className="font-display font-bold text-sm text-white">{row.feature}</span>
-                <span className="block font-mono text-[10px] text-[#ffa116] mt-0.5">{row.latency}</span>
+                <span className="block font-code text-xs text-[#ffa116] mt-0.5">{row.latency}</span>
               </div>
-              <div className="sm:col-span-4 text-xs text-zinc-500 flex items-start gap-2">
+              <div className="sm:col-span-4 text-xs text-zinc-400 flex items-start gap-2">
                 <FiX className="text-rose-400 text-xs shrink-0 mt-0.5" />
                 <span>{row.legacy}</span>
               </div>

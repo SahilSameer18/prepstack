@@ -35,7 +35,7 @@ const Footer = () => {
             </Link>
 
             <p className="text-zinc-400 text-sm leading-relaxed max-w-sm font-sans">
-              The high-signal preparation workspace for software engineers. Curated DSA pattern progressions, low-level systems internals, and production architectural blueprints.
+              A free interview preparation workspace for software engineers: DSA sheets, CS notes, roadmaps and AI project ideas.
             </p>
 
             {/* Social icons with 44px touch targets */}
@@ -58,7 +58,7 @@ const Footer = () => {
           {/* Resources Column */}
           <div>
             <h4 className="font-display text-xs uppercase tracking-widest text-zinc-300 font-bold mb-4">
-              Curriculum & Tools
+              Learn
             </h4>
             <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
               {resources.map((r) => (
@@ -78,7 +78,7 @@ const Footer = () => {
           <div className="space-y-6">
             <div>
               <h4 className="font-display text-xs uppercase tracking-widest text-zinc-300 font-bold mb-4">
-                Governance
+                Legal
               </h4>
               <ul className="space-y-2.5">
                 {[
@@ -96,21 +96,15 @@ const Footer = () => {
                 ))}
               </ul>
             </div>
-
-            {/* Live Telemetry Indicator */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/[0.07] font-mono text-[11px] text-zinc-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>Platform Status: Operational</span>
-            </div>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-xs text-zinc-500 font-sans">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-xs text-zinc-400 font-sans">
           <p className="flex items-center gap-2">
-            <span>© {new Date().getFullYear()} PrepStack Platform. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} PrepStack. All rights reserved.</span>
           </p>
-          <p className="font-mono text-[11px] text-zinc-500">
+          <p className="font-ui text-xs text-zinc-400">
             Engineered by Sahil Sameer
           </p>
         </div>
