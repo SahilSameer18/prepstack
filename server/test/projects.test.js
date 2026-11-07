@@ -67,16 +67,16 @@ describe('AI project ideas: generate, list, open, delete', () => {
 
   describe('POST /api/project/generate: bad AI output is rejected and never saved', () => {
     const cases = [
-      ['not JSON at all', 'sorry, I cannot do that', /invalid response/],
-      ['an empty/blocked reply', undefined, /invalid response/],
-      ['features is a string, not a list', () => t.goodIdea({ features: 'just one string' }), /incomplete response/],
-      ['features contains numbers', () => t.goodIdea({ features: [1, 2] }), /incomplete response/],
-      ['title missing', () => { const x = t.goodIdea(); delete x.title; return x; }, /incomplete response/],
-      ['title empty', () => t.goodIdea({ title: '' }), /incomplete response/],
-      ['difficulty is not one of the three', () => t.goodIdea({ difficulty: 'banana' }), /incomplete response/],
-      ['difficulty "Medium"', () => t.goodIdea({ difficulty: 'Medium' }), /incomplete response/],
-      ['the reply is a JSON array', () => [t.goodIdea()], /incomplete response/],
-      ['the reply is JSON null', 'null', /incomplete response/],
+      ['not JSON at all', 'sorry, I cannot do that', /very busy/],
+      ['an empty/blocked reply', undefined, /very busy/],
+      ['features is a string, not a list', () => t.goodIdea({ features: 'just one string' }), /very busy/],
+      ['features contains numbers', () => t.goodIdea({ features: [1, 2] }), /very busy/],
+      ['title missing', () => { const x = t.goodIdea(); delete x.title; return x; }, /very busy/],
+      ['title empty', () => t.goodIdea({ title: '' }), /very busy/],
+      ['difficulty is not one of the three', () => t.goodIdea({ difficulty: 'banana' }), /very busy/],
+      ['difficulty "Medium"', () => t.goodIdea({ difficulty: 'Medium' }), /very busy/],
+      ['the reply is a JSON array', () => [t.goodIdea()], /very busy/],
+      ['the reply is JSON null', 'null', /very busy/],
     ];
     for (const [label, reply, message] of cases) {
       it(`${label} -> 502, nothing saved`, async () => {
@@ -93,7 +93,7 @@ describe('AI project ideas: generate, list, open, delete', () => {
       const acct = await t.register();
       const res = await gen(acct);
       assert.equal(res.status, 502);
-      assert.match(res.body.message, /unavailable right now/);
+      assert.match(res.body.message, /very busy/);
       assert.equal(await Project.countDocuments({ user: acct.id }), 0);
     });
   });

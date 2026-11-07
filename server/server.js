@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 const dns = require('dns');
 const app = require('./src/app');
 const connectToDB = require('./src/config/database')
+const { describeProviders } = require('./src/services/ai.service')
 
 // Indexes are built in the background when the DB connects. If one fails (e.g. old data already breaks a unique
 // rule), the app keeps running, so say so loudly instead of staying silent.
@@ -75,6 +76,11 @@ const start = async () => {
   server = app.listen(PORT, () => {
     console.log(`server is running on http://localhost:${PORT}`)
   });
+
+  // Say which AI providers are configured (names only, never keys)
+  const aiProviders = describeProviders();
+  if (aiProviders.length) console.log(`AI providers, tried in this order: ${aiProviders.join(' -> ')}`);
+  else console.warn('⚠️  No AI provider configured (set GOOGLE_API_KEY and/or GROQ_API_KEY): project idea generation will answer 503.');
 };
 
 start();

@@ -1,7 +1,7 @@
 // Shared test harness. Every test file is its own process (node --test), so this sets up a private world per file:
 //   - fake secrets and NODE_ENV=test (the real server/.env is never loaded)
 //   - an in-memory MongoDB (never a real database)
-//   - fake Gemini and fake Google sign-in (no network, no cost)
+//   - fake Gemini, fake Groq and fake Google sign-in (no network, no cost)
 // The real rate limiters stay ON. Each request gets a unique X-Forwarded-For so tests don't share a limiter counter.
 const path = require('path');
 const SERVER_ROOT = path.join(__dirname, '..', '..');
@@ -11,17 +11,43 @@ process.env.ACCESS_SECRET = 'test-access-secret-' + 'a'.repeat(32);
 process.env.REFRESH_SECRET = 'test-refresh-secret-' + 'b'.repeat(32);
 process.env.GOOGLE_API_KEY = 'fake-gemini-key';
 process.env.GOOGLE_CLIENT_ID = 'fake-google-client-id';
-for (const k of ['ALLOWED_ORIGINS', 'CLIENT_URL', 'ENABLE_CUSTOM_DNS', 'MONGO_URI']) delete process.env[k];
+for (const k of ['ALLOWED_ORIGINS', 'CLIENT_URL', 'ENABLE_CUSTOM_DNS', 'MONGO_URI', 'GROQ_API_KEY', 'GEMINI_PRIMARY_MODEL', 'GEMINI_FALLBACK_MODEL', 'GEMINI_FALLBACK_2_MODEL', 'GROQ_MODEL', 'AI_DAILY_LIMIT']) delete process.env[k];
+process.env.AI_RETRY_DELAY_MS = '1'; // the AI retry wait is 1 s in real life; keep tests fast
 
-// ── fake Gemini: tests set `gemini.reply` (object or raw string) or `gemini.error` ──
-const gemini = {
-  reply: undefined,
-  error: null,
-  calls: 0,
-  lastConfig: null,
-  lastPrompt: null,
-  reset() { this.reply = undefined; this.error = null; this.calls = 0; this.lastConfig = null; this.lastPrompt = null; },
-};
+// ── fake AI providers (Gemini and Groq) ──
+// Two ways to drive a fake:
+//   simple:    set `.reply` (object or raw string) or `.error`; every model answers the same way
+//   per model: `.script[modelId] = [step1, step2, ...]`, used on that model's 1st, 2nd... call (the last step repeats);
+//              a step is { reply } | { error } | { hang: true }
+// `.models` lists the model IDs that were called, in order; `.calls` counts all calls.
+const aiServicePath = path.join(SERVER_ROOT, 'src', 'services', 'ai.service.js');
+const resetAiState = () => { const m = require.cache[aiServicePath]; if (m && m.exports.resetState) m.exports.resetState(); };
+function makeFake() {
+  return {
+    reply: undefined, error: null, script: {}, perModelCalls: {}, calls: 0, models: [], lastConfig: null, lastPrompt: null, lastParams: null,
+    reset() {
+      this.reply = undefined; this.error = null; this.script = {}; this.perModelCalls = {}; this.calls = 0; this.models = [];
+      this.lastConfig = null; this.lastPrompt = null; this.lastParams = null;
+      resetAiState(); // the circuit breaker in ai.service remembers failures between calls
+    },
+    async run(model) {
+      this.calls++; this.models.push(model);
+      const n = (this.perModelCalls[model] = (this.perModelCalls[model] || 0) + 1);
+      const steps = this.script[model];
+      const step = steps ? steps[Math.min(n, steps.length) - 1] : { reply: this.reply, error: this.error };
+      if (step.hang) await new Promise(() => {});
+      if (step.error) throw step.error;
+      const r = step.reply;
+      return typeof r === 'string' || r === undefined ? r : JSON.stringify(r);
+    },
+  };
+}
+const gemini = makeFake();
+const groq = makeFake();
+const MODELS = { primary: 'gemini-3-flash-preview', fallback: 'gemini-3.5-flash-lite', fallback2: 'gemini-3.1-flash-lite', groq: 'openai/gpt-oss-120b' };
+/** An error shaped like the real SDK errors: it carries the HTTP status. */
+const apiError = (status, message = `HTTP ${status}`) => Object.assign(new Error(message), { status });
+
 const geminiPath = require.resolve('@google/genai', { paths: [SERVER_ROOT] });
 require.cache[geminiPath] = {
   id: geminiPath, filename: geminiPath, loaded: true,
@@ -29,17 +55,30 @@ require.cache[geminiPath] = {
     GoogleGenAI: class {
       constructor() {
         this.models = {
-          generateContent: async ({ contents, config }) => {
-            gemini.calls++; gemini.lastConfig = config; gemini.lastPrompt = contents;
-            if (gemini.error) throw gemini.error;
-            const r = gemini.reply;
-            return { text: typeof r === 'string' || r === undefined ? r : JSON.stringify(r) };
+          generateContent: async ({ model, contents, config }) => {
+            gemini.lastConfig = config; gemini.lastPrompt = contents;
+            return { text: await gemini.run(model) };
           },
         };
       }
     },
   },
 };
+const groqPath = require.resolve('groq-sdk', { paths: [SERVER_ROOT] });
+class FakeGroq {
+  constructor() {
+    this.chat = {
+      completions: {
+        create: async (params) => {
+          groq.lastParams = params; groq.lastPrompt = params.messages?.[0]?.content;
+          const content = await groq.run(params.model);
+          return { choices: [{ message: { content } }], usage: { total_tokens: 10 } };
+        },
+      },
+    };
+  }
+}
+require.cache[groqPath] = { id: groqPath, filename: groqPath, loaded: true, exports: FakeGroq };
 const goodIdea = (over = {}) => ({
   title: 'Test Idea', tagline: 'tag', description: 'desc', features: ['f1', 'f2'], techStack: 'MERN',
   difficulty: 'Intermediate', estimatedTime: '2 weeks', resumeValue: 'resume value', ...over,
@@ -150,6 +189,6 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const countAt = async (Model, filter) => Model.countDocuments(filter);
 
 module.exports = {
-  SERVER_ROOT, env, start, stop, resetData, getModels, mongoose, gemini, goodIdea, google,
+  SERVER_ROOT, env, start, stop, resetData, getModels, mongoose, gemini, groq, MODELS, apiError, goodIdea, google,
   api, register, login, parseCookies, cookieHeader, UA, PASSWORD, L, seedSheets, sleep, countAt, nextIp,
 };
