@@ -7,12 +7,12 @@ const LogoMark = ({ className = "w-7 h-7" }) => {
     <svg viewBox="0 0 512 512" className={className} aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ffc04d" />
-          <stop offset="1" stopColor="#f59300" />
+          <stop offset="0" style={{ stopColor: "var(--logo-top)" }} />
+          <stop offset="1" style={{ stopColor: "var(--logo-bottom)" }} />
         </linearGradient>
       </defs>
       <rect width="512" height="512" rx="112" fill={`url(#${gradientId})`} />
-      <g fill="#0c0c0e">
+      <g style={{ fill: "var(--card)" }}>
         <path
           fillRule="evenodd"
           d="M150 104H304A104 104 0 0 1 304 312H200V390A18 18 0 0 1 182 408H150A18 18 0 0 1 132 390V122A18 18 0 0 1 150 104ZM200 164H300A44 44 0 0 1 300 252H200Z"

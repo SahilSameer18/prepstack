@@ -8,8 +8,8 @@ const subjects = [
     title: "Operating Systems",
     slug: "os",
     icon: <FaCode />,
-    hoverColor: "#60a5fa",   // blue-400
-    bg: "bg-blue-500/10", border: "border-blue-500/20",
+    hoverColor: "var(--data-blue-soft)",   // blue-400
+    bg: "bg-info-solid/10", border: "border-info-solid/20",
     topics: 24,
     description: "Deep dive into process management, memory, and the internals that power every computer.",
     topicList: ["Processes & Threads", "CPU Scheduling", "Deadlocks", "Memory Management", "Virtual Memory", "File Systems"],
@@ -21,8 +21,8 @@ const subjects = [
     title: "DBMS",
     slug: "dbms",
     icon: <FaDatabase />,
-    hoverColor: "#34d399",   // emerald-400
-    bg: "bg-emerald-500/10", border: "border-emerald-500/20",
+    hoverColor: "var(--data-green-soft)",   // emerald-400
+    bg: "bg-ok-solid/10", border: "border-ok-solid/20",
     topics: 18,
     description: "Master relational databases, SQL, normalization, transactions and indexing concepts.",
     topicList: ["ER Diagrams", "Normalization", "SQL Queries", "Transactions", "Indexing", "NoSQL Basics"],
@@ -34,8 +34,8 @@ const subjects = [
     title: "Computer Networks",
     slug: "cn",
     icon: <FaNetworkWired />,
-    hoverColor: "#c084fc",   // purple-400
-    bg: "bg-purple-500/10", border: "border-purple-500/20",
+    hoverColor: "var(--data-purple-soft)",   // purple-400
+    bg: "bg-violet-solid/10", border: "border-violet-solid/20",
     topics: 30,
     description: "Understand how the internet works, from OSI layers to TCP/IP, DNS, routing and sockets.",
     topicList: ["OSI & TCP/IP Model", "HTTP/HTTPS", "DNS & DHCP", "TCP vs UDP", "Routing Protocols", "Socket Programming"],
@@ -47,8 +47,8 @@ const subjects = [
     title: "OOPs",
     slug: "oops",
     icon: <FaSitemap />,
-    hoverColor: "#fb923c",   // orange-400
-    bg: "bg-orange-500/10", border: "border-orange-500/20",
+    hoverColor: "var(--data-orange-soft)",   // orange-400
+    bg: "bg-orange-solid/10", border: "border-orange-solid/20",
     topics: 15,
     description: "Grasp the four pillars of OOP and how design patterns solve real-world software problems.",
     topicList: ["Classes & Objects", "Inheritance", "Polymorphism", "Abstraction", "Encapsulation", "Design Patterns"],
@@ -60,8 +60,8 @@ const subjects = [
     title: "System Design",
     slug: "system-design",
     icon: <FaProjectDiagram />,
-    hoverColor: "#f472b6",   // pink-400
-    bg: "bg-pink-500/10", border: "border-pink-500/20",
+    hoverColor: "var(--data-pink-soft)",   // pink-400
+    bg: "bg-pink-solid/10", border: "border-pink-solid/20",
     topics: 12,
     description: "Learn to architect scalable systems: load balancing, caching, microservices and API design.",
     topicList: ["Scalability", "Load Balancing", "Caching", "Database Design", "Microservices", "API Design"],
@@ -84,7 +84,7 @@ const NoteCard = ({ s }) => {
         }}
       />
       {/* Specular hairline */}
-      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />
 
       <div className="p-6 sm:p-7 flex flex-col flex-1">
         {/* Icon + badges row */}
@@ -97,11 +97,11 @@ const NoteCard = ({ s }) => {
           </div>
           <div className="flex items-center gap-1.5">
             {s.comingSoon ? (
-              <span className="text-xs font-ui font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400">
+              <span className="text-xs font-ui font-semibold px-2.5 py-0.5 rounded-full bg-bad-solid/10 border border-bad-solid/20 text-bad">
                 In Review
               </span>
             ) : (
-              <span className="text-xs font-ui font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/30 text-[#ffa116]">
+              <span className="text-xs font-ui font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-brand/10 border border-brand/30 text-brand">
                 {s.difficulty}
               </span>
             )}
@@ -109,33 +109,33 @@ const NoteCard = ({ s }) => {
         </div>
 
         {/* Title */}
-        <h3 className="font-display text-xl font-bold text-white mb-2 group-hover:text-white transition-colors">
+        <h3 className="font-display text-xl font-bold text-fg mb-2 group-hover:text-fg transition-colors">
           {s.title}
         </h3>
 
         {/* Description */}
-        <p className="text-zinc-400 text-sm leading-relaxed mb-4 flex-1">
+        <p className="text-muted text-sm leading-relaxed mb-4 flex-1">
           {s.description}
         </p>
 
         {/* Telemetry metadata */}
-        <div className="flex items-center gap-3 text-xs font-ui text-zinc-400 mb-4 flex-wrap">
-          <span className="flex items-center gap-1.5"><FiLayers className="text-xs text-zinc-400" />{s.topics} Topics</span>
-          <span className="text-zinc-400">•</span>
-          <span className="flex items-center gap-1.5"><FiClock className="text-xs text-zinc-400" />{s.readTime}</span>
-          <span className="text-zinc-400">•</span>
-          <span className="text-zinc-400">{s.lastUpdated}</span>
+        <div className="flex items-center gap-3 text-xs font-ui text-muted mb-4 flex-wrap">
+          <span className="flex items-center gap-1.5"><FiLayers className="text-xs text-muted" />{s.topics} Topics</span>
+          <span className="text-muted">•</span>
+          <span className="flex items-center gap-1.5"><FiClock className="text-xs text-muted" />{s.readTime}</span>
+          <span className="text-muted">•</span>
+          <span className="text-muted">{s.lastUpdated}</span>
         </div>
 
         {/* Topic chips */}
         <div className="flex flex-wrap gap-1.5 mb-6">
           {s.topicList.slice(0, 4).map((t) => (
-            <span key={t} className="text-xs font-ui px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-300">
+            <span key={t} className="text-xs font-ui px-2 py-0.5 rounded-md bg-elevated/90 border border-ink/[0.08] text-fg-3">
               {t}
             </span>
           ))}
           {s.topicList.length > 4 && (
-            <span className="text-xs font-ui px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-400">
+            <span className="text-xs font-ui px-2 py-0.5 rounded-md bg-elevated/90 border border-ink/[0.08] text-muted">
               +{s.topicList.length - 4} more
             </span>
           )}
@@ -145,14 +145,14 @@ const NoteCard = ({ s }) => {
         {s.comingSoon ? (
           <button
             disabled
-            className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-white/[0.02] text-zinc-400 cursor-not-allowed"
+            className="w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-ink/[0.02] text-muted cursor-not-allowed"
           >
             Coming Soon
           </button>
         ) : (
           <Link to={`/notes/${s.slug}`} className="block">
             <button
-              className="w-full py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 bg-white/[0.04] border border-white/[0.08] text-zinc-200 group-hover:amber-specular-button cursor-pointer select-none"
+              className="w-full py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all duration-200 bg-ink/[0.04] border border-ink/[0.08] text-fg-2 group-hover:amber-specular-button cursor-pointer select-none"
             >
               <span>Study Notes</span>
               <FiArrowRight className="text-xs group-hover:translate-x-0.5 transition-transform" />
@@ -177,26 +177,26 @@ const Notes = () => {
 
       {/* ── HEADER ── */}
       <div className="mb-10 pt-2">
-        <div className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-3 py-1 mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-cyan bg-cyan-solid/10 border border-cyan-solid/20 rounded-full px-3 py-1 mb-4">
           <FiBook /> 5 Core Engineering Tracks
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
-          Computer Science <span className="text-[#ffa116]">Internals</span>
+        <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-fg tracking-tight mb-3">
+          Computer Science <span className="text-brand">Internals</span>
         </h1>
-        <p className="text-zinc-400 max-w-2xl text-sm sm:text-base leading-relaxed font-normal">
+        <p className="text-muted max-w-2xl text-sm sm:text-base leading-relaxed font-normal">
           Master the low-level operating system, database, and network fundamentals required for rigorous technical screening rounds.
         </p>
       </div>
 
       {/* ── SEARCH ── */}
       <div className="relative w-full md:w-96 mb-10">
-        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" />
+        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
         <input
           type="text"
           placeholder="Search subjects or topics..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-[#0c0c0e] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] focus:shadow-[0_0_0_3px_rgba(255,161,22,0.1)] rounded-xl py-3 pl-12 pr-4 outline-none transition-colors text-sm text-white placeholder-zinc-500 font-normal"
+          className="w-full bg-card border border-ink/[0.08] hover:border-ink/[0.15] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)] rounded-xl py-3 pl-12 pr-4 outline-none transition-colors text-sm text-fg placeholder-faint font-normal"
         />
       </div>
 
@@ -207,10 +207,10 @@ const Notes = () => {
         ))}
 
         {filtered.length === 0 && (
-          <div className="col-span-full py-20 text-center text-zinc-400 border border-dashed border-white/[0.08] rounded-3xl bg-[#0c0c0e]/50">
-            <FiSearch className="text-3xl mx-auto mb-3 opacity-30 text-[#ffa116]" />
-            <p className="text-lg font-bold text-white mb-1">No subjects found</p>
-            <p className="text-sm text-zinc-400">Try a different search query</p>
+          <div className="col-span-full py-20 text-center text-muted border border-dashed border-ink/[0.08] rounded-3xl bg-card/50">
+            <FiSearch className="text-3xl mx-auto mb-3 opacity-30 text-brand" />
+            <p className="text-lg font-bold text-fg mb-1">No subjects found</p>
+            <p className="text-sm text-muted">Try a different search query</p>
           </div>
         )}
       </div>

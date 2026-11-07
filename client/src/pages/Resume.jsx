@@ -16,8 +16,8 @@ import { FiCheck, FiX, FiExternalLink, FiCompass } from "react-icons/fi";
 const sections = [
   {
     icon: <FaUser />,
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
+    color: "text-warn",
+    bg: "bg-warn-solid/10",
     title: "Contact Information",
     tips: [
       "Include your full name, professional email, phone number, LinkedIn, and GitHub profile.",
@@ -32,8 +32,8 @@ Location: Bangalore, Karnataka`,
   },
   {
     icon: <FaGraduationCap />,
-    color: "text-blue-400",
-    bg: "bg-blue-500/10",
+    color: "text-info",
+    bg: "bg-info-solid/10",
     title: "Education",
     tips: [
       "List your highest degree first with expected graduation year (reverse chronological).",
@@ -49,8 +49,8 @@ Coursework: Data Structures & Algorithms, Distributed Systems, Database Manageme
   },
   {
     icon: <FaCode />,
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
+    color: "text-ok",
+    bg: "bg-ok-solid/10",
     title: "Technical Skills",
     tips: [
       "Categorize skills into Languages, Frameworks, Infrastructure/Databases, and Developer Tools.",
@@ -65,8 +65,8 @@ Infrastructure: Docker, Kubernetes, AWS (EC2, S3), Git, CI/CD`,
   },
   {
     icon: <FaBriefcase />,
-    color: "text-purple-400",
-    bg: "bg-purple-500/10",
+    color: "text-violet",
+    bg: "bg-violet-solid/10",
     title: "Work Experience & Internships",
     tips: [
       "Apply the Google XYZ Formula: 'Accomplished [X] as measured by [Y] by doing [Z]'.",
@@ -83,8 +83,8 @@ June 2024 - August 2024  |  Hyderabad (Remote)
   },
   {
     icon: <FaCode />,
-    color: "text-rose-400",
-    bg: "bg-rose-500/10",
+    color: "text-bad",
+    bg: "bg-bad-solid/10",
     title: "Engineering Projects",
     tips: [
       "Include 2-3 substantial projects demonstrating production architecture over toy apps.",
@@ -101,8 +101,8 @@ Live Demo: ratelimit.dev  |  GitHub: github.com/user/distributed-limiter
   },
   {
     icon: <FaLink />,
-    color: "text-cyan-400",
-    bg: "bg-cyan-500/10",
+    color: "text-cyan",
+    bg: "bg-cyan-solid/10",
     title: "Honors, Contests & Certifications",
     tips: [
       "Include competitive programming ratings (LeetCode, Codeforces, CodeChef).",
@@ -140,7 +140,7 @@ const SectionCard = ({ section }) => {
   return (
     <div
       className={`luxury-card rounded-2xl overflow-hidden transition-all duration-300 ${
-        open ? "border-[#ffa116]/50 shadow-[0_15px_35px_rgba(0,0,0,0.8)]" : ""
+        open ? "border-brand/50 shadow-[0_15px_35px_color-mix(in_srgb,var(--shadow)_80%,transparent)]" : ""
       }`}
     >
       <button
@@ -150,9 +150,9 @@ const SectionCard = ({ section }) => {
         <div className={`p-3 rounded-xl ${section.bg} ${section.color} text-base flex-shrink-0`}>
           {section.icon}
         </div>
-        <span className="font-display text-base sm:text-lg font-bold text-white flex-1">{section.title}</span>
+        <span className="font-display text-base sm:text-lg font-bold text-fg flex-1">{section.title}</span>
         <FaChevronDown
-          className={`text-zinc-400 transition-transform duration-300 ${open ? "rotate-180 text-[#ffa116]" : ""}`}
+          className={`text-muted transition-transform duration-300 ${open ? "rotate-180 text-brand" : ""}`}
         />
       </button>
       <div
@@ -160,12 +160,12 @@ const SectionCard = ({ section }) => {
           open ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="px-5 pb-6 border-t border-white/[0.08] pt-5 space-y-5">
+        <div className="px-5 pb-6 border-t border-ink/[0.08] pt-5 space-y-5">
           {/* Tips */}
           <ul className="space-y-2.5">
             {section.tips.map((tip, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-zinc-300 text-sm">
-                <FiCheck className="text-[#ffa116] mt-1 flex-shrink-0 text-xs" />
+              <li key={i} className="flex items-start gap-2.5 text-fg-3 text-sm">
+                <FiCheck className="text-brand mt-1 flex-shrink-0 text-xs" />
                 <span>{tip}</span>
               </li>
             ))}
@@ -173,10 +173,10 @@ const SectionCard = ({ section }) => {
 
           {/* Example */}
           <div>
-            <p className="font-ui text-xs uppercase tracking-wider text-[#ffa116] font-semibold mb-2">
+            <p className="font-ui text-xs uppercase tracking-wider text-brand font-semibold mb-2">
               Verified Production Example
             </p>
-            <pre className="bg-black/60 border border-white/[0.08] rounded-xl p-4 text-zinc-300 text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap font-ui selection:bg-[#ffa116]/30">
+            <pre className="bg-scrim/60 border border-ink/[0.08] rounded-xl p-4 text-fg-3 text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap font-ui selection:bg-brand/30">
               {section.example}
             </pre>
           </div>
@@ -191,25 +191,25 @@ const Resume = () => {
     <div className="px-4 sm:px-6 pb-12 max-w-5xl mx-auto page-enter">
       {/* Header */}
       <div className="mb-10 pt-2">
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-[-0.035em] mb-3">
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-fg tracking-[-0.035em] mb-3">
           SDE Resume Architecture
         </h1>
-        <p className="text-zinc-400 text-base sm:text-lg max-w-2xl font-normal leading-relaxed">
+        <p className="text-muted text-base sm:text-lg max-w-2xl font-normal leading-relaxed">
           The tactical blueprint for building an ATS-optimized, high-signal engineering resume designed to clear FAANG and tier-1 screening rounds.
         </p>
-        <Link to="/analyzer" className="inline-block mt-3 text-sm text-[#ffa116] hover:underline">Check your resume against a real job with the Role Analyzer &rarr;</Link>
+        <Link to="/analyzer" className="inline-block mt-3 text-sm text-brand hover:underline">Check your resume against a real job with the Role Analyzer &rarr;</Link>
       </div>
 
       {/* Engineering Rule Callout */}
       <div className="luxury-glass p-5 rounded-2xl mb-12 flex items-start gap-4">
-        <div className="w-9 h-9 rounded-xl bg-[#ffa116]/10 border border-[#ffa116]/20 flex items-center justify-center text-[#ffa116] flex-shrink-0 mt-0.5">
+        <div className="w-9 h-9 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand flex-shrink-0 mt-0.5">
           <FiCompass className="text-base" />
         </div>
         <div>
-          <h3 className="font-display text-sm sm:text-base font-bold text-white mb-1">
+          <h3 className="font-display text-sm sm:text-base font-bold text-fg mb-1">
             The Core Engineering Principle
           </h3>
-          <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">
+          <p className="text-fg-3 text-xs sm:text-sm leading-relaxed">
             Your resume is an <strong>engineering specification</strong>, not an autobiography. Every bullet point must demonstrate personal technical agency, measurable business impact, and zero fluff.
           </p>
         </div>
@@ -217,10 +217,10 @@ const Resume = () => {
 
       {/* Section-by-section guide */}
       <div className="mb-14">
-        <h2 className="font-display text-2xl font-bold text-white tracking-tight mb-1">
+        <h2 className="font-display text-2xl font-bold text-fg tracking-tight mb-1">
           Recommended section order
         </h2>
-        <p className="text-zinc-400 text-xs sm:text-sm mb-6">
+        <p className="text-muted text-xs sm:text-sm mb-6">
           Inspect each section's structural rules and verified high-signal examples.
         </p>
         <div className="space-y-4">
@@ -232,31 +232,31 @@ const Resume = () => {
 
       {/* Do's and Don'ts */}
       <div className="mb-14">
-        <h2 className="font-display text-2xl font-bold text-white tracking-tight mb-6">
+        <h2 className="font-display text-2xl font-bold text-fg tracking-tight mb-6">
           Evaluation Criteria & Standards
         </h2>
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="luxury-card rounded-2xl p-6 border-emerald-500/20">
-            <h3 className="font-display text-base font-bold text-emerald-400 mb-4 flex items-center gap-2">
-              <FiCheck className="text-emerald-400 text-sm" /> High-Signal Standards
+          <div className="luxury-card rounded-2xl p-6 border-ok-solid/20">
+            <h3 className="font-display text-base font-bold text-ok mb-4 flex items-center gap-2">
+              <FiCheck className="text-ok text-sm" /> High-Signal Standards
             </h3>
             <ul className="space-y-3">
               {dos.map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-zinc-300 text-xs sm:text-sm leading-relaxed">
-                  <FiCheck className="text-emerald-400 flex-shrink-0 mt-1 text-xs" />
+                <li key={i} className="flex items-start gap-2.5 text-fg-3 text-xs sm:text-sm leading-relaxed">
+                  <FiCheck className="text-ok flex-shrink-0 mt-1 text-xs" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="luxury-card rounded-2xl p-6 border-rose-500/20">
-            <h3 className="font-display text-base font-bold text-rose-400 mb-4 flex items-center gap-2">
-              <FiX className="text-rose-400 text-sm" /> Disqualifying Anti-Patterns
+          <div className="luxury-card rounded-2xl p-6 border-bad-solid/20">
+            <h3 className="font-display text-base font-bold text-bad mb-4 flex items-center gap-2">
+              <FiX className="text-bad text-sm" /> Disqualifying Anti-Patterns
             </h3>
             <ul className="space-y-3">
               {donts.map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-zinc-300 text-xs sm:text-sm leading-relaxed">
-                  <FiX className="text-rose-400 flex-shrink-0 mt-1 text-xs" />
+                <li key={i} className="flex items-start gap-2.5 text-fg-3 text-xs sm:text-sm leading-relaxed">
+                  <FiX className="text-bad flex-shrink-0 mt-1 text-xs" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -268,10 +268,10 @@ const Resume = () => {
       {/* Verified Tooling Resources */}
       <div className="luxury-glass p-7 sm:p-8 rounded-2xl relative overflow-hidden">
         <div className="max-w-xl mx-auto text-center mb-8">
-          <h3 className="font-display text-xl sm:text-2xl font-bold text-white mb-2">
+          <h3 className="font-display text-xl sm:text-2xl font-bold text-fg mb-2">
             Recommended Authoring Tools
           </h3>
-          <p className="text-zinc-400 text-xs sm:text-sm">
+          <p className="text-muted text-xs sm:text-sm">
             Professional LaTeX editors and verified ATS parsers to validate layout parsing.
           </p>
         </div>
@@ -286,15 +286,15 @@ const Resume = () => {
               href={tool.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.08] hover:border-[#ffa116]/50 hover:bg-white/[0.04] transition-all group"
+              className="p-4 rounded-xl bg-ink/[0.02] border border-ink/[0.08] hover:border-brand/50 hover:bg-ink/[0.04] transition-all group"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-display text-sm font-bold text-white group-hover:text-[#ffa116] transition-colors">
+                <span className="font-display text-sm font-bold text-fg group-hover:text-brand transition-colors">
                   {tool.name}
                 </span>
-                <FiExternalLink className="text-xs text-zinc-400 group-hover:text-white transition-colors" />
+                <FiExternalLink className="text-xs text-muted group-hover:text-fg transition-colors" />
               </div>
-              <p className="text-xs text-zinc-400 leading-relaxed font-sans">{tool.desc}</p>
+              <p className="text-xs text-muted leading-relaxed font-sans">{tool.desc}</p>
             </a>
           ))}
         </div>

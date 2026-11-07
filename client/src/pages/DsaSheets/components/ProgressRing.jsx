@@ -11,7 +11,7 @@ const ProgressRing = ({ percentage, solved, total, accentColor }) => {
         <circle
           cx="68" cy="68" r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          style={{ stroke: "color-mix(in srgb, var(--ink) 6%, transparent)" }}
           strokeWidth="8"
           strokeLinecap="round"
         />
@@ -19,19 +19,18 @@ const ProgressRing = ({ percentage, solved, total, accentColor }) => {
         <circle
           cx="68" cy="68" r={radius}
           fill="none"
-          stroke={accentColor}
           strokeWidth="8"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
-          style={{ transition: 'stroke-dashoffset 0.6s ease', filter: `drop-shadow(0 0 6px ${accentColor}80)` }}
+          style={{ stroke: accentColor, transition: 'stroke-dashoffset 0.6s ease', filter: `drop-shadow(0 0 6px color-mix(in srgb, ${accentColor} 50%, transparent))` }}
         />
       </svg>
       {/* Center label */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-3xl font-black text-white leading-none">{solved}</span>
-        <span className="text-xs text-zinc-400 font-semibold mt-0.5">/ {total}</span>
-        <span className="text-xs text-zinc-400 mt-1 font-bold">Solved</span>
+        <span className="text-3xl font-black text-fg leading-none">{solved}</span>
+        <span className="text-xs text-muted font-semibold mt-0.5">/ {total}</span>
+        <span className="text-xs text-muted mt-1 font-bold">Solved</span>
       </div>
     </div>
   );

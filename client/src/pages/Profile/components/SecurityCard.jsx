@@ -104,31 +104,31 @@ const SecurityCard = () => {
 
   return (
     <div className="titanium-card rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
-      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
-      <div className="pb-4 border-b border-white/[0.06]">
-        <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
-          <FiShield className="text-[#ffa116]" /> Sign-in & security
+      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />
+      <div className="pb-4 border-b border-ink/[0.06]">
+        <h2 className="font-display text-lg font-bold text-fg flex items-center gap-2">
+          <FiShield className="text-brand" /> Sign-in & security
         </h2>
-        <p className="text-xs font-ui text-zinc-400 mt-1">Link your Google account and manage your password.</p>
+        <p className="text-xs font-ui text-muted mt-1">Link your Google account and manage your password.</p>
       </div>
 
       <div className="space-y-4">
         {/* Google Provider Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-[#121216] gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-card-hover gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center text-zinc-300 text-lg">
+            <div className="w-10 h-10 rounded-xl bg-ink/[0.04] flex items-center justify-center text-fg-3 text-lg">
               <FaGoogle />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">Google account</p>
-              <p className="text-xs font-ui text-zinc-400">
+              <p className="text-sm font-semibold text-fg">Google account</p>
+              <p className="text-xs font-ui text-muted">
                 {isGoogleLinked ? "Linked for passwordless SSO login" : "No external Google account linked"}
               </p>
             </div>
           </div>
 
           {isGoogleLinked ? (
-            <div className="text-xs font-ui font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 self-start sm:self-auto flex items-center gap-1.5">
+            <div className="text-xs font-ui font-semibold px-3 py-1 rounded-full bg-ok-solid/10 text-ok border border-ok-solid/25 self-start sm:self-auto flex items-center gap-1.5">
               <FiCheck /> Linked & Verified
             </div>
           ) : (
@@ -144,15 +144,15 @@ const SecurityCard = () => {
         </div>
 
         {/* Password Row */}
-        <div className="p-4 rounded-xl bg-[#121216] space-y-4">
+        <div className="p-4 rounded-xl bg-card-hover space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center text-zinc-300 text-lg">
+              <div className="w-10 h-10 rounded-xl bg-ink/[0.04] flex items-center justify-center text-fg-3 text-lg">
                 <FiLock />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">Account Password</p>
-                <p className="text-xs font-ui text-zinc-400">
+                <p className="text-sm font-semibold text-fg">Account Password</p>
+                <p className="text-xs font-ui text-muted">
                   {user.hasPassword
                     ? "Encrypted bcrypt password configured for direct login"
                     : "No password configured (SSO-only account)"}
@@ -166,7 +166,7 @@ const SecurityCard = () => {
                 setShowPasswordSection(!showPasswordSection);
                 setPasswordError(null);
               }}
-              className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-white/[0.05] text-white hover:bg-white/[0.1] transition-colors self-start sm:self-auto cursor-pointer min-h-[44px]"
+              className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-ink/[0.05] text-fg hover:bg-ink/[0.1] transition-colors self-start sm:self-auto cursor-pointer min-h-[44px]"
             >
               {showPasswordSection ? "Close Form" : user.hasPassword ? "Change Password" : "Set Password"}
             </button>
@@ -177,26 +177,26 @@ const SecurityCard = () => {
             {showPasswordSection && (
               <form
                 onSubmit={onPasswordSubmit}
-                className="pt-4 border-t border-white/[0.06] space-y-4"
+                className="pt-4 border-t border-ink/[0.06] space-y-4"
               >
                 <InlineErrorAlert message={passwordError} onDismiss={() => setPasswordError(null)} />
 
                 {user.hasPassword && (
                   <div className="space-y-1.5">
-                    <label className="text-xs font-ui font-medium text-zinc-300">Current Password</label>
-                    <div className="relative flex items-center bg-[#0c0c0e] border border-white/[0.08] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
+                    <label className="text-xs font-ui font-medium text-fg-3">Current Password</label>
+                    <div className="relative flex items-center bg-card border border-ink/[0.08] rounded-xl px-4 h-11 focus-within:border-brand">
                       <input
                         type={showCurrentPw ? "text" : "password"}
                         value={passwordForm.currentPassword}
                         onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
                         placeholder="Enter current password to verify"
-                        className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm pr-8"
+                        className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm pr-8"
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowCurrentPw(!showCurrentPw)}
-                        className="absolute right-3 text-zinc-400 hover:text-white cursor-pointer"
+                        className="absolute right-3 text-muted hover:text-fg cursor-pointer"
                       >
                         {showCurrentPw ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
                       </button>
@@ -206,23 +206,23 @@ const SecurityCard = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-ui font-medium text-zinc-300">
+                    <label className="text-xs font-ui font-medium text-fg-3">
                       {user.hasPassword ? "New Password" : "Create Password"}
                     </label>
-                    <div className="relative flex items-center bg-[#0c0c0e] border border-white/[0.08] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
+                    <div className="relative flex items-center bg-card border border-ink/[0.08] rounded-xl px-4 h-11 focus-within:border-brand">
                       <input
                         type={showNewPw ? "text" : "password"}
                         value={passwordForm.newPassword}
                         onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                         placeholder="Min 8 characters"
-                        className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm pr-8"
+                        className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm pr-8"
                         required
                         minLength={8}
                       />
                       <button
                         type="button"
                         onClick={() => setShowNewPw(!showNewPw)}
-                        className="absolute right-3 text-zinc-400 hover:text-white cursor-pointer"
+                        className="absolute right-3 text-muted hover:text-fg cursor-pointer"
                       >
                         {showNewPw ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
                       </button>
@@ -230,14 +230,14 @@ const SecurityCard = () => {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-ui font-medium text-zinc-300">Confirm New Password</label>
-                    <div className="flex items-center bg-[#0c0c0e] border border-white/[0.08] rounded-xl px-4 h-11 focus-within:border-[#ffa116]">
+                    <label className="text-xs font-ui font-medium text-fg-3">Confirm New Password</label>
+                    <div className="flex items-center bg-card border border-ink/[0.08] rounded-xl px-4 h-11 focus-within:border-brand">
                       <input
                         type="password"
                         value={passwordForm.confirmPassword}
                         onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                         placeholder="Confirm new password"
-                        className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
+                        className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                         required
                         minLength={8}
                       />
@@ -249,16 +249,16 @@ const SecurityCard = () => {
                   <button
                     type="button"
                     onClick={() => setShowPasswordSection(false)}
-                    className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-white/[0.05] text-zinc-400 hover:bg-white/[0.1] transition-colors cursor-pointer min-h-[44px]"
+                    className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-ink/[0.05] text-muted hover:bg-ink/[0.1] transition-colors cursor-pointer min-h-[44px]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingPassword}
-                    className="px-5 py-2 text-xs font-display font-semibold rounded-xl amber-specular-button text-black transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold min-h-[44px]"
+                    className="px-5 py-2 text-xs font-display font-semibold rounded-xl amber-specular-button text-on-brand transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer font-bold min-h-[44px]"
                   >
-                    {isSubmittingPassword ? <InlineSpinner size={14} color="#000" /> : null}
+                    {isSubmittingPassword ? <InlineSpinner size={14} color="var(--on-brand)" /> : null}
                     {isSubmittingPassword ? "Saving..." : user.hasPassword ? "Verify & Update Password" : "Set Password"}
                   </button>
                 </div>

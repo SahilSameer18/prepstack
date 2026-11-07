@@ -35,7 +35,7 @@ class ErrorBoundary extends React.Component {
       <div
         style={{
           minHeight: '100vh',
-          backgroundColor: '#0a0a0a',
+          backgroundColor: 'var(--card)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -52,22 +52,22 @@ class ErrorBoundary extends React.Component {
             width: 80,
             height: 80,
             borderRadius: 20,
-            background: 'rgba(239,68,68,0.1)',
-            border: '1px solid rgba(239,68,68,0.2)',
+            background: 'color-mix(in srgb, var(--bad-solid) 10%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--bad-solid) 20%, transparent)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <FiAlertTriangle style={{ fontSize: 36, color: '#f87171' }} />
+          <FiAlertTriangle style={{ fontSize: 36, color: 'var(--bad)' }} />
         </div>
 
         {/* Copy */}
         <div>
-          <h1 style={{ color: '#fff', fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
+          <h1 style={{ color: 'var(--fg)', fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
             Something went wrong
           </h1>
-          <p style={{ color: '#6b7280', fontSize: 14, maxWidth: 400, lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--faint)', fontSize: 14, maxWidth: 400, lineHeight: 1.6 }}>
             An unexpected error occurred. Our team has been notified. Try going
             back to the home page.
           </p>
@@ -78,10 +78,10 @@ class ErrorBoundary extends React.Component {
               style={{
                 marginTop: 16,
                 padding: '12px 16px',
-                background: 'rgba(239,68,68,0.06)',
-                border: '1px solid rgba(239,68,68,0.15)',
+                background: 'color-mix(in srgb, var(--bad-solid) 6%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--bad-solid) 15%, transparent)',
                 borderRadius: 10,
-                color: '#fca5a5',
+                color: 'var(--bad)',
                 fontSize: 12,
                 textAlign: 'left',
                 maxWidth: 480,
@@ -104,8 +104,8 @@ class ErrorBoundary extends React.Component {
             gap: 8,
             padding: '10px 24px',
             borderRadius: 12,
-            background: 'linear-gradient(135deg, #ffa116, #ff8c00)',
-            color: '#000',
+            background: 'linear-gradient(135deg, var(--brand), var(--brand-deep))',
+            color: 'var(--on-brand)',
             fontWeight: 600,
             fontSize: 14,
             border: 'none',

@@ -113,10 +113,10 @@ const SheetsDetail = () => {
   );
 
   return (
-    <div className="px-4 md:px-6 py-8 max-w-5xl mx-auto page-enter text-white">
+    <div className="px-4 md:px-6 py-8 max-w-5xl mx-auto page-enter text-fg">
 
       {/* Back link */}
-      <Link to="/dsa" className="inline-flex items-center gap-2 min-h-[44px] text-zinc-400 hover:text-white text-sm mb-3 transition-colors group">
+      <Link to="/dsa" className="inline-flex items-center gap-2 min-h-[44px] text-muted hover:text-fg text-sm mb-3 transition-colors group">
         <FiArrowLeft className="transition-transform group-hover:-translate-x-0.5" />
         Back to Sheets
       </Link>
@@ -139,33 +139,33 @@ const SheetsDetail = () => {
           const topicPct = topicTotal === 0 ? 0 : Math.round((topicSolvedCount / topicTotal) * 100);
 
           return (
-            <div key={index} className={`bg-[#0c0c0e] border rounded-xl overflow-hidden transition-all duration-200 ${isOpen ? 'border-white/[0.12] shadow-lg' : 'border-white/[0.06] hover:border-white/[0.1]'}`}>
+            <div key={index} className={`bg-card border rounded-xl overflow-hidden transition-all duration-200 ${isOpen ? 'border-ink/[0.12] shadow-lg' : 'border-ink/[0.06] hover:border-ink/[0.1]'}`}>
               {/* Accordion Header */}
               <button
                 onClick={() => toggleTopic(index)}
-                className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                className="w-full px-5 py-4 flex items-center justify-between hover:bg-ink/[0.02] transition-colors"
               >
                 <div className="flex items-center gap-4 min-w-0">
-                  <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-white/[0.04] flex-shrink-0">
-                    <span className="text-sm font-bold text-white font-ui">{index + 1}</span>
+                  <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-ink/[0.04] flex-shrink-0">
+                    <span className="text-sm font-bold text-fg font-ui">{index + 1}</span>
                   </div>
                   <div className="min-w-0 text-left">
-                    <h2 className="text-sm md:text-base font-semibold text-zinc-100 truncate">{topic.title || topic.topic || `Topic ${index + 1}`}</h2>
+                    <h2 className="text-sm md:text-base font-semibold text-fg-1 truncate">{topic.title || topic.topic || `Topic ${index + 1}`}</h2>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <div className="h-1 w-16 bg-white/[0.06] rounded-full overflow-hidden">
+                      <div className="h-1 w-16 bg-ink/[0.06] rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full"
                           style={{ width: `${topicPct}%`, background: meta.accentColor, opacity: 0.8 }}
                         />
                       </div>
-                      <span className="text-xs text-zinc-400 font-ui">{topicSolvedCount}/{topicTotal}</span>
+                      <span className="text-xs text-muted font-ui">{topicSolvedCount}/{topicTotal}</span>
                     </div>
                   </div>
                 </div>
                 <motion.span
                   animate={{ rotate: isOpen ? 180 : 0 }}
                   transition={{ type: "spring", damping: 20, stiffness: 320 }}
-                  className="text-zinc-400 text-xs flex-shrink-0"
+                  className="text-muted text-xs flex-shrink-0"
                 >
                   <FaChevronDown />
                 </motion.span>
@@ -179,7 +179,7 @@ const SheetsDetail = () => {
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: "spring", damping: 30, stiffness: 350 }}
-                    className="border-t border-white/[0.06] overflow-hidden"
+                    className="border-t border-ink/[0.06] overflow-hidden"
                   >
                     {problems.map((problem, pIdx) => (
                       <ProblemRow

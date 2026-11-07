@@ -16,7 +16,7 @@ const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderCla
       </h4>
       <ul className="space-y-2.5">
         {items.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-3 text-zinc-200">
+          <li key={idx} className="flex items-start gap-3 text-fg-2">
             <span className={`mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0 ${colorClass.replace('text-', 'bg-')}`} />
             <span className="leading-[1.7] text-[14.5px] sm:text-[15px]">{item}</span>
           </li>
@@ -60,10 +60,10 @@ export default function NotesDetail() {
   if (error || !noteConfig) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh]">
-        <FiAlertTriangle className="text-rose-500 text-4xl mb-4" />
-        <h2 className="text-xl font-bold text-white mb-2">Failed to load notes</h2>
-        <p className="text-zinc-400 mb-6 text-sm">{error || "Notes not found"}</p>
-        <Link to="/notes" className="px-5 py-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors text-sm">
+        <FiAlertTriangle className="text-bad-solid text-4xl mb-4" />
+        <h2 className="text-xl font-bold text-fg mb-2">Failed to load notes</h2>
+        <p className="text-muted mb-6 text-sm">{error || "Notes not found"}</p>
+        <Link to="/notes" className="px-5 py-2 bg-ink/10 hover:bg-ink/20 rounded-full text-fg transition-colors text-sm">
           Go Back
         </Link>
       </div>
@@ -79,19 +79,19 @@ export default function NotesDetail() {
     <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)] -mt-6">
       
       {/* ── Mobile Top Bar ── */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-[#0c0c0e] sticky top-0 z-40">
+      <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-ink/[0.08] bg-card sticky top-0 z-40">
         <div className="flex items-center gap-3 min-w-0">
-          <Link to="/notes" aria-label="Back to all subjects" className="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-lg bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors">
+          <Link to="/notes" aria-label="Back to all subjects" className="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-lg bg-ink/5 text-muted hover:text-fg hover:bg-ink/10 transition-colors">
             <FiChevronLeft className="text-base" />
           </Link>
           <div className="min-w-0 text-left">
-            <p className="text-xs text-zinc-400 font-ui font-semibold">{subjectTitle}</p>
-            <p className="text-sm font-semibold text-white truncate">{activeTopic?.name || 'Select topic'}</p>
+            <p className="text-xs text-muted font-ui font-semibold">{subjectTitle}</p>
+            <p className="text-sm font-semibold text-fg truncate">{activeTopic?.name || 'Select topic'}</p>
           </div>
         </div>
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="flex-shrink-0 flex items-center gap-1.5 px-3.5 min-h-[44px] rounded-lg bg-white/[0.06] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition-colors"
+          className="flex-shrink-0 flex items-center gap-1.5 px-3.5 min-h-[44px] rounded-lg bg-ink/[0.06] border border-ink/[0.08] text-fg-2 hover:text-fg text-xs font-medium transition-colors"
         >
           <FiMenu className="text-sm" />
           Topics
@@ -105,7 +105,7 @@ export default function NotesDetail() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => setIsSidebarOpen(false)}
-            className="fixed inset-0 bg-black/70 z-40 md:hidden backdrop-blur-sm"
+            className="fixed inset-0 bg-scrim/70 z-40 md:hidden backdrop-blur-sm"
           />
         )}
       </AnimatePresence>
@@ -116,8 +116,8 @@ export default function NotesDetail() {
           fixed left-0 md:left-auto md:sticky top-0 md:top-[80px]
           h-screen md:h-[calc(100vh-80px)]
           w-[280px] md:w-64
-          bg-[#0c0c0e]
-          border-r border-white/[0.08]
+          bg-card
+          border-r border-ink/[0.08]
           z-50 md:z-auto
           flex flex-col
           transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-left
@@ -125,28 +125,28 @@ export default function NotesDetail() {
         `}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-white/[0.08] flex-shrink-0">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-ink/[0.08] flex-shrink-0">
           <Link
             to="/notes"
-            className="flex items-center gap-2 min-h-[44px] text-zinc-400 hover:text-white transition-colors text-sm group"
+            className="flex items-center gap-2 min-h-[44px] text-muted hover:text-fg transition-colors text-sm group"
           >
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
+            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-ink/5 group-hover:bg-ink/10 transition-colors">
               <FiChevronLeft className="text-sm" />
             </div>
             <span className="font-medium">All Subjects</span>
           </Link>
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="md:hidden flex items-center justify-center w-11 h-11 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="md:hidden flex items-center justify-center w-11 h-11 rounded-lg text-muted hover:text-fg hover:bg-ink/10 transition-colors"
           >
             <FiX className="text-sm" />
           </button>
         </div>
 
         {/* Subject Title */}
-        <div className="px-4 pt-4 pb-3 border-b border-white/[0.06] flex-shrink-0">
-          <h2 className="font-display text-base font-bold text-white mb-0.5">{subjectTitle}</h2>
-          <p className="font-ui text-xs text-zinc-400">{totalTopics} topics</p>
+        <div className="px-4 pt-4 pb-3 border-b border-ink/[0.06] flex-shrink-0">
+          <h2 className="font-display text-base font-bold text-fg mb-0.5">{subjectTitle}</h2>
+          <p className="font-ui text-xs text-muted">{totalTopics} topics</p>
         </div>
 
         {/* Topic List */}
@@ -154,7 +154,7 @@ export default function NotesDetail() {
           <div className="px-3 space-y-5">
             {sections.map((section, sIdx) => (
               <div key={sIdx}>
-                <p className="text-xs font-ui font-semibold text-zinc-400 mb-1.5 px-2">
+                <p className="text-xs font-ui font-semibold text-muted mb-1.5 px-2">
                   {section.title}
                 </p>
                 <ul className="space-y-0.5">
@@ -169,12 +169,12 @@ export default function NotesDetail() {
                           }}
                           className={`w-full text-left px-3 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150 flex items-center justify-between group cursor-pointer ${
                             isActive 
-                              ? 'bg-[#ffa116]/10 text-[#ffa116] border border-[#ffa116]/25 font-semibold' 
-                              : 'text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200 border border-transparent'
+                              ? 'bg-brand/10 text-brand border border-brand/25 font-semibold' 
+                              : 'text-muted hover:bg-ink/[0.04] hover:text-fg-2 border border-transparent'
                           }`}
                         >
                           <span className="truncate">{topic.name}</span>
-                          {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116] flex-shrink-0 ml-2" />}
+                          {isActive && <span className="w-1.5 h-1.5 rounded-full bg-brand flex-shrink-0 ml-2" />}
                         </button>
                       </li>
                     );
@@ -197,13 +197,13 @@ export default function NotesDetail() {
               transition={{ duration: 0.15 }}
             >
               {/* Breadcrumb */}
-              <div className="flex items-center gap-1.5 text-xs text-zinc-400 mb-5 font-ui">
-                <Link to="/notes" className="hover:text-zinc-200 transition-colors">{subjectTitle}</Link>
-                <FiChevronRight className="text-xs text-zinc-400" />
-                <span className="text-zinc-200 truncate">{activeTopic.name}</span>
+              <div className="flex items-center gap-1.5 text-xs text-muted mb-5 font-ui">
+                <Link to="/notes" className="hover:text-fg-2 transition-colors">{subjectTitle}</Link>
+                <FiChevronRight className="text-xs text-muted" />
+                <span className="text-fg-2 truncate">{activeTopic.name}</span>
               </div>
 
-              <h1 className="text-2xl md:text-3xl font-display font-bold text-white mb-6 pb-4 border-b border-white/[0.08] leading-tight text-left">
+              <h1 className="text-2xl md:text-3xl font-display font-bold text-fg mb-6 pb-4 border-b border-ink/[0.08] leading-tight text-left">
                 {activeTopic.name}
               </h1>
 
@@ -211,48 +211,48 @@ export default function NotesDetail() {
                 title="Concept" 
                 items={activeTopic.concept} 
                 icon={FiInfo}
-                colorClass="text-blue-400" bgClass="bg-blue-500/[0.04]" borderClass="border-blue-500/[0.12]" 
+                colorClass="text-info" bgClass="bg-info-solid/[0.04]" borderClass="border-info-solid/[0.12]" 
               />
 
               <SectionBlock 
                 title="Deep Insight" 
                 items={activeTopic.deepInsight} 
                 icon={FiInfo}
-                colorClass="text-purple-400" bgClass="bg-purple-500/[0.04]" borderClass="border-purple-500/[0.12]" 
+                colorClass="text-violet" bgClass="bg-violet-solid/[0.04]" borderClass="border-violet-solid/[0.12]" 
               />
 
               <SectionBlock 
                 title="Why it matters" 
                 items={activeTopic.why} 
-                colorClass="text-amber-400" bgClass="bg-amber-500/[0.04]" borderClass="border-amber-500/[0.12]" 
+                colorClass="text-warn" bgClass="bg-warn-solid/[0.04]" borderClass="border-warn-solid/[0.12]" 
               />
 
               <SectionBlock 
                 title="Real World Examples" 
                 items={activeTopic.realWorld} 
                 icon={FiCheckCircle}
-                colorClass="text-emerald-400" bgClass="bg-emerald-500/[0.04]" borderClass="border-emerald-500/[0.12]" 
+                colorClass="text-ok" bgClass="bg-ok-solid/[0.04]" borderClass="border-ok-solid/[0.12]" 
               />
 
               <SectionBlock 
                 title="Common Traps / Gotchas" 
                 items={activeTopic.traps} 
                 icon={FiAlertTriangle}
-                colorClass="text-red-400" bgClass="bg-red-500/[0.04]" borderClass="border-red-500/[0.12]" 
+                colorClass="text-bad" bgClass="bg-bad-solid/[0.04]" borderClass="border-bad-solid/[0.12]" 
               />
 
               <SectionBlock 
                 title="How to Answer in Interview" 
                 items={activeTopic.interviewAnswer} 
                 icon={FiMessageSquare}
-                colorClass="text-[#ffa116]" bgClass="bg-[#ffa116]/[0.04]" borderClass="border-[#ffa116]/[0.12]" 
+                colorClass="text-brand" bgClass="bg-brand/[0.04]" borderClass="border-brand/[0.12]" 
               />
 
               {activeTopic.flow && (
                 <SectionBlock 
                   title="Flow Step-by-Step" 
                   items={activeTopic.flow} 
-                  colorClass="text-cyan-400" bgClass="bg-cyan-500/[0.04]" borderClass="border-cyan-500/[0.12]" 
+                  colorClass="text-cyan" bgClass="bg-cyan-solid/[0.04]" borderClass="border-cyan-solid/[0.12]" 
                 />
               )}
 
@@ -260,7 +260,7 @@ export default function NotesDetail() {
                 <SectionBlock 
                   title="Conditions" 
                   items={activeTopic.conditions} 
-                  colorClass="text-yellow-400" bgClass="bg-yellow-500/[0.04]" borderClass="border-yellow-500/[0.12]" 
+                  colorClass="text-yellow" bgClass="bg-yellow-solid/[0.04]" borderClass="border-yellow-solid/[0.12]" 
                 />
               )}
 
@@ -268,7 +268,7 @@ export default function NotesDetail() {
                 <SectionBlock 
                   title="PCB Contains" 
                   items={activeTopic.pcbContains} 
-                  colorClass="text-teal-400" bgClass="bg-teal-500/[0.04]" borderClass="border-teal-500/[0.12]" 
+                  colorClass="text-cyan" bgClass="bg-cyan-solid/[0.04]" borderClass="border-cyan-solid/[0.12]" 
                 />
               )}
 
@@ -276,7 +276,7 @@ export default function NotesDetail() {
                 <SectionBlock 
                   title="Solution Concept" 
                   items={activeTopic.solution} 
-                  colorClass="text-emerald-400" bgClass="bg-emerald-500/[0.04]" borderClass="border-emerald-500/[0.12]" 
+                  colorClass="text-ok" bgClass="bg-ok-solid/[0.04]" borderClass="border-ok-solid/[0.12]" 
                 />
               )}
 
@@ -284,18 +284,18 @@ export default function NotesDetail() {
                 <SectionBlock 
                   title="Key Takeaways" 
                   items={activeTopic.list} 
-                  colorClass="text-zinc-300" bgClass="bg-white/[0.02]" borderClass="border-white/[0.08]" 
+                  colorClass="text-fg-3" bgClass="bg-ink/[0.02]" borderClass="border-ink/[0.08]" 
                 />
               )}
 
               {activeTopic.followUps && (
-                <div className="mt-8 pt-6 border-t border-white/[0.08] text-left">
-                  <h4 className="text-xs font-ui font-bold text-zinc-400 mb-3.5">
+                <div className="mt-8 pt-6 border-t border-ink/[0.08] text-left">
+                  <h4 className="text-xs font-ui font-bold text-muted mb-3.5">
                     Interview Follow-up Questions
                   </h4>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {activeTopic.followUps.map((q, idx) => (
-                      <li key={idx} className="bg-[#0c0c0e] border border-white/[0.08] p-4 rounded-xl text-zinc-300 text-xs sm:text-sm leading-relaxed hover:border-white/[0.15] transition-colors">
+                      <li key={idx} className="bg-card border border-ink/[0.08] p-4 rounded-xl text-fg-3 text-xs sm:text-sm leading-relaxed hover:border-ink/[0.15] transition-colors">
                         {q}
                       </li>
                     ))}
@@ -316,20 +316,20 @@ export default function NotesDetail() {
                 };
 
                 return (
-                  <div className="mt-12 pt-8 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="mt-12 pt-8 border-t border-ink/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {prevTopic ? (
                       <button
                         onClick={() => {
                           setSelectedTopic(prevTopic);
                           scrollToReadingTop();
                         }}
-                        className="group flex flex-col items-start p-4 rounded-xl border border-white/[0.08] bg-[#0c0c0e] hover:border-white/[0.2] hover:bg-white/[0.02] transition-colors text-left"
+                        className="group flex flex-col items-start p-4 rounded-xl border border-ink/[0.08] bg-card hover:border-ink/[0.2] hover:bg-ink/[0.02] transition-colors text-left"
                       >
-                        <span className="flex items-center gap-1.5 text-xs text-zinc-400 font-ui mb-1">
+                        <span className="flex items-center gap-1.5 text-xs text-muted font-ui mb-1">
                           <FiChevronLeft className="group-hover:-translate-x-0.5 transition-transform" />
                           Previous Topic
                         </span>
-                        <span className="text-sm font-semibold text-zinc-200 group-hover:text-white truncate w-full">
+                        <span className="text-sm font-semibold text-fg-2 group-hover:text-fg truncate w-full">
                           {prevTopic.name}
                         </span>
                       </button>
@@ -341,13 +341,13 @@ export default function NotesDetail() {
                           setSelectedTopic(nextTopic);
                           scrollToReadingTop();
                         }}
-                        className="group flex flex-col items-end p-4 rounded-xl border border-white/[0.08] bg-[#0c0c0e] hover:border-[#ffa116]/30 hover:bg-[#ffa116]/[0.02] transition-colors text-right sm:col-start-2"
+                        className="group flex flex-col items-end p-4 rounded-xl border border-ink/[0.08] bg-card hover:border-brand/30 hover:bg-brand/[0.02] transition-colors text-right sm:col-start-2"
                       >
-                        <span className="flex items-center gap-1.5 text-xs text-zinc-400 font-ui mb-1">
+                        <span className="flex items-center gap-1.5 text-xs text-muted font-ui mb-1">
                           Next Topic
-                          <FiChevronRight className="group-hover:translate-x-0.5 transition-transform text-[#ffa116]" />
+                          <FiChevronRight className="group-hover:translate-x-0.5 transition-transform text-brand" />
                         </span>
-                        <span className="text-sm font-semibold text-zinc-200 group-hover:text-white truncate w-full">
+                        <span className="text-sm font-semibold text-fg-2 group-hover:text-fg truncate w-full">
                           {nextTopic.name}
                         </span>
                       </button>
@@ -358,7 +358,7 @@ export default function NotesDetail() {
 
             </motion.div>
           ) : (
-            <div className="flex items-center justify-center h-64 text-zinc-400 text-sm font-ui">
+            <div className="flex items-center justify-center h-64 text-muted text-sm font-ui">
               Select a topic from the sidebar to start reading.
             </div>
           )}

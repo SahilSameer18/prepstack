@@ -13,10 +13,10 @@ const CATEGORIES = [
 ];
 
 const CATEGORY_COLORS = {
-  Personal:        { text: "text-blue-400",    bg: "bg-blue-500/10",    border: "border-blue-500/25" },
-  Teamwork:        { text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/25" },
-  "Problem Solving":{ text: "text-purple-400", bg: "bg-purple-500/10",  border: "border-purple-500/25" },
-  Leadership:      { text: "text-[#ffa116]",   bg: "bg-[#ffa116]/10",   border: "border-[#ffa116]/25" },
+  Personal:        { text: "text-info",    bg: "bg-info-solid/10",    border: "border-info-solid/25" },
+  Teamwork:        { text: "text-ok", bg: "bg-ok-solid/10", border: "border-ok-solid/25" },
+  "Problem Solving":{ text: "text-violet", bg: "bg-violet-solid/10",  border: "border-violet-solid/25" },
+  Leadership:      { text: "text-brand",   bg: "bg-brand/10",   border: "border-brand/25" },
 };
 
 const QuestionCard = ({ q }) => {
@@ -25,8 +25,8 @@ const QuestionCard = ({ q }) => {
 
   return (
     <div
-      className={`group bg-[#0c0c0e] border rounded-2xl overflow-hidden transition-colors duration-200 shadow-md text-left
-        ${open ? `border-[#ffa116]/40` : `border-white/[0.08] hover:border-white/[0.18]`}`}
+      className={`group bg-card border rounded-2xl overflow-hidden transition-colors duration-200 shadow-md text-left
+        ${open ? `border-brand/40` : `border-ink/[0.08] hover:border-ink/[0.18]`}`}
     >
       {/* Question row */}
       <button
@@ -34,7 +34,7 @@ const QuestionCard = ({ q }) => {
         className="w-full text-left px-5 sm:px-6 py-5 flex items-start gap-4 focus:outline-none cursor-pointer"
       >
         {/* Number badge */}
-        <span className="flex-shrink-0 mt-0.5 w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-xs font-ui font-bold text-zinc-400">
+        <span className="flex-shrink-0 mt-0.5 w-8 h-8 rounded-lg bg-ink/[0.04] border border-ink/[0.08] flex items-center justify-center text-xs font-ui font-bold text-muted">
           {String(q.id).padStart(2, "0")}
         </span>
 
@@ -46,7 +46,7 @@ const QuestionCard = ({ q }) => {
               {q.category}
             </span>
           </div>
-          <h3 className={`text-base font-semibold leading-snug transition-colors duration-200 ${open ? "text-[#ffa116]" : "text-zinc-100 group-hover:text-white"}`}>
+          <h3 className={`text-base font-semibold leading-snug transition-colors duration-200 ${open ? "text-brand" : "text-fg-1 group-hover:text-fg"}`}>
             {q.question}
           </h3>
         </div>
@@ -55,7 +55,7 @@ const QuestionCard = ({ q }) => {
           animate={{ rotate: open ? 180 : 0 }} 
           transition={{ type: "spring", damping: 20, stiffness: 320 }}
           className={`flex-shrink-0 mt-1 w-8 h-8 rounded-lg border flex items-center justify-center transition-colors duration-200
-            ${open ? "bg-[#ffa116]/15 border-[#ffa116]/30 text-[#ffa116]" : "bg-white/[0.04] border-white/[0.08] text-zinc-400 group-hover:text-white"}`}
+            ${open ? "bg-brand/15 border-brand/30 text-brand" : "bg-ink/[0.04] border-ink/[0.08] text-muted group-hover:text-fg"}`}
         >
           <FiChevronDown className="text-sm" />
         </motion.div>
@@ -72,28 +72,28 @@ const QuestionCard = ({ q }) => {
             transition={{ type: "spring", damping: 30, stiffness: 350 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-white/[0.06] px-5 sm:px-6 py-6 bg-[#0a0a0c]">
+            <div className="border-t border-ink/[0.06] px-5 sm:px-6 py-6 bg-card">
               <div className="grid md:grid-cols-2 gap-4">
                 {/* Strategy / Tip */}
-                <div className="rounded-xl bg-[#ffa116]/[0.03] border border-[#ffa116]/20 p-5">
+                <div className="rounded-xl bg-brand/[0.03] border border-brand/20 p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-6 rounded-md bg-[#ffa116]/15 flex items-center justify-center">
-                      <FiZap className="text-[#ffa116] text-xs" />
+                    <div className="w-6 h-6 rounded-md bg-brand/15 flex items-center justify-center">
+                      <FiZap className="text-brand text-xs" />
                     </div>
-                    <span className="text-xs font-ui font-bold uppercase tracking-wider text-[#ffa116]">Evaluation Strategy</span>
+                    <span className="text-xs font-ui font-bold uppercase tracking-wider text-brand">Evaluation Strategy</span>
                   </div>
-                  <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{q.tip}</p>
+                  <p className="text-fg-3 text-xs sm:text-sm leading-relaxed">{q.tip}</p>
                 </div>
 
                 {/* Example Answer */}
-                <div className="rounded-xl bg-emerald-500/[0.03] border border-emerald-500/20 p-5">
+                <div className="rounded-xl bg-ok-solid/[0.03] border border-ok-solid/20 p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-6 rounded-md bg-emerald-500/15 flex items-center justify-center">
-                      <FiMessageSquare className="text-emerald-400 text-xs" />
+                    <div className="w-6 h-6 rounded-md bg-ok-solid/15 flex items-center justify-center">
+                      <FiMessageSquare className="text-ok text-xs" />
                     </div>
-                    <span className="text-xs font-ui font-bold text-emerald-400">STAR Model Answer</span>
+                    <span className="text-xs font-ui font-bold text-ok">STAR Model Answer</span>
                   </div>
-                  <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed italic">"{q.exampleAnswer}"</p>
+                  <p className="text-fg-3 text-xs sm:text-sm leading-relaxed italic">"{q.exampleAnswer}"</p>
                 </div>
               </div>
             </div>
@@ -122,31 +122,31 @@ const Behavioral = () => {
 
       {/* ── Header ── */}
       <div className="mb-8 pt-2">
-        <div className="inline-flex items-center gap-2 text-xs font-ui text-zinc-400 mb-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
-          <span className="tracking-wider font-semibold text-zinc-300">
+        <div className="inline-flex items-center gap-2 text-xs font-ui text-muted mb-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand" />
+          <span className="tracking-wider font-semibold text-fg-3">
             {behavioralQuestions.length} Curated Questions // STAR Methodology
           </span>
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-[-0.035em] mb-2.5">
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-fg tracking-[-0.035em] mb-2.5">
           Behavioral Interview Studio
         </h1>
-        <p className="text-zinc-400 max-w-2xl text-sm sm:text-base leading-relaxed">
+        <p className="text-muted max-w-2xl text-sm sm:text-base leading-relaxed">
           Master the behavioral and leadership rounds for top-tier tech roles. Practice curated question archetypes with STAR answer frameworks and strategic evaluation signals.
         </p>
-        <Link to="/analyzer" className="inline-block mt-3 text-sm text-[#ffa116] hover:underline">Get questions picked for a specific job with the Role Analyzer &rarr;</Link>
+        <Link to="/analyzer" className="inline-block mt-3 text-sm text-brand hover:underline">Get questions picked for a specific job with the Role Analyzer &rarr;</Link>
       </div>
 
       {/* ── STAR Method callout ── */}
-      <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-5 sm:p-6 mb-8 shadow-xl">
+      <div className="bg-card border border-ink/[0.08] rounded-2xl p-5 sm:p-6 mb-8 shadow-xl">
         <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#ffa116]/10 border border-[#ffa116]/25 flex items-center justify-center">
-            <FiStar className="text-[#ffa116] text-lg" />
+          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-brand/10 border border-brand/25 flex items-center justify-center">
+            <FiStar className="text-brand text-lg" />
           </div>
           <div>
-            <p className="font-display font-bold text-white text-base mb-1">The STAR Formulation Model</p>
-            <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">
-              Structure every response cleanly: <strong className="text-white font-ui">Situation → Task → Action → Result</strong>.
+            <p className="font-display font-bold text-fg text-base mb-1">The STAR Formulation Model</p>
+            <p className="text-fg-3 text-xs sm:text-sm leading-relaxed">
+              Structure every response cleanly: <strong className="text-fg font-ui">Situation → Task → Action → Result</strong>.
               Always quantify the delta impact (e.g., latency dropped by 42%, incident resolution time halved).
             </p>
             <div className="flex flex-wrap gap-2 mt-3.5">
@@ -156,9 +156,9 @@ const Behavioral = () => {
                 { name: "Action", desc: "Technical decisions" },
                 { name: "Result", desc: "Quantified metric" }
               ].map((s) => (
-                <div key={s.name} className="px-3 py-1.5 rounded-lg bg-[#121216] border border-white/[0.08] text-xs">
-                  <span className="font-ui font-bold text-[#ffa116] mr-1.5">{s.name}:</span>
-                  <span className="text-zinc-400">{s.desc}</span>
+                <div key={s.name} className="px-3 py-1.5 rounded-lg bg-card-hover border border-ink/[0.08] text-xs">
+                  <span className="font-ui font-bold text-brand mr-1.5">{s.name}:</span>
+                  <span className="text-muted">{s.desc}</span>
                 </div>
               ))}
             </div>
@@ -170,11 +170,11 @@ const Behavioral = () => {
       <div className="flex flex-col gap-3.5 mb-8">
         {/* Search bar */}
         <div className="relative w-full">
-          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm" />
+          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-muted text-sm" />
           <input
             type="text"
             placeholder="Search interview question archetypes..."
-            className="w-full bg-[#0c0c0e] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] rounded-xl py-3 pl-11 pr-4 outline-none transition-colors text-sm text-white placeholder-zinc-500 font-ui"
+            className="w-full bg-card border border-ink/[0.08] hover:border-ink/[0.15] focus:border-brand rounded-xl py-3 pl-11 pr-4 outline-none transition-colors text-sm text-fg placeholder-faint font-ui"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -190,14 +190,14 @@ const Behavioral = () => {
                 onClick={() => setSelectedCategory(cat.label)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-ui font-semibold border transition-all duration-150 active:scale-95 cursor-pointer min-h-[44px]
                   ${isActive
-                    ? "bg-[#ffa116] text-black border-[#ffa116]"
-                    : "bg-[#0c0c0e] border-white/[0.08] text-zinc-400 hover:border-white/[0.18] hover:text-white"
+                    ? "bg-brand text-on-brand border-brand"
+                    : "bg-card border-ink/[0.08] text-muted hover:border-ink/[0.18] hover:text-fg"
                   }`}
               >
                 {cat.icon}
                 <span>{cat.label}</span>
                 <span className={`text-xs font-ui font-bold px-1.5 py-0.5 rounded-md
-                  ${isActive ? "bg-black/20 text-black" : "bg-white/[0.06] text-zinc-400"}`}>
+                  ${isActive ? "bg-scrim/20 text-on-brand" : "bg-ink/[0.06] text-muted"}`}>
                   {totalByCategory(cat.label)}
                 </span>
               </button>
@@ -213,10 +213,10 @@ const Behavioral = () => {
         ))}
 
         {filteredQuestions.length === 0 && (
-          <div className="py-16 text-center text-zinc-400 border border-white/[0.08] rounded-2xl bg-[#0c0c0e]">
-            <FiSearch className="text-3xl mx-auto mb-2 text-zinc-400" />
-            <p className="text-base font-semibold text-white mb-1">No questions match criteria</p>
-            <p className="text-xs font-ui text-zinc-400">Try adjusting your search keywords or switching category filters.</p>
+          <div className="py-16 text-center text-muted border border-ink/[0.08] rounded-2xl bg-card">
+            <FiSearch className="text-3xl mx-auto mb-2 text-muted" />
+            <p className="text-base font-semibold text-fg mb-1">No questions match criteria</p>
+            <p className="text-xs font-ui text-muted">Try adjusting your search keywords or switching category filters.</p>
           </div>
         )}
       </div>

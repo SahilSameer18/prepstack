@@ -18,38 +18,145 @@ html, body, #root {
   max-width: 100vw;
 }
 
+/* ================= COLOR TOKENS =================
+   Components never use raw colors. They use the names below (bg-card, text-muted, border-ink/10, text-ok ...).
+   The values live in :root. To add a light theme, define the same variables again under
+   :root[data-theme="light"] and nothing else needs to change. */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-elevated: var(--elevated);
+  --color-ink: var(--ink);          /* overlay base: white on dark, black on light. Use with an opacity: bg-ink/5 */
+  --color-scrim: var(--scrim);      /* modal backdrops and shadows */
+  --color-fg: var(--fg);            /* strongest text */
+  --color-fg-1: var(--fg-1);
+  --color-fg-2: var(--fg-2);
+  --color-body: var(--body);        /* default page text */
+  --color-fg-3: var(--fg-3);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-deep: var(--brand-deep);
+  --color-on-brand: var(--on-brand); /* text on top of brand-coloured buttons */
+  --color-ok: var(--ok);
+  --color-ok-solid: var(--ok-solid);
+  --color-bad: var(--bad);
+  --color-bad-solid: var(--bad-solid);
+  --color-warn: var(--warn);
+  --color-warn-solid: var(--warn-solid);
+  --color-info: var(--info);
+  --color-info-solid: var(--info-solid);
+  --color-cyan: var(--cyan);
+  --color-cyan-solid: var(--cyan-solid);
+  --color-violet: var(--violet);
+  --color-violet-solid: var(--violet-solid);
+  --color-pink: var(--pink);
+  --color-pink-solid: var(--pink-solid);
+  --color-orange: var(--orange);
+  --color-orange-solid: var(--orange-solid);
+  --color-yellow: var(--yellow);
+  --color-yellow-solid: var(--yellow-solid);
+}
+
 :root {
-  /* ── OBSIDIAN SURFACE & BORDER SCALE ── */
-  --surface-base: #060608;
-  --surface-card: #0c0c0e;
-  --surface-card-hover: #121216;
-  --surface-elevated: #16161c;
-  --surface-overlay: rgba(8, 8, 11, 0.85);
+  /* ── surfaces ── */
+  --canvas: #060608;
+  --card: #0c0c0e;
+  --card-hover: #121216;
+  --elevated: oklch(21% 0.006 285.885);
+  --ink: #ffffff;
+  --scrim: #000000;
+  --shadow: #000000;
 
-  --border-hairline: rgba(255, 255, 255, 0.07);
-  --border-medium: rgba(255, 255, 255, 0.12);
-  --border-specular: inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  --border-focus: rgba(255, 161, 22, 0.5);
+  /* ── text ── */
+  --fg: #ffffff;
+  --fg-1: oklch(96.7% 0.001 286.375);
+  --fg-2: oklch(92% 0.004 286.32);
+  --fg-3: oklch(87.1% 0.006 286.286);
+  --muted: oklch(70.5% 0.015 286.067);
+  --faint: oklch(55.2% 0.016 285.938);
+  --body: #f4f4f5;
+  --line: oklch(37% 0.013 285.805);   /* a solid, stronger border */
 
-  /* ── BRAND TOKENS (Locked Singular Accent) ── */
-  --brand-amber: #ffa116;
-  --brand-amber-hover: #ffb342;
-  --brand-amber-glow: rgba(255, 161, 22, 0.22);
+  /* ── brand ── */
+  --brand: #ffa116;
+  --brand-hover: #ffb84d;
+  --brand-deep: #ff8c00;
+  --on-brand: #050505;
+  --brand-grad-top: #ffa826;
+  --brand-grad-bottom: #e68d05;
+  --brand-grad-hover-top: #ffb342;
+  --brand-grad-hover-bottom: #f59508;
 
-  /* ── FUNCTIONAL STATUS TOKENS ── */
-  --status-easy: #34d399;
-  --status-medium: #fbbf24;
-  --status-hard: #f87171;
-  --status-info: #60a5fa;
+  /* ── status and accent colors (-solid = the stronger shade for filled backgrounds) ── */
+  --ok: oklch(76.5% 0.177 163.223);
+  --ok-solid: oklch(69.6% 0.17 162.48);
+  --bad: oklch(71.2% 0.194 13.428);
+  --bad-solid: oklch(64.5% 0.246 16.439);
+  --warn: oklch(82.8% 0.189 84.429);
+  --warn-solid: oklch(76.9% 0.188 70.08);
+  --info: oklch(70.7% 0.165 254.624);
+  --info-solid: oklch(62.3% 0.214 259.815);
+  --cyan: oklch(78.9% 0.154 211.53);
+  --cyan-solid: oklch(71.5% 0.143 215.221);
+  --violet: oklch(71.4% 0.203 305.504);
+  --violet-solid: oklch(62.7% 0.265 303.9);
+  --pink: oklch(71.8% 0.202 349.761);
+  --pink-solid: oklch(65.6% 0.241 354.308);
+  --orange: oklch(75% 0.183 55.934);
+  --orange-solid: oklch(70.5% 0.213 47.604);
+  --yellow: oklch(85.2% 0.199 91.936);
+  --yellow-solid: oklch(79.5% 0.184 86.047);
 
-  /* ── LEGACY LEETCODE TOKENS (Preserved for compatibility) ── */
-  --lc-bg: #060608;
-  --lc-card: #0c0c0e;
-  --lc-border: rgba(255, 255, 255, 0.08);
-  --lc-primary: #ffa116;
-  --lc-primary-hover: #ffb84d;
-  --lc-text: #f4f4f5;
-  --lc-muted: #a1a1aa;
+  /* ── chart and data colors (used from JS as var(--data-...)) ── */
+  --data-blue: #3b82f6;
+  --data-purple: #a855f7;
+  --data-green: #10b981;
+  --data-pink: #ec4899;
+  --data-blue-soft: #60a5fa;
+  --data-green-soft: #34d399;
+  --data-purple-soft: #c084fc;
+  --data-orange-soft: #fb923c;
+  --data-pink-soft: #f472b6;
+  --toast-ok: #4ade80;
+  --toast-bad: #ef4444;
+
+  /* ── logo mark ── */
+  --logo-top: #ffc04d;
+  --logo-bottom: #f59300;
+
+  /* ── older names, now aliases of the tokens above (kept so existing CSS keeps working) ── */
+  --overlay-base: #08080b;
+  --surface-base: var(--canvas);
+  --surface-card: var(--card);
+  --surface-card-hover: var(--card-hover);
+  --surface-elevated: var(--elevated);
+  --surface-overlay: color-mix(in srgb, var(--overlay-base) 85%, transparent);
+
+  --border-hairline: color-mix(in srgb, var(--ink) 7%, transparent);
+  --border-medium: color-mix(in srgb, var(--ink) 12%, transparent);
+  --border-specular: inset 0 1px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+  --border-focus: color-mix(in srgb, var(--brand) 50%, transparent);
+
+  --brand-amber: var(--brand);
+  --brand-amber-hover: var(--brand-grad-hover-top);
+  --brand-amber-glow: color-mix(in srgb, var(--brand) 22%, transparent);
+
+  --status-easy: var(--ok);
+  --status-medium: var(--warn);
+  --status-hard: var(--bad);
+  --status-info: var(--info);
+
+  --lc-bg: var(--canvas);
+  --lc-card: var(--card);
+  --lc-border: color-mix(in srgb, var(--ink) 8%, transparent);
+  --lc-primary: var(--brand);
+  --lc-primary-hover: var(--brand-hover);
+  --lc-text: var(--body);
+  --lc-muted: var(--muted);
 
   /* ── TYPOGRAPHY STACK ── */
   --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -109,13 +216,13 @@ kbd,
 /* ---------------- LUXURY & SPECULAR UTILITIES ---------------- */
 
 .bg-dot-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 9%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
 .bg-line-grid {
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-image: linear-gradient(to right, color-mix(in srgb, var(--ink) 4%, transparent) 1px, transparent 1px),
+                    linear-gradient(to bottom, color-mix(in srgb, var(--ink) 4%, transparent) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -130,26 +237,26 @@ kbd,
 }
 
 .luxury-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.038) 0%, rgba(255, 255, 255, 0.008) 100%), #0c0c0e;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 3.8%, transparent) 0%, color-mix(in srgb, var(--ink) 0.8%, transparent) 100%), var(--card);
   border: 1px solid var(--border-hairline);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 20px 45px -15px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--shadow) 60%, transparent), 0 20px 45px -15px color-mix(in srgb, var(--shadow) 85%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 12%, transparent);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .luxury-card:hover {
   border-color: var(--border-medium);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8), 0 25px 55px -12px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--shadow) 80%, transparent), 0 25px 55px -12px color-mix(in srgb, var(--shadow) 95%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 20%, transparent);
 }
 
 .titanium-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.006) 100%), #0a0a0d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 24px 48px -12px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 4.5%, transparent) 0%, color-mix(in srgb, var(--ink) 0.6%, transparent) 100%), var(--card);
+  border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--shadow) 70%, transparent), 0 24px 48px -12px color-mix(in srgb, var(--shadow) 90%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 14%, transparent);
 }
 
 .titanium-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.9), 0 30px 60px -15px rgba(0, 0, 0, 0.98), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  border-color: color-mix(in srgb, var(--ink) 15%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--shadow) 90%, transparent), 0 30px 60px -15px color-mix(in srgb, var(--shadow) 98%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 22%, transparent);
 }
 
 .luxury-glass {
@@ -157,45 +264,45 @@ kbd,
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border-hairline);
-  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 60px -20px color-mix(in srgb, var(--shadow) 85%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 12%, transparent);
 }
 
 .specular-border {
   border: 1px solid var(--border-hairline);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--ink) 15%, transparent);
 }
 
 .amber-specular-button {
-  background: linear-gradient(180deg, #ffa826 0%, #e68d05 100%);
-  color: #050505;
-  box-shadow: 0 8px 24px -4px rgba(245, 158, 11, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: linear-gradient(180deg, var(--brand-grad-top) 0%, var(--brand-grad-bottom) 100%);
+  color: var(--on-brand);
+  box-shadow: 0 8px 24px -4px color-mix(in srgb, var(--brand-deep) 38%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 40%, transparent);
   transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease, background 0.12s ease;
   will-change: transform;
 }
 
 .amber-specular-button:hover {
-  background: linear-gradient(180deg, #ffb342 0%, #f59508 100%);
-  box-shadow: 0 12px 28px -3px rgba(245, 158, 11, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: linear-gradient(180deg, var(--brand-grad-hover-top) 0%, var(--brand-grad-hover-bottom) 100%);
+  box-shadow: 0 12px 28px -3px color-mix(in srgb, var(--brand-deep) 48%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 50%, transparent);
   transform: translateY(-1px);
 }
 
 .amber-specular-button:active {
   transform: translateY(1px) scale(0.99);
-  box-shadow: 0 4px 12px -2px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--brand-deep) 30%, transparent);
 }
 
 .titanium-button {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), #121216;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  color: #e4e4e7;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 7%, transparent) 0%, color-mix(in srgb, var(--ink) 2%, transparent) 100%), var(--card-hover);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--shadow) 40%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 14%, transparent);
+  color: var(--fg-2);
   transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
 }
 
 .titanium-button:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.04) 100%), #16161b;
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 11%, transparent) 0%, color-mix(in srgb, var(--ink) 4%, transparent) 100%), var(--card-hover);
+  border-color: color-mix(in srgb, var(--ink) 20%, transparent);
+  color: var(--fg);
   transform: translateY(-1px);
 }
 
@@ -221,10 +328,10 @@ a.btn:active,
   line-height: 1;
   padding: 3px 6px;
   border-radius: 5px;
-  background: #121215;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #a1a1aa;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 2px rgba(0, 0, 0, 0.6);
+  background: var(--card-hover);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  color: var(--muted);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--ink) 10%, transparent), 0 1px 2px color-mix(in srgb, var(--shadow) 60%, transparent);
 }
 
 /* ── SPOTLIGHT CARD (Zero layout-thrashing cursor glow) ── */
@@ -239,7 +346,7 @@ a.btn:active,
 
 .spotlight-card:hover {
   border-color: var(--border-medium);
-  box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 20px 45px -15px color-mix(in srgb, var(--shadow) 85%, transparent);
 }
 
 /* ── ENVIRONMENTAL ACCESSIBILITY TRIAD (Apple WWDC Standards) ── */
@@ -263,7 +370,7 @@ a.btn:active,
   .titanium-card,
   nav,
   .modal-surface {
-    background-color: #0c0c0e !important;
+    background-color: var(--card) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
@@ -272,24 +379,24 @@ a.btn:active,
 /* 3. Increased Contrast: Sharpen hairline borders and elevate secondary text */
 @media (prefers-contrast: more) {
   :root {
-    --border-hairline: rgba(255, 255, 255, 0.28);
-    --border-medium: rgba(255, 255, 255, 0.4);
-    --lc-border: rgba(255, 255, 255, 0.3);
+    --border-hairline: color-mix(in srgb, var(--ink) 28%, transparent);
+    --border-medium: color-mix(in srgb, var(--ink) 40%, transparent);
+    --lc-border: color-mix(in srgb, var(--ink) 30%, transparent);
   }
 
   .titanium-card,
   .luxury-card,
   .card,
-  [class*="border-white/[0.0"],
-  [class*="border-white/[0.1"] {
-    border-color: rgba(255, 255, 255, 0.3) !important;
+  [class*="border-ink/[0.0"],
+  [class*="border-ink/[0.1"] {
+    border-color: color-mix(in srgb, var(--ink) 30%, transparent) !important;
   }
 
   .text-zinc-400,
   .text-zinc-500,
   .text-gray-400,
   .text-gray-500 {
-    color: #d4d4d8 !important;
+    color: var(--fg-3) !important;
   }
 }
 
@@ -305,7 +412,7 @@ a.btn:active,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
   border-radius: 10px;
 }
 
@@ -323,24 +430,24 @@ a.btn:active,
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
   border-radius: 10px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--ink) 20%, transparent);
 }
 
 /* Text selection */
 ::selection {
-  background: rgba(255, 161, 22, 0.25);
-  color: #fff;
+  background: color-mix(in srgb, var(--brand) 25%, transparent);
+  color: var(--fg);
 }
 
 /* ---------------- GLASS EFFECT ---------------- */
 
 .glass {
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
   backdrop-filter: blur(12px);
   border: 1px solid var(--lc-border);
 }
@@ -358,7 +465,7 @@ a.btn:active,
 
 .btn-primary {
   background: var(--lc-primary);
-  color: black;
+  color: var(--on-brand);
   padding: 8px 16px;
   border-radius: 8px;
   font-weight: 500;
@@ -406,9 +513,9 @@ a.btn:active,
 
 .skeleton-shine {
   background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0.04) 25%,
-      rgba(255, 255, 255, 0.09) 50%,
-      rgba(255, 255, 255, 0.04) 75%);
+      color-mix(in srgb, var(--ink) 4%, transparent) 25%,
+      color-mix(in srgb, var(--ink) 9%, transparent) 50%,
+      color-mix(in srgb, var(--ink) 4%, transparent) 75%);
   background-size: 600px 100%;
   animation: shimmer 1.6s ease-in-out infinite;
 }
@@ -455,8 +562,8 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #111 inset !important;
-  -webkit-text-fill-color: white !important;
+  -webkit-box-shadow: 0 0 0 30px var(--card-hover) inset !important;
+  -webkit-text-fill-color: var(--fg) !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 

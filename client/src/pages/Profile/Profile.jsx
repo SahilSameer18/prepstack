@@ -28,7 +28,7 @@ const Profile = () => {
     if (user) setProfileForm(formFor(user));
   }
 
-  if (!user) return <div className="p-8 text-center text-gray-400">Loading profile...</div>;
+  if (!user) return <div className="p-8 text-center text-muted">Loading profile...</div>;
 
   const liveAvatarUrl = profileForm.avatar || user.avatar || getDiceBearAvatar(user.username);
 

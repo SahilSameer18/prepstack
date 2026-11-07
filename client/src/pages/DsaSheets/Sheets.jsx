@@ -10,11 +10,11 @@ const CATEGORY_DEFINITIONS = [
     id: "foundation",
     label: "Foundation Tracks",
     icon: <FiBook className="text-base" />,
-    color: "text-cyan-400",
-    bg: "bg-cyan-500/10",
-    border: "border-cyan-500/20",
-    activeBorder: "border-cyan-400",
-    badge: "bg-cyan-500/10 text-cyan-300 border-cyan-500/20",
+    color: "text-cyan",
+    bg: "bg-cyan-solid/10",
+    border: "border-cyan-solid/20",
+    activeBorder: "border-cyan",
+    badge: "bg-cyan-solid/10 text-cyan border-cyan-solid/20",
     desc: "Comprehensive topic-by-topic curriculums to master data structures and algorithms from ground up.",
     slugs: ["love-babbar", "striver-a2z"],
   },
@@ -22,11 +22,11 @@ const CATEGORY_DEFINITIONS = [
     id: "product",
     label: "Product & FAANG Core",
     icon: <FiTarget className="text-base" />,
-    color: "text-[#ffa116]",
-    bg: "bg-[#ffa116]/10",
-    border: "border-[#ffa116]/20",
-    activeBorder: "border-[#ffa116]",
-    badge: "bg-[#ffa116]/10 text-[#ffa116] border-[#ffa116]/20",
+    color: "text-brand",
+    bg: "bg-brand/10",
+    border: "border-brand/20",
+    activeBorder: "border-brand",
+    badge: "bg-brand/10 text-brand border-brand/20",
     desc: "Handpicked algorithmic pattern sets targeting high-bar technical interviews at top tier tech firms.",
     slugs: ["striver-sde", "neetcode-150"],
   },
@@ -34,11 +34,11 @@ const CATEGORY_DEFINITIONS = [
     id: "revision",
     label: "Rapid Interview Sprint",
     icon: <FiZap className="text-base" />,
-    color: "text-rose-400",
-    bg: "bg-rose-500/10",
-    border: "border-rose-500/20",
-    activeBorder: "border-rose-400",
-    badge: "bg-rose-500/10 text-rose-300 border-rose-500/20",
+    color: "text-bad",
+    bg: "bg-bad-solid/10",
+    border: "border-bad-solid/20",
+    activeBorder: "border-bad",
+    badge: "bg-bad-solid/10 text-bad border-bad-solid/20",
     desc: "Compact high-signal sheets designed for fast 30-day review cycles before scheduled interviews.",
     slugs: ["blind-75"],
   },
@@ -46,31 +46,31 @@ const CATEGORY_DEFINITIONS = [
 
 const SHEET_METADATA_MAP = {
   "love-babbar": {
-    icon: <FaStar className="text-amber-400" />,
+    icon: <FaStar className="text-warn" />,
     highlight: "Comprehensive 450-question complete coverage",
     recommended: false,
     defaultCategoryId: "foundation",
   },
   "striver-a2z": {
-    icon: <FiLayers className="text-cyan-400" />,
+    icon: <FiLayers className="text-cyan" />,
     highlight: "Structured topic-by-topic algorithmic progression",
     recommended: true,
     defaultCategoryId: "foundation",
   },
   "striver-sde": {
-    icon: <FiTarget className="text-[#ffa116]" />,
+    icon: <FiTarget className="text-brand" />,
     highlight: "191 handpicked problems for core tech rounds",
     recommended: true,
     defaultCategoryId: "product",
   },
   "neetcode-150": {
-    icon: <FaCode className="text-emerald-400" />,
+    icon: <FaCode className="text-ok" />,
     highlight: "Pattern-based FAANG preparation superset",
     recommended: false,
     defaultCategoryId: "product",
   },
   "blind-75": {
-    icon: <FaCheckCircle className="text-rose-400" />,
+    icon: <FaCheckCircle className="text-bad" />,
     highlight: "The essential 75 pattern pre-interview checklist",
     recommended: true,
     defaultCategoryId: "revision",
@@ -79,12 +79,12 @@ const SHEET_METADATA_MAP = {
 
 const SheetCard = ({ sheet, cat }) => (
   <div className="group titanium-card rounded-2xl p-6 sm:p-7 transition-all duration-200 hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between text-left">
-    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent group-hover:via-[#ffa116]/50 transition-all" />
+    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent group-hover:via-brand/50 transition-all" />
     
     {sheet.recommended && (
-      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-[#ffa116]/10 border border-[#ffa116]/30 rounded-full px-2.5 py-0.5 shadow-[0_0_10px_rgba(255,161,22,0.15)]">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116] shadow-[0_0_6px_#ffa116]" />
-        <span className="text-[#ffa116] text-xs font-ui font-semibold uppercase tracking-wider">Top Pick</span>
+      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-brand/10 border border-brand/30 rounded-full px-2.5 py-0.5 shadow-[0_0_10px_color-mix(in_srgb,var(--brand)_15%,transparent)]">
+        <span className="w-1.5 h-1.5 rounded-full bg-brand shadow-[0_0_6px_var(--brand)]" />
+        <span className="text-brand text-xs font-ui font-semibold uppercase tracking-wider">Top Pick</span>
       </div>
     )}
 
@@ -98,22 +98,22 @@ const SheetCard = ({ sheet, cat }) => (
         </span>
       </div>
 
-      <h3 className="font-display text-xl font-bold text-white mb-1.5 group-hover:text-[#ffa116] transition-colors">
+      <h3 className="font-display text-xl font-bold text-fg mb-1.5 group-hover:text-brand transition-colors">
         {sheet.title}
       </h3>
-      <p className="text-xs text-zinc-400 mb-4 leading-relaxed line-clamp-2">
+      <p className="text-xs text-muted mb-4 leading-relaxed line-clamp-2">
         {sheet.highlight}
       </p>
 
       <div className="flex items-center gap-2 mb-4 font-ui text-xs">
-        <span className="text-white font-bold">{sheet.count} Problems</span>
-        <span className="text-zinc-400">·</span>
-        <span className="text-zinc-400">{sheet.difficulty}</span>
+        <span className="text-fg font-bold">{sheet.count} Problems</span>
+        <span className="text-muted">·</span>
+        <span className="text-muted">{sheet.difficulty}</span>
       </div>
 
       <div className="flex flex-wrap gap-1.5 mb-6">
         {(sheet.tags || []).map((tag, idx) => (
-          <span key={idx} className="text-xs font-ui px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-400">
+          <span key={idx} className="text-xs font-ui px-2 py-0.5 rounded-md bg-elevated/90 border border-ink/[0.08] text-muted">
             {tag}
           </span>
         ))}
@@ -122,7 +122,7 @@ const SheetCard = ({ sheet, cat }) => (
 
     <Link
       to={`/dsa/${sheet.slug}`}
-      className="w-full py-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-200 group-hover:amber-specular-button font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm select-none"
+      className="w-full py-3 rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-fg-2 group-hover:amber-specular-button font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm select-none"
     >
       <span>Launch Sheet</span>
       <FaExternalLinkAlt className="text-xs" />
@@ -163,7 +163,7 @@ const Sheets = () => {
 
     return source.map((sheet) => {
       const meta = SHEET_METADATA_MAP[sheet.slug] || {
-        icon: <FaCode className="text-[#ffa116]" />,
+        icon: <FaCode className="text-brand" />,
         highlight: sheet.description || "Structured interview prep sheet",
         recommended: false,
         defaultCategoryId: "foundation",
@@ -218,13 +218,13 @@ const Sheets = () => {
     <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto page-enter text-left">
       {/* ── HEADER ── */}
       <div className="mb-10 pt-2">
-        <div className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-[#ffa116] bg-[#ffa116]/10 border border-[#ffa116]/20 rounded-full px-3 py-1 mb-4">
+        <div className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-brand bg-brand/10 border border-brand/20 rounded-full px-3 py-1 mb-4">
           <FaCode /> {totalProblemCount > 0 ? `${totalProblemCount}+ Problems` : "1,200+ Problems"}
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-3">
-          DSA Problem <span className="text-[#ffa116]">Sheets</span>
+        <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-fg tracking-tight mb-3">
+          DSA Problem <span className="text-brand">Sheets</span>
         </h1>
-        <p className="text-zinc-400 max-w-2xl text-sm sm:text-base leading-relaxed font-normal">
+        <p className="text-muted max-w-2xl text-sm sm:text-base leading-relaxed font-normal">
           Curated algorithmic patterns organized by your preparation timeline, from zero-to-one fundamentals to fast pre-interview review sprints.
         </p>
       </div>
@@ -232,11 +232,11 @@ const Sheets = () => {
       {/* ── SEARCH & FILTER CONTROLS ── */}
       <div className="flex flex-col md:flex-row gap-4 mb-10">
         <div className="relative w-full md:w-80">
-          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 text-sm" />
+          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-muted text-sm" />
           <input
             type="text"
             placeholder="Search sheets or patterns..."
-            className="w-full bg-[#0c0c0e] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] focus:shadow-[0_0_0_3px_rgba(255,161,22,0.1)] rounded-xl py-3 pl-12 pr-4 outline-none transition-colors text-sm text-white placeholder-zinc-500 font-normal"
+            className="w-full bg-card border border-ink/[0.08] hover:border-ink/[0.15] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)] rounded-xl py-3 pl-12 pr-4 outline-none transition-colors text-sm text-fg placeholder-faint font-normal"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -246,8 +246,8 @@ const Sheets = () => {
             onClick={() => setActiveCategory("all")}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-95 border cursor-pointer select-none ${
               activeCategory === "all"
-                ? "amber-specular-button font-bold text-black border-[#ffa116]"
-                : "titanium-button text-zinc-400 hover:text-white"
+                ? "amber-specular-button font-bold text-on-brand border-brand"
+                : "titanium-button text-muted hover:text-fg"
             }`}
           >
             All sheets
@@ -259,7 +259,7 @@ const Sheets = () => {
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-95 border cursor-pointer select-none ${
                 activeCategory === c.id
                   ? `${c.bg} ${c.color} ${c.activeBorder} shadow-sm font-bold`
-                  : "titanium-button text-zinc-400 hover:text-white"
+                  : "titanium-button text-muted hover:text-fg"
               }`}
             >
               {c.icon} {c.label}
@@ -280,12 +280,12 @@ const Sheets = () => {
           {visibleCategories.map((cat) => (
             <div key={cat.id}>
               <div className={`flex items-center gap-4 p-5 rounded-2xl border ${cat.border} ${cat.bg} mb-6 relative overflow-hidden`}>
-                <div className={`w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center ${cat.color} flex-shrink-0`}>
+                <div className={`w-10 h-10 rounded-xl bg-ink/[0.05] border border-ink/[0.08] flex items-center justify-center ${cat.color} flex-shrink-0`}>
                   {cat.icon}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h2 className={`font-display text-lg font-bold ${cat.color}`}>{cat.label}</h2>
-                  <p className="text-zinc-400 text-xs sm:text-sm mt-0.5 leading-relaxed">{cat.desc}</p>
+                  <p className="text-muted text-xs sm:text-sm mt-0.5 leading-relaxed">{cat.desc}</p>
                 </div>
                 <div className={`hidden sm:flex items-center gap-1.5 text-xs font-ui font-semibold px-3 py-1 rounded-full border ${cat.badge} shrink-0`}>
                   {cat.sheets.length} {cat.sheets.length === 1 ? "track" : "tracks"}
@@ -299,7 +299,7 @@ const Sheets = () => {
         </div>
       ) : (
         <div>
-          <p className="text-zinc-400 font-ui text-sm mb-6">{filtered.length} result{filtered.length !== 1 ? "s" : ""} found</p>
+          <p className="text-muted font-ui text-sm mb-6">{filtered.length} result{filtered.length !== 1 ? "s" : ""} found</p>
           {filtered.length > 0 ? (
             <div className="grid md:grid-cols-2 gap-6">
               {filtered.map((sheet, i) => {
@@ -308,10 +308,10 @@ const Sheets = () => {
               })}
             </div>
           ) : (
-            <div className="py-20 text-center text-zinc-400 border border-dashed border-white/[0.08] rounded-3xl bg-[#0c0c0e]/50">
-              <FaSearch className="text-3xl mx-auto mb-3 opacity-30 text-[#ffa116]" />
-              <p className="text-lg font-bold text-white mb-1">No matching sheets found</p>
-              <p className="text-sm text-zinc-400">Try searching for a different pattern name or topic</p>
+            <div className="py-20 text-center text-muted border border-dashed border-ink/[0.08] rounded-3xl bg-card/50">
+              <FaSearch className="text-3xl mx-auto mb-3 opacity-30 text-brand" />
+              <p className="text-lg font-bold text-fg mb-1">No matching sheets found</p>
+              <p className="text-sm text-muted">Try searching for a different pattern name or topic</p>
             </div>
           )}
         </div>

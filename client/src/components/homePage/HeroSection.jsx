@@ -14,21 +14,21 @@ const HeroSection = () => {
         {/* ── LEFT PANE: Mission, Editorial Typography, Direct CTA (5 Columns) ── */}
         <div className="min-w-0 lg:col-span-5 flex flex-col justify-center space-y-6 sm:space-y-7">
           {/* Eyebrow */}
-          <p className="flex items-center gap-2 font-ui text-sm font-medium text-zinc-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
+          <p className="flex items-center gap-2 font-ui text-sm font-medium text-fg-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand" />
             Interview prep for software engineers
           </p>
 
           {/* Left-Aligned High-Contrast Display Headline with Specular Sheen */}
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-[54px] font-black tracking-[-0.035em] text-white leading-[1.06]">
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-[54px] font-black tracking-[-0.035em] text-fg leading-[1.06]">
             Stop grinding blindly.{" "}
-            <span className="block mt-1.5 bg-gradient-to-r from-[#ffa116] via-[#ffb84d] to-[#ffa116] bg-clip-text text-transparent">
+            <span className="block mt-1.5 bg-gradient-to-r from-brand via-brand-hover to-brand bg-clip-text text-transparent">
               Engineer your placement.
             </span>
           </h1>
 
           {/* Authoritative Subtitle */}
-          <p className="text-sm sm:text-base text-zinc-400 leading-relaxed font-normal max-w-lg">
+          <p className="text-sm sm:text-base text-muted leading-relaxed font-normal max-w-lg">
             One place for interview prep: curated DSA sheets, CS notes, roadmaps and AI project ideas, instead of 15 scattered tabs.
           </p>
 
@@ -61,14 +61,14 @@ const HeroSection = () => {
             )}
           </div>
 
-          <Link to="/analyzer" className="inline-block text-sm text-[#ffa116] hover:underline">New: match your resume to a job with the Role Analyzer &rarr;</Link>
+          <Link to="/analyzer" className="inline-block text-sm text-brand hover:underline">New: match your resume to a job with the Role Analyzer &rarr;</Link>
 
           {/* Target Placement Ticker */}
-          <div className="pt-2 flex flex-wrap items-center gap-2 font-ui text-xs text-zinc-400">
-            <span className="text-zinc-300 font-semibold flex items-center gap-1">
-              <FiShield className="text-[#ffa116]" /> What's covered:
+          <div className="pt-2 flex flex-wrap items-center gap-2 font-ui text-xs text-muted">
+            <span className="text-fg-3 font-semibold flex items-center gap-1">
+              <FiShield className="text-brand" /> What's covered:
             </span>
-            <span className="text-zinc-300 font-medium">Blind 75 · NeetCode 150 · Striver SDE · Low-Level CS</span>
+            <span className="text-fg-3 font-medium">Blind 75 · NeetCode 150 · Striver SDE · Low-Level CS</span>
           </div>
         </div>
 

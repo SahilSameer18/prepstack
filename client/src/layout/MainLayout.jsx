@@ -9,7 +9,7 @@ import RouteSeo from "../seo/Seo";
 
 const MainLayout = () => {
   return (
-    <div className="relative min-h-screen flex flex-col bg-[#060608] text-[#f4f4f5] selection:bg-[#ffa116]/25 selection:text-white overflow-x-hidden">
+    <div className="relative min-h-screen flex flex-col bg-canvas text-body selection:bg-brand/25 selection:text-fg overflow-x-hidden">
       {/* ── LUXURY ATMOSPHERIC CANVAS (Subtle architectural grid + radial light) ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         {/* Subtle dot matrix grid with top radial mask */}
@@ -20,12 +20,12 @@ const MainLayout = () => {
           className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1400px] h-[550px] opacity-70 transform-gpu"
           style={{
             background:
-              "radial-gradient(ellipse 70% 40% at 50% 0%, rgba(255, 161, 22, 0.08) 0%, rgba(255, 161, 22, 0.015) 50%, transparent 80%)",
+              "radial-gradient(ellipse 70% 40% at 50% 0%, color-mix(in srgb, var(--brand) 8%, transparent) 0%, color-mix(in srgb, var(--brand) 1.5%, transparent) 50%, transparent 80%)",
           }}
         />
 
         {/* Crisp top hairline specular separator */}
-        <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />
       </div>
 
       <RouteSeo />

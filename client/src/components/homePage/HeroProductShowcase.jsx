@@ -50,20 +50,20 @@ const HeroProductShowcase = () => {
   return (
     <div className="relative w-full rounded-2xl titanium-card overflow-hidden text-left transform-gpu">
       {/* ── WINDOW CHROME ── */}
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 sm:px-6 py-3.5 border-b border-white/[0.08] bg-[#0e0e12]">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 sm:px-6 py-3.5 border-b border-ink/[0.08] bg-card">
         {/* Workspace status / file path header */}
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-white/[0.04] text-zinc-400">
-            <FiTerminal className="text-xs text-[#ffa116]" />
-            <span className="text-xs font-ui tracking-wider text-zinc-300 font-semibold">Demo</span>
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-ink/[0.04] text-muted">
+            <FiTerminal className="text-xs text-brand" />
+            <span className="text-xs font-ui tracking-wider text-fg-3 font-semibold">Demo</span>
           </div>
-          <span className="hidden sm:inline-block font-ui text-xs text-zinc-400 font-medium">
-            prepstack-workspace / <span className="text-zinc-200">{TABS[activeTab].file}</span>
+          <span className="hidden sm:inline-block font-ui text-xs text-muted font-medium">
+            prepstack-workspace / <span className="text-fg-2">{TABS[activeTab].file}</span>
           </span>
         </div>
 
         {/* ── SILKY SEGMENTED CONTROL ── */}
-        <div className="relative flex items-center w-full sm:w-auto bg-black/60 p-1 rounded-xl">
+        <div className="relative flex items-center w-full sm:w-auto bg-scrim/60 p-1 rounded-xl">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -72,13 +72,13 @@ const HeroProductShowcase = () => {
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
                 className={`relative z-10 flex flex-1 sm:flex-none items-center justify-center gap-1.5 min-h-[40px] sm:min-h-0 py-1.5 px-2.5 sm:px-3.5 rounded-lg text-xs font-medium transition-colors ${
-                  isActive ? "text-[#ffa116]" : "text-zinc-400 hover:text-zinc-200"
+                  isActive ? "text-brand" : "text-muted hover:text-fg-2"
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeWorkspaceTab"
-                    className="absolute inset-0 bg-[#ffa116]/12 border border-[#ffa116]/30 rounded-lg shadow-sm -z-10"
+                    className="absolute inset-0 bg-brand/12 border border-brand/30 rounded-lg shadow-sm -z-10"
                     transition={{ type: "spring", stiffness: 450, damping: 35 }}
                   />
                 )}
@@ -103,23 +103,23 @@ const HeroProductShowcase = () => {
               transition={{ duration: 0.14 }}
               className="space-y-4"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+              <div className="flex items-center justify-between pb-3 border-b border-ink/[0.06]">
                 <div>
-                  <p className="text-xs font-ui uppercase tracking-widest text-[#ffa116] font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
+                  <p className="text-xs font-ui uppercase tracking-widest text-brand font-semibold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand" />
                     Try it: click a problem to mark it solved
                   </p>
-                  <h3 className="font-display text-white text-sm sm:text-base font-bold tracking-tight mt-0.5">
+                  <h3 className="font-display text-fg text-sm sm:text-base font-bold tracking-tight mt-0.5">
                     Blind 75 Core Placement Patterns
                   </h3>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="font-ui text-xs text-zinc-400">
-                    <span className="text-white font-bold">{solvedCount}</span>/{demoProblems.length} Solved
+                  <span className="font-ui text-xs text-muted">
+                    <span className="text-fg font-bold">{solvedCount}</span>/{demoProblems.length} Solved
                   </span>
-                  <div className="w-20 sm:w-28 h-1.5 bg-white/[0.08] rounded-full mt-1.5 overflow-hidden">
+                  <div className="w-20 sm:w-28 h-1.5 bg-ink/[0.08] rounded-full mt-1.5 overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-[#ffa116] to-[#f59e0b]"
+                      className="h-full bg-gradient-to-r from-brand to-brand-deep"
                       initial={{ width: 0 }}
                       animate={{ width: `${progressPct}%` }}
                       transition={{ duration: 0.35, ease: "easeOut" }}
@@ -133,10 +133,10 @@ const HeroProductShowcase = () => {
                 {demoProblems.map((problem) => {
                   const diffBadge =
                     problem.diff === "Easy"
-                      ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                      ? "text-ok bg-ok-solid/10 border-ok-solid/20"
                       : problem.diff === "Medium"
-                      ? "text-amber-400 bg-amber-500/10 border-amber-500/20"
-                      : "text-rose-400 bg-rose-500/10 border-rose-500/20";
+                      ? "text-warn bg-warn-solid/10 border-warn-solid/20"
+                      : "text-bad bg-bad-solid/10 border-bad-solid/20";
 
                   return (
                     <div
@@ -144,16 +144,16 @@ const HeroProductShowcase = () => {
                       onClick={() => toggleDemoProblem(problem.id)}
                       className={`group flex items-center justify-between p-2.5 sm:p-3 rounded-xl border transition-all duration-150 cursor-pointer select-none ${
                         problem.solved
-                          ? "bg-white/[0.03] border-white/[0.08] opacity-85"
-                          : "bg-white/[0.015] border-white/[0.06] hover:border-white/[0.14] hover:bg-white/[0.025]"
+                          ? "bg-ink/[0.03] border-ink/[0.08] opacity-85"
+                          : "bg-ink/[0.015] border-ink/[0.06] hover:border-ink/[0.14] hover:bg-ink/[0.025]"
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0 mr-2">
                         <div
                           className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all flex-shrink-0 ${
                             problem.solved
-                              ? "bg-[#ffa116] border-[#ffa116] text-black shadow-[0_0_10px_rgba(255,161,22,0.4)]"
-                              : "border-white/25 group-hover:border-white/50"
+                              ? "bg-brand border-brand text-on-brand shadow-[0_0_10px_color-mix(in_srgb,var(--brand)_40%,transparent)]"
+                              : "border-ink/25 group-hover:border-ink/50"
                           }`}
                         >
                           {problem.solved && <FaCheck className="text-xs" />}
@@ -161,19 +161,19 @@ const HeroProductShowcase = () => {
                         <span
                           className={`text-xs sm:text-sm font-medium transition-colors truncate ${
                             problem.solved
-                              ? "line-through text-zinc-400"
-                              : "text-zinc-200 group-hover:text-white"
+                              ? "line-through text-muted"
+                              : "text-fg-2 group-hover:text-fg"
                           }`}
                         >
                           {problem.title}
                         </span>
-                        <span className="hidden sm:inline-block font-ui text-xs text-zinc-400">
+                        <span className="hidden sm:inline-block font-ui text-xs text-muted">
                           {problem.category}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="font-ui text-xs text-zinc-400 bg-white/[0.04] px-1.5 py-0.5 rounded">
+                        <span className="font-ui text-xs text-muted bg-ink/[0.04] px-1.5 py-0.5 rounded">
                           {problem.time}
                         </span>
                         <span className={`text-xs font-ui px-2 py-0.5 rounded-md border ${diffBadge}`}>
@@ -195,12 +195,12 @@ const HeroProductShowcase = () => {
                     disabled={isRunningTest}
                     className="titanium-button text-xs font-ui py-2.5 sm:py-1.5 px-3.5 sm:px-3 min-h-[44px] sm:min-h-0 rounded-lg flex items-center gap-2 whitespace-nowrap cursor-pointer select-none"
                   >
-                    <FaPlay className={`text-xs text-[#ffa116] ${isRunningTest ? "animate-spin" : ""}`} />
+                    <FaPlay className={`text-xs text-brand ${isRunningTest ? "animate-spin" : ""}`} />
                     <span>{isRunningTest ? "Running Benchmark..." : "Run Test Benchmark"}</span>
                     <span className="hidden sm:inline-flex"><span className="kbd-capsule">⌘↵</span></span>
                   </button>
 
-                  <span className="text-xs font-ui text-zinc-400 whitespace-nowrap">
+                  <span className="text-xs font-ui text-muted whitespace-nowrap">
                     Demo only
                   </span>
                 </div>
@@ -210,15 +210,15 @@ const HeroProductShowcase = () => {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    className="mt-2.5 p-2.5 rounded-lg bg-emerald-950/25 border border-emerald-500/25 font-ui text-xs text-emerald-300 flex flex-wrap items-center justify-between gap-2"
+                    className="mt-2.5 p-2.5 rounded-lg bg-ok/25 border border-ok-solid/25 font-ui text-xs text-ok flex flex-wrap items-center justify-between gap-2"
                   >
                     <div className="flex items-center gap-2">
-                      <FaCheckCircle className="text-emerald-400 text-xs shrink-0" />
+                      <FaCheckCircle className="text-ok text-xs shrink-0" />
                       <span>Passed {testResult.casesPassed} test cases</span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-zinc-400">
-                      <span>Runtime: <strong className="text-emerald-300">{testResult.runtime}</strong> (Beats {testResult.runtimePercentile})</span>
-                      <span>Memory: <strong className="text-emerald-300">{testResult.memory}</strong></span>
+                    <div className="flex items-center gap-3 text-xs text-muted">
+                      <span>Runtime: <strong className="text-ok">{testResult.runtime}</strong> (Beats {testResult.runtimePercentile})</span>
+                      <span>Memory: <strong className="text-ok">{testResult.memory}</strong></span>
                     </div>
                   </motion.div>
                 )}
@@ -236,24 +236,24 @@ const HeroProductShowcase = () => {
               transition={{ duration: 0.14 }}
               className="space-y-4"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+              <div className="flex items-center justify-between pb-3 border-b border-ink/[0.06]">
                 <div>
-                  <p className="text-xs font-ui text-cyan-400 font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  <p className="text-xs font-ui text-cyan font-semibold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan" />
                     Interactive Kernel Simulator
                   </p>
-                  <h3 className="font-display text-white text-sm sm:text-base font-bold tracking-tight mt-0.5">
+                  <h3 className="font-display text-fg text-sm sm:text-base font-bold tracking-tight mt-0.5">
                     Concurrency &amp; Memory Synchronization
                   </h3>
                 </div>
 
                 {/* Concurrency Selector */}
-                <div className="flex items-center bg-black/60 p-0.5 rounded-lg text-xs font-ui">
+                <div className="flex items-center bg-scrim/60 p-0.5 rounded-lg text-xs font-ui">
                   <button
                     type="button"
                     onClick={() => setConcurrencyMode("mutex")}
                     className={`px-2 py-1 rounded transition-colors ${
-                      concurrencyMode === "mutex" ? "bg-white/[0.1] text-white font-bold" : "text-zinc-400 hover:text-zinc-200"
+                      concurrencyMode === "mutex" ? "bg-ink/[0.1] text-fg font-bold" : "text-muted hover:text-fg-2"
                     }`}
                   >
                     Mutex Lock
@@ -262,7 +262,7 @@ const HeroProductShowcase = () => {
                     type="button"
                     onClick={() => setConcurrencyMode("lockless")}
                     className={`px-2 py-1 rounded transition-colors ${
-                      concurrencyMode === "lockless" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold" : "text-zinc-400 hover:text-zinc-200"
+                      concurrencyMode === "lockless" ? "bg-cyan-solid/20 text-cyan border border-cyan-solid/30 font-bold" : "text-muted hover:text-fg-2"
                     }`}
                   >
                     Atomic CAS
@@ -271,42 +271,42 @@ const HeroProductShowcase = () => {
               </div>
 
               {/* Simulation Architecture Diagram */}
-              <div className="bg-black/50 rounded-xl p-3.5 space-y-3 font-ui text-xs">
+              <div className="bg-scrim/50 rounded-xl p-3.5 space-y-3 font-ui text-xs">
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-zinc-900/80 border border-white/[0.06]">
-                    <div className="text-zinc-400 text-xs">Thread 0 (Producer)</div>
-                    <div className="text-emerald-400 font-bold mt-1">EMIT_PACKET</div>
-                    <div className="text-xs text-zinc-400 mt-0.5">CPU Core 0</div>
+                  <div className="p-2 rounded-lg bg-elevated/80 border border-ink/[0.06]">
+                    <div className="text-muted text-xs">Thread 0 (Producer)</div>
+                    <div className="text-ok font-bold mt-1">EMIT_PACKET</div>
+                    <div className="text-xs text-muted mt-0.5">CPU Core 0</div>
                   </div>
-                  <div className="p-2 rounded-lg bg-zinc-900/80 border border-cyan-500/30 bg-cyan-950/10">
-                    <div className="text-zinc-400 text-xs">Shared Barrier</div>
-                    <div className="text-cyan-300 font-bold mt-1">
+                  <div className="p-2 rounded-lg bg-elevated/80 border border-cyan-solid/30 bg-cyan/10">
+                    <div className="text-muted text-xs">Shared Barrier</div>
+                    <div className="text-cyan font-bold mt-1">
                       {concurrencyMode === "mutex" ? "MUTEX_HELD" : "CAS_EXCHANGE"}
                     </div>
-                    <div className="text-xs text-zinc-400 mt-0.5">[0x7ffd8a04]</div>
+                    <div className="text-xs text-muted mt-0.5">[0x7ffd8a04]</div>
                   </div>
-                  <div className="p-2 rounded-lg bg-zinc-900/80 border border-white/[0.06]">
-                    <div className="text-zinc-400 text-xs">Thread 1 (Consumer)</div>
-                    <div className={concurrencyMode === "mutex" ? "text-amber-400 font-bold mt-1" : "text-emerald-400 font-bold mt-1"}>
+                  <div className="p-2 rounded-lg bg-elevated/80 border border-ink/[0.06]">
+                    <div className="text-muted text-xs">Thread 1 (Consumer)</div>
+                    <div className={concurrencyMode === "mutex" ? "text-warn font-bold mt-1" : "text-ok font-bold mt-1"}>
                       {concurrencyMode === "mutex" ? "BLOCKED_WAIT" : "DRAIN_BUFFER"}
                     </div>
-                    <div className="text-xs text-zinc-400 mt-0.5">CPU Core 1</div>
+                    <div className="text-xs text-muted mt-0.5">CPU Core 1</div>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-white/[0.02] text-xs leading-relaxed flex items-center justify-between text-zinc-300">
+                <div className="p-2.5 rounded-lg bg-ink/[0.02] text-xs leading-relaxed flex items-center justify-between text-fg-3">
                   <span>
                     {concurrencyMode === "mutex"
                       ? "⚠️ Kernel context switch triggered: ~1,420ns latency penalty"
                       : "⚡ Zero kernel trap: 4ns hardware atomic exchange without OS preemption"}
                   </span>
-                  <span className="font-bold text-zinc-200 shrink-0 ml-2">
+                  <span className="font-bold text-fg-2 shrink-0 ml-2">
                     {concurrencyMode === "mutex" ? "High Contention" : "Lockless 0% Contention"}
                   </span>
                 </div>
 
-                <div className="text-xs text-zinc-400 pt-1 border-t border-white/[0.05]">
-                  <strong className="text-zinc-400">FAANG Question:</strong> "Explain how ring buffers prevent cache bouncing across L1/L2 data lines."
+                <div className="text-xs text-muted pt-1 border-t border-ink/[0.05]">
+                  <strong className="text-muted">FAANG Question:</strong> "Explain how ring buffers prevent cache bouncing across L1/L2 data lines."
                 </div>
               </div>
             </motion.div>
@@ -322,56 +322,56 @@ const HeroProductShowcase = () => {
               transition={{ duration: 0.14 }}
               className="space-y-4"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+              <div className="flex items-center justify-between pb-3 border-b border-ink/[0.06]">
                 <div>
-                  <p className="text-xs font-ui uppercase tracking-widest text-[#ffa116] font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#ffa116]" />
+                  <p className="text-xs font-ui uppercase tracking-widest text-brand font-semibold flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand" />
                     Production Architecture Spec
                   </p>
-                  <h3 className="font-display text-white text-sm sm:text-base font-bold tracking-tight mt-0.5">
+                  <h3 className="font-display text-fg text-sm sm:text-base font-bold tracking-tight mt-0.5">
                     Distributed Sliding-Window Rate Limiter
                   </h3>
                 </div>
-                <span className="text-xs font-ui px-2.5 py-0.5 rounded-md bg-[#ffa116]/10 border border-[#ffa116]/25 text-[#ffa116] font-bold">
+                <span className="text-xs font-ui px-2.5 py-0.5 rounded-md bg-brand/10 border border-brand/25 text-brand font-bold">
                   Scale: 100k req/s
                 </span>
               </div>
 
               {/* Topology Layers */}
               <div className="space-y-2 font-ui text-xs">
-                <div className="p-2.5 rounded-xl bg-white/[0.02] flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-ink/[0.02] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <FiLayers className="text-[#ffa116] text-xs" />
-                    <span className="text-zinc-200 text-xs">Edge API Gateway</span>
+                    <FiLayers className="text-brand text-xs" />
+                    <span className="text-fg-2 text-xs">Edge API Gateway</span>
                   </div>
-                  <span className="text-xs text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded">
+                  <span className="text-xs text-muted bg-ink/[0.05] px-2 py-0.5 rounded">
                     TLS 1.3 Termination · Envoy Proxy
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-zinc-900/60 border border-[#ffa116]/30 bg-[#ffa116]/[0.02] flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-elevated/60 border border-brand/30 bg-brand/[0.02] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <FiShield className="text-[#ffa116] text-xs" />
-                    <span className="text-white text-xs font-semibold">Sliding Window Core</span>
+                    <FiShield className="text-brand text-xs" />
+                    <span className="text-fg text-xs font-semibold">Sliding Window Core</span>
                   </div>
-                  <span className="text-xs text-[#ffa116] font-ui">
+                  <span className="text-xs text-brand font-ui">
                     Redis Cluster + Lua Script Atomic Eval
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-white/[0.02] flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-ink/[0.02] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <FiDatabase className="text-cyan-400 text-xs" />
-                    <span className="text-zinc-200 text-xs">PostgreSQL WAL Logging</span>
+                    <FiDatabase className="text-cyan text-xs" />
+                    <span className="text-fg-2 text-xs">PostgreSQL WAL Logging</span>
                   </div>
-                  <span className="text-xs text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded">
+                  <span className="text-xs text-muted bg-ink/[0.05] px-2 py-0.5 rounded">
                     Partitioned by User UUID · Async Sync
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-1 px-1 text-xs text-zinc-400">
-                  <span>Latency SLA: <strong className="text-white">p99 &lt; 2.4ms</strong></span>
-                  <span>Fault Tolerance: <strong className="text-white">Multi-AZ Failover</strong></span>
+                <div className="flex items-center justify-between pt-1 px-1 text-xs text-muted">
+                  <span>Latency SLA: <strong className="text-fg">p99 &lt; 2.4ms</strong></span>
+                  <span>Fault Tolerance: <strong className="text-fg">Multi-AZ Failover</strong></span>
                 </div>
               </div>
             </motion.div>
@@ -379,13 +379,13 @@ const HeroProductShowcase = () => {
         </AnimatePresence>
 
         {/* ── WORKSPACE FOOTER ── */}
-        <div className="pt-3.5 border-t border-white/[0.07] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-zinc-400 mt-3">
-          <span className="font-ui text-xs flex items-center gap-2 text-zinc-400 whitespace-nowrap">
+        <div className="pt-3.5 border-t border-ink/[0.07] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-muted mt-3">
+          <span className="font-ui text-xs flex items-center gap-2 text-muted whitespace-nowrap">
             Interactive demo
           </span>
           <Link
             to={activeTab === 0 ? "/dsa" : activeTab === 1 ? "/notes" : "/ai-projects"}
-            className="inline-flex items-center gap-1.5 py-2.5 sm:py-0 min-h-[44px] sm:min-h-0 text-[#ffa116] hover:text-[#ffb84d] font-semibold transition-colors text-xs shrink-0 whitespace-nowrap select-none group"
+            className="inline-flex items-center gap-1.5 py-2.5 sm:py-0 min-h-[44px] sm:min-h-0 text-brand hover:text-brand-hover font-semibold transition-colors text-xs shrink-0 whitespace-nowrap select-none group"
           >
             Launch Full Tool{" "}
             <FaArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-0.5" />

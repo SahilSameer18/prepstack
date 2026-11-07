@@ -35,12 +35,12 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
     <div
       className={`rounded-2xl transition-all duration-200 border overflow-hidden relative ${
         isOpen
-          ? "titanium-card border-[#ffa116]/40 shadow-[0_15px_35px_-10px_rgba(0,0,0,0.9)]"
-          : "bg-[#0b0b0e] border-white/[0.07] hover:border-white/[0.14] hover:bg-white/[0.015]"
+          ? "titanium-card border-brand/40 shadow-[0_15px_35px_-10px_color-mix(in_srgb,var(--shadow)_90%,transparent)]"
+          : "bg-card border-ink/[0.07] hover:border-ink/[0.14] hover:bg-ink/[0.015]"
       }`}
     >
       {isOpen && (
-        <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffa116]/50 to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-brand/50 to-transparent" />
       )}
       <button
         type="button"
@@ -48,10 +48,10 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
         className="w-full p-5 sm:p-6 flex items-center justify-between text-left focus:outline-none cursor-pointer group select-none"
       >
         <div className="flex items-center gap-3.5 sm:gap-4 pr-3">
-          <span className="font-ui text-xs font-semibold text-[#ffa116] shrink-0">
+          <span className="font-ui text-xs font-semibold text-brand shrink-0">
             [{idx}]
           </span>
-          <span className="font-display text-base sm:text-lg font-bold text-white group-hover:text-zinc-200 transition-colors">
+          <span className="font-display text-base sm:text-lg font-bold text-fg group-hover:text-fg-2 transition-colors">
             {question}
           </span>
         </div>
@@ -60,8 +60,8 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
           transition={{ type: "spring", damping: 20, stiffness: 320 }}
           className={`shrink-0 w-7 h-7 rounded-lg border flex items-center justify-center transition-colors ${
             isOpen
-              ? "bg-[#ffa116]/10 border-[#ffa116]/30 text-[#ffa116]"
-              : "border-white/[0.08] text-zinc-400 group-hover:text-white"
+              ? "bg-brand/10 border-brand/30 text-brand"
+              : "border-ink/[0.08] text-muted group-hover:text-fg"
           }`}
         >
           <FiChevronDown className="text-sm" />
@@ -77,7 +77,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
             className="overflow-hidden"
           >
-            <div className="px-5 sm:px-6 pb-6 pt-1 text-zinc-400 text-sm leading-relaxed border-t border-white/[0.04] mt-1 pl-12 sm:pl-14">
+            <div className="px-5 sm:px-6 pb-6 pt-1 text-muted text-sm leading-relaxed border-t border-ink/[0.04] mt-1 pl-12 sm:pl-14">
               {answer}
             </div>
           </motion.div>
@@ -98,13 +98,13 @@ const FAQ = () => {
     <section className="relative">
       <div className="max-w-3xl mx-auto text-left">
         <div className="text-center mb-12 sm:mb-14">
-          <p className="text-xs font-ui uppercase tracking-widest text-[#ffa116] font-semibold mb-3">
+          <p className="text-xs font-ui uppercase tracking-widest text-brand font-semibold mb-3">
             Technical Briefing
           </p>
-          <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
-            Frequently asked <span className="text-[#ffa116]">questions</span>
+          <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-fg tracking-tight leading-tight mb-4">
+            Frequently asked <span className="text-brand">questions</span>
           </h2>
-          <p className="text-sm sm:text-base text-zinc-400 leading-relaxed">
+          <p className="text-sm sm:text-base text-muted leading-relaxed">
             Everything you need to know about the platform architecture and preparation workflow.
           </p>
         </div>

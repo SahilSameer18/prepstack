@@ -20,7 +20,7 @@ const COMMON_PATTERNS = [
   'Bit Manipulation',
 ];
 
-const LABEL_CLASS = 'text-xs font-ui text-zinc-400 uppercase tracking-wider';
+const LABEL_CLASS = 'text-xs font-ui text-muted uppercase tracking-wider';
 
 // A row of toggle chips (pattern / time complexity / space complexity). `selectedClass` is a full literal
 // class string so Tailwind can see it.
@@ -38,7 +38,7 @@ const ChipGroup = ({ label, labelClassName, options, selected, onSelect, selecte
             className={`text-xs font-ui px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
               isSelected
                 ? selectedClass
-                : 'bg-white/[0.03] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/15'
+                : 'bg-ink/[0.03] border-ink/[0.06] text-muted hover:text-fg hover:border-ink/15'
             }`}
           >
             {option}
@@ -60,15 +60,15 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
         transition={{ type: "spring", damping: 28, stiffness: 340 }}
         className="overflow-hidden"
       >
-        <div className="bg-[#0b0b0f] border-t border-white/[0.06] px-5 py-4 space-y-3.5">
+        <div className="bg-card border-t border-ink/[0.06] px-5 py-4 space-y-3.5">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-ui font-semibold text-amber-400/90 flex items-center gap-1.5">
-                <FiFileText className="text-amber-400" />
+              <span className="text-xs font-ui font-semibold text-warn/90 flex items-center gap-1.5">
+                <FiFileText className="text-warn" />
                 Your notes
               </span>
               <span
-                className="text-xs font-ui text-zinc-400 bg-white/[0.04] px-2 py-0.5 rounded"
+                className="text-xs font-ui text-muted bg-ink/[0.04] px-2 py-0.5 rounded"
                 title="Notes are saved only in this browser on this device. They won't appear on other devices and are lost if you clear your browser data."
               >
                 This device only
@@ -80,21 +80,21 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
                 <button
                   type="button"
                   onClick={onClear}
-                  className="inline-flex items-center gap-1 text-xs font-ui text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs font-ui text-muted hover:text-bad transition-colors cursor-pointer"
                   title="Clear note for this problem"
                 >
                   <FiTrash2 className="text-xs" />
                   Clear
                 </button>
               )}
-              <span className="inline-flex items-center gap-1 text-xs font-ui text-emerald-400/80">
-                <FiCheck className="text-xs text-emerald-400" />
+              <span className="inline-flex items-center gap-1 text-xs font-ui text-ok/80">
+                <FiCheck className="text-xs text-ok" />
                 Auto-saved
               </span>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-zinc-400 hover:text-white p-1 rounded hover:bg-white/[0.05] transition-colors cursor-pointer"
+                className="text-muted hover:text-fg p-1 rounded hover:bg-ink/[0.05] transition-colors cursor-pointer"
                 title="Close drawer"
               >
                 <FiX className="text-sm" />
@@ -109,26 +109,26 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
             options={COMMON_PATTERNS}
             selected={noteData?.pattern}
             onSelect={(pattern) => onUpdate({ pattern })}
-            selectedClass="bg-amber-500/20 border-amber-500/50 text-amber-300 font-semibold"
+            selectedClass="bg-warn-solid/20 border-warn-solid/50 text-warn font-semibold"
           />
 
           {/* Complexity Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
             <ChipGroup
-              label={<><FiClock className="text-xs text-zinc-400" />Time Complexity</>}
+              label={<><FiClock className="text-xs text-muted" />Time Complexity</>}
               labelClassName={`${LABEL_CLASS} flex items-center gap-1`}
               options={TIME_COMPLEXITIES}
               selected={noteData?.timeComplexity}
               onSelect={(timeComplexity) => onUpdate({ timeComplexity })}
-              selectedClass="bg-blue-500/20 border-blue-500/50 text-blue-300 font-semibold"
+              selectedClass="bg-info-solid/20 border-info-solid/50 text-info font-semibold"
             />
             <ChipGroup
-              label={<><FiCpu className="text-xs text-zinc-400" />Space Complexity</>}
+              label={<><FiCpu className="text-xs text-muted" />Space Complexity</>}
               labelClassName={`${LABEL_CLASS} flex items-center gap-1`}
               options={SPACE_COMPLEXITIES}
               selected={noteData?.spaceComplexity}
               onSelect={(spaceComplexity) => onUpdate({ spaceComplexity })}
-              selectedClass="bg-purple-500/20 border-purple-500/50 text-purple-300 font-semibold"
+              selectedClass="bg-violet-solid/20 border-violet-solid/50 text-violet font-semibold"
             />
           </div>
 
@@ -142,7 +142,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
               value={noteData?.approach || ''}
               onChange={(e) => onUpdate({ approach: e.target.value })}
               placeholder="e.g. Invariant: Maintain a monotonically decreasing stack of indices. When current element exceeds stack top, pop and compute trapped water width/height. Edge cases: empty array, strictly decreasing values."
-              className="w-full bg-[#131317] border border-white/[0.08] focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 rounded-lg p-3 text-xs text-zinc-200 placeholder:text-zinc-400 focus:outline-none transition-all resize-y font-ui leading-relaxed"
+              className="w-full bg-card-hover border border-ink/[0.08] focus:border-warn-solid/50 focus:ring-1 focus:ring-warn-solid/30 rounded-lg p-3 text-xs text-fg-2 placeholder:text-muted focus:outline-none transition-all resize-y font-ui leading-relaxed"
             />
           </div>
         </div>

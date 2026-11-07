@@ -72,22 +72,22 @@ const SessionsCard = () => {
 
   return (
     <div className="titanium-card rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-xl">
-      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-white/[0.06]">
+      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-ink/[0.06]">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#ffa116]/10 text-[#ffa116] flex items-center justify-center text-base border border-[#ffa116]/20">
+          <div className="w-8 h-8 rounded-lg bg-brand/10 text-brand flex items-center justify-center text-base border border-brand/20">
             <FiMonitor />
           </div>
           <div>
-            <h3 className="font-display text-sm font-bold text-white flex items-center gap-2">
+            <h3 className="font-display text-sm font-bold text-fg flex items-center gap-2">
               Devices signed in to your account
               {sessions.length > 0 && (
-                <span className="text-xs font-ui px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.08]">
+                <span className="text-xs font-ui px-2 py-0.5 rounded-full bg-ink/[0.06] text-fg-3 border border-ink/[0.08]">
                   {sessions.length} {sessions.length === 1 ? 'device' : 'devices'}
                 </span>
               )}
             </h3>
-            <p className="text-xs font-ui text-zinc-400 mt-0.5">
+            <p className="text-xs font-ui text-muted mt-0.5">
               Sign out any device you don't use or recognise.
             </p>
           </div>
@@ -97,10 +97,10 @@ const SessionsCard = () => {
           type="button"
           onClick={fetchSessions}
           disabled={loadingSessions}
-          className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-white/[0.04] text-xs font-ui font-medium text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[44px]"
+          className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-ink/[0.04] text-xs font-ui font-medium text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[44px]"
           title="Refresh active sessions"
         >
-          <FiRefreshCw className={loadingSessions ? "animate-spin text-[#ffa116]" : "text-zinc-400"} />
+          <FiRefreshCw className={loadingSessions ? "animate-spin text-brand" : "text-muted"} />
           <span>{loadingSessions ? "Refreshing..." : "Refresh"}</span>
         </button>
       </div>
@@ -109,20 +109,20 @@ const SessionsCard = () => {
         {loadingSessions ? (
           <div className="space-y-3">
             {[1, 2].map((i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] animate-pulse">
+              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-ink/[0.02] animate-pulse">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-white/[0.05]" />
+                  <div className="w-10 h-10 rounded-lg bg-ink/[0.05]" />
                   <div className="space-y-1.5">
-                    <div className="w-36 h-3.5 rounded bg-white/[0.06]" />
-                    <div className="w-24 h-2.5 rounded bg-white/[0.04]" />
+                    <div className="w-36 h-3.5 rounded bg-ink/[0.06]" />
+                    <div className="w-24 h-2.5 rounded bg-ink/[0.04]" />
                   </div>
                 </div>
-                <div className="w-16 h-7 rounded bg-white/[0.05]" />
+                <div className="w-16 h-7 rounded bg-ink/[0.05]" />
               </div>
             ))}
           </div>
         ) : sessions.length === 0 ? (
-          <div className="text-center py-6 text-xs font-ui text-zinc-400">
+          <div className="text-center py-6 text-xs font-ui text-muted">
             No active device records found.
           </div>
         ) : (
@@ -135,39 +135,39 @@ const SessionsCard = () => {
                 key={session.id}
                 className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border transition-colors ${
                   session.isCurrent
-                    ? "bg-[#ffa116]/[0.02] border-[#ffa116]/30"
-                    : "bg-[#121216] border-white/[0.08] hover:border-white/[0.15]"
+                    ? "bg-brand/[0.02] border-brand/30"
+                    : "bg-card-hover border-ink/[0.08] hover:border-ink/[0.15]"
                 }`}
               >
                 <div className="flex items-start sm:items-center gap-3.5 min-w-0">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 ${
                     session.isCurrent
-                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
-                      : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]"
+                      ? "bg-ok-solid/10 text-ok border border-ok-solid/25"
+                      : "bg-ink/[0.04] text-muted border border-ink/[0.08]"
                   }`}>
                     {isTablet ? <FiTablet /> : isMobile ? <FiSmartphone /> : <FiMonitor />}
                   </div>
 
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-xs font-semibold text-white truncate">
+                      <p className="text-xs font-semibold text-fg truncate">
                         {session.device || "Unknown Device"}
                       </p>
                       {session.isCurrent ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-ui font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-ui font-bold bg-ok-solid/15 text-ok border border-ok-solid/30">
+                          <span className="w-1.5 h-1.5 rounded-full bg-ok" />
                           Current Device
                         </span>
                       ) : (
-                        <span className="text-xs font-ui px-2 py-0.5 rounded-full bg-white/[0.04] text-zinc-400 border border-white/[0.08]">
+                        <span className="text-xs font-ui px-2 py-0.5 rounded-full bg-ink/[0.04] text-muted border border-ink/[0.08]">
                           Other device
                         </span>
                       )}
                     </div>
 
-                    <p className="text-xs font-ui text-zinc-400 mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
-                      <span className="text-zinc-300">IP: {session.ip}</span>
-                      <span className="text-zinc-400">•</span>
+                    <p className="text-xs font-ui text-muted mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+                      <span className="text-fg-3">IP: {session.ip}</span>
+                      <span className="text-muted">•</span>
                       <span>{formatRelativeTime(session.lastActive)}</span>
                     </p>
                   </div>
@@ -175,7 +175,7 @@ const SessionsCard = () => {
 
                 <div className="self-end sm:self-center shrink-0">
                   {session.isCurrent ? (
-                    <span className="text-xs font-ui text-zinc-400 px-3 py-1.5">
+                    <span className="text-xs font-ui text-muted px-3 py-1.5">
                       This browser
                     </span>
                   ) : (
@@ -183,10 +183,10 @@ const SessionsCard = () => {
                       type="button"
                       onClick={() => handleRevokeSession(session.id, false)}
                       disabled={revokingSessionId === session.id}
-                      className="px-3 py-1.5 min-h-[44px] sm:min-h-0 rounded-xl text-xs font-ui font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 hover:border-rose-500/40 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[36px]"
+                      className="px-3 py-1.5 min-h-[44px] sm:min-h-0 rounded-xl text-xs font-ui font-semibold bg-bad-solid/10 hover:bg-bad-solid/20 text-bad border border-bad-solid/25 hover:border-bad-solid/40 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[36px]"
                     >
                       {revokingSessionId === session.id ? (
-                        <InlineSpinner size={12} color="#f87171" />
+                        <InlineSpinner size={12} color="var(--bad)" />
                       ) : (
                         <FiTrash2 className="text-xs" />
                       )}

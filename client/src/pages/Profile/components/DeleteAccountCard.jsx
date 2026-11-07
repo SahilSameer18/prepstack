@@ -57,12 +57,12 @@ const DeleteAccountCard = () => {
 
   return (
     <>
-      <div className="bg-rose-500/[0.02] border border-rose-500/20 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden shadow-xl">
+      <div className="bg-bad-solid/[0.02] border border-bad-solid/20 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden shadow-xl">
         <div>
-          <h3 className="font-display text-sm font-bold text-rose-400 flex items-center gap-2">
+          <h3 className="font-display text-sm font-bold text-bad flex items-center gap-2">
             <FiAlertTriangle /> Delete account
           </h3>
-          <p className="text-xs font-ui text-zinc-400 mt-1 max-w-xl leading-relaxed">
+          <p className="text-xs font-ui text-muted mt-1 max-w-xl leading-relaxed">
             Permanently delete your profile, your solved-problem progress and your saved project ideas. This action is irreversible.
           </p>
         </div>
@@ -74,7 +74,7 @@ const DeleteAccountCard = () => {
             setDeleteConfirmation("");
             setShowDeleteModal(true);
           }}
-          className="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/25 hover:border-rose-500/40 transition-colors font-ui font-semibold text-xs cursor-pointer shrink-0 min-h-[44px]"
+          className="px-4 py-2.5 rounded-xl bg-bad-solid/10 hover:bg-bad-solid/20 text-bad border border-bad-solid/25 hover:border-bad-solid/40 transition-colors font-ui font-semibold text-xs cursor-pointer shrink-0 min-h-[44px]"
         >
           Delete Account...
         </button>
@@ -88,18 +88,18 @@ const DeleteAccountCard = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-scrim/80 backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 8 }}
               transition={{ type: "spring", damping: 26, stiffness: 360 }}
-              className="w-full max-w-md bg-[#0c0c0e] border border-rose-500/30 rounded-2xl p-6 space-y-5 shadow-2xl relative text-left"
+              className="w-full max-w-md bg-card border border-bad-solid/30 rounded-2xl p-6 space-y-5 shadow-2xl relative text-left"
             >
-              <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-                <div className="flex items-center gap-2.5 text-rose-400 font-display font-bold text-sm">
-                  <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-base">
+              <div className="flex items-center justify-between border-b border-ink/[0.08] pb-4">
+                <div className="flex items-center gap-2.5 text-bad font-display font-bold text-sm">
+                  <div className="w-8 h-8 rounded-lg bg-bad-solid/10 flex items-center justify-center text-base">
                     <FiAlertTriangle />
                   </div>
                   <span>Delete Account Permanently</span>
@@ -107,15 +107,15 @@ const DeleteAccountCard = () => {
                 <button
                   type="button"
                   onClick={() => setShowDeleteModal(false)}
-                  className="text-zinc-400 hover:text-white p-1 cursor-pointer transition-colors"
+                  className="text-muted hover:text-fg p-1 cursor-pointer transition-colors"
                 >
                   <FiX className="text-lg" />
                 </button>
               </div>
 
-              <div className="text-xs text-zinc-300 space-y-2 leading-relaxed">
+              <div className="text-xs text-fg-3 space-y-2 leading-relaxed">
                 <p>This action is irreversible. The following data will be permanently wiped:</p>
-                <ul className="list-disc list-inside space-y-1 text-zinc-400 pl-1 font-ui text-xs">
+                <ul className="list-disc list-inside space-y-1 text-muted pl-1 font-ui text-xs">
                   <li>All solved DSA problem tracker entries across all sheets.</li>
                   <li>All compiled system architecture blueprints.</li>
                   <li>Your sign-in details and all signed-in devices.</li>
@@ -126,11 +126,11 @@ const DeleteAccountCard = () => {
 
               <form onSubmit={handleDeleteAccount} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-ui font-medium text-zinc-300">
+                  <label className="text-xs font-ui font-medium text-fg-3">
                     {user.hasPassword ? (
                       "Enter current password to verify:"
                     ) : (
-                      <span>Type email <strong className="text-white select-all">{user.email}</strong> to verify:</span>
+                      <span>Type email <strong className="text-fg select-all">{user.email}</strong> to verify:</span>
                     )}
                   </label>
                   <input
@@ -139,7 +139,7 @@ const DeleteAccountCard = () => {
                     onChange={(e) => setDeleteConfirmation(e.target.value)}
                     placeholder={user.hasPassword ? "Enter current password" : user.email}
                     required
-                    className="w-full bg-[#121216] border border-white/[0.08] focus:border-rose-500/50 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 outline-none transition-colors font-ui"
+                    className="w-full bg-card-hover border border-ink/[0.08] focus:border-bad-solid/50 rounded-xl px-4 py-2.5 text-sm text-fg placeholder-faint outline-none transition-colors font-ui"
                   />
                 </div>
 
@@ -148,16 +148,16 @@ const DeleteAccountCard = () => {
                     type="button"
                     onClick={() => setShowDeleteModal(false)}
                     disabled={isDeletingAccount}
-                    className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-white/[0.05] text-zinc-300 hover:bg-white/[0.1] transition-colors cursor-pointer min-h-[44px]"
+                    className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-ink/[0.05] text-fg-3 hover:bg-ink/[0.1] transition-colors cursor-pointer min-h-[44px]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isDeletingAccount}
-                    className="px-5 py-2 text-xs font-display font-semibold rounded-xl bg-rose-600 hover:bg-rose-500 text-white transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-lg shadow-rose-600/20 min-h-[44px]"
+                    className="px-5 py-2 text-xs font-display font-semibold rounded-xl bg-bad-solid hover:bg-bad-solid text-fg transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-lg shadow-bad-solid/20 min-h-[44px]"
                   >
-                    {isDeletingAccount && <InlineSpinner size={14} color="#fff" />}
+                    {isDeletingAccount && <InlineSpinner size={14} color="var(--fg)" />}
                     {isDeletingAccount ? "Deleting..." : "Permanently Delete"}
                   </button>
                 </div>

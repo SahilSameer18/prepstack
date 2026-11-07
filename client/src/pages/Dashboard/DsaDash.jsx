@@ -11,49 +11,49 @@ import {
 // ── Sheet accent colors ────────────────────────────────────────────────────
 const SHEET_META = {
   "blind-75": {
-    accentColor: "#3b82f6",
+    accentColor: "var(--data-blue)",
     badge: "FAANG Core",
-    badgeColor: "text-blue-400 bg-blue-500/10 border-blue-500/25",
+    badgeColor: "text-info bg-info-solid/10 border-info-solid/25",
   },
   "neetcode-150": {
-    accentColor: "#a855f7",
+    accentColor: "var(--data-purple)",
     badge: "Algorithms 150",
-    badgeColor: "text-purple-400 bg-purple-500/10 border-purple-500/25",
+    badgeColor: "text-violet bg-violet-solid/10 border-violet-solid/25",
   },
   "striver-sde": {
-    accentColor: "#ffa116",
+    accentColor: "var(--brand)",
     badge: "SDE Standard",
-    badgeColor: "text-[#ffa116] bg-[#ffa116]/10 border-[#ffa116]/25",
+    badgeColor: "text-brand bg-brand/10 border-brand/25",
   },
   "striver-a2z": {
-    accentColor: "#10b981",
+    accentColor: "var(--data-green)",
     badge: "Foundational A2Z",
-    badgeColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25",
+    badgeColor: "text-ok bg-ok-solid/10 border-ok-solid/25",
   },
   "love-babbar": {
-    accentColor: "#ec4899",
+    accentColor: "var(--data-pink)",
     badge: "DSA 450",
-    badgeColor: "text-pink-400 bg-pink-500/10 border-pink-500/25",
+    badgeColor: "text-pink bg-pink-solid/10 border-pink-solid/25",
   },
 };
 const getSheetMeta = (slug) =>
   SHEET_META[slug] || {
-    accentColor: "#ffa116",
+    accentColor: "var(--brand)",
     badge: "Sheet",
-    badgeColor: "text-zinc-300 bg-white/[0.04] border-white/[0.08]",
+    badgeColor: "text-fg-3 bg-ink/[0.04] border-ink/[0.08]",
   };
 
 // ── Skeleton ───────────────────────────────────────────────────────────────
 const SkeletonDSACard = memo(() => (
-  <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-5 space-y-3 animate-pulse">
+  <div className="bg-card border border-ink/[0.08] rounded-2xl p-5 space-y-3 animate-pulse">
     <div className="flex items-center justify-between">
-      <div className="h-4 w-28 rounded bg-white/[0.06]" />
-      <div className="h-5 w-16 rounded-full bg-white/[0.06]" />
+      <div className="h-4 w-28 rounded bg-ink/[0.06]" />
+      <div className="h-5 w-16 rounded-full bg-ink/[0.06]" />
     </div>
-    <div className="h-2 w-full rounded-full bg-white/[0.04]" />
+    <div className="h-2 w-full rounded-full bg-ink/[0.04]" />
     <div className="flex items-center justify-between">
-      <div className="h-3 w-20 rounded bg-white/[0.06]" />
-      <div className="h-3 w-12 rounded bg-white/[0.06]" />
+      <div className="h-3 w-20 rounded bg-ink/[0.06]" />
+      <div className="h-3 w-12 rounded bg-ink/[0.06]" />
     </div>
   </div>
 ));
@@ -74,7 +74,7 @@ const MiniRing = memo(({ pct, color }) => {
         cy="22"
         r={r}
         fill="none"
-        stroke="rgba(255,255,255,0.06)"
+        style={{ stroke: "color-mix(in srgb, var(--ink) 6%, transparent)" }}
         strokeWidth="3.5"
       />
       <circle
@@ -82,12 +82,12 @@ const MiniRing = memo(({ pct, color }) => {
         cy="22"
         r={r}
         fill="none"
-        stroke={color}
         strokeWidth="3.5"
         strokeLinecap="round"
         strokeDasharray={c}
         strokeDashoffset={c - (pct / 100) * c}
         style={{
+          stroke: color,
           transition: "stroke-dashoffset 0.6s ease",
         }}
       />
@@ -102,22 +102,22 @@ const DSADash = ({ dsaData, loading, stats }) => {
       {/* Section heading */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#ffa116]/10 border border-[#ffa116]/25 flex items-center justify-center">
-            <FiCode className="text-[#ffa116] text-lg" />
+          <div className="w-10 h-10 rounded-xl bg-brand/10 border border-brand/25 flex items-center justify-center">
+            <FiCode className="text-brand text-lg" />
           </div>
           <div>
-            <h2 className="text-xl font-display font-bold text-white">DSA Practice Workspace</h2>
-            <p className="text-xs font-ui text-zinc-400 mt-0.5">
+            <h2 className="text-xl font-display font-bold text-fg">DSA Practice Workspace</h2>
+            <p className="text-xs font-ui text-muted mt-0.5">
               Your progress on each DSA sheet
             </p>
           </div>
         </div>
         <Link
           to="/dsa"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.18] text-xs font-ui font-semibold text-zinc-300 hover:text-white transition-colors self-start sm:self-auto min-h-[44px]"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-ink/[0.04] border border-ink/[0.08] hover:border-ink/[0.18] text-xs font-ui font-semibold text-fg-3 hover:text-fg transition-colors self-start sm:self-auto min-h-[44px]"
         >
           <span>All sheets</span>
-          <FiExternalLink className="text-xs text-zinc-400" />
+          <FiExternalLink className="text-xs text-muted" />
         </Link>
       </div>
 
@@ -138,7 +138,7 @@ const DSADash = ({ dsaData, loading, stats }) => {
                     to={`/dsa/${sheet.slug}`}
                     className="group relative titanium-card rounded-2xl p-5 flex gap-4 items-center transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] overflow-hidden h-full shadow-lg"
                   >
-                    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent group-hover:via-[#ffa116]/40 transition-all" />
+                    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent group-hover:via-brand/40 transition-all" />
 
                     {/* Mini ring */}
                     <div className="relative flex-shrink-0">
@@ -160,11 +160,11 @@ const DSADash = ({ dsaData, loading, stats }) => {
                           {meta.badge}
                         </span>
                       </div>
-                      <h3 className="text-sm font-display font-bold text-white group-hover:text-[#ffa116] truncate transition-colors">
+                      <h3 className="text-sm font-display font-bold text-fg group-hover:text-brand truncate transition-colors">
                         {sheet.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-2">
-                        <div className="flex-1 h-1 bg-white/[0.06] rounded-full overflow-hidden">
+                        <div className="flex-1 h-1 bg-ink/[0.06] rounded-full overflow-hidden">
                           <motion.div
                             className="h-full rounded-full"
                             initial={{ width: 0 }}
@@ -175,19 +175,19 @@ const DSADash = ({ dsaData, loading, stats }) => {
                             }}
                           />
                         </div>
-                        <span className="text-xs font-ui text-zinc-300 font-semibold whitespace-nowrap flex-shrink-0">
+                        <span className="text-xs font-ui text-fg-3 font-semibold whitespace-nowrap flex-shrink-0">
                           {solved} / {total}
                         </span>
                       </div>
                       {remaining > 0 ? (
-                        <p className="text-xs font-ui text-zinc-400 mt-2">
-                          <span className="text-zinc-300 font-medium">
+                        <p className="text-xs font-ui text-muted mt-2">
+                          <span className="text-fg-3 font-medium">
                             {remaining}
                           </span>{" "}
                           problems remaining
                         </p>
                       ) : (
-                        <p className="text-xs font-ui text-emerald-400 mt-2 font-medium">
+                        <p className="text-xs font-ui text-ok mt-2 font-medium">
                           Sheets completed
                         </p>
                       )}
@@ -201,16 +201,16 @@ const DSADash = ({ dsaData, loading, stats }) => {
       {/* Telemetry readiness callout */}
       {!loading && stats.totalSolved > 0 && (
         <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 titanium-card rounded-2xl p-5 shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffa116]/40 to-transparent" />
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-brand/40 to-transparent" />
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-[#ffa116]/10 border border-[#ffa116]/25 flex items-center justify-center flex-shrink-0">
-              <FiAward className="text-[#ffa116] text-lg" />
+            <div className="w-10 h-10 rounded-xl bg-brand/10 border border-brand/25 flex items-center justify-center flex-shrink-0">
+              <FiAward className="text-brand text-lg" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-fg">
                 {stats.totalSolved} problems solved
               </p>
-              <p className="text-xs font-ui text-zinc-400 mt-0.5">
+              <p className="text-xs font-ui text-muted mt-0.5">
                 {stats.sheetsCompleted > 0
                   ? `${stats.sheetsCompleted} complete curriculum finished · Placement ready`
                   : "Keep going: a little practice every day adds up"}
@@ -219,7 +219,7 @@ const DSADash = ({ dsaData, loading, stats }) => {
           </div>
           <Link
             to="/dsa"
-            className="self-start sm:self-auto px-4 py-2 min-h-[44px] sm:min-h-0 inline-flex items-center rounded-xl titanium-button text-xs font-ui font-semibold text-zinc-200 transition-colors"
+            className="self-start sm:self-auto px-4 py-2 min-h-[44px] sm:min-h-0 inline-flex items-center rounded-xl titanium-button text-xs font-ui font-semibold text-fg-2 transition-colors"
           >
             Explore All Sheets →
           </Link>

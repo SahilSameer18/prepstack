@@ -41,30 +41,30 @@ const SignOutCard = () => {
   };
 
   return (
-    <div className="bg-[#0c0c0e] border border-white/[0.08] rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
+    <div className="bg-card border border-ink/[0.08] rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
       <div>
-        <h3 className="font-display text-sm font-bold text-white flex items-center gap-2">
-          <FiLogOut className="text-[#ffa116]" /> Sign out
+        <h3 className="font-display text-sm font-bold text-fg flex items-center gap-2">
+          <FiLogOut className="text-brand" /> Sign out
         </h3>
-        <p className="text-xs font-ui text-zinc-400 mt-0.5">Sign out here, or sign out of every device at once.</p>
+        <p className="text-xs font-ui text-muted mt-0.5">Sign out here, or sign out of every device at once.</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
         <button
           onClick={logout}
           disabled={isLoggingOut || isLoggingOutAll}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] text-zinc-300 hover:text-white hover:bg-white/[0.08] transition-colors font-ui font-medium text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50 min-h-[44px]"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-ink/[0.04] text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors font-ui font-medium text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50 min-h-[44px]"
         >
-          {isLoggingOut ? <InlineSpinner size={14} color="#fff" /> : <FiLogOut />}
+          {isLoggingOut ? <InlineSpinner size={14} color="var(--fg)" /> : <FiLogOut />}
           {isLoggingOut ? "Signing out..." : "Sign Out (This Device)"}
         </button>
 
         <button
           onClick={logoutAll}
           disabled={isLoggingOut || isLoggingOutAll}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/40 transition-colors font-ui font-semibold text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50 min-h-[44px]"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-bad-solid/10 border border-bad-solid/25 text-bad hover:bg-bad-solid/20 hover:border-bad-solid/40 transition-colors font-ui font-semibold text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50 min-h-[44px]"
         >
-          {isLoggingOutAll ? <InlineSpinner size={14} color="#f87171" /> : <FiShield />}
+          {isLoggingOutAll ? <InlineSpinner size={14} color="var(--bad)" /> : <FiShield />}
           {isLoggingOutAll ? "Revoking all..." : "Sign Out All Devices"}
         </button>
       </div>

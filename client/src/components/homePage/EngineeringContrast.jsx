@@ -32,57 +32,57 @@ const EngineeringContrast = () => {
   return (
     <section className="relative text-left">
       <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.1] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] mb-4">
-          <FiLayers className="text-xs text-[#ffa116]" />
-          <span className="text-xs font-ui uppercase tracking-widest text-[#ffa116] font-semibold">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/[0.03] border border-ink/[0.1] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--ink)_12%,transparent)] mb-4">
+          <FiLayers className="text-xs text-brand" />
+          <span className="text-xs font-ui uppercase tracking-widest text-brand font-semibold">
             System Architecture Contrast
           </span>
         </div>
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight mb-4">
-          Why serious engineers choose <span className="text-[#ffa116]">PrepStack</span>
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-fg tracking-tight leading-tight mb-4">
+          Why serious engineers choose <span className="text-brand">PrepStack</span>
         </h2>
-        <p className="text-sm sm:text-base text-zinc-400 leading-relaxed">
+        <p className="text-sm sm:text-base text-muted leading-relaxed">
           Interview preparation shouldn't require 15 browser tabs, forgotten Google spreadsheets, and unguided grind.
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
         {/* ── The Fragmented Grind ── */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-[#0a0a0c] border border-red-500/20 shadow-xl relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-rose-500/30 to-transparent" />
+        <div className="p-6 sm:p-8 rounded-2xl bg-card border border-bad-solid/20 shadow-xl relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-bad-solid/30 to-transparent" />
 
           <div>
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.06]">
-              <div className="flex items-center gap-2 text-xs font-ui text-rose-400 font-semibold">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-ink/[0.06]">
+              <div className="flex items-center gap-2 text-xs font-ui text-bad font-semibold">
                 <FiAlertTriangle className="text-sm" />
                 Fragmented Legacy Grind
               </div>
-              <span className="text-xs font-ui text-zinc-400 px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">
+              <span className="text-xs font-ui text-muted px-2 py-0.5 rounded bg-bad-solid/10 border border-bad-solid/20">
                 Low Conversion
               </span>
             </div>
 
-            <ul className="space-y-4 text-sm text-zinc-400">
+            <ul className="space-y-4 text-sm text-muted">
               <li className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-md bg-bad-solid/10 border border-bad-solid/20 text-bad flex items-center justify-center shrink-0 mt-0.5">
                   <FiX className="text-xs" />
                 </div>
                 <span>Jumping across 20+ disconnected YouTube playlists with zero persistent progress tracking.</span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-md bg-bad-solid/10 border border-bad-solid/20 text-bad flex items-center justify-center shrink-0 mt-0.5">
                   <FiX className="text-xs" />
                 </div>
                 <span>Unmaintained spreadsheets and Notion templates that get abandoned by day 10.</span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-md bg-bad-solid/10 border border-bad-solid/20 text-bad flex items-center justify-center shrink-0 mt-0.5">
                   <FiX className="text-xs" />
                 </div>
                 <span>Building generic clone projects (to-do lists, weather apps) that recruiters immediately skip past.</span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-md bg-bad-solid/10 border border-bad-solid/20 text-bad flex items-center justify-center shrink-0 mt-0.5">
                   <FiX className="text-xs" />
                 </div>
                 <span>Memorizing textbook theory without understanding real-world concurrency, deadlocks, or database indexes.</span>
@@ -90,9 +90,9 @@ const EngineeringContrast = () => {
             </ul>
           </div>
 
-          <div className="mt-8 pt-4 border-t border-white/[0.06] flex items-center justify-between font-ui text-xs text-zinc-400">
+          <div className="mt-8 pt-4 border-t border-ink/[0.06] flex items-center justify-between font-ui text-xs text-muted">
             <span>Friction: Context switching &amp; zero persistence</span>
-            <span className="text-rose-400 font-ui text-xs bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
+            <span className="text-bad font-ui text-xs bg-bad-solid/10 px-2 py-0.5 rounded border border-bad-solid/20">
               High Friction
             </span>
           </div>
@@ -101,40 +101,40 @@ const EngineeringContrast = () => {
         {/* ── The PrepStack Pipeline ── */}
         <div className="p-6 sm:p-8 rounded-2xl titanium-card relative overflow-hidden flex flex-col justify-between group">
           {/* Subtle top specular horizon */}
-          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ffa116]/50 to-transparent" />
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-brand/50 to-transparent" />
 
           <div>
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/[0.08]">
-              <div className="flex items-center gap-2 text-xs font-ui uppercase tracking-wider text-[#ffa116] font-semibold">
-                <FiZap className="text-sm text-[#ffa116]" />
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-ink/[0.08]">
+              <div className="flex items-center gap-2 text-xs font-ui uppercase tracking-wider text-brand font-semibold">
+                <FiZap className="text-sm text-brand" />
                 The PrepStack Pipeline
               </div>
-              <span className="text-xs font-ui font-semibold bg-[#ffa116]/10 px-2 py-0.5 rounded border border-[#ffa116]/25 text-[#ffa116]">
+              <span className="text-xs font-ui font-semibold bg-brand/10 px-2 py-0.5 rounded border border-brand/25 text-brand">
                 Engineered High-Signal
               </span>
             </div>
 
-            <ul className="space-y-4 text-sm text-zinc-200">
+            <ul className="space-y-4 text-sm text-fg-2">
               <li className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-md bg-[#ffa116]/15 border border-[#ffa116]/30 text-[#ffa116] flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_rgba(255,161,22,0.3)]">
+                <div className="w-5 h-5 rounded-md bg-brand/15 border border-brand/30 text-brand flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_color-mix(in_srgb,var(--brand)_30%,transparent)]">
                   <FiCheck className="text-xs" />
                 </div>
                 <span>Unified dashboard syncing every solved problem atomically across Blind 75, NeetCode, and Striver.</span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-md bg-[#ffa116]/15 border border-[#ffa116]/30 text-[#ffa116] flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_rgba(255,161,22,0.3)]">
+                <div className="w-5 h-5 rounded-md bg-brand/15 border border-brand/30 text-brand flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_color-mix(in_srgb,var(--brand)_30%,transparent)]">
                   <FiCheck className="text-xs" />
                 </div>
                 <span>Curated algorithmic pattern progression (Two Pointers &rarr; Sliding Window &rarr; Graph &rarr; DP).</span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-md bg-[#ffa116]/15 border border-[#ffa116]/30 text-[#ffa116] flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_rgba(255,161,22,0.3)]">
+                <div className="w-5 h-5 rounded-md bg-brand/15 border border-brand/30 text-brand flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_color-mix(in_srgb,var(--brand)_30%,transparent)]">
                   <FiCheck className="text-xs" />
                 </div>
                 <span>AI system architect generating production blueprints with latency specs, schemas, and indexing tradeoffs.</span>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-md bg-[#ffa116]/15 border border-[#ffa116]/30 text-[#ffa116] flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_rgba(255,161,22,0.3)]">
+                <div className="w-5 h-5 rounded-md bg-brand/15 border border-brand/30 text-brand flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_color-mix(in_srgb,var(--brand)_30%,transparent)]">
                   <FiCheck className="text-xs" />
                 </div>
                 <span>Synthesized OS, DBMS, Networks, and OOPs internals with exact interview question debriefs.</span>
@@ -142,9 +142,9 @@ const EngineeringContrast = () => {
             </ul>
           </div>
 
-          <div className="mt-8 pt-4 border-t border-white/[0.08] flex items-center justify-between font-ui text-xs text-[#ffa116]">
+          <div className="mt-8 pt-4 border-t border-ink/[0.08] flex items-center justify-between font-ui text-xs text-brand">
             <span>Advantage: Atomic DB sync &amp; structured patterns</span>
-            <span className="font-bold text-[#ffa116] bg-[#ffa116]/10 px-2 py-0.5 rounded border border-[#ffa116]/20 text-xs">
+            <span className="font-bold text-brand bg-brand/10 px-2 py-0.5 rounded border border-brand/20 text-xs">
               Single Source of Truth
             </span>
           </div>
@@ -153,26 +153,26 @@ const EngineeringContrast = () => {
 
       {/* ── Architectural Diff Breakdown ── */}
       <div className="mt-8 max-w-5xl mx-auto rounded-2xl titanium-card overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-white/[0.08] bg-[#0e0e12] flex items-center justify-between">
-          <span className="font-ui text-xs text-zinc-300 font-semibold flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#ffa116]" />
+        <div className="px-5 py-3.5 border-b border-ink/[0.08] bg-card flex items-center justify-between">
+          <span className="font-ui text-xs text-fg-3 font-semibold flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-brand" />
             Feature-by-Feature Benchmark
           </span>
-          <span className="font-ui text-xs text-zinc-400">Linear Architecture Standard</span>
+          <span className="font-ui text-xs text-muted">Linear Architecture Standard</span>
         </div>
-        <div className="divide-y divide-white/[0.06]">
+        <div className="divide-y divide-ink/[0.06]">
           {COMPARISON_ROWS.map((row, idx) => (
-            <div key={idx} className="p-4 sm:p-5 grid sm:grid-cols-12 gap-3 sm:gap-6 items-center hover:bg-white/[0.02] transition-colors">
+            <div key={idx} className="p-4 sm:p-5 grid sm:grid-cols-12 gap-3 sm:gap-6 items-center hover:bg-ink/[0.02] transition-colors">
               <div className="sm:col-span-3">
-                <span className="font-display font-bold text-sm text-white">{row.feature}</span>
-                <span className="block font-code text-xs text-[#ffa116] mt-0.5">{row.latency}</span>
+                <span className="font-display font-bold text-sm text-fg">{row.feature}</span>
+                <span className="block font-code text-xs text-brand mt-0.5">{row.latency}</span>
               </div>
-              <div className="sm:col-span-4 text-xs text-zinc-400 flex items-start gap-2">
-                <FiX className="text-rose-400 text-xs shrink-0 mt-0.5" />
+              <div className="sm:col-span-4 text-xs text-muted flex items-start gap-2">
+                <FiX className="text-bad text-xs shrink-0 mt-0.5" />
                 <span>{row.legacy}</span>
               </div>
-              <div className="sm:col-span-5 text-xs text-zinc-200 flex items-start gap-2">
-                <FiCheck className="text-[#ffa116] text-xs shrink-0 mt-0.5" />
+              <div className="sm:col-span-5 text-xs text-fg-2 flex items-start gap-2">
+                <FiCheck className="text-brand text-xs shrink-0 mt-0.5" />
                 <span className="font-medium">{row.prepstack}</span>
               </div>
             </div>

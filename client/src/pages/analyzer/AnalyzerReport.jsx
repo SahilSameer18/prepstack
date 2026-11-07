@@ -12,8 +12,8 @@ import RequirementRow from "../../components/analyzer/RequirementRow";
 import SkillGapCard from "../../components/analyzer/SkillGapCard";
 
 const ORDER = { missing: 0, partial: 1, met: 2 };
-const card = "rounded-xl bg-[#121216] border border-white/[0.08] p-4";
-const tag = { missing: "text-rose-400 bg-rose-500/10 border-rose-500/25", partial: "text-amber-400 bg-amber-500/10 border-amber-500/25", met: "text-emerald-400 bg-emerald-500/10 border-emerald-500/25" };
+const card = "rounded-xl bg-card-hover border border-ink/[0.08] p-4";
+const tag = { missing: "text-bad bg-bad-solid/10 border-bad-solid/25", partial: "text-warn bg-warn-solid/10 border-warn-solid/25", met: "text-ok bg-ok-solid/10 border-ok-solid/25" };
 
 const AnalyzerReport = () => {
   const { id } = useParams();
@@ -54,7 +54,7 @@ const AnalyzerReport = () => {
   };
 
   if (error) return <PageErrorState message={error} backTo="/analyzer" backLabel="Back to Role Analyzer" />;
-  if (!report) return <div className="flex justify-center py-24 text-zinc-400"><FiLoader className="animate-spin text-2xl" aria-label="Loading" /></div>;
+  if (!report) return <div className="flex justify-center py-24 text-muted"><FiLoader className="animate-spin text-2xl" aria-label="Loading" /></div>;
 
   const advice = report.skillAdvice || {};
   const reqs = [...report.requirements].sort((a, b) => ORDER[a.status] - ORDER[b.status]);
@@ -79,12 +79,12 @@ const AnalyzerReport = () => {
   return (
     <div className="px-4 sm:px-6 pb-16 max-w-5xl mx-auto page-enter text-left">
       <div className="flex items-center justify-between gap-3 pt-2 mb-4">
-        <Link to="/analyzer" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white min-h-[44px]"><FiArrowLeft /> New report</Link>
+        <Link to="/analyzer" className="inline-flex items-center gap-2 text-sm text-muted hover:text-fg min-h-[44px]"><FiArrowLeft /> New report</Link>
         <div className="flex items-center gap-1">
-          <button onClick={download} disabled={downloading} className="inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white min-h-[44px] px-2 cursor-pointer disabled:opacity-60">
+          <button onClick={download} disabled={downloading} className="inline-flex items-center gap-1.5 text-xs text-fg-3 hover:text-fg min-h-[44px] px-2 cursor-pointer disabled:opacity-60">
             {downloading ? <FiLoader className="animate-spin" /> : <FiDownload />} {downloading ? "Preparing..." : "Download PDF"}
           </button>
-          <button onClick={remove} className="text-xs text-zinc-400 hover:text-rose-400 min-h-[44px] px-2 cursor-pointer">Delete report</button>
+          <button onClick={remove} className="text-xs text-muted hover:text-bad min-h-[44px] px-2 cursor-pointer">Delete report</button>
         </div>
       </div>
 
@@ -92,36 +92,36 @@ const AnalyzerReport = () => {
       <div className="titanium-card rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-5 sm:gap-6">
         <ScoreRing score={report.score} />
         <div className="flex-1 min-w-0 text-center sm:text-left">
-          <p className="text-xs font-ui font-semibold tracking-wider text-[#ffa116] mb-1">ROLE MATCH</p>
-          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-[-0.03em] break-words">{formatTitle(report.title)}</h1>
-          <p className="text-sm text-zinc-400 mt-1">{must.met || 0} of {mustTotal} required skills matched</p>
+          <p className="text-xs font-ui font-semibold tracking-wider text-brand mb-1">ROLE MATCH</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-fg tracking-[-0.03em] break-words">{formatTitle(report.title)}</h1>
+          <p className="text-sm text-muted mt-1">{must.met || 0} of {mustTotal} required skills matched</p>
         </div>
         <dl className="grid grid-cols-3 gap-5 text-center sm:text-left shrink-0">
           {[["Gaps", gaps.length], ["Study time", hours ? `${hours} h` : "-"], ["Plan", `${report.days} days`]].map(([k, v]) => (
-            <div key={k}><dt className="text-xs text-zinc-400">{k}</dt><dd className="font-display text-xl font-bold text-white">{v}</dd></div>
+            <div key={k}><dt className="text-xs text-muted">{k}</dt><dd className="font-display text-xl font-bold text-fg">{v}</dd></div>
           ))}
         </dl>
       </div>
 
       {/* Start here */}
       {first && (
-        <div className="mt-3 rounded-xl border border-[#ffa116]/40 bg-[#ffa116]/[0.04] px-4 py-3 flex items-start sm:items-center gap-3">
-          <FiFlag className="shrink-0 mt-0.5 sm:mt-0 text-[#ffa116]" aria-hidden="true" />
-          <p className="flex-1 text-sm text-zinc-200 leading-snug"><span className="font-semibold text-white">Start here:</span> {first.title}{first.hours ? ` (about ${first.hours} hours)` : ""}</p>
-          {startLink && <Link to={startLink.path} className="shrink-0 inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white min-h-[44px]">Open <FiArrowRight /></Link>}
+        <div className="mt-3 rounded-xl border border-brand/40 bg-brand/[0.04] px-4 py-3 flex items-start sm:items-center gap-3">
+          <FiFlag className="shrink-0 mt-0.5 sm:mt-0 text-brand" aria-hidden="true" />
+          <p className="flex-1 text-sm text-fg-2 leading-snug"><span className="font-semibold text-fg">Start here:</span> {first.title}{first.hours ? ` (about ${first.hours} hours)` : ""}</p>
+          {startLink && <Link to={startLink.path} className="shrink-0 inline-flex items-center gap-1.5 text-xs text-fg-3 hover:text-fg min-h-[44px]">Open <FiArrowRight /></Link>}
         </div>
       )}
 
       <div className="mt-6 grid lg:grid-cols-[minmax(0,1fr)_280px] gap-6 items-start">
         <div className="min-w-0">
           {/* Tabs */}
-          <div role="tablist" aria-label="Report sections" className="flex gap-1 border-b border-white/[0.08] overflow-x-auto">
+          <div role="tablist" aria-label="Report sections" className="flex gap-1 border-b border-ink/[0.08] overflow-x-auto">
             {tabs.map((t) => (
               <button
                 key={t.key} role="tab" aria-selected={tab === t.key} onClick={() => setTab(t.key)}
-                className={`px-3 sm:px-4 py-3 min-h-[44px] text-sm whitespace-nowrap border-b-2 cursor-pointer transition-colors ${tab === t.key ? "border-[#ffa116] text-white font-semibold" : "border-transparent text-zinc-400 hover:text-zinc-200"}`}
+                className={`px-3 sm:px-4 py-3 min-h-[44px] text-sm whitespace-nowrap border-b-2 cursor-pointer transition-colors ${tab === t.key ? "border-brand text-fg font-semibold" : "border-transparent text-muted hover:text-fg-2"}`}
               >
-                {t.label} <span className="text-xs text-zinc-400 font-normal">{t.n}</span>
+                {t.label} <span className="text-xs text-muted font-normal">{t.n}</span>
               </button>
             ))}
           </div>
@@ -133,42 +133,42 @@ const AnalyzerReport = () => {
                   <ol className="space-y-2">
                     {report.priorities.map((p, i) => (
                       <li key={i} className={card}>
-                        <p className="text-sm text-white font-semibold">{i + 1}. {p.title} <span className="text-xs font-normal text-zinc-400">(about {p.hours} hours)</span></p>
-                        <p className="text-sm text-zinc-400 mt-1 leading-relaxed">{p.why}</p>
+                        <p className="text-sm text-fg font-semibold">{i + 1}. {p.title} <span className="text-xs font-normal text-muted">(about {p.hours} hours)</span></p>
+                        <p className="text-sm text-muted mt-1 leading-relaxed">{p.why}</p>
                       </li>
                     ))}
                   </ol>
                 )}
                 <ol className="space-y-3 pt-2">
                   {(report.plan || []).map((d, idx) => (
-                    <li key={d.day} className={`${card} border-l-2 ${idx === 0 ? "border-l-[#ffa116]" : "border-l-white/[0.12]"}`}>
-                      <p className="text-xs font-ui font-bold text-[#ffa116] mb-1">DAY {d.day}</p>
-                      <p className="text-sm text-white font-semibold">{d.focus}</p>
+                    <li key={d.day} className={`${card} border-l-2 ${idx === 0 ? "border-l-brand" : "border-l-ink/[0.12]"}`}>
+                      <p className="text-xs font-ui font-bold text-brand mb-1">DAY {d.day}</p>
+                      <p className="text-sm text-fg font-semibold">{d.focus}</p>
                       <ul className="mt-2 space-y-2">
                         {(d.items || []).map((it, i) => {
                           const l = refLink(it.ref);
                           return (
-                            <li key={i} className="text-sm text-zinc-300 leading-relaxed">
+                            <li key={i} className="text-sm text-fg-3 leading-relaxed">
                               {it.task}
-                              {l && <> <Link to={l.path} className="text-xs text-blue-400 hover:text-blue-300">{l.label}</Link></>}
+                              {l && <> <Link to={l.path} className="text-xs text-info hover:text-info">{l.label}</Link></>}
                             </li>
                           );
                         })}
                       </ul>
-                      {d.extra && <p className="text-xs text-zinc-400 mt-2">{d.extra}</p>}
+                      {d.extra && <p className="text-xs text-muted mt-2">{d.extra}</p>}
                     </li>
                   ))}
                 </ol>
                 {report.codingTopics?.length > 0 && (
                   <div className="pt-4">
-                    <h2 className="font-display font-bold text-white text-base mb-2">Coding topics to practise</h2>
+                    <h2 className="font-display font-bold text-fg text-base mb-2">Coding topics to practise</h2>
                     <ul className="space-y-2">
                       {report.codingTopics.map((t, i) => {
                         const l = refLink(t.ref);
                         return (
-                          <li key={i} className={`${card} text-sm text-zinc-300 leading-relaxed`}>
-                            {l ? <Link to={l.path} className="text-white font-semibold hover:text-[#ffa116]">{l.label}</Link> : <span className="text-white font-semibold">{t.ref}</span>}
-                            <span className="text-zinc-400"> &mdash; {t.why}</span>
+                          <li key={i} className={`${card} text-sm text-fg-3 leading-relaxed`}>
+                            {l ? <Link to={l.path} className="text-fg font-semibold hover:text-brand">{l.label}</Link> : <span className="text-fg font-semibold">{t.ref}</span>}
+                            <span className="text-muted"> &mdash; {t.why}</span>
                           </li>
                         );
                       })}
@@ -197,22 +197,22 @@ const AnalyzerReport = () => {
               <>
                 {report.technicalQuestions?.map((q, i) => (
                   <div key={i} className={card}>
-                    <p className="text-sm text-white font-semibold leading-snug">{q.question}</p>
-                    <p className="text-sm text-zinc-400 mt-1.5 leading-relaxed">{q.why}</p>
-                    {q.resumeAngle && <p className="text-xs text-zinc-400 mt-2">Your resume angle: {q.resumeAngle}</p>}
-                    {q.followUps?.length > 0 && <ul className="mt-2 list-disc pl-5 text-xs text-zinc-400 space-y-1">{q.followUps.map((f, j) => <li key={j}>{f}</li>)}</ul>}
+                    <p className="text-sm text-fg font-semibold leading-snug">{q.question}</p>
+                    <p className="text-sm text-muted mt-1.5 leading-relaxed">{q.why}</p>
+                    {q.resumeAngle && <p className="text-xs text-muted mt-2">Your resume angle: {q.resumeAngle}</p>}
+                    {q.followUps?.length > 0 && <ul className="mt-2 list-disc pl-5 text-xs text-muted space-y-1">{q.followUps.map((f, j) => <li key={j}>{f}</li>)}</ul>}
                   </div>
                 ))}
                 {report.behavioralQuestions?.length > 0 && (
                   <>
-                    <h2 className="font-display font-bold text-white text-base pt-3">Behavioral questions</h2>
+                    <h2 className="font-display font-bold text-fg text-base pt-3">Behavioral questions</h2>
                     {report.behavioralQuestions.map((q, i) => (
                       <div key={i} className={card}>
-                        <p className="text-sm text-white font-semibold leading-snug">{q.question}</p>
-                        {q.resumeAngle && <p className="text-xs text-zinc-400 mt-2">Your resume angle: {q.resumeAngle}</p>}
+                        <p className="text-sm text-fg font-semibold leading-snug">{q.question}</p>
+                        {q.resumeAngle && <p className="text-xs text-muted mt-2">Your resume angle: {q.resumeAngle}</p>}
                       </div>
                     ))}
-                    <Link to="/behavioral" className="inline-flex items-center gap-2 text-sm text-[#ffa116] hover:underline min-h-[44px]">Practise these on Behavioral Prep <FiArrowRight /></Link>
+                    <Link to="/behavioral" className="inline-flex items-center gap-2 text-sm text-brand hover:underline min-h-[44px]">Practise these on Behavioral Prep <FiArrowRight /></Link>
                   </>
                 )}
               </>
@@ -221,9 +221,9 @@ const AnalyzerReport = () => {
             {tab === "tips" && (
               <>
                 {report.resumeTweaks?.length > 0 ? report.resumeTweaks.map((t, i) => (
-                  <div key={i} className={`${card} text-sm text-zinc-300 leading-relaxed`}><span className="text-white font-semibold">{t.keyword}</span> &mdash; {t.suggestion}</div>
-                )) : <p className="text-sm text-zinc-400">No resume changes to suggest for this job.</p>}
-                <Link to="/resume" className="inline-flex items-center gap-2 text-sm text-[#ffa116] hover:underline min-h-[44px]">Read the Resume Guide <FiArrowRight /></Link>
+                  <div key={i} className={`${card} text-sm text-fg-3 leading-relaxed`}><span className="text-fg font-semibold">{t.keyword}</span> &mdash; {t.suggestion}</div>
+                )) : <p className="text-sm text-muted">No resume changes to suggest for this job.</p>}
+                <Link to="/resume" className="inline-flex items-center gap-2 text-sm text-brand hover:underline min-h-[44px]">Read the Resume Guide <FiArrowRight /></Link>
               </>
             )}
           </div>
@@ -233,17 +233,17 @@ const AnalyzerReport = () => {
         <aside className="hidden lg:flex flex-col gap-3">
           {gaps.length > 0 && (
             <div className={card}>
-              <p className="text-xs text-zinc-400 mb-2">Skill gaps</p>
+              <p className="text-xs text-muted mb-2">Skill gaps</p>
               <div className="flex flex-wrap gap-1.5">
                 {gaps.map((r, i) => <span key={i} className={`text-xs rounded-full px-2.5 py-0.5 border ${tag[r.status]}`}>{r.skillKey && r.skillKey !== "none" ? r.skillKey : r.text}</span>)}
               </div>
             </div>
           )}
-          <p className="text-xs text-zinc-400 leading-relaxed">The score is worked out by our code from these marks, not by the AI. Each match shows the line from your resume that proves it, under Skills.</p>
+          <p className="text-xs text-muted leading-relaxed">The score is worked out by our code from these marks, not by the AI. Each match shows the line from your resume that proves it, under Skills.</p>
         </aside>
       </div>
 
-      <p className="mt-10 text-xs text-zinc-400 leading-relaxed">
+      <p className="mt-10 text-xs text-muted leading-relaxed">
         This report is advice written by an AI and checked by our code. It cannot promise an interview or a job. Your resume was not saved, only this report.
       </p>
     </div>

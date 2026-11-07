@@ -80,9 +80,9 @@ const Register = () => {
     const hasUpper = /[A-Z]/.test(p);
     const hasLower = /[a-z]/.test(p);
     const hasNumber = /[0-9]/.test(p);
-    if (p.length < 8) return { score: 1, label: "Weak", color: "bg-red-500" };
-    if (!hasUpper || !hasLower || !hasNumber) return { score: 2, label: "Fair", color: "bg-yellow-500" };
-    return { score: 3, label: "Strong", color: "bg-green-500" };
+    if (p.length < 8) return { score: 1, label: "Weak", color: "bg-bad-solid" };
+    if (!hasUpper || !hasLower || !hasNumber) return { score: 2, label: "Fair", color: "bg-yellow-solid" };
+    return { score: 3, label: "Strong", color: "bg-ok-solid" };
   };
   const strength = passwordStrength();
 
@@ -90,33 +90,33 @@ const Register = () => {
   const avatars = ["S", "A", "R", "P"];
 
   return (
-    <div className="min-h-screen bg-[#060608] flex selection:bg-[#ffa116]/25 selection:text-white">
+    <div className="min-h-screen bg-canvas flex selection:bg-brand/25 selection:text-fg">
 
       {/* ── Left Panel ── */}
       <motion.div
-        className="hidden lg:flex lg:w-1/2 relative flex-col p-10 xl:p-14 overflow-y-auto custom-scrollbar overflow-x-hidden border-r border-white/[0.06]"
+        className="hidden lg:flex lg:w-1/2 relative flex-col p-10 xl:p-14 overflow-y-auto custom-scrollbar overflow-x-hidden border-r border-ink/[0.06]"
         variants={panelLeft}
         initial="hidden"
         animate="show"
       >
         {/* Hardware-accelerated ambient glow (0 GPU re-rasterization) */}
-        <div className="absolute inset-0 bg-[#060608]" />
+        <div className="absolute inset-0 bg-canvas" />
         <div
           className="absolute top-[-80px] right-[-40px] w-[420px] h-[420px] rounded-full pointer-events-none transform-gpu opacity-60"
           style={{
-            background: "radial-gradient(circle, rgba(255,161,22,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, color-mix(in srgb, var(--brand) 12%, transparent) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute bottom-[60px] left-[-60px] w-[360px] h-[360px] rounded-full pointer-events-none transform-gpu opacity-40"
           style={{
-            background: "radial-gradient(circle, rgba(234,88,12,0.08) 0%, transparent 70%)",
+            background: "radial-gradient(circle, color-mix(in srgb, var(--orange-solid) 8%, transparent) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute inset-0 opacity-[0.025] pointer-events-none"
           style={{
-            backgroundImage: `radial-gradient(circle, rgba(255,161,22,0.8) 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle, color-mix(in srgb, var(--brand) 80%, transparent) 1px, transparent 1px)`,
             backgroundSize: "40px 40px",
           }}
         />
@@ -124,8 +124,8 @@ const Register = () => {
         {/* Logo */}
         <div className="relative z-10 mb-10 shrink-0">
           <Link to="/" className="flex items-center gap-2 group w-fit">
-            <span className="text-2xl font-display font-bold tracking-tight text-white group-hover:opacity-90 transition-opacity">
-              Prep<span className="text-[#ffa116]">Stack</span>
+            <span className="text-2xl font-display font-bold tracking-tight text-fg group-hover:opacity-90 transition-opacity">
+              Prep<span className="text-brand">Stack</span>
             </span>
           </Link>
         </div>
@@ -138,13 +138,13 @@ const Register = () => {
           animate="show"
         >
           <motion.div variants={formItem}>
-            <p className="mb-5 font-ui text-sm font-semibold text-emerald-400">Free forever</p>
-            <h2 className="text-3xl xl:text-4xl font-bold text-white leading-snug mb-3">
+            <p className="mb-5 font-ui text-sm font-semibold text-ok">Free forever</p>
+            <h2 className="text-3xl xl:text-4xl font-bold text-fg leading-snug mb-3">
               Join thousands of<br />
-              students <span className="text-[#ffa116]">getting hired</span><br />
+              students <span className="text-brand">getting hired</span><br />
               at top companies.
             </h2>
-            <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+            <p className="text-muted text-sm leading-relaxed max-w-sm">
               Create your free account and get instant access to everything PrepStack has to offer.
             </p>
           </motion.div>
@@ -153,36 +153,36 @@ const Register = () => {
           <motion.div className="space-y-3" variants={formItem}>
             {perks.map((perk) => (
               <div key={perk} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#ffa116]/15 border border-[#ffa116]/30 flex items-center justify-center flex-shrink-0">
-                  <FiCheck className="text-[#ffa116] text-xs" />
+                <div className="w-5 h-5 rounded-full bg-brand/15 border border-brand/30 flex items-center justify-center flex-shrink-0">
+                  <FiCheck className="text-brand text-xs" />
                 </div>
-                <span className="text-gray-300 text-sm">{perk}</span>
+                <span className="text-fg-3 text-sm">{perk}</span>
               </div>
             ))}
           </motion.div>
 
           {/* Social proof */}
-          <motion.div className="bg-white/[0.03] rounded-2xl p-4" variants={formItem}>
+          <motion.div className="bg-ink/[0.03] rounded-2xl p-4" variants={formItem}>
             <div className="flex items-center gap-3 mb-2">
               <div className="flex -space-x-2">
                 {avatars.map((l, i) => (
                   <div
                     key={i}
-                    className="w-7 h-7 rounded-full border-2 border-[#0a0a0a] flex items-center justify-center text-xs font-bold text-white"
+                    className="w-7 h-7 rounded-full border-2 border-card flex items-center justify-center text-xs font-bold text-fg"
                     style={{ background: `hsl(${i * 40 + 20}, 70%, 45%)` }}
                   >
                     {l}
                   </div>
                 ))}
               </div>
-              <span className="text-gray-300 text-sm">Many students joined</span>
+              <span className="text-fg-3 text-sm">Many students joined</span>
             </div>
-            <p className="text-zinc-400 text-xs italic">&ldquo;PrepStack helped me prepare systematically and land my first SDE internship!&rdquo;</p>
+            <p className="text-muted text-xs italic">&ldquo;PrepStack helped me prepare systematically and land my first SDE internship!&rdquo;</p>
           </motion.div>
         </motion.div>
 
         <div className="relative z-10 mt-8 shrink-0">
-          <p className="text-zinc-400 text-xs italic">&ldquo;Your future self will thank you for starting today.&rdquo;</p>
+          <p className="text-muted text-xs italic">&ldquo;Your future self will thank you for starting today.&rdquo;</p>
         </div>
       </motion.div>
 
@@ -195,7 +195,7 @@ const Register = () => {
       >
         {/* Mobile logo */}
         <div className="lg:hidden mb-6">
-          <Link to="/" className="text-xl font-bold">Prep<span className="text-[#ffa116]">Stack</span></Link>
+          <Link to="/" className="text-xl font-bold">Prep<span className="text-brand">Stack</span></Link>
         </div>
 
         <motion.div
@@ -208,9 +208,9 @@ const Register = () => {
           <motion.div variants={formItem} className="mb-6">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 min-h-[44px] text-xs font-ui text-gray-400 hover:text-white transition-colors group"
+              className="inline-flex items-center gap-2 min-h-[44px] text-xs font-ui text-muted hover:text-fg transition-colors group"
             >
-              <span className="w-7 h-7 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center group-hover:bg-white/[0.08] group-hover:border-[#ffa116]/40 group-hover:text-[#ffa116] transition-all">
+              <span className="w-7 h-7 rounded-full bg-ink/[0.04] border border-ink/[0.08] flex items-center justify-center group-hover:bg-ink/[0.08] group-hover:border-brand/40 group-hover:text-brand transition-all">
                 <FiArrowLeft className="text-xs" />
               </span>
               <span>Back to Home</span>
@@ -218,8 +218,8 @@ const Register = () => {
           </motion.div>
 
           <motion.div className="mb-6" variants={formItem}>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1.5">Create your account</h1>
-            <p className="text-gray-400 text-sm">Get started for free</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-fg mb-1.5">Create your account</h1>
+            <p className="text-muted text-sm">Get started for free</p>
           </motion.div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -229,29 +229,29 @@ const Register = () => {
 
             {/* Username */}
             <motion.div className="space-y-1.5" variants={formItem}>
-              <label className="text-sm font-medium text-zinc-300">Username</label>
-              <div className={`flex items-center gap-3 w-full bg-[#0c0c0e] border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "username" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
-                <FiUser className={`text-lg flex-shrink-0 transition-colors ${focusedField === "username" ? "text-[#ffa116]" : "text-zinc-400"}`} />
+              <label className="text-sm font-medium text-fg-3">Username</label>
+              <div className={`flex items-center gap-3 w-full bg-card border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "username" ? "border-brand shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)]" : "border-ink/[0.08] hover:border-ink/[0.15]"}`}>
+                <FiUser className={`text-lg flex-shrink-0 transition-colors ${focusedField === "username" ? "text-brand" : "text-muted"}`} />
                 <input
                   type="text" name="username" placeholder="e.g. coder_sahil"
-                  className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
+                  className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.username} onChange={handleChange}
                   onFocus={() => setFocusedField("username")} onBlur={() => setFocusedField(null)}
                   required minLength={4} maxLength={30}
                 />
-                {formData.username.length >= 4 && <FiCheck className="text-emerald-400 flex-shrink-0" />}
+                {formData.username.length >= 4 && <FiCheck className="text-ok flex-shrink-0" />}
               </div>
-              <p className="text-xs text-zinc-400 pl-1 font-ui">4–30 characters</p>
+              <p className="text-xs text-muted pl-1 font-ui">4–30 characters</p>
             </motion.div>
 
             {/* Email */}
             <motion.div className="space-y-1.5" variants={formItem}>
-              <label className="text-sm font-medium text-zinc-300">Email address</label>
-              <div className={`flex items-center gap-3 w-full bg-[#0c0c0e] border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "email" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
-                <FiMail className={`text-lg flex-shrink-0 transition-colors ${focusedField === "email" ? "text-[#ffa116]" : "text-zinc-400"}`} />
+              <label className="text-sm font-medium text-fg-3">Email address</label>
+              <div className={`flex items-center gap-3 w-full bg-card border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "email" ? "border-brand shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)]" : "border-ink/[0.08] hover:border-ink/[0.15]"}`}>
+                <FiMail className={`text-lg flex-shrink-0 transition-colors ${focusedField === "email" ? "text-brand" : "text-muted"}`} />
                 <input
                   type="email" name="email" placeholder="you@example.com"
-                  className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
+                  className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.email} onChange={handleChange}
                   onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} required
                 />
@@ -260,17 +260,17 @@ const Register = () => {
 
             {/* Password */}
             <motion.div className="space-y-1.5" variants={formItem}>
-              <label className="text-sm font-medium text-zinc-300">Password</label>
-              <div className={`flex items-center gap-3 w-full bg-[#0c0c0e] border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "password" ? "border-[#ffa116] shadow-[0_0_0_3px_rgba(255,161,22,0.1)]" : "border-white/[0.08] hover:border-white/[0.15]"}`}>
-                <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-[#ffa116]" : "text-zinc-400"}`} />
+              <label className="text-sm font-medium text-fg-3">Password</label>
+              <div className={`flex items-center gap-3 w-full bg-card border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "password" ? "border-brand shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)]" : "border-ink/[0.08] hover:border-ink/[0.15]"}`}>
+                <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-brand" : "text-muted"}`} />
                 <input
                   type={showPassword ? "text" : "password"} name="password" placeholder="Min. 8 chars, uppercase & number"
-                  className="w-full bg-transparent text-white placeholder-zinc-500 outline-none text-sm"
+                  className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.password} onChange={handleChange}
                   onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)}
                   required minLength={8}
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-zinc-400 hover:text-zinc-300 transition-colors flex-shrink-0">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-muted hover:text-fg-3 transition-colors flex-shrink-0">
                   {showPassword ? <FiEye className="text-lg" /> : <FiEyeOff className="text-lg" />}
                 </button>
               </div>
@@ -278,20 +278,20 @@ const Register = () => {
                 <div className="flex items-center gap-2 pt-1">
                   <div className="flex gap-1 flex-1">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= strength.score ? strength.color : "bg-white/10"}`} />
+                      <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= strength.score ? strength.color : "bg-ink/10"}`} />
                     ))}
                   </div>
-                  <span className={`text-xs font-medium ${strength.score === 1 ? "text-rose-400" : strength.score === 2 ? "text-amber-400" : "text-emerald-400"}`}>
+                  <span className={`text-xs font-medium ${strength.score === 1 ? "text-bad" : strength.score === 2 ? "text-warn" : "text-ok"}`}>
                     {strength.label}
                   </span>
                 </div>
               )}
             </motion.div>
 
-            <motion.p className="text-xs text-zinc-400 leading-relaxed" variants={formItem}>
+            <motion.p className="text-xs text-muted leading-relaxed" variants={formItem}>
               By creating an account, you agree to our{" "}
-              <Link to="/terms" className="text-[#ffa116] hover:underline">Terms of Use</Link> and{" "}
-              <Link to="/privacy" className="text-[#ffa116] hover:underline">Privacy Policy</Link>.
+              <Link to="/terms" className="text-brand hover:underline">Terms of Use</Link> and{" "}
+              <Link to="/privacy" className="text-brand hover:underline">Privacy Policy</Link>.
             </motion.p>
 
             <motion.button
@@ -301,16 +301,16 @@ const Register = () => {
               className="amber-specular-button w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <><InlineSpinner size={17} color="#000" /><span>Creating account...</span></>
+                <><InlineSpinner size={17} color="var(--on-brand)" /><span>Creating account...</span></>
               ) : (
                 "Create Free Account"
               )}
             </motion.button>
 
             <motion.div className="flex items-center gap-3 py-2" variants={formItem}>
-              <div className="flex-1 h-px bg-white/[0.07]" />
-              <span className="text-zinc-400 text-xs">or</span>
-              <div className="flex-1 h-px bg-white/[0.07]" />
+              <div className="flex-1 h-px bg-ink/[0.07]" />
+              <span className="text-muted text-xs">or</span>
+              <div className="flex-1 h-px bg-ink/[0.07]" />
             </motion.div>
 
             <motion.div variants={formItem} className="w-full flex justify-center pb-2" style={{ colorScheme: "light" }}>
@@ -323,9 +323,9 @@ const Register = () => {
               />
             </motion.div>
 
-            <motion.p className="text-center text-gray-400 text-sm" variants={formItem}>
+            <motion.p className="text-center text-muted text-sm" variants={formItem}>
               Already have an account?{" "}
-              <Link to="/login" className="text-[#ffa116] hover:text-[#ffb84d] font-semibold transition-colors">
+              <Link to="/login" className="text-brand hover:text-brand-hover font-semibold transition-colors">
                 Log in here
               </Link>
             </motion.p>
