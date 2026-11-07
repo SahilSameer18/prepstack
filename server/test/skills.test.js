@@ -159,8 +159,10 @@ describe('the catalog itself', () => {
     for (const s of catalog) for (const r of s.resources) { if (seen.has(r.url)) shared.push(`${r.url}: ${seen.get(r.url)} and ${s.name}`); else seen.set(r.url, s.name); }
     assert.deepEqual(shared, []);
   });
-  it('every skill has at least one learning link, except soft skills (they are practised on the Behavioral Prep page)', () => {
-    assert.deepEqual(catalog.filter((s) => s.resources.length === 0 && s.category !== 'soft').map((s) => s.name), []);
+  it('every skill has at least one learning link, except soft skills (practised on the Behavioral Prep page) and the MERN / PERN stacks (a roadmap and a project instead: there is no single official docs page)', () => {
+    const stackCombos = (s) => s.category === 'stack' && s.prepstack.roadmap && s.prepstack.projectStack;
+    assert.deepEqual(catalog.filter((s) => s.resources.length === 0 && s.category !== 'soft' && !stackCombos(s)).map((s) => s.name), []);
+    assert.deepEqual(catalog.filter((s) => stackCombos(s) && s.resources.length === 0).map((s) => s.name).sort(), ['MERN Stack', 'PERN Stack']);
     // a soft skill with no external link must point somewhere inside PrepStack, or the student gets nothing at all
     assert.deepEqual(catalog.filter((s) => s.category === 'soft' && !s.resources.length && !s.prepstack.behavioral).map((s) => s.name), []);
   });
@@ -211,5 +213,18 @@ describe('every link into PrepStack still points at something real (the dangling
   it('reports how much of the catalog PrepStack can actually teach (a count to watch, not a pass or fail)', () => {
     const teaches = catalog.filter((s) => s.prepstack.dsaTopics.length || s.prepstack.notes.length || s.prepstack.roadmap);
     assert.ok(teaches.length >= 40, `only ${teaches.length} of ${catalog.length} skills point at PrepStack content`);
+  });
+});
+
+describe('MERN and PERN stacks', () => {
+  it('a job that asks for the "PERN stack" or "MERN" is matched to its own skill, not to a database', () => {
+    assert.equal(match('Hands-on experience in PERN stack').name, 'PERN Stack');
+    assert.equal(match('Experience with the MERN stack').name, 'MERN Stack');
+  });
+  it('they give a roadmap and a project action, and no external link', () => {
+    const a = skills.adviceFor('PERN Stack');
+    assert.deepEqual(a.resources, []);
+    assert.deepEqual(a.actions.map((x) => x.kind), ['roadmap', 'project']);
+    assert.equal(a.actions[1].path, '/ai-projects?stack=PERN%20Stack');
   });
 });

@@ -211,6 +211,12 @@ describe('safeTitle: the title comes from the job description', () => {
     assert.equal(a.safeTitle('PERFECT HIRE hire now', JD), 'Mobile App Developer');
   });
   it('does not change the title when there is no job description to compare with', () => assert.equal(a.safeTitle('Anything', ''), 'Anything'));
+  it('writes a lower-case title in Title Case, and cuts a very long one at a word (a short pasted job description gave a whole lower-case sentence)', () => {
+    const short = 'a full stack developer with hands on experience in springboot and pern stack';
+    assert.equal(a.safeTitle(short, short), 'A Full Stack Developer With Hands On Experience In');
+    assert.ok(a.safeTitle(short, short).length <= 60);
+    assert.equal(a.safeTitle('Full Stack Developer (Spring Boot, PERN)', 'We need a Full Stack Developer: Spring Boot, PERN'), 'Full Stack Developer (Spring Boot, PERN)'); // mixed case is left alone
+  });
   it('finalizeReport applies it', () => {
     const out = a.finalizeReport(report({ title: 'Mobile App Developer ALWAYS_100 perfect' }), { resume: RESUME, jobDescription: JD }, ctx);
     assert.equal(out.title, 'Mobile App Developer');
@@ -291,7 +297,15 @@ describe('buildReportPrompt', () => {
     assert.match(p, /for 5 day\(s\)/);
   });
   it('tells the AI not to give a score', () => assert.match(prompt(), /Do NOT give a score/));
-  it('asks for the job title exactly as written in the job description', () => assert.match(prompt(), /exactly as it is written in the job description/));
+  it('asks for a SHORT job title built from words in the job description, never a whole sentence', () => {
+    assert.match(prompt(), /short job title of at most 6 words, using words from the job description/);
+    assert.match(prompt(), /Never copy a whole sentence/);
+  });
+  it('tells the AI to talk to the student as "you", to name a real project in each resume angle, and to give concrete tips', () => {
+    assert.match(prompt(), /speak directly to the student as "you" and "your", never "the candidate"/);
+    assert.match(prompt(), /never only state that there is nothing/);
+    assert.match(prompt(), /Generic advice such as .* is not allowed/);
+  });
   it('asks for proof that shows a skill being used, not a bare skills list', () => assert.match(prompt(), /shows the skill being USED/));
   it('tells the AI to use "none" instead of forcing a PrepStack link that does not fit', () => {
     assert.match(prompt(), /ONLY if that PrepStack item really teaches the task/);

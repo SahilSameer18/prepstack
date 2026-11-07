@@ -1030,5 +1030,21 @@
 
     ],
     "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null,"behavioral":true}
+  },
+  {
+    "name": "MERN Stack", "category": "stack",
+    "aliases": ["mern","mern stack"],
+    "resources": [
+
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":"MERN Stack"}
+  },
+  {
+    "name": "PERN Stack", "category": "stack",
+    "aliases": ["pern","pern stack"],
+    "resources": [
+
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":"PERN Stack"}
   }
 ]

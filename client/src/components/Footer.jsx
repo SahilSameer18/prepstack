@@ -105,7 +105,10 @@ const Footer = () => {
             <span>© {new Date().getFullYear()} PrepStack. All rights reserved.</span>
           </p>
           <p className="font-ui text-xs text-zinc-400">
-            Engineered by Sahil Sameer
+            Engineered by{" "}
+            <a href="https://www.linkedin.com/in/sahil-sameer-siddique/" target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white underline underline-offset-2 transition-colors">
+              Sahil Sameer
+            </a>
           </p>
         </div>
       </div>

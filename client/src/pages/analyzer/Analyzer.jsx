@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 import { createReport, listReports, deleteReport } from "../../api/services/analyzerService";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 import { extractError } from "../../utils/extractError";
+import { formatDate } from "../../utils/formatDate";
+import { formatTitle } from "../../utils/formatTitle";
 
 const MAX_PDF = 3 * 1024 * 1024; // same limit as the server
 const input = "w-full bg-[#121216] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] focus:ring-1 focus:ring-[#ffa116] rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors";
@@ -161,8 +163,8 @@ const Analyzer = () => {
                 <Link to={`/analyzer/${r._id}`} className="flex-1 min-w-0 flex items-center gap-3 px-4 py-3 min-h-[56px]">
                   <span className="font-display font-extrabold text-white w-10 shrink-0">{r.score}</span>
                   <span className="flex-1 min-w-0">
-                    <span className="block text-sm text-zinc-100 truncate">{r.title}</span>
-                    <span className="block text-xs text-zinc-400">{new Date(r.createdAt).toLocaleDateString()} &middot; {r.days}-day plan</span>
+                    <span className="block text-sm text-zinc-100 truncate">{formatTitle(r.title)}</span>
+                    <span className="block text-xs text-zinc-400">{formatDate(r.createdAt)} &middot; {r.days}-day plan</span>
                   </span>
                   <FiArrowRight className="shrink-0 text-zinc-400" />
                 </Link>

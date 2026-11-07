@@ -5,20 +5,11 @@ import toast from "react-hot-toast";
 import { getReport, deleteReport } from "../../api/services/analyzerService";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
 import { extractError } from "../../utils/extractError";
+import { refLink } from "../../utils/reportLinks";
+import { formatTitle } from "../../utils/formatTitle";
 import ScoreRing from "../../components/analyzer/ScoreRing";
 import RequirementRow from "../../components/analyzer/RequirementRow";
 import SkillGapCard from "../../components/analyzer/SkillGapCard";
-
-// A plan item or coding topic points at PrepStack content with a ref like "dsa:Arrays", "notes:os:Deadlocks" or "roadmap:frontend".
-// The server only keeps refs that exist, so every one of these resolves to a real page.
-const refLink = (ref) => {
-  if (!ref) return null;
-  const [kind, a] = ref.split(":");
-  if (kind === "dsa") return { path: "/dsa/blind-75", label: `Blind 75: ${ref.slice(4)}` };
-  if (kind === "notes") return { path: `/notes/${a}`, label: `CS notes: ${ref.split(":").slice(2).join(":")}` };
-  if (kind === "roadmap") return { path: `/roadmaps/${a}`, label: "Roadmap" };
-  return null;
-};
 
 const ORDER = { missing: 0, partial: 1, met: 2 };
 const card = "rounded-xl bg-[#121216] border border-white/[0.08] p-4";
@@ -102,7 +93,7 @@ const AnalyzerReport = () => {
         <ScoreRing score={report.score} />
         <div className="flex-1 min-w-0 text-center sm:text-left">
           <p className="text-xs font-ui font-semibold tracking-wider text-[#ffa116] mb-1">ROLE MATCH</p>
-          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-[-0.03em] break-words">{report.title}</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-[-0.03em] break-words">{formatTitle(report.title)}</h1>
           <p className="text-sm text-zinc-400 mt-1">{must.met || 0} of {mustTotal} required skills matched</p>
         </div>
         <dl className="grid grid-cols-3 gap-5 text-center sm:text-left shrink-0">

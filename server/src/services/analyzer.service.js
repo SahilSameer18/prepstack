@@ -117,14 +117,15 @@ HOW TO WORK
 3. "skillKey": the best match from the ALLOWED SKILLS list below, copied exactly, or "none" if nothing fits.
 4. "category": dsa (algorithms and data structures), cs-core (operating systems, networks, databases, OOP), stack (languages, frameworks, tools), soft (communication, leadership), or other.
 5. "priorities": the 3 most valuable things to work on first, with an honest estimate of hours.
-6. "technicalQuestions": 5 or 6 questions interviewers for THIS job would likely ask, each tied to a requirement. For each give "why" they ask it, "resumeAngle" (which part of THIS resume the candidate can use; say plainly if there is nothing to use) and up to 2 likely follow-ups. Do not write model answers.
-7. "behavioralQuestions": choose 4 questions from the BEHAVIORAL list by id (the id as text) and say in "resumeAngle" which experience in the resume fits.
+6. "technicalQuestions": 5 or 6 questions interviewers for THIS job would likely ask, each tied to a requirement. For each give "why" they ask it, "resumeAngle" and up to 2 likely follow-ups. Do not write model answers. WRITING STYLE: speak directly to the student as "you" and "your", never "the candidate". "resumeAngle" says which project or experience from THIS resume to use in the answer (name it). If nothing in the resume fits, name the closest experience to compare it with (for example "Compare it with your Express.js work"); never only state that there is nothing.
+7. "behavioralQuestions": choose 4 questions from the BEHAVIORAL list by id (the id as text) and say in "resumeAngle" which experience in the resume fits (speak to the student as "you"; name the project or role; if nothing fits, name the closest experience to build the answer on).
 8. "plan": a study plan for ${Number(days) || 7} day(s), one entry per day and at most ${MAX_PLAN_DAYS} entries (if there are more days, give the ${MAX_PLAN_DAYS} most important). Each item needs a "ref" copied exactly from the ALLOWED REFS list, but ONLY if that PrepStack item really teaches the task. If PrepStack has nothing that fits (for example TypeScript, Docker or testing tools), use "none" for "ref" and set "skillKey" to the skill from ALLOWED SKILLS so the app can show learning links. For a PrepStack item set "skillKey" to the skill it practises, or "none". Spend the most effort on "must" requirements that are missing or partial. "extra" may hold one task that is not on PrepStack, or "".
 9. "codingTopics": up to 5 refs from the CODING list that this role is likely to test.
-10. "resumeTweaks": up to 5 wording changes, ONLY for things the resume already shows in other words (for example the resume describes token rotation but never says "JWT"). NEVER suggest adding a skill the candidate does not have; gaps belong in the plan, not in resume tweaks. Use an empty list if there is nothing honest to suggest.
+10. "resumeTweaks": up to 5 wording changes, ONLY for things the resume already shows in other words (for example the resume describes token rotation but never says "JWT"). NEVER suggest adding a skill the candidate does not have; gaps belong in the plan, not in resume tweaks. Each "suggestion" must be concrete: say exactly which words to add or change, with a short example sentence the student can use, built only from what the resume already shows. Generic advice such as "highlight backend patterns" is not allowed. Use an empty list if there is nothing honest to suggest.
 11. Do NOT give a score. The system computes it from your marks.
 12. Be honest. If the resume is thin or does not match the job, show it with "missing" statuses. Never invent experience.
-13. "title": the job title exactly as it is written in the job description. Do not add words such as "report" or "candidate".
+13. "title": a short job title of at most 6 words, using words from the job description (for example "Full Stack Developer (Spring Boot, PERN)"). Never copy a whole sentence. Do not add words such as "report" or "candidate".
+14. Everywhere ("why", "priorities", "plan" and the rest) speak to the student as "you", never "the candidate".
 Return ONLY valid JSON.
 
 ALLOWED SKILLS: ${ctx.skillNames.join('; ')}
@@ -211,12 +212,17 @@ const computeScore = (requirements) => {
 
 // The title must come from the JOB DESCRIPTION. If most of its words are not in it (for example a resume talked the AI into
 // putting its own words there), use the first sentence of the job description instead.
+// A title that came out all lower case (a job description typed in lower case) is shown in Title Case, and a long one is cut at a word.
+const tidyTitle = (t) => {
+  const s = clip(String(t || '').replace(/\s+/g, ' ').trim(), 60, false);
+  return s === s.toLowerCase() ? s.replace(/(^|[\s(/-])([a-z])/g, (m, a, b) => a + b.toUpperCase()) : s;
+};
 const safeTitle = (title, jobDescription) => {
-  if (!jobDescription) return title;
+  if (!jobDescription) return tidyTitle(title);
   const jd = new Set(normalise(jobDescription).split(' '));
   const words = normalise(title).split(' ').filter((w) => w.length >= 2);
-  if (words.length && words.filter((w) => jd.has(w)).length / words.length >= 0.6) return title;
-  return clip(String(jobDescription).trim().split(/[.\n]/)[0].trim(), 60, false) || 'Role analysis';
+  if (words.length && words.filter((w) => jd.has(w)).length / words.length >= 0.6) return tidyTitle(title);
+  return tidyTitle(String(jobDescription).trim().split(/[.\n]/)[0].trim()) || 'Role analysis';
 };
 
 // A resume tip may only reword what the resume already shows. If a tip mentions a skill the report marked MISSING, it is
