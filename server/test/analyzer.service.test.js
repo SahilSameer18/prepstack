@@ -146,7 +146,7 @@ describe('resume tips: never tell the student to claim a skill they do not have'
     assert.equal(out.resumeTweaks.length, 1);
   });
   it('handles skill names with special characters (C++, CI/CD, Node.js) without breaking, and "node.js" does not match "nodexjs"', () => {
-    const c = { ...ctx, aliases: {} };
+    const c = { ...ctx, skillNames: [...ctx.skillNames, 'C++', 'CI/CD'], aliases: {} };
     const out = a.finalizeReport(report({
       requirements: [req({ text: 'C++', status: 'missing', evidence: '', skillKey: 'C++' }), req({ text: 'CI/CD', status: 'missing', evidence: '', skillKey: 'CI/CD' }), req(), req()],
       resumeTweaks: [{ keyword: 'C++', suggestion: 'Add C++ projects.' }, { keyword: 'Pipelines', suggestion: 'Mention your CI/CD work.' }, { keyword: 'Typo', suggestion: 'Say nodexjs correctly.' }],
@@ -164,9 +164,20 @@ describe('resume tips: never tell the student to claim a skill they do not have'
 describe('the report schema', () => {
   const schema = a.buildReportSchema(ctx);
   it('accepts a good report', () => assert.ok(schema.safeParse(report()).success));
-  it('refuses a skill that is not in the catalog (the AI must choose from the closed list)', () => {
-    assert.ok(!schema.safeParse(report({ requirements: [req({ skillKey: 'Cobol' }), req(), req(), req()] })).success);
-    assert.ok(schema.safeParse(report({ requirements: [req({ skillKey: 'none' }), req(), req(), req()] })).success);
+  it('sends the skill name as short plain text, NOT as a list of every skill (Gemini rejects the request once the list is long)', () => {
+    const sent = JSON.stringify(a.buildJsonSchema(schema));
+    assert.ok(!sent.includes('"Node.js"') && !sent.includes('"Docker"'), 'no skill name may be inside the schema sent to the AI');
+    assert.ok(!schema.safeParse(report({ requirements: [req({ skillKey: 'x'.repeat(61) }), req(), req(), req()] })).success);
+  });
+  it('the closed list is enforced by the code: an invented skill name becomes "none", in requirements and in the plan', () => {
+    const ctxFull = { ...ctx, skillNames: ctx.skillNames };
+    const out = a.finalizeReport(report({
+      requirements: [req({ skillKey: 'Cobol', status: 'missing', evidence: '' }), req(), req(), req()],
+      plan: [{ day: 1, focus: 'x', items: [{ ref: 'dsa:Graphs', skillKey: 'Cobol', task: 't' }, { ref: 'dsa:Graphs', skillKey: 'Docker', task: 't' }], extra: '' }],
+    }), { resume: RESUME }, ctxFull);
+    assert.equal(out.requirements[0].skillKey, 'none');
+    assert.deepEqual(out.plan[0].items.map((i) => i.skillKey), ['none', 'Docker']);
+    assert.equal(out.requirements[1].skillKey, 'React'); // a real name is kept
   });
   it('refuses a plan item that points outside PrepStack, and a behavioral id that is not in the bank', () => {
     assert.ok(!schema.safeParse(report({ plan: [{ day: 1, focus: 'x', items: [{ ref: 'dsa:Made Up', skillKey: 'none', task: 't' }], extra: '' }] })).success);
@@ -182,13 +193,13 @@ describe('the report schema', () => {
   it('has no score field: the code computes it', () => {
     assert.ok(!('score' in schema.shape) && !('matchScore' in schema.shape));
   });
-  it('the JSON schema sent to the AI has no $schema, additionalProperties, minItems or maxItems anywhere (Gemini rejects array limits), and lists the closed skill list', () => {
+  it('the JSON schema sent to the AI has no $schema, additionalProperties, minItems or maxItems anywhere (Gemini rejects array limits), and does not list the skills (a long list is rejected too)', () => {
     const json = a.buildJsonSchema(schema);
     const text = JSON.stringify(json);
     assert.ok(!text.includes('additionalProperties') && !text.includes('$schema'));
     assert.ok(!text.includes('minItems') && !text.includes('maxItems'));
     assert.ok(text.includes('maxLength')); // field lengths ARE sent: Gemini accepts them
-    assert.ok(text.includes('"Docker"') && text.includes('"none"'));
+    assert.ok(!text.includes('"Docker"') && text.includes('"none"')); // "none" is still in the plan-link list
   });
 });
 
@@ -226,7 +237,7 @@ describe('clip and clampReport: trim, do not reject', () => {
   });
   it('still rejects a reply that is wrong in a way trimming cannot fix', () => {
     const schema = a.buildReportSchema(ctx);
-    assert.throws(() => a.parseReport(JSON.stringify(report({ requirements: [req({ skillKey: 'Cobol' }), req(), req(), req()] })), schema), BadOutput);
+    assert.throws(() => a.parseReport(JSON.stringify(report({ requirements: [req({ status: 'maybe' }), req(), req(), req()] })), schema), BadOutput);
   });
 });
 

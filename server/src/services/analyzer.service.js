@@ -29,7 +29,10 @@ const LIMIT = { title: 80, reqText: 120, evidence: 160, priTitle: 80, priWhy: 20
 
 // ── the shape of a report, with size limits on every field (a runaway reply can never be saved) ──
 const buildReportSchema = (ctx) => {
-  const skillKey = z.enum([...ctx.skillNames, 'none']);
+  // Plain text, not z.enum(skill names): Gemini rejects the whole request with a 400 once the list is long (118 skills fail,
+  // 94 work; found by sending the real schema). The prompt still lists the allowed skills, and finalizeReport turns any
+  // name that is not on the list into "none", so the closed list is enforced by the code.
+  const skillKey = z.string().min(1).max(60);
   const ref = z.enum([...ctx.refs, 'none']); // 'none': PrepStack has nothing that teaches this task; the skill below gives learning links instead
   const dsaRef = z.enum(ctx.dsaRefs);
   const bankId = z.enum(ctx.behavioral.map((b) => String(b.id)));
@@ -235,7 +238,9 @@ const honestTweaks = (tweaks, requirements, ctx) => {
 // Everything the code decides after the AI has answered.
 const finalizeReport = (report, { resume, jobDescription }, ctx) => {
   const index = ctx.aliases ? makeIndex(ctx.aliases) : null;
-  const requirements = report.requirements.map((r) => {
+  const known = new Set(ctx.skillNames);
+  const requirements = report.requirements.map((raw) => {
+    const r = { ...raw, skillKey: known.has(raw.skillKey) ? raw.skillKey : 'none' }; // closed list: an invented name counts as "none"
     // When the AI could not name the skill ("none"), look for it in the requirement's own words. A sure match (the name or an
     // alias as a whole word) is used; a close spelling is only offered as "did you mean".
     let skill = {};
@@ -254,7 +259,8 @@ const finalizeReport = (report, { resume, jobDescription }, ctx) => {
   let droppedRefs = 0;
   const plan = report.plan
     .map((d) => {
-      const items = d.items.filter((i) => (i.ref === 'none' ? i.skillKey !== 'none' : allowed.has(i.ref)) || (droppedRefs++, false));
+      // a plan item may only name a skill from the closed list; anything else counts as "none"
+      const items = d.items.map((i) => ({ ...i, skillKey: known.has(i.skillKey) ? i.skillKey : 'none' })).filter((i) => (i.ref === 'none' ? i.skillKey !== 'none' : allowed.has(i.ref)) || (droppedRefs++, false));
       return { ...d, items };
     })
     .filter((d) => d.items.length || d.extra);

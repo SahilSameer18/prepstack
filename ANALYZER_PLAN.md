@@ -191,7 +191,12 @@ Original plan for this phase:
 
 ### Phase 4: PDF export, docs, live check (about 1.5 days) — PDF and docs DONE 2026-11-07; live check is yours to run
 Done: `AnalyzerReportPDF.jsx`, `exportReportPdf.js` (library loaded only on click), a Download PDF button on the report page, `README.md` and `TESTING.md`. Checked in a browser: a valid 2-page PDF with 18 clickable links was produced, named after the report. Not checked: how the pages look when printed or opened in a PDF viewer (only the file's structure was checked), and long reports with many pages.
-Still open: the live check below, with real keys on your deployed server.
+Live check run by me on 2026-11-07 (real Gemini keys from `server/.env`, your real resume PDF, in-memory database):
+- **A real bug was found and fixed:** with the 118-skill catalog, Gemini rejected every analyzer request with `400 INVALID_ARGUMENT` (94 skills worked), so every report failed with "AI is very busy". The fake-AI tests could not catch it. The skill name is now plain text in the schema sent to Gemini (max 60 characters) and the code turns any name not on the list into "none" (requirements and plan items), so the closed list is still enforced. Two tests guard it (the sent schema must not contain skill names; an invented name becomes "none"); both fail if the fix is undone.
+- After the fix: HTTP 201 in 7 to 11 s, score 60 in all three runs on the same input (spread 0), every quote verified, no contact details in the response or the database, resume not stored. The injection sample was not obeyed (0 of 1 run, 4 of 4 quotes verified).
+- All providers failing returns the clear 502 "AI is very busy... This attempt did not count" (seen while the bug was present).
+- Not run live: a scanned PDF (covered by fake-AI tests only), the PDF download on the deployed site, and anything on your deployed server. Gemini's free tier also returned 429 (per-minute quota) when I sent about 15 calls in a minute.
+Still open: the same check on your deployed server with its own keys.
 
 Original plan for this phase:
 **Create:** `client/src/components/pdf/AnalyzerReportPDF.jsx`, `client/src/utils/exportReportPdf.js` (ported from SkillBridge, PrepStack branding, links to PrepStack pages, loaded only on click).
