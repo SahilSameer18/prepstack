@@ -12,6 +12,8 @@ const { formatUserResponse, defaultAvatar } = require('../utils/userResponse');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+// A real bcrypt hash (cost 12) of a throwaway string. Only used to make logins for unknown emails take as long as real ones.
+const DUMMY_PASSWORD_HASH = '$2b$12$t8HcBQ3t3OpRffH1PQqQCOeZBBGTIVl100XdyKMnQwvrPS7bTcvRi';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const MAX_SESSIONS = 10;
 // After a refresh token is rotated, the previous one still works for this long. Two tabs that refresh
@@ -123,6 +125,8 @@ const loginUser = async (req, res, next) => {
 
     const user = await userModel.findOne({ email });
     if (!user) {
+      // Do the same slow password work as for a real account, so the response time does not reveal which emails exist
+      await bcrypt.compare(password, DUMMY_PASSWORD_HASH);
       return next(new AppError(401, 'Invalid email or password'));
     }
 
@@ -254,6 +258,11 @@ const refreshAccessToken = async (req, res, next) => {
     );
 
     if (!justRotated) {
+      // This exact token was this session's PREVIOUS token and its grace window is over. A browser never sends it any
+      // more (it holds the newer one), so a copy of it is in someone else's hands. Delete the whole session: the
+      // thief's chain and the real user's chain are the same session, so both are signed out and the real user logs
+      // in again. (Only the immediately previous token is remembered; older ones are just rejected.)
+      await userModel.updateOne({ _id: decoded.id }, { $pull: { refreshTokens: { prevTokenHash: incomingHash } } });
       return next(new AppError(403, 'Invalid or expired refresh token'));
     }
 

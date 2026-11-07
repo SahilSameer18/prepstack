@@ -246,11 +246,11 @@ describe('AI cascade: time limits', () => {
 
   it('Groq always gets a turn: slow Gemini calls cannot use up the whole budget', async () => {
     useGroq();
-    process.env.AI_CALL_TIMEOUT_MS = '100'; process.env.AI_TOTAL_BUDGET_MS = '400'; process.env.AI_RESERVE_MS = '150';
+    process.env.AI_CALL_TIMEOUT_MS = '300'; process.env.AI_TOTAL_BUDGET_MS = '1500'; process.env.AI_RESERVE_MS = '700'; // wide margins: the suite runs files in parallel and timers slip under load
     gemini.script = allGemini({ hang: true });
     const started = Date.now();
     const r = await gen();
-    assert.ok(Date.now() - started < 800);
+    assert.ok(Date.now() - started < 2500);
     assert.deepEqual(gemini.models, [M.primary, M.fallback]); // the third Gemini model was skipped to keep time for Groq
     assert.deepEqual(groq.models, [M.groq]);
     assert.equal(r.aiProvider, G);

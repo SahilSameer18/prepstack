@@ -237,6 +237,21 @@ describe('User: stats, dashboard, profile, password, account deletion', () => {
     it('requires login (401)', async () => {
       assert.equal((await t.api.put('/api/user/change-password', { body: { currentPassword: 'x', newPassword: 'NewPass12345' } })).status, 401);
     });
+    it('stops password guessing: after 10 wrong current passwords the 11th gets 429, even from a new address', async () => {
+      const acct = await t.register();
+      const statuses = [];
+      for (let i = 0; i < 11; i++) statuses.push((await change(acct, { currentPassword: 'WrongPass123', newPassword: 'NewPass12345' })).status);
+      assert.deepEqual(statuses, [...Array(10).fill(401), 429]);
+      // counted per signed-in user, not per address: a request from a brand-new address is still blocked
+      assert.equal((await change(acct, { currentPassword: acct.password, newPassword: 'NewPass12345' })).status, 429);
+    });
+    it('the guess limit is per user: someone else on the same address can still change their password', async () => {
+      const bad = await t.register(); const other = await t.register();
+      const ip = '203.0.113.99';
+      for (let i = 0; i < 11; i++) await t.api.put('/api/user/change-password', { cookies: bad.cookies, ip, body: { currentPassword: 'WrongPass123', newPassword: 'NewPass12345' } });
+      const res = await t.api.put('/api/user/change-password', { cookies: other.cookies, ip, body: { currentPassword: other.password, newPassword: 'AnotherPass123' } });
+      assert.equal(res.status, 200);
+    });
   });
 
   // ───────────────────────────── delete account ─────────────────────────────
@@ -319,6 +334,13 @@ describe('User: stats, dashboard, profile, password, account deletion', () => {
       const g = await googleAccount();
       assert.equal((await del(g, { confirmationEmail: 'not-an-email' })).status, 422);
       assert.equal((await t.api.del('/api/user/account', { body: { password: 'x' } })).status, 401);
+    });
+    it('stops password guessing on delete: 10 wrong passwords, then 429, and the account is still there', async () => {
+      const acct = await t.register();
+      const statuses = [];
+      for (let i = 0; i < 11; i++) statuses.push((await del(acct, { password: 'WrongPass123' })).status);
+      assert.deepEqual(statuses, [...Array(10).fill(401), 429]);
+      assert.ok(await User.exists({ _id: acct.id }));
     });
   });
 });

@@ -3,6 +3,7 @@ const router = express.Router();
 const { getUserStats, getDashboardSummary, updateProfile, changePassword, deleteAccount } = require('../controllers/user.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
 const validate = require('../middlewares/validate.middleware');
+const { accountActionLimiter } = require('../middlewares/rateLimit.middleware');
 const { updateProfileSchema, changePasswordSchema, deleteAccountSchema } = require('../validators/user.validators');
 
 // Apply authentication middleware to all user routes
@@ -18,10 +19,10 @@ router.get('/dashboard-summary', getDashboardSummary);
 router.put('/profile', validate(updateProfileSchema), updateProfile);
 
 // @desc change user password
-router.put('/change-password', validate(changePasswordSchema), changePassword);
+router.put('/change-password', accountActionLimiter, validate(changePasswordSchema), changePassword);
 
 // @desc delete user account and wipe all personal progress (GDPR Right to Erasure)
-router.delete('/account', validate(deleteAccountSchema), deleteAccount);
+router.delete('/account', accountActionLimiter, validate(deleteAccountSchema), deleteAccount);
 
 module.exports = router;
 

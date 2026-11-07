@@ -183,6 +183,17 @@ describe('Authentication: register, login, refresh, sessions', () => {
       assert.equal(other.status, 401); // a different IP is unaffected
     });
 
+    it('an unknown email costs the same password work as a wrong password (so timing does not reveal which emails exist)', async () => {
+      const bcrypt = require('bcrypt');
+      const real = await t.register();
+      const spy = require('node:test').mock.method(bcrypt, 'compare');
+      try {
+        await t.api.post('/api/auth/login', { body: { email: 'nobody.here@example.com', password: 'WrongPass123' } });
+        assert.equal(spy.mock.callCount(), 1);
+        await t.api.post('/api/auth/login', { body: { email: real.email, password: 'WrongPass123' } });
+        assert.equal(spy.mock.callCount(), 2);
+      } finally { spy.mock.restore(); }
+    });
     it('does not count successful logins, so many students behind one Wi-Fi address can all log in', async () => {
       const acct = await t.register();
       const ip = '203.0.113.77';
@@ -357,6 +368,37 @@ describe('Authentication: register, login, refresh, sessions', () => {
       const res = await t.api.post('/api/auth/refresh', { cookies: { refreshToken: acct.cookies.refreshToken } });
       assert.equal(res.status, 403);
       assert.equal(res.body.message, 'Invalid or expired refresh token');
+    });
+
+    it('replaying the previous token after the grace window signs out the whole session (thief AND real user)', async () => {
+      const acct = await t.register();
+      const first = acct.cookies.refreshToken;
+      const rotated = await t.api.post('/api/auth/refresh', { cookies: { refreshToken: first } }); // the real user moves on
+      const current = t.parseCookies(rotated);
+      await User.updateOne({ email: acct.email }, { $set: { 'refreshTokens.$[].rotatedAt': new Date(Date.now() - 11_000) } });
+      const replay = await t.api.post('/api/auth/refresh', { cookies: { refreshToken: first } }); // a copy of the old token is used
+      assert.equal(replay.status, 403);
+      assert.equal((await sessionsInDb(acct.email)).length, 0); // the session is deleted
+      assert.equal((await t.api.post('/api/auth/refresh', { cookies: { refreshToken: current.refreshToken } })).status, 403); // the newer token is dead too
+      assert.equal((await t.api.get('/api/auth/current-user', { cookies: { accessToken: current.accessToken } })).status, 401);
+    });
+    it('replaying inside the grace window revokes nothing (two tabs refreshing together stay logged in)', async () => {
+      const acct = await t.register();
+      const first = acct.cookies.refreshToken;
+      const winner = t.parseCookies(await t.api.post('/api/auth/refresh', { cookies: { refreshToken: first } }));
+      assert.equal((await t.api.post('/api/auth/refresh', { cookies: { refreshToken: first } })).status, 200); // slower tab
+      assert.equal((await sessionsInDb(acct.email)).length, 1);
+      assert.equal((await t.api.post('/api/auth/refresh', { cookies: { refreshToken: winner.refreshToken } })).status, 200);
+    });
+    it('a token from TWO rotations ago is rejected, but it is not the remembered previous one so nothing is revoked', async () => {
+      const acct = await t.register();
+      const first = acct.cookies.refreshToken;
+      const second = t.parseCookies(await t.api.post('/api/auth/refresh', { cookies: { refreshToken: first } })).refreshToken;
+      const third = t.parseCookies(await t.api.post('/api/auth/refresh', { cookies: { refreshToken: second } })).refreshToken;
+      await User.updateOne({ email: acct.email }, { $set: { 'refreshTokens.$[].rotatedAt': new Date(Date.now() - 11_000) } });
+      assert.equal((await t.api.post('/api/auth/refresh', { cookies: { refreshToken: first } })).status, 403);
+      assert.equal((await sessionsInDb(acct.email)).length, 1); // known limit: only the immediately previous token triggers a revoke
+      assert.equal((await t.api.post('/api/auth/refresh', { cookies: { refreshToken: third } })).status, 200);
     });
 
     for (const n of [2, 5, 30]) {

@@ -5,6 +5,11 @@ if (!process.env.ACCESS_SECRET || !process.env.REFRESH_SECRET) {
   console.error('❌ Missing ACCESS_SECRET and/or REFRESH_SECRET in environment. Server cannot start.');
   process.exit(1);
 }
+// Without the Google client ID the server cannot check that a Google sign-in token was made for THIS app
+if (!process.env.GOOGLE_CLIENT_ID) {
+  console.error('❌ Missing GOOGLE_CLIENT_ID in environment. Server cannot start.');
+  process.exit(1);
+}
 if (process.env.ACCESS_SECRET.length < 32 || process.env.REFRESH_SECRET.length < 32) {
   console.warn('⚠️  ACCESS_SECRET/REFRESH_SECRET is shorter than the recommended 32 chars.');
 }

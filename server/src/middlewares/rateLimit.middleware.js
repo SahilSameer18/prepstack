@@ -55,6 +55,23 @@ const linkGoogleLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Password change and account deletion ask for the current password. Only FAILED tries count, per signed-in user, so a
+// stolen session cannot be used to guess the password (and one user's mistakes never affect another).
+const accountActionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  skipSuccessfulRequests: true,
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip,
+  validate: { keyGeneratorIpFallback: false },
+  message: {
+    success: false,
+    message: "Too many failed attempts. Please try again after 15 minutes.",
+    errors: ["Rate limit exceeded. Please try again after 15 minutes."],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const refreshLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 30, // 30 refresh attempts per 15 min per IP
@@ -67,4 +84,4 @@ const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, registerLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter };
+module.exports = { authLimiter, registerLimiter, accountActionLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter };
