@@ -18,6 +18,7 @@ process.env.AI_RESERVE_MS = '1'; // the time kept for the last provider is 8 s i
 // ── fake AI providers (Gemini and Groq) ──
 // Two ways to drive a fake:
 //   simple:    set `.reply` (object or raw string) or `.error`; every model answers the same way
+//   special:   `.hook = (prompt, model) => reply | undefined` answers matching prompts itself (undefined = carry on as usual)
 //   per model: `.script[modelId] = [step1, step2, ...]`, used on that model's 1st, 2nd... call (the last step repeats);
 //              a step is { reply } | { error } | { hang: true }, and may add { delayMs } to answer slowly
 // `.models` lists the model IDs that were called, in order; `.calls` counts all calls.
@@ -25,14 +26,17 @@ const aiServicePath = path.join(SERVER_ROOT, 'src', 'services', 'ai.service.js')
 const resetAiState = () => { const m = require.cache[aiServicePath]; if (m && m.exports.resetState) m.exports.resetState(); };
 function makeFake() {
   return {
-    reply: undefined, error: null, script: {}, perModelCalls: {}, calls: 0, models: [], lastConfig: null, lastPrompt: null, lastParams: null,
+    reply: undefined, error: null, script: {}, hook: null, perModelCalls: {}, calls: 0, models: [], prompts: [], lastConfig: null, lastPrompt: null, lastParams: null,
     reset() {
-      this.reply = undefined; this.error = null; this.script = {}; this.perModelCalls = {}; this.calls = 0; this.models = [];
+      this.reply = undefined; this.error = null; this.script = {}; this.hook = null; this.perModelCalls = {}; this.calls = 0; this.models = []; this.prompts = [];
       this.lastConfig = null; this.lastPrompt = null; this.lastParams = null;
       resetAiState(); // the circuit breaker in ai.service remembers failures between calls
     },
-    async run(model) {
-      this.calls++; this.models.push(model);
+    async run(model, prompt) {
+      this.calls++; this.models.push(model); this.prompts.push(prompt);
+      // `hook(prompt, model)` can answer some prompts specially (for example the tech-stack check); undefined = no special answer
+      const special = this.hook ? this.hook(prompt, model) : undefined;
+      if (special !== undefined) return typeof special === 'string' ? special : JSON.stringify(special);
       const n = (this.perModelCalls[model] = (this.perModelCalls[model] || 0) + 1);
       const steps = this.script[model];
       const step = steps ? steps[Math.min(n, steps.length) - 1] : { reply: this.reply, error: this.error };
@@ -59,7 +63,7 @@ require.cache[geminiPath] = {
         this.models = {
           generateContent: async ({ model, contents, config }) => {
             gemini.lastConfig = config; gemini.lastPrompt = contents;
-            return { text: await gemini.run(model) };
+            return { text: await gemini.run(model, contents) };
           },
         };
       }
@@ -73,7 +77,7 @@ class FakeGroq {
       completions: {
         create: async (params) => {
           groq.lastParams = params; groq.lastPrompt = params.messages?.[0]?.content;
-          const content = await groq.run(params.model);
+          const content = await groq.run(params.model, params.messages?.[0]?.content);
           return { choices: [{ message: { content } }], usage: { total_tokens: 10 } };
         },
       },

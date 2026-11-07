@@ -7,7 +7,10 @@ const generateProjectSchema = z.object({
     .string({ error: 'Tech stack is required' })
     .trim()
     .min(2, 'Tech stack must be at least 2 characters')
-    .max(200, 'Tech stack cannot exceed 200 characters'),
+    .max(40, 'Tech stack cannot exceed 40 characters')
+    // a technology name, not a sentence: this also keeps scripts, links and long instructions out of the AI prompt
+    .regex(/^[A-Za-z0-9 +#./&()-]+$/, 'Tech stack can only use letters, numbers and + # . / & ( ) -')
+    .refine((value) => (value.match(/[A-Za-z]/g) || []).length >= 2, 'Tech stack must contain letters'),
 
   complexity: z
     .string({ error: 'Complexity is required' })

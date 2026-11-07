@@ -4,7 +4,11 @@ import { useProject } from '../../hooks/useProject'
 import { useNavigate, useParams } from "react-router-dom";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 
-const techStacks = ["MERN Stack", "Python / Django", "React Native", "Next.js", "Flutter", "Spring Boot", "FastAPI", "Vue.js", "MEAN Stack"];
+// KEEP IN SYNC with KNOWN_STACKS in server/src/services/ai.service.js: typed names that are not in this list are
+// checked by the AI ("is this a real technology?") before an idea is generated.
+const techStacks = ["MERN Stack", "PERN Stack", "MEAN Stack", "Next.js", "Angular", "Python / Django", "FastAPI", "Java / Spring Boot", "Go", ".NET", "Flutter", "React Native", "Kotlin (Android)"];
+// Same rule as the server: 2 to 40 characters, letters, numbers and + # . / & ( ) -, with at least 2 letters
+const isValidStackName = (value) => /^[A-Za-z0-9 +#./&()-]{2,40}$/.test(value) && (value.match(/[A-Za-z]/g) || []).length >= 2;
 const complexities = ["Beginner", "Intermediate", "Advanced"];
 const domains = ["FinTech", "HealthTech", "EdTech", "E-Commerce", "SaaS", "Web3", "Open Source", "Social Media", "Productivity", "AI / ML"];
 
@@ -15,6 +19,7 @@ const AIProjectIdeas = () => {
   const { generateProject, getProjectById, loading, project, setProject } = useProject();
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(null);
+  const [customStack, setCustomStack] = useState(false); // "Other": the user types their own tech stack
 
   useEffect(() => {
     if (projectId) {
@@ -29,10 +34,10 @@ const AIProjectIdeas = () => {
   const handleChange = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const handleGenerate = async () => {
-    if (!form.techStack || !form.complexity) return;
+    if (!isFormValid) return;
     setError(null);
     try {
-      await generateProject(form);
+      await generateProject({ ...form, techStack: form.techStack.trim() });
     } catch (err) {
       setError(err.message || "Failed to generate project idea. Please try again.");
     }
@@ -40,6 +45,7 @@ const AIProjectIdeas = () => {
 
   const handleReset = () => {
     setForm({ techStack: "", complexity: "", domain: "", notes: "" });
+    setCustomStack(false);
     setProject(null);
     setError(null);
     navigate('/ai-projects', { replace: true });
@@ -53,7 +59,9 @@ const AIProjectIdeas = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const isFormValid = form.techStack && form.complexity;
+  const stackOk = customStack ? isValidStackName(form.techStack.trim()) : !!form.techStack;
+  const stackError = customStack && form.techStack.trim() !== "" && !stackOk ? "Use 2 to 40 letters, numbers or + # . / & ( ) -" : null;
+  const isFormValid = stackOk && !!form.complexity;
 
   return (
     <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto page-enter">
@@ -107,9 +115,9 @@ const AIProjectIdeas = () => {
               {techStacks.map((s) => (
                 <button
                   key={s}
-                  onClick={() => handleChange("techStack", s)}
+                  onClick={() => { setCustomStack(false); handleChange("techStack", s); }}
                   className={`px-3 py-2.5 sm:py-1.5 min-h-[44px] sm:min-h-0 rounded-lg text-xs font-medium border transition-all duration-150 active:scale-95 cursor-pointer ${
-                    form.techStack === s 
+                    !customStack && form.techStack === s 
                       ? "bg-[#ffa116]/15 border-[#ffa116]/40 text-[#ffa116] font-semibold" 
                       : "bg-[#121216] border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.2]"
                   }`}
@@ -117,7 +125,34 @@ const AIProjectIdeas = () => {
                   {s}
                 </button>
               ))}
+              <button
+                onClick={() => { setCustomStack(true); handleChange("techStack", ""); }}
+                className={`px-3 py-2.5 sm:py-1.5 min-h-[44px] sm:min-h-0 rounded-lg text-xs font-medium border border-dashed transition-all duration-150 active:scale-95 cursor-pointer ${
+                  customStack
+                    ? "bg-[#ffa116]/15 border-[#ffa116]/40 text-[#ffa116] font-semibold"
+                    : "bg-[#121216] border-white/[0.15] text-zinc-400 hover:text-white hover:border-white/[0.3]"
+                }`}
+              >
+                Other (type your own)
+              </button>
             </div>
+            {customStack && (
+              <div className="space-y-1.5">
+                <input
+                  type="text"
+                  value={form.techStack}
+                  maxLength={40}
+                  autoFocus
+                  onChange={(e) => handleChange("techStack", e.target.value)}
+                  placeholder="e.g. Rust, Svelte, Laravel"
+                  aria-label="Your tech stack"
+                  className="w-full bg-[#121216] border border-white/[0.08] hover:border-white/[0.15] focus:border-[#ffa116] focus:ring-1 focus:ring-[#ffa116] rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors"
+                />
+                <p className={`text-xs ${stackError ? "text-rose-400" : "text-zinc-400"}`}>
+                  {stackError || "Type a programming language, framework or tool. We check that it is a real one."}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Complexity: grouped section */}

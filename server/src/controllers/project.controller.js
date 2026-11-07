@@ -4,6 +4,18 @@ const projectModel = require('../models/project.model');
 const AppError = require('../utils/AppError');
 const { sendSuccess, sanitizeDoc } = require('../utils/responseFormatter');
 
+// Times (ms) at which the AI said a user's typed tech stack was not a real technology, per user. A rejected check still
+// costs an AI call and the hourly limit does not count failed requests, so without this someone could type junk in a
+// loop and use up the shared free quota. Kept in server memory (resets on restart).
+const notATechnology = new Map();
+const NOT_A_TECHNOLOGY_LIMIT = 5; // per user per hour
+const HOUR_MS = 60 * 60 * 1000;
+const recentNotATechnology = (key) => {
+  const fresh = (notATechnology.get(key) || []).filter((at) => Date.now() - at < HOUR_MS);
+  if (fresh.length) notATechnology.set(key, fresh); else notATechnology.delete(key);
+  return fresh.length;
+};
+
 // Users with an idea being generated right now. Kept in server memory, so it resets on restart and is per
 // server process (fine for a single instance).
 const generatingNow = new Set();
@@ -32,6 +44,10 @@ const generateProject = async (req, res, next) => {
   try {
     const { techStack, complexity, domain, notes } = req.body;
 
+    if (recentNotATechnology(key) >= NOT_A_TECHNOLOGY_LIMIT) {
+      return next(new AppError(429, "You've tried several names we don't recognise. Please pick a tech stack from the list, or try again in an hour."));
+    }
+
     const limit = dailyLimit();
     const recent = await projectModel.countDocuments({ user: userId, createdAt: { $gte: new Date(Date.now() - DAY_MS) } });
     if (recent >= limit) {
@@ -57,6 +73,7 @@ const generateProject = async (req, res, next) => {
     const sanitizedProject = sanitizeDoc(project);
     return sendSuccess(res, 201, 'Project idea generated successfully', { project: sanitizedProject }, { project: sanitizedProject });
   } catch (error) {
+    if (error.reason === 'invalid-tech-stack') notATechnology.set(key, [...(notATechnology.get(key) || []), Date.now()]);
     next(error);
   } finally {
     generatingNow.delete(key); // always cleared: success, failure or the early returns above

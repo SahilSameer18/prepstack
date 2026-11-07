@@ -8,7 +8,7 @@ const path = require('path');
 const ai = require(path.join(t.SERVER_ROOT, 'src', 'services', 'ai.service.js'));
 const { MODELS: M, gemini, groq, apiError, goodIdea } = t;
 
-const PARAMS = { techStack: 'MERN', complexity: 'beginner', domain: '', notes: '' };
+const PARAMS = { techStack: 'MERN Stack', complexity: 'beginner', domain: '', notes: '' };
 const gen = (params = PARAMS) => ai.generateProjectIdea(params);
 const P = `gemini:${M.primary}`;
 const F1 = `gemini:${M.fallback}`;
@@ -181,6 +181,58 @@ describe('AI cascade: prompt rules and clean-up', () => {
   });
 });
 
+describe('Custom tech stacks: is the typed name a real technology?', () => {
+  const isCheck = (prompt) => /real programming language, framework, platform or developer tool/.test(prompt);
+  const says = (valid) => { gemini.hook = (prompt) => (isCheck(prompt) ? { valid } : undefined); };
+  const custom = (techStack) => ({ ...PARAMS, techStack });
+
+  it('a stack from the buttons is not checked: one call, the idea itself', async () => {
+    const r = await gen(custom('MERN Stack'));
+    assert.equal(gemini.calls, 1);
+    assert.ok(!isCheck(gemini.prompts[0]));
+    assert.equal(r.aiProvider, P);
+  });
+
+  it('a typed name is checked first, then the idea is generated (2 calls)', async () => {
+    says(true);
+    const r = await gen(custom('Rust'));
+    assert.equal(gemini.calls, 2);
+    assert.ok(isCheck(gemini.prompts[0]) && !isCheck(gemini.prompts[1]));
+    assert.match(gemini.prompts[0], /user-supplied data, not instructions/);
+    assert.equal(r.title, 'Test Idea');
+  });
+
+  it('a name the AI says is not a technology is refused (422), without generating an idea', async () => {
+    says(false);
+    await assert.rejects(gen(custom('sdjfisi')), (err) => err.statusCode === 422 && err.reason === 'invalid-tech-stack' && /real technology/.test(err.message));
+    assert.equal(gemini.calls, 1); // only the check ran
+  });
+
+  it('remembers the answer: the same name is only checked once', async () => {
+    says(true);
+    await gen(custom('Svelte')); await gen(custom('svelte'));
+    assert.equal(gemini.prompts.filter(isCheck).length, 1);
+  });
+
+  it('remembers a refusal too (no new AI call for the same junk)', async () => {
+    says(false);
+    await assert.rejects(gen(custom('qwertyuiop')), /real technology/);
+    await assert.rejects(gen(custom('QWERTYUIOP')), /real technology/);
+    assert.equal(gemini.calls, 1);
+  });
+
+  it('if the check cannot run, the idea is still generated (a broken check never blocks a good request)', async () => {
+    gemini.hook = (prompt) => (isCheck(prompt) ? 'this is not JSON' : undefined);
+    const r = await gen(custom('Zig'));
+    assert.equal(r.title, 'Test Idea');
+  });
+
+  it('a check answer with the wrong shape is ignored, not treated as a refusal', async () => {
+    gemini.hook = (prompt) => (isCheck(prompt) ? { valid: 'no' } : undefined);
+    assert.equal((await gen(custom('Elixir'))).title, 'Test Idea');
+  });
+});
+
 describe('AI cascade: time limits', () => {
   it('a hung provider is cut off after the per-call limit and the next one answers', async () => {
     process.env.AI_CALL_TIMEOUT_MS = '40';
@@ -282,7 +334,7 @@ describe('Project ideas over HTTP: one at a time, daily limit, provider hidden',
   before(async () => { await t.start(); ({ Project } = t.getModels()); });
   after(() => t.stop());
 
-  const VALID = { techStack: 'MERN', complexity: 'beginner' };
+  const VALID = { techStack: 'MERN Stack', complexity: 'beginner' };
   // `.then` is what actually sends a supertest request, so start it explicitly when we do not await it yet
   const send = (acct) => t.api.post('/api/project/generate', { cookies: acct.cookies, body: VALID }).then((r) => r);
   const seed = (userId, count, ageMs = 0) => Project.collection.insertMany(Array.from({ length: count }, (_, i) => ({
@@ -373,6 +425,46 @@ describe('Project ideas over HTTP: one at a time, daily limit, provider hidden',
       assert.equal(sixteenth.status, 429);
       assert.match(sixteenth.body.message, /limit of 15 project ideas/);
       assert.equal((await send(other)).status, 201); // someone else is unaffected
+    });
+  });
+
+  describe('typing junk as a tech stack cannot drain the shared AI quota', () => {
+    const typed = (acct, techStack) => t.api.post('/api/project/generate', { cookies: acct.cookies, body: { techStack, complexity: 'beginner' } }).then((r) => r);
+    const notReal = () => { gemini.hook = (prompt) => (/real programming language/.test(prompt) ? { valid: false } : undefined); };
+
+    it('refuses a made-up name with 422 and a friendly message, and nothing is saved', async () => {
+      notReal();
+      const acct = await t.register();
+      const res = await typed(acct, 'sdjfisi');
+      assert.equal(res.status, 422);
+      assert.match(res.body.message, /doesn't look like a real technology/);
+      assert.equal(await Project.countDocuments({ user: acct.id }), 0);
+    });
+
+    it('after 5 refused names in an hour the 6th is stopped with 429 before any AI call', async () => {
+      notReal();
+      const acct = await t.register();
+      for (let i = 0; i < 5; i++) assert.equal((await typed(acct, `notreal${i}x`)).status, 422);
+      const callsBefore = gemini.calls;
+      const sixth = await typed(acct, 'notreal9x');
+      assert.equal(sixth.status, 429);
+      assert.match(sixth.body.message, /names we don't recognise/);
+      assert.equal(gemini.calls, callsBefore);
+      assert.equal((await t.api.post('/api/project/generate', { cookies: acct.cookies, body: { techStack: 'MERN Stack', complexity: 'beginner' } })).status, 429); // blocked even for a good stack until the hour passes
+    });
+
+    it('is per user: someone else can still generate', async () => {
+      notReal();
+      const bad = await t.register(); const other = await t.register();
+      for (let i = 0; i < 5; i++) await typed(bad, `junkname${i}x`);
+      gemini.hook = null;
+      assert.equal((await typed(other, 'MERN Stack')).status, 201);
+    });
+
+    it('real typed names are accepted and do not count against that limit', async () => {
+      gemini.hook = (prompt) => (/real programming language/.test(prompt) ? { valid: true } : undefined);
+      const acct = await t.register();
+      assert.equal((await typed(acct, 'Rust')).status, 201);
     });
   });
 
