@@ -1,6 +1,8 @@
 # LeetCode auto-sync extension: plan (LeetCode only)
 
-Status: plan agreed, all decisions made, nothing built yet. Date: 2026-11-07. Build order: do the Step 0 spike first, and stop if it fails.
+Status: **parked** (2026-11-07). Plan agreed, nothing built. Build after the improvement plan's Phase 3 and only if users ask for it. When it starts, do the Step 0 spike first and stop if it fails.
+
+Decisions (2026-11-07): LeetCode only. No money to spend, so **no Chrome Web Store release**: the extension stays unpacked for the owner and friends (Step 5's store part is dropped).
 
 ## Goal
 

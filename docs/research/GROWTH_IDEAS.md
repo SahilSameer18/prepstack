@@ -2,6 +2,8 @@
 
 Ideas only, nothing here is built or promised. Kept for reference.
 
+Decisions (2026-11-07): launch date not decided; none of the engineering-depth ideas (AI evaluation, CI and monitoring, Redis) are in the plan for now; a college/placement-cell dashboard is not planned until real student users exist.
+
 The 7 levers, in order of impact
 
 1. Real users and measured outcomes (biggest jump)

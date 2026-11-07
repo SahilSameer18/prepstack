@@ -303,6 +303,7 @@ Rough sequence for one developer. Weeks are working weeks; the plan fits in abou
 
 ### Content review checklist (every section, every roadmap step, every guide)
 
+- The accuracy process below was followed (run the code, claim table, independent review, outside reader).
 - Each technical statement was checked against at least one reliable source (official docs, a standard textbook, the language or protocol specification). Keep a short list of the sources used, in a notes file, not on the page.
 - Examples run or were traced by hand.
 - Numbers, limits and defaults are stated with the version or context they depend on.
@@ -311,6 +312,21 @@ Rough sequence for one developer. Weeks are working weeks; the plan fits in abou
 - Links work and point to free pages.
 - For the resume guide and behavioral guide: advice is stated as guidance, not guarantees ("recruiters often ...", not "ATS always ...").
 - A second pair of eyes (a friend or a senior student) read it once.
+
+### Accuracy process for notes and technical content (added 7 Nov 2026)
+
+The content is drafted by Claude and the owner cannot judge every technical claim alone, so accuracy rests on checks that do not depend on one person's knowledge. Every section goes through all of these:
+
+1. **Run it.** Every SQL example runs on a real database; every Java example is compiled and run; complexity and algorithm claims are checked with small scripts. A wrong example must fail automatically.
+2. **Claim table.** For each factual claim, record its source (RFC, official docs, or a named textbook chapter) in the sources notes file. A claim with no source is marked unverified and does not ship.
+3. **Independent review.** After drafting, a separate reviewing agent with fresh context fetches the official sources, tries to refute each claim, and lists every disagreement. Disagreements go to the owner with evidence.
+4. **Plain-words explanation.** Where the owner cannot judge a claim, it is explained simply with a source link, so it can be confirmed by opening the link.
+5. **Outside reader, mandatory per subject.** One senior student, friend or mentor reads each finished subject once before it goes live. This is the only check that is not from an AI.
+6. **After launch.** A "report a mistake" link and a "last checked" date on every notes section. Fixes ship straight away, not in the next phase.
+
+Reference sources: OS (Silberschatz, *Operating System Concepts*); DBMS (Korth and Silberschatz, plus the PostgreSQL or MySQL docs); Networks (Kurose and Ross, plus the RFCs); Java and OOP (official Java docs, *Effective Java*, GoF).
+
+Honest limit: this lowers the chance of a wrong fact a lot, but it cannot make it zero.
 
 ### Code gates (every feature item)
 
@@ -340,6 +356,32 @@ Rough sequence for one developer. Weeks are working weeks; the plan fits in abou
 ---
 
 ## 8. Decisions needed from you
+
+**Decided (7 Nov 2026):**
+- **#1 OOP notes language: Java.**
+- **#4 Quiz and Aptitude: remove both hidden pages** (quizzes can come back later as B7).
+- **#9 Content review: Sahil and Claude together.**
+- **#10 New roadmap tracks: none.** Instead, improve the existing roadmaps, and redesign the UI of the roadmap and notes pages together with the content.
+- **Content target: MAANG level.** This raises the depth of every section in A1 and A2, so re-estimate the writing days after the first subject (DBMS).
+
+- **#2 Notes scope: the full proposed list.** Add diagrams where they help understanding (not on every topic).
+- **#5 Streak rule: Indian time (IST).**
+- **#6 Planner estimates: use 20 / 35 / 60 minutes by difficulty** (Claude's call; adjustable later).
+- **#7 Notes import: move browser notes to the account automatically, no prompt.**
+- **#13 Dashboard tab order: DSA first until My plan exists, then My plan first.**
+
+- **#3 System Design basics: include**, written after the four main subjects.
+- **#8 Public profile: include later** (B8, last optional item).
+- **#11 Report tasks when a plan exists: ask each time**, merge is the default.
+
+- **Story bank (A4): saved to the account** (add to B2; privacy policy line needed).
+- **Time available: full-time**, so the 9 to 10 week schedule holds.
+- **Outside readers: maybe.** Find one per subject before that subject finishes (college groups, seniors, Reddit); do not depend on it.
+- **Student validation: no one lined up yet.** Find 3 to 5 students and 2 to 3 job switchers before the Phase 3 gate. If none are found, the gate answer is "stop at B4".
+
+- **#12 Plan name: "My Plan"** (tab and "Add to My plan" button). The small dashboard card is called **"Today"**.
+
+**All 13 decisions are now made.** Status: still planning, no work started.
 
 1. **OOP notes language:** C++, Java, or both?
 2. **Notes scope:** do you want the proposed new sections (section 3, A1 table), or a shorter list?

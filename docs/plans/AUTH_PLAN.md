@@ -131,12 +131,12 @@ Goal: users who forget their password can get back in, and nobody can squat on a
 
 ---
 
-## Decisions needed before Phase 3
+## Decisions (made 2026-11-07)
 
-1. Option A (email), Option B (Google rule), or both?
-2. If email: which sender can you set up (Brevo, Resend, Gmail with an app password)?
-3. Add email verification at sign-up (step 3b), or only password reset?
-4. Phase 2: is a simple 15-minute lock after 10 failures acceptable, given an attacker could lock a victim out for 15 minutes?
+1. **Option A: email reset.** Option B (Google rule) is not part of the first version.
+2. **Sender: Brevo** (free plan, 300 emails per day, one verified sender address, no domain needed). The email service reads the provider from env, so it can move to Resend once a domain is owned. Check Brevo's current plan page before signing up, and test delivery to a real inbox (a Gmail sender address may land in spam).
+3. **Password reset only.** Email verification at sign-up (step 3b) comes later.
+4. **Phase 2 lock accepted:** 15 minutes after 10 failed password logins, not applied to Google sign-in or logged-in devices.
 
 ## Risks (stated honestly)
 

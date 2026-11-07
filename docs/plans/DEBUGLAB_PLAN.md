@@ -1,3 +1,5 @@
+STATUS (2026-11-07): PARKED. Build after the improvement plan (IMPROVEMENT_PLAN.md) is done and real users exist; the metrics in section 13 decide. This plan was written 15 Oct 2026 and may be out of date (it refers to old "Report 1" and "Report 3" prerequisites and file paths). Re-check it against the current code before starting. Decisions: JavaScript only to start; other languages only if users ask later.
+
 DebugLab - Complete Build Plan (MVP First)
 Prepared 15 Oct 2026 for PrepStack. This plan assumes the Report 1 fixes and the Report 3 analyzer port are finished first. It replaces the 20-incident master plan: the good ideas are kept, the flawed parts are corrected, and the riskiest mechanism was prototyped before writing.
 1. What I verified before writing this plan
