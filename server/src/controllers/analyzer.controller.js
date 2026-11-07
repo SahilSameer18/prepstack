@@ -5,6 +5,7 @@ const { sendSuccess } = require('../utils/responseFormatter');
 const { extractPdfText, prepareResumeText } = require('../services/resume.service');
 const { buildContext } = require('../services/analyzerContext.service');
 const { analyze } = require('../services/analyzer.service');
+const { adviceForReport } = require('../services/skills.service');
 
 // Users with a report being written right now (a second request gets a 409). Kept in server memory, so it resets on
 // restart and is per server process: fine for a single instance, the same trade-off as the project-idea generator.
@@ -22,8 +23,12 @@ const dailyLimit = () => {
 const present = (doc) => {
   const o = typeof doc.toObject === 'function' ? doc.toObject() : { ...doc };
   delete o.__v; delete o.aiProvider;
+  // What to do about each gap in PrepStack, and the learning links. Worked out on every read from the catalog and never
+  // stored, so an improved catalog improves old reports too.
+  o.skillAdvice = adviceForReport(o);
   return o;
 };
+
 
 // POST /api/analyzer
 const createReport = async (req, res, next) => {
@@ -81,6 +86,7 @@ const createReport = async (req, res, next) => {
   }
 };
 
+
 // GET /api/analyzer?page=1&limit=6
 const listReports = async (req, res, next) => {
   try {
@@ -97,6 +103,7 @@ const listReports = async (req, res, next) => {
   }
 };
 
+
 // GET /api/analyzer/:id
 const getReport = async (req, res, next) => {
   try {
@@ -108,6 +115,7 @@ const getReport = async (req, res, next) => {
     return next(error);
   }
 };
+
 
 // DELETE /api/analyzer/:id
 const deleteReport = async (req, res, next) => {
@@ -122,3 +130,6 @@ const deleteReport = async (req, res, next) => {
 };
 
 module.exports = { createReport, listReports, getReport, deleteReport };
+
+
+

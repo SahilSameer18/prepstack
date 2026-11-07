@@ -13,6 +13,7 @@
 //         (only real PrepStack items survive)
 const { z } = require('zod');
 const { runCascade, settings, BadOutput } = require('./ai.service');
+const { matchSkillText, makeIndex } = require('./skills.service');
 
 const IMPORTANCE = ['must', 'nice'];
 const STATUS = ['met', 'partial', 'missing'];
@@ -233,12 +234,21 @@ const honestTweaks = (tweaks, requirements, ctx) => {
 
 // Everything the code decides after the AI has answered.
 const finalizeReport = (report, { resume, jobDescription }, ctx) => {
+  const index = ctx.aliases ? makeIndex(ctx.aliases) : null;
   const requirements = report.requirements.map((r) => {
-    if (r.status === 'missing') return { ...r, evidence: '', evidenceCheck: 'n/a' };
+    // When the AI could not name the skill ("none"), look for it in the requirement's own words. A sure match (the name or an
+    // alias as a whole word) is used; a close spelling is only offered as "did you mean".
+    let skill = {};
+    if (r.skillKey === 'none' && index) {
+      const m = matchSkillText(r.text, index);
+      if (m.how === 'exact' || m.how === 'alias') skill = { skillKey: m.name, matchedBy: 'text' };
+      else if (m.how === 'fuzzy') skill = { didYouMean: m.name };
+    }
+    if (r.status === 'missing') return { ...r, ...skill, evidence: '', evidenceCheck: 'n/a' };
     const check = verifyEvidence(resume, r.evidence);
-    if (check !== 'none') return { ...r, evidenceCheck: check };
+    if (check !== 'none') return { ...r, ...skill, evidenceCheck: check };
     // No proof, no full credit: met becomes partial, partial becomes missing, and the quote is dropped.
-    return { ...r, status: r.status === 'met' ? 'partial' : 'missing', evidence: '', evidenceCheck: 'unverified', downgraded: true };
+    return { ...r, ...skill, status: r.status === 'met' ? 'partial' : 'missing', evidence: '', evidenceCheck: 'unverified', downgraded: true };
   });
   const allowed = new Set(ctx.refs);
   let droppedRefs = 0;

@@ -21,6 +21,8 @@ const reportSchema = new mongoose.Schema({
     evidenceCheck: { type: String, enum: ['exact', 'loose', 'unverified', 'n/a'] },
     downgraded: Boolean,
     skillKey: String,
+    matchedBy: String, // "text" when the code (not the AI) found the skill in the requirement's words
+    didYouMean: String, // a close spelling of a skill name: only a suggestion
     category: { type: String, enum: ['dsa', 'cs-core', 'stack', 'soft', 'other'] },
   }],
   priorities: [{ _id: false, title: String, why: String, hours: Number }],

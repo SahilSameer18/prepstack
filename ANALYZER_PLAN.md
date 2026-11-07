@@ -1,6 +1,6 @@
 # Role Analyzer: bringing SkillBridge into PrepStack (version 2 of the plan)
 
-Status (2026-11-07): plan agreed. Phase 1 is DONE (see section 6). Phase 0 is DONE and its gate PASSED (8 samples, 3 runs each, 24 real reports: format 100%, quotes verified 100%, score spread 1.3 points, score in a sensible range 100%, gap recall 100%, wrongly flagged 0%, the injection resume never obeyed). Next: show real reports to 3 to 5 students, then Phase 1. Part 1 (sections 1 to 8) is the analyzer; Part 2 (sections 9 to 14, at the end) is the interconnection work that starts only after Part 1 is finished and students have tried it.
+Status (2026-11-07): plan agreed. Phase 2 is DONE (see section 6). Phase 1 is DONE (see section 6). Phase 0 is DONE and its gate PASSED (8 samples, 3 runs each, 24 real reports: format 100%, quotes verified 100%, score spread 1.3 points, score in a sensible range 100%, gap recall 100%, wrongly flagged 0%, the injection resume never obeyed). Next: show real reports to 3 to 5 students, then Phase 1. Part 1 (sections 1 to 8) is the analyzer; Part 2 (sections 9 to 14, at the end) is the interconnection work that starts only after Part 1 is finished and students have tried it.
 Decided: do not store the resume; remove contact details before sending to the AI; 3 reports per hour and 5 per day per user; the name "Role Analyzer"; improve SkillBridge's report and its skill matching instead of copying them.
 Still open: decision 5 (free-tier privacy wording on the privacy page) and your review of the skill-to-PrepStack mapping (Phase 2).
 
@@ -154,7 +154,19 @@ Goal: send a resume and a job description, get a validated report saved.
 - `server/src/services/ai.service.js` (export `runCascade`; optional output cap per call), `server/src/app.js` (mount the route), `server/src/middlewares/rateLimit.middleware.js` (analyzer limiter: 3 per hour per user, failed requests not counted), `server/package.json` (add `multer`, `pdf-parse`), `server/test/helpers/setup.js` (fake PDF buffer), `server/.env.example`.
 **Rules:** one report at a time per user (409); daily cap of 5 from the database; friendly 502/504 when every provider fails; no resume text in logs or responses.
 
-### Phase 2: skills catalog and the PrepStack mapping (about 2 days)
+### Phase 2: skills catalog and the PrepStack mapping (about 2 days) — DONE 2026-11-07
+Built and verified (457 server tests pass; 6 catalog and matcher rules and 3 wiring rules were broken on purpose and a test failed each time; a live run with the real AI and your real resume PDF showed the advice per gap).
+What differs from the plan below, and why:
+- **No `Skill` database model and no seed script.** `server/src/data/skillCatalog.json` is the single source of truth (names, aliases, a docs link, a video link, a category and the PrepStack mapping). It avoids a third copy of the skills and two files; a database can be added later if the catalog ever needs editing from the app.
+- **One new file instead of three:** `server/src/services/skills.service.js` holds the matcher and the advice (replacing the planned `skillMatcher.service.js`, `skill.model.js` and `skillsSeed.js`). The tests are in `server/test/skills.test.js`.
+- **Advice is worked out on every read and never stored:** the report JSON carries `skillAdvice` (links and PrepStack actions per gap), so an improved catalog improves old reports too.
+- **The mapping is a first draft for you to review** (see below). 47 of the 94 skills have nothing in PrepStack yet (no sheet topic, notes section or roadmap): they only get the external learning links, and the report says so.
+- **Catalog clean-up:** SkillBridge reused the same video for several skills (for example one "SQL" video labelled "SQLite Full Course"). A link is now kept only for the first skill that uses it (6 links dropped), and a test fails if a link is shared.
+- **A bug found in SkillBridge, not fixed there:** its `prisma/seed.js` puts 7 skills in a second array (`const chunks = [ ... ]`) that the seed loop then treats as if it were a list of lists, so `chunk.map is not a function` is thrown on the first loop and the seed fails. I took all 94 skills from both arrays.
+- **24 skills added after the first 94 (118 in total):** HTML, CSS, Responsive Design, Web Accessibility, Webpack/Vite, C#, Rust, Statistics, Data Analysis, Data Cleaning, Pandas & NumPy, Excel, Tableau, Power BI, TensorFlow, PyTorch, Concurrency & Multithreading, Caching, Nginx, Jenkins, and four soft skills (Communication, Teamwork, Leadership & Mentoring, Problem Solving). Links for the new skills are **official documentation only, no videos** (a video address cannot be checked from here), and none of the new links was opened. The soft skills have no external link and point at the Behavioral Prep page (a new `behavioral` action). Concurrency points at the OS notes; the web basics at the Frontend roadmap; the data skills at the Data Analytics roadmap.
+- A stray leading space in the Blind 75 topic title " Heap/Priority Queue" is trimmed when the analyzer reads it (the seed itself is unchanged).
+
+Original plan for this phase:
 **Create**
 - `server/src/models/skill.model.js`.
 - `server/src/seed/skillsSeed.js` (the 94 skills and links, converted from SkillBridge's `prisma/seed.js`, plus a `prepstack` object on each skill that can list several things: `{ dsaTopics: [{ sheet, topic }], notes: [{ subject, section }], roadmap, projectStack }`, plus a `category`; **you review this mapping**. The analyzer only uses the first item for now; the later interconnection work (Part 2, section 9 onwards) uses all of them, so keeping the object shape from day one avoids a data migration).
@@ -165,7 +177,7 @@ Goal: send a resume and a job description, get a validated report saved.
 **Create**
 - `client/src/pages/analyzer/Analyzer.jsx` (job description, PDF upload or paste, days until interview, consent checkbox).
 - `client/src/pages/analyzer/AnalyzerReport.jsx` (verdict and top 3, requirements checklist, gaps with PrepStack actions, questions, plan, resume tweaks, estimate label on the score).
-- `client/src/pages/analyzer/components/` (ResumeUpload, JobDescriptionInput, RequirementRow, SkillGapCard, ScoreRing).
+- `client/src/components/analyzer/` (ResumeUpload, JobDescriptionInput, RequirementRow, SkillGapCard, ScoreRing).
 - `client/src/api/services/analyzerService.js`.
 **Modify:** `client/src/app.routes.jsx` (two protected routes), `client/src/components/Navbar.jsx` (main-bar link; hide Quiz and Aptitude), `client/src/components/Footer.jsx`, `client/src/components/homePage/BentoGrid.jsx` and `HeroSection.jsx` (card and button), `client/src/pages/Dashboard/UnifiedDashboard.jsx` (recent reports strip), `client/src/pages/Resume.jsx` and `client/src/pages/Behavioral.jsx` (links), `client/src/pages/project/AIProjectIdeas.jsx` (accept `?stack=`), `client/src/pages/Profile/components/ProfileHero.jsx` (report count), `client/src/seo/pages.js`, `client/src/pages/legal/PrivacyPolicy.jsx` and `TermsOfUse.jsx`.
 

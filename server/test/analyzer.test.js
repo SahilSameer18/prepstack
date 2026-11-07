@@ -154,6 +154,66 @@ describe('POST /api/analyzer: a pasted resume', () => {
   });
 });
 
+describe('POST /api/analyzer: skills, learning links and what to do in PrepStack', () => {
+  const reply = (over = {}) => goodReply({ requirements: [
+    req(),
+    req({ text: 'Docker', status: 'missing', evidence: '', skillKey: 'Docker' }),
+    req({ text: 'Terraform infrastructure as code', status: 'missing', evidence: '', skillKey: 'none' }), // the AI could not name it
+    req({ text: 'Kubernets', status: 'missing', evidence: '', skillKey: 'none', importance: 'nice' }), // a typo
+    req({ text: 'Operating Systems', status: 'partial', evidence: 'Fixed 14 UI bugs as a web development intern', skillKey: 'Operating Systems', category: 'cs-core' }),
+  ], ...over });
+
+  it('gives advice for every gap: learning links, and what PrepStack itself offers', async () => {
+    gemini.reply = reply();
+    const acct = await t.register();
+    const r = (await create(acct)).body.data.report;
+    const docker = r.skillAdvice.Docker;
+    assert.ok(docker.resources.some((x) => x.type === 'docs') && docker.resources.some((x) => x.type === 'video'));
+    assert.deepEqual(docker.actions.filter((a) => a.kind === 'roadmap').map((a) => a.path), ['/roadmaps/backend']);
+    const os = r.skillAdvice['Operating Systems'];
+    assert.deepEqual(os.actions.map((a) => [a.kind, a.path]), [['notes', '/notes/os']]);
+    assert.ok(!('React' in r.skillAdvice)); // a skill the resume already shows needs no advice
+  });
+  it('the code finds a skill the AI left as "none" from the requirement\'s own words', async () => {
+    gemini.reply = reply();
+    const acct = await t.register();
+    const r = (await create(acct)).body.data.report;
+    const tf = r.requirements.find((q) => q.text.startsWith('Terraform'));
+    assert.equal(tf.skillKey, 'Terraform');
+    assert.equal(tf.matchedBy, 'text');
+    assert.ok(r.skillAdvice.Terraform.resources.length >= 1);
+  });
+  it('a misspelt skill is only a suggestion ("did you mean"): it gets no links of its own', async () => {
+    gemini.reply = reply();
+    const acct = await t.register();
+    const r = (await create(acct)).body.data.report;
+    const typo = r.requirements.find((q) => q.text === 'Kubernets');
+    assert.equal(typo.skillKey, 'none');
+    assert.equal(typo.didYouMean, 'Kubernetes');
+    assert.ok(!('Kubernetes' in r.skillAdvice));
+  });
+  it('gives advice for a plan task that PrepStack does not cover but names a skill', async () => {
+    const acct = await t.register();
+    const r = (await create(acct)).body.data.report; // the default reply has a Docker task with ref "none"
+    assert.ok(r.skillAdvice.Docker && r.skillAdvice.Docker.resources.length >= 1);
+  });
+  it('is worked out on every read and never stored: an old report gets today\'s catalog', async () => {
+    const acct = await t.register();
+    const id = (await create(acct)).body.data.report._id;
+    const stored = await Report.collection.findOne({ _id: new t.mongoose.Types.ObjectId(id) });
+    assert.ok(!('skillAdvice' in stored) && !JSON.stringify(stored).includes('youtu'));
+    const opened = (await t.api.get(`/api/analyzer/${id}`, { cookies: acct.cookies })).body.data.report;
+    assert.ok(opened.skillAdvice.Docker.resources.length >= 1);
+  });
+  it('the PrepStack links in the advice point only at real pages (notes subjects, roadmap slugs, the DSA sheet)', async () => {
+    gemini.reply = reply();
+    const acct = await t.register();
+    const r = (await create(acct)).body.data.report;
+    const ok = /^\/(notes\/(os|dbms|cn|oops)|roadmaps\/(frontend|backend|fullstack|android|data-analytics|machine-learning)|dsa\/blind-75|ai-projects\?stack=[^\s]+)$/;
+    for (const a of Object.values(r.skillAdvice).flatMap((x) => x.actions)) assert.match(a.path, ok);
+  });
+});
+
 describe('POST /api/analyzer: an uploaded PDF', () => {
   it('reads a real PDF and creates the report (201)', async () => {
     const acct = await t.register();

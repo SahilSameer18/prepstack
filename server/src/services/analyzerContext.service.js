@@ -23,7 +23,7 @@ const buildContext = async () => {
     DSASheet.findOne({ slug: DSA_SHEET_SLUG }).select('topics.title').lean(),
     Notes.find({}).select('subjectSlug sections.title').lean(),
   ]);
-  const dsaRefs = [...new Set((sheet?.topics || []).map((t) => `dsa:${t.title}`))];
+  const dsaRefs = [...new Set((sheet?.topics || []).map((t) => `dsa:${String(t.title).trim()}`))]; // one Blind 75 title has a stray leading space
   const notesRefs = notes.flatMap((n) => (n.sections || []).map((s) => `notes:${n.subjectSlug}:${s.title}`));
   return {
     skillNames,

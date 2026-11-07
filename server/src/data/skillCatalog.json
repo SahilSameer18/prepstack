@@ -1,832 +1,1034 @@
 [
   {
-    "name": "JavaScript",
-    "aliases": [
-      "javascript",
-      "ecmascript",
-      "js"
-    ]
-  },
-  {
-    "name": "TypeScript",
-    "aliases": [
-      "typescript",
-      "ts",
-      "ts language",
-      "typescript language"
-    ]
-  },
-  {
-    "name": "Python",
-    "aliases": [
-      "python",
-      "py",
-      "python3",
-      "python programming"
-    ]
-  },
-  {
-    "name": "Java",
-    "aliases": [
-      "java",
-      "java programming",
-      "java language",
-      "jdk",
-      "jvm",
-      "jvm internals",
-      "garbage collection",
-      "concurrency in java",
-      "multithreading in java",
-      "multithreading and concurrency in java"
-    ]
-  },
-  {
-    "name": "C++",
-    "aliases": [
-      "c++",
-      "cpp"
-    ]
-  },
-  {
-    "name": "Go",
-    "aliases": [
-      "golang",
-      "go programming",
-      "go language",
-      "golang dev"
-    ]
-  },
-  {
-    "name": "PHP",
-    "aliases": [
-      "php",
-      "php8",
-      "php programming",
-      "modern php",
-      "php / laravel"
-    ]
-  },
-  {
-    "name": "React",
-    "aliases": [
-      "react.js",
-      "reactjs",
-      "react"
-    ]
-  },
-  {
-    "name": "Vue.js",
-    "aliases": [
-      "vue.js",
-      "vuejs",
-      "vue"
-    ]
-  },
-  {
-    "name": "Angular",
-    "aliases": [
-      "angular",
-      "angularjs",
-      "angular.js",
-      "angular 2+",
-      "angular framework"
-    ]
-  },
-  {
-    "name": "Tailwind CSS",
-    "aliases": [
-      "tailwindcss",
-      "tailwind",
-      "tailwind css"
-    ]
-  },
-  {
-    "name": "Redux",
-    "aliases": [
-      "redux",
-      "redux toolkit",
-      "rtk",
-      "redux state management"
-    ]
-  },
-  {
-    "name": "Zustand",
-    "aliases": [
-      "zustand"
-    ]
-  },
-  {
-    "name": "React Query",
-    "aliases": [
-      "react query",
-      "tanstack query",
-      "tanstack react query",
-      "@tanstack/react-query",
-      "react-query"
-    ]
-  },
-  {
-    "name": "Material UI",
-    "aliases": [
-      "material ui",
-      "mui",
-      "@mui"
-    ]
-  },
-  {
-    "name": "Bootstrap",
-    "aliases": [
-      "bootstrap",
-      "bootstrap 5"
-    ]
-  },
-  {
-    "name": "Next.js",
-    "aliases": [
-      "next",
-      "nextjs",
-      "next.js",
-      "nextjs framework",
-      "next.js framework"
-    ]
-  },
-  {
-    "name": "Node.js",
-    "aliases": [
-      "node.js",
-      "nodejs",
-      "node",
-      "node runtime",
-      "node.js runtime"
-    ]
-  },
-  {
-    "name": "Express.js",
-    "aliases": [
-      "express.js",
-      "expressjs",
-      "express",
-      "express framework",
-      "express.js framework"
-    ]
-  },
-  {
-    "name": "Django",
-    "aliases": [
-      "django"
-    ]
-  },
-  {
-    "name": "Spring Boot",
-    "aliases": [
-      "spring boot",
-      "springboot",
-      "spring",
-      "spring boot framework",
-      "spring framework",
-      "spring boot/hibernate",
-      "spring boot / hibernate",
-      "java ecosystem"
-    ]
-  },
-  {
-    "name": "Hibernate / JPA",
-    "aliases": [
-      "hibernate",
-      "jpa",
-      "java persistence api",
-      "spring data jpa",
-      "orm hibernate"
-    ]
-  },
-  {
-    "name": "Build Tools (Maven/Gradle)",
-    "aliases": [
-      "maven",
-      "gradle",
-      "java-based build tools",
-      "java build tools",
-      "build tools (maven/gradle)"
-    ]
-  },
-  {
-    "name": "REST APIs",
-    "aliases": [
-      "restful",
-      "rest api",
-      "rest apis",
-      "restful apis",
-      "rest"
-    ]
-  },
-  {
-    "name": "GraphQL",
-    "aliases": [
-      "graphql",
-      "gql",
-      "graphql api"
-    ]
-  },
-  {
-    "name": "Socket.io",
-    "aliases": [
-      "socket.io",
-      "socketio",
-      "websockets",
-      "websocket",
-      "web socket",
-      "web sockets",
-      "real-time communication",
-      "real time communication"
-    ]
-  },
-  {
-    "name": "NestJS",
-    "aliases": [
-      "nestjs",
-      "nest",
-      "nest.js"
-    ]
-  },
-  {
-    "name": "FastAPI",
-    "aliases": [
-      "fastapi"
-    ]
-  },
-  {
-    "name": "Flask",
-    "aliases": [
-      "flask"
-    ]
-  },
-  {
-    "name": "ASP.NET Core",
-    "aliases": [
-      "asp.net core",
-      "asp.net",
-      "dotnet",
-      ".net",
-      ".net core"
-    ]
-  },
-  {
-    "name": "Laravel",
-    "aliases": [
-      "laravel"
-    ]
-  },
-  {
-    "name": "Ruby on Rails",
-    "aliases": [
-      "ruby on rails",
-      "rails",
-      "ror"
-    ]
-  },
-  {
-    "name": "SQL",
-    "aliases": [
-      "sql"
-    ]
-  },
-  {
-    "name": "PostgreSQL",
-    "aliases": [
-      "postgresql",
-      "postgres",
-      "postgres database"
-    ]
-  },
-  {
-    "name": "MongoDB",
-    "aliases": [
-      "mongodb",
-      "mongo",
-      "mongodb database"
-    ]
-  },
-  {
-    "name": "Redis",
-    "aliases": [
-      "redis",
-      "redis cache",
-      "redis caching",
-      "redis caching implementation",
-      "redis (caching & pub/sub)",
-      "caching strategies",
-      "caching strategies (redis/memcached)"
-    ]
-  },
-  {
-    "name": "Oracle Database",
-    "aliases": [
-      "oracle",
-      "oracle db",
-      "oracle database"
-    ]
-  },
-  {
-    "name": "Firebase",
-    "aliases": [
-      "firebase",
-      "cloud firestore",
-      "firestore"
-    ]
-  },
-  {
-    "name": "Prisma",
-    "aliases": [
-      "prisma",
-      "prisma orm",
-      "prisma client"
-    ]
-  },
-  {
-    "name": "MySQL",
-    "aliases": [
-      "mysql",
-      "mysql database"
-    ]
-  },
-  {
-    "name": "SQLite",
-    "aliases": [
-      "sqlite",
-      "sqlite database"
-    ]
-  },
-  {
-    "name": "Docker",
-    "aliases": [
-      "docker",
-      "docker containers",
-      "containerization",
-      "docker containerization",
-      "docker & containerization",
-      "containerization (docker)",
-      "containerization (docker/kubernetes)"
-    ]
-  },
-  {
-    "name": "Kubernetes",
-    "aliases": [
-      "kubernetes",
-      "k8s",
-      "k8s cluster",
-      "kubernetes orchestration"
-    ]
-  },
-  {
-    "name": "AWS",
-    "aliases": [
-      "amazon web services",
-      "aws",
-      "aws services",
-      "amazon cloud"
-    ]
-  },
-  {
-    "name": "Azure",
-    "aliases": [
-      "azure"
-    ]
-  },
-  {
-    "name": "GCP",
-    "aliases": [
-      "google cloud",
-      "gcp"
-    ]
-  },
-  {
-    "name": "CI/CD",
-    "aliases": [
-      "continuous integration",
-      "continuous deployment",
-      "ci/cd",
-      "ci cd",
-      "cicd",
-      "deployment pipeline",
-      "deployment pipelines",
-      "devops",
-      "cloud infrastructure & devops",
-      "ci/cd pipeline",
-      "ci/cd pipeline implementation",
-      "ci/cd pipeline configuration"
-    ]
-  },
-  {
-    "name": "Terraform",
-    "aliases": [
-      "terraform",
-      "infrastructure as code",
-      "iac",
-      "hashicorp terraform",
-      "infrastructure as code (terraform)"
-    ]
-  },
-  {
-    "name": "Git",
-    "aliases": [
-      "version control",
-      "git",
-      "github",
-      "gitlab"
-    ]
-  },
-  {
-    "name": "Linux/Bash",
-    "aliases": [
-      "shell scripting",
-      "bash",
-      "linux",
-      "linux system administration",
-      "bash scripting",
-      "linux administration"
-    ]
-  },
-  {
-    "name": "GitHub Actions",
-    "aliases": [
-      "github actions",
-      "github workflows",
-      "github action"
-    ]
-  },
-  {
-    "name": "Apache Kafka",
-    "aliases": [
-      "kafka",
-      "apache kafka"
-    ]
-  },
-  {
-    "name": "RabbitMQ",
-    "aliases": [
-      "rabbitmq"
-    ]
-  },
-  {
-    "name": "Unit Testing",
-    "aliases": [
-      "unit testing",
-      "unit-testing",
-      "automated testing",
-      "integration testing",
-      "unit/integration",
-      "testing",
-      "software testing",
-      "automated testing (unit/integration)",
-      "automated testing (unit/e2e)",
-      "unit and integration testing",
-      "professional software testing"
-    ]
-  },
-  {
-    "name": "Jest",
-    "aliases": [
-      "jest",
-      "jest testing",
-      "jest/cypress",
-      "jest/mocha",
-      "jest/react testing library"
-    ]
-  },
-  {
-    "name": "Cypress",
-    "aliases": [
-      "cypress"
-    ]
-  },
-  {
-    "name": "Playwright",
-    "aliases": [
-      "playwright"
-    ]
-  },
-  {
-    "name": "Mocha",
-    "aliases": [
-      "mocha"
-    ]
-  },
-  {
-    "name": "Test-Driven Development",
-    "aliases": [
-      "test driven development",
-      "test-driven development",
-      "tdd"
-    ]
-  },
-  {
-    "name": "Selenium",
-    "aliases": [
-      "selenium",
-      "selenium webdriver"
-    ]
-  },
-  {
-    "name": "Postman",
-    "aliases": [
-      "postman",
-      "postman api testing"
-    ]
-  },
-  {
-    "name": "API Testing",
-    "aliases": [
-      "api testing",
-      "rest api testing",
-      "api automation testing"
-    ]
-  },
-  {
-    "name": "Swagger / OpenAPI",
-    "aliases": [
-      "swagger",
-      "swagger ui",
-      "openapi",
-      "openapi specification"
-    ]
-  },
-  {
-    "name": "Data Structures",
-    "aliases": [
-      "data structures",
-      "data structure",
-      "dsa",
-      "competitive programming",
-      "advanced competitive programming",
-      "data structures and algorithms"
-    ]
-  },
-  {
-    "name": "Algorithms",
-    "aliases": [
-      "algorithm",
-      "algorithms",
-      "algorithmic problem solving",
-      "algorithm design"
-    ]
-  },
-  {
-    "name": "System Design",
-    "aliases": [
-      "system design",
-      "systems design",
-      "architecting systems",
-      "system design & scalability",
-      "scalability"
-    ]
-  },
-  {
-    "name": "Object-Oriented Programming",
-    "aliases": [
-      "object oriented programming",
-      "object-oriented",
-      "oop"
-    ]
-  },
-  {
-    "name": "Design Patterns",
-    "aliases": [
-      "design patterns",
-      "design pattern"
-    ]
-  },
-  {
-    "name": "Big O / Time Complexity",
-    "aliases": [
-      "space complexity",
-      "time complexity",
-      "big o"
-    ]
-  },
-  {
-    "name": "Microservices",
-    "aliases": [
-      "microservice",
-      "microservices"
-    ]
-  },
-  {
-    "name": "Load Balancing",
-    "aliases": [
-      "load balancer",
-      "load balancing",
-      "load-balancer",
-      "load-balancing"
-    ]
-  },
-  {
-    "name": "Message Queues",
-    "aliases": [
-      "message queues",
-      "message queue",
-      "queue systems"
-    ]
-  },
-  {
-    "name": "Authentication & Authorization",
-    "aliases": [
-      "authorization",
-      "authentication",
-      "auth",
-      "authn",
-      "authz"
-    ]
-  },
-  {
-    "name": "JWT",
-    "aliases": [
-      "json web token",
-      "jwt",
-      "jwts",
-      "json web tokens"
-    ]
-  },
-  {
-    "name": "OAuth 2.0",
-    "aliases": [
-      "oauth2",
-      "oauth 2.0",
-      "oauth"
-    ]
-  },
-  {
-    "name": "Web Security (OWASP)",
-    "aliases": [
-      "sql injection",
-      "csrf",
-      "xss",
-      "owasp",
-      "web security",
-      "cybersecurity",
-      "application security"
-    ]
-  },
-  {
-    "name": "React Native",
-    "aliases": [
-      "react native",
-      "reactnative"
-    ]
-  },
-  {
-    "name": "Flutter",
-    "aliases": [
-      "flutter"
-    ]
-  },
-  {
-    "name": "Android Development",
-    "aliases": [
-      "android",
-      "android development"
-    ]
-  },
-  {
-    "name": "iOS Development",
-    "aliases": [
-      "ios",
-      "ios development",
-      "iphone development"
-    ]
-  },
-  {
-    "name": "Swift",
-    "aliases": [
-      "swift",
-      "swift language"
-    ]
-  },
-  {
-    "name": "SwiftUI",
-    "aliases": [
-      "swiftui",
-      "swift ui"
-    ]
-  },
-  {
-    "name": "Kotlin",
-    "aliases": [
-      "kotlin"
-    ]
-  },
-  {
-    "name": "Android SDK",
-    "aliases": [
-      "android sdk",
-      "sdk android"
-    ]
-  },
-  {
-    "name": "Firebase Mobile",
-    "aliases": [
-      "firebase mobile",
-      "firebase android",
-      "firebase ios"
-    ]
-  },
-  {
-    "name": "UI/UX Design",
-    "aliases": [
-      "ui/ux",
-      "ux research",
-      "user testing",
-      "visual hierarchy",
-      "typography",
-      "user experience",
-      "user interface",
-      "design theory",
-      "advanced ux research",
-      "visual hierarchy and typography",
-      "typography theory",
-      "visual hierarchy and typography theory"
-    ]
-  },
-  {
-    "name": "Figma",
-    "aliases": [
-      "figma",
-      "figma mastery",
-      "figma prototyping",
-      "figma design",
-      "professional figma",
-      "prototyping & design",
-      "professional figma mastery"
-    ]
-  },
-  {
-    "name": "Operating Systems",
-    "aliases": [
-      "operating systems",
-      "os concepts",
-      "operating system fundamentals",
-      "concurrency and threading",
-      "process scheduling"
-    ]
-  },
-  {
-    "name": "Computer Networks",
-    "aliases": [
-      "computer networks",
-      "networking",
-      "tcp/ip",
-      "osi model",
-      "http/https",
-      "dns networking"
-    ]
-  },
-  {
-    "name": "Database Indexing & Optimization",
-    "aliases": [
-      "database indexing",
-      "db indexing",
-      "b-tree indexing",
-      "indexing strategies",
-      "query optimization",
-      "explain analyze"
-    ]
-  },
-  {
-    "name": "Apache Cassandra & NoSQL",
-    "aliases": [
-      "cassandra",
-      "apache cassandra",
-      "nosql databases",
-      "wide-column store",
-      "nosql modeling"
-    ]
-  },
-  {
-    "name": "Machine Learning Fundamentals",
-    "aliases": [
-      "machine learning",
-      "ml fundamentals",
-      "scikit-learn",
-      "deep learning",
-      "ai and ml"
-    ]
-  },
-  {
-    "name": "gRPC & Protocol Buffers",
-    "aliases": [
-      "grpc",
-      "protocol buffers",
-      "protobuf",
-      "grpc microservices"
-    ]
-  },
-  {
-    "name": "Agile & Scrum",
-    "aliases": [
-      "agile",
-      "scrum",
-      "agile development",
-      "kanban",
-      "sprint planning"
-    ]
+    "name": "JavaScript", "category": "stack",
+    "aliases": ["javascript","ecmascript","js","es6","vanilla js"],
+    "resources": [
+      {"type":"docs","title":"JavaScript Docs - MDN","url":"https://developer.mozilla.org/en-US/docs/Web/JavaScript"},
+      {"type":"video","title":"JavaScript Full Course - freeCodeCamp","url":"https://www.youtube.com/playlist?list=PLQEaRBV9gAFuf-27K64l7-hV7o0fr9zx7"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"frontend","projectStack":"MERN Stack"}
+  },
+  {
+    "name": "TypeScript", "category": "stack",
+    "aliases": ["typescript","ts","ts language","typescript language","type script"],
+    "resources": [
+      {"type":"docs","title":"TypeScript Handbook","url":"https://www.typescriptlang.org/docs/"},
+      {"type":"video","title":"TypeScript Full Course - freeCodeCamp","url":"https://youtube.com/playlist?list=PLu71SKxNbfoBkkr8lblqtsJvxrw3j1tWC"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"TypeScript"}
+  },
+  {
+    "name": "Python", "category": "stack",
+    "aliases": ["python","py","python3","python programming"],
+    "resources": [
+      {"type":"docs","title":"Python Official Docs","url":"https://docs.python.org/3/"},
+      {"type":"video","title":"Python Full Course - freeCodeCamp","url":"https://youtu.be/ERCMXc8x7mc"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"machine-learning","projectStack":"Python / Django"}
+  },
+  {
+    "name": "Java", "category": "stack",
+    "aliases": ["java","java programming","java language","jdk","jvm","jvm internals","garbage collection","concurrency in java","multithreading in java","multithreading and concurrency in java"],
+    "resources": [
+      {"type":"docs","title":"Java Documentation - Oracle","url":"https://docs.oracle.com/en/java/"},
+      {"type":"video","title":"Java Full Course - freeCodeCamp","url":"https://youtube.com/playlist?list=PLQEaRBV9gAFsR15tNo2QLF9d2qc-c018p"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Java / Spring Boot"}
+  },
+  {
+    "name": "C++", "category": "stack",
+    "aliases": ["c++","cpp"],
+    "resources": [
+      {"type":"docs","title":"C++ Reference","url":"https://en.cppreference.com/w/cpp"},
+      {"type":"video","title":"C++ Full Course - freeCodeCamp","url":"https://youtu.be/Z2oxGj36vZk"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Go", "category": "stack",
+    "aliases": ["golang","go programming","go language","golang dev"],
+    "resources": [
+      {"type":"docs","title":"Go Documentation","url":"https://go.dev/doc/"},
+      {"type":"video","title":"Go Full Course - freeCodeCamp","url":"https://youtu.be/yZgwW6Yuc_E"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Go"}
+  },
+  {
+    "name": "PHP", "category": "stack",
+    "aliases": ["php","php8","php programming","modern php","php / laravel"],
+    "resources": [
+      {"type":"docs","title":"PHP Official Documentation","url":"https://www.php.net/docs.php"},
+      {"type":"video","title":"PHP Full Course - freeCodeCamp","url":"https://youtu.be/OK_JCtrrv-c"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Laravel"}
+  },
+  {
+    "name": "React", "category": "stack",
+    "aliases": ["react.js","reactjs","react","react js"],
+    "resources": [
+      {"type":"docs","title":"React Docs","url":"https://react.dev/"},
+      {"type":"video","title":"React Full Course","url":"https://youtube.com/playlist?list=PLu71SKxNbfoDqgPchmvIsL4hTnJIrtige"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"frontend","projectStack":"MERN Stack"}
+  },
+  {
+    "name": "Vue.js", "category": "stack",
+    "aliases": ["vue.js","vuejs","vue","vue js"],
+    "resources": [
+      {"type":"docs","title":"Vue.js Guide","url":"https://vuejs.org/guide/"},
+      {"type":"video","title":"Vue.js Full Course","url":"https://youtu.be/jT7F1hK6hJ8"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Vue.js"}
+  },
+  {
+    "name": "Angular", "category": "stack",
+    "aliases": ["angular","angularjs","angular.js","angular 2+","angular framework"],
+    "resources": [
+      {"type":"docs","title":"Angular Docs","url":"https://angular.dev/"},
+      {"type":"video","title":"Angular Full Course","url":"https://youtube.com/playlist?list=PLu71SKxNbfoB57gV87_bIUP9Q_gq81m3I"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Angular"}
+  },
+  {
+    "name": "Tailwind CSS", "category": "stack",
+    "aliases": ["tailwindcss","tailwind","tailwind css"],
+    "resources": [
+      {"type":"docs","title":"Tailwind CSS Docs","url":"https://tailwindcss.com/docs"},
+      {"type":"video","title":"Tailwind CSS Crash Course","url":"https://youtu.be/_9mTJ84uL1Q"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"frontend","projectStack":null}
+  },
+  {
+    "name": "Redux", "category": "stack",
+    "aliases": ["redux","redux toolkit","rtk","redux state management"],
+    "resources": [
+      {"type":"docs","title":"Redux Docs","url":"https://redux.js.org/"},
+      {"type":"video","title":"Redux Crash Course","url":"https://youtu.be/Q5TqsetwCoE"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "Zustand", "category": "stack",
+    "aliases": ["zustand"],
+    "resources": [
+      {"type":"docs","title":"Zustand Docs","url":"https://github.com/pmndrs/zustand"},
+      {"type":"video","title":"Zustand Crash Course","url":"https://youtu.be/HU6YEFfzopo"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "React Query", "category": "stack",
+    "aliases": ["react query","tanstack query","tanstack react query","@tanstack/react-query","react-query"],
+    "resources": [
+      {"type":"docs","title":"TanStack Query Documentation","url":"https://tanstack.com/query/latest"},
+      {"type":"video","title":"React Query Crash Course","url":"https://youtu.be/KrruJTTwOgU"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Material UI", "category": "stack",
+    "aliases": ["material ui","mui","@mui"],
+    "resources": [
+      {"type":"docs","title":"Material UI Documentation","url":"https://mui.com/"},
+      {"type":"video","title":"Material UI Tutorial","url":"https://youtube.com/playlist?list=PLC3y8-rFHvwh-K9mDlrrcDywl7CeVL2rO"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Bootstrap", "category": "stack",
+    "aliases": ["bootstrap","bootstrap 5"],
+    "resources": [
+      {"type":"docs","title":"Bootstrap Documentation","url":"https://getbootstrap.com/docs/"},
+      {"type":"video","title":"Bootstrap 5 Crash Course","url":"https://youtu.be/fB00t4At0rk"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Next.js", "category": "stack",
+    "aliases": ["next","nextjs","next.js","nextjs framework","next.js framework","next js"],
+    "resources": [
+      {"type":"docs","title":"Next.js Documentation","url":"https://nextjs.org/docs"},
+      {"type":"video","title":"Next.js Full Course","url":"https://youtu.be/MZbwu3-uz3Y"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"frontend","projectStack":"Next.js"}
+  },
+  {
+    "name": "Node.js", "category": "stack",
+    "aliases": ["node.js","nodejs","node","node runtime","node.js runtime","node js"],
+    "resources": [
+      {"type":"docs","title":"Node.js Docs","url":"https://nodejs.org/en/docs/"},
+      {"type":"video","title":"Node.js Full Course","url":"https://youtube.com/playlist?list=PL78RhpUUKSwfeSOOwfE9x6l5jTjn5LbY3"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":"MERN Stack"}
+  },
+  {
+    "name": "Express.js", "category": "stack",
+    "aliases": ["express.js","expressjs","express","express framework","express.js framework","express js"],
+    "resources": [
+      {"type":"docs","title":"Express.js Docs","url":"https://expressjs.com/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":"MERN Stack"}
+  },
+  {
+    "name": "Django", "category": "stack",
+    "aliases": ["django"],
+    "resources": [
+      {"type":"docs","title":"Django Docs","url":"https://docs.djangoproject.com/"},
+      {"type":"video","title":"Django Full Course","url":"https://youtu.be/iflSRpcyzdI"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Python / Django"}
+  },
+  {
+    "name": "Spring Boot", "category": "stack",
+    "aliases": ["spring boot","springboot","spring","spring boot framework","spring framework","spring boot/hibernate","spring boot / hibernate","java ecosystem"],
+    "resources": [
+      {"type":"docs","title":"Spring Boot Docs","url":"https://spring.io/projects/spring-boot"},
+      {"type":"video","title":"Spring Boot Full Course","url":"https://youtube.com/playlist?list=PLEYgx5hMdopw"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Java / Spring Boot"}
+  },
+  {
+    "name": "Hibernate / JPA", "category": "stack",
+    "aliases": ["hibernate","jpa","java persistence api","spring data jpa","orm hibernate"],
+    "resources": [
+      {"type":"docs","title":"Hibernate ORM Documentation","url":"https://hibernate.org/orm/documentation/"},
+      {"type":"video","title":"Hibernate & JPA Full Course","url":"https://youtu.be/VRpH91Gsmk4"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Java / Spring Boot"}
+  },
+  {
+    "name": "Build Tools (Maven/Gradle)", "category": "stack",
+    "aliases": ["maven","gradle","java-based build tools","java build tools","build tools (maven/gradle)"],
+    "resources": [
+      {"type":"docs","title":"Apache Maven Documentation","url":"https://maven.apache.org/guides/"},
+      {"type":"video","title":"Maven & Gradle Crash Course","url":"https://youtu.be/0b59bY4qfio"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "REST APIs", "category": "stack",
+    "aliases": ["restful","rest api","rest apis","restful apis","rest"],
+    "resources": [
+      {"type":"docs","title":"REST API Tutorial","url":"https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"},
+      {"type":"video","title":"REST API Crash Course","url":"https://youtu.be/XvFmUE-36Kc"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","section":"Application Layer"}],"roadmap":"backend","projectStack":"MERN Stack"}
+  },
+  {
+    "name": "GraphQL", "category": "stack",
+    "aliases": ["graphql","gql","graphql api"],
+    "resources": [
+      {"type":"docs","title":"GraphQL Docs","url":"https://graphql.org/"},
+      {"type":"video","title":"GraphQL Crash Course","url":"https://youtu.be/WtkKwO1viI8"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"GraphQL"}
+  },
+  {
+    "name": "Socket.io", "category": "stack",
+    "aliases": ["socket.io","socketio","websockets","websocket","web socket","web sockets","real-time communication","real time communication","socket io"],
+    "resources": [
+      {"type":"docs","title":"Socket.io Docs","url":"https://socket.io/docs/"},
+      {"type":"video","title":"Socket.io Crash Course","url":"https://youtu.be/CzcfeL7ymbU"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"MERN Stack"}
+  },
+  {
+    "name": "NestJS", "category": "stack",
+    "aliases": ["nestjs","nest","nest.js"],
+    "resources": [
+      {"type":"docs","title":"NestJS Documentation","url":"https://docs.nestjs.com/"},
+      {"type":"video","title":"NestJS Full Course","url":"https://youtu.be/KMg_Qg0WCds"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"NestJS"}
+  },
+  {
+    "name": "FastAPI", "category": "stack",
+    "aliases": ["fastapi"],
+    "resources": [
+      {"type":"docs","title":"FastAPI Documentation","url":"https://fastapi.tiangolo.com/"},
+      {"type":"video","title":"FastAPI Course","url":"https://youtu.be/fxRCoEUmq8s"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"FastAPI"}
+  },
+  {
+    "name": "Flask", "category": "stack",
+    "aliases": ["flask"],
+    "resources": [
+      {"type":"docs","title":"Flask Documentation","url":"https://flask.palletsprojects.com/"},
+      {"type":"video","title":"Flask Course","url":"https://youtu.be/QZfaRHzWM0k"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Flask"}
+  },
+  {
+    "name": "ASP.NET Core", "category": "stack",
+    "aliases": ["asp.net core","asp.net","dotnet",".net",".net core"],
+    "resources": [
+      {"type":"docs","title":"ASP.NET Core Documentation","url":"https://learn.microsoft.com/en-us/aspnet/core/"},
+      {"type":"video","title":"ASP.NET Core Full Course","url":"https://youtu.be/YbRe4iIVYJk"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":".NET"}
+  },
+  {
+    "name": "Laravel", "category": "stack",
+    "aliases": ["laravel"],
+    "resources": [
+      {"type":"docs","title":"Laravel Documentation","url":"https://laravel.com/docs"},
+      {"type":"video","title":"Laravel Full Course","url":"https://youtu.be/MYyJ4PuL4pY"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Laravel"}
+  },
+  {
+    "name": "Ruby on Rails", "category": "stack",
+    "aliases": ["ruby on rails","rails","ror"],
+    "resources": [
+      {"type":"docs","title":"Ruby on Rails Guides","url":"https://guides.rubyonrails.org/"},
+      {"type":"video","title":"Ruby on Rails Course","url":"https://youtu.be/fmyvWz5TUWg"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Ruby on Rails"}
+  },
+  {
+    "name": "SQL", "category": "cs-core",
+    "aliases": ["sql"],
+    "resources": [
+      {"type":"docs","title":"SQL Tutorial","url":"https://www.postgresql.org/docs/current/tutorial-sql.html"},
+      {"type":"video","title":"SQL Full Course","url":"https://youtu.be/yE6tIle64tU"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","section":"SQL"},{"subject":"dbms","section":"Keys & Constraints"}],"roadmap":"data-analytics","projectStack":null}
+  },
+  {
+    "name": "PostgreSQL", "category": "stack",
+    "aliases": ["postgresql","postgres","postgres database","postgre sql","postgres sql"],
+    "resources": [
+      {"type":"docs","title":"PostgreSQL Docs","url":"https://www.postgresql.org/docs/"},
+      {"type":"video","title":"PostgreSQL Full Course","url":"https://youtu.be/cnzka7kF5Zk"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","section":"SQL"},{"subject":"dbms","section":"Indexing & File Organization"}],"roadmap":null,"projectStack":"PERN Stack"}
+  },
+  {
+    "name": "MongoDB", "category": "stack",
+    "aliases": ["mongodb","mongo","mongodb database","mongo db"],
+    "resources": [
+      {"type":"docs","title":"MongoDB Docs","url":"https://docs.mongodb.com/"},
+      {"type":"video","title":"MongoDB Full Course","url":"https://youtu.be/M1dKYQ7GsTg"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":"MERN Stack"}
+  },
+  {
+    "name": "Redis", "category": "stack",
+    "aliases": ["redis","redis cache","redis caching","redis caching implementation","redis (caching & pub/sub)","caching strategies","caching strategies (redis/memcached)"],
+    "resources": [
+      {"type":"docs","title":"Redis Docs","url":"https://redis.io/docs/"},
+      {"type":"video","title":"Redis Crash Course","url":"https://youtube.com/playlist?list=PLxamJ86SDCj28nzE9l6frczaVhPX7P7o7"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Oracle Database", "category": "stack",
+    "aliases": ["oracle","oracle db","oracle database"],
+    "resources": [
+      {"type":"docs","title":"Oracle Database Documentation","url":"https://docs.oracle.com/en/database/"},
+      {"type":"video","title":"Oracle SQL Tutorial","url":"https://youtube.com/playlist?list=PLsphD3EpR7F9mmtY2jBt_O8Q9XmvrhQEF"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","section":"SQL"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Firebase", "category": "stack",
+    "aliases": ["firebase","cloud firestore","firestore"],
+    "resources": [
+      {"type":"docs","title":"Firebase Documentation","url":"https://firebase.google.com/docs"},
+      {"type":"video","title":"Firebase Full Course","url":"https://youtu.be/fgdpvwEWJ9M"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "Prisma", "category": "stack",
+    "aliases": ["prisma","prisma orm","prisma client"],
+    "resources": [
+      {"type":"docs","title":"Prisma Documentation","url":"https://www.prisma.io/docs"},
+      {"type":"video","title":"Prisma ORM Crash Course","url":"https://youtu.be/kkwrvcTVd1k"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"PERN Stack"}
+  },
+  {
+    "name": "MySQL", "category": "stack",
+    "aliases": ["mysql","mysql database"],
+    "resources": [
+      {"type":"docs","title":"MySQL Documentation","url":"https://dev.mysql.com/doc/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","section":"SQL"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "SQLite", "category": "stack",
+    "aliases": ["sqlite","sqlite database"],
+    "resources": [
+      {"type":"docs","title":"SQLite Documentation","url":"https://www.sqlite.org/docs.html"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","section":"SQL"}],"roadmap":"android","projectStack":null}
+  },
+  {
+    "name": "Docker", "category": "stack",
+    "aliases": ["docker","docker containers","containerization","docker containerization","docker & containerization","containerization (docker)","containerization (docker/kubernetes)"],
+    "resources": [
+      {"type":"docs","title":"Docker Docs","url":"https://docs.docker.com/"},
+      {"type":"video","title":"Docker Full Course","url":"https://youtu.be/OhnTMWmfTBE"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+  },
+  {
+    "name": "Kubernetes", "category": "stack",
+    "aliases": ["kubernetes","k8s","k8s cluster","kubernetes orchestration"],
+    "resources": [
+      {"type":"docs","title":"Kubernetes Docs","url":"https://kubernetes.io/docs/"},
+      {"type":"video","title":"Kubernetes Full Course","url":"https://youtu.be/_4uQI4ihGVU"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "AWS", "category": "stack",
+    "aliases": ["amazon web services","aws","aws services","amazon cloud"],
+    "resources": [
+      {"type":"docs","title":"AWS Documentation","url":"https://docs.aws.amazon.com/"},
+      {"type":"video","title":"AWS Full Course","url":"https://youtu.be/N4sJj-SxX00"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+  },
+  {
+    "name": "Azure", "category": "stack",
+    "aliases": ["azure"],
+    "resources": [
+      {"type":"docs","title":"Microsoft Azure Docs","url":"https://learn.microsoft.com/azure/"},
+      {"type":"video","title":"Azure Full Course","url":"https://www.youtube.com/live/hUxB_Uenq14"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "GCP", "category": "stack",
+    "aliases": ["google cloud","gcp"],
+    "resources": [
+      {"type":"docs","title":"Google Cloud Docs","url":"https://cloud.google.com/docs/"},
+      {"type":"video","title":"GCP Full Course","url":"https://youtu.be/hUxB_Uenq14"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "CI/CD", "category": "stack",
+    "aliases": ["continuous integration","continuous deployment","ci/cd","ci cd","cicd","deployment pipeline","deployment pipelines","devops","cloud infrastructure & devops","ci/cd pipeline","ci/cd pipeline implementation","ci/cd pipeline configuration"],
+    "resources": [
+      {"type":"docs","title":"CI/CD Concepts Guide","url":"https://about.gitlab.com/topics/ci-cd/"},
+      {"type":"video","title":"CI/CD Crash Course","url":"https://youtube.com/playlist?list=PLzpJO-82rjC6ZD0uAhP8HR9RV9xGaPbIJ"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+  },
+  {
+    "name": "Terraform", "category": "stack",
+    "aliases": ["terraform","infrastructure as code","iac","hashicorp terraform","infrastructure as code (terraform)"],
+    "resources": [
+      {"type":"docs","title":"Terraform Documentation","url":"https://developer.hashicorp.com/terraform/docs"},
+      {"type":"video","title":"Terraform Full Course - freeCodeCamp","url":"https://youtu.be/7xngnjfIlK4"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Git", "category": "stack",
+    "aliases": ["version control","git","github","gitlab"],
+    "resources": [
+      {"type":"docs","title":"Git Documentation","url":"https://git-scm.com/doc"},
+      {"type":"video","title":"Git & GitHub Full Course","url":"https://youtu.be/zTjRZNkhiEU"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "Linux/Bash", "category": "stack",
+    "aliases": ["shell scripting","bash","linux","linux system administration","bash scripting","linux administration"],
+    "resources": [
+      {"type":"docs","title":"Bash Reference Manual","url":"https://www.gnu.org/software/bash/manual/"},
+      {"type":"video","title":"Linux Command Line Full Course","url":"https://youtube.com/playlist?list=PL5Qp2b7x1b6d899d3E1-78Qd1C1oW3W9p"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","section":"System Concepts"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "GitHub Actions", "category": "stack",
+    "aliases": ["github actions","github workflows","github action"],
+    "resources": [
+      {"type":"docs","title":"GitHub Actions Documentation","url":"https://docs.github.com/actions"},
+      {"type":"video","title":"GitHub Actions Tutorial","url":"https://youtu.be/Xwpi0ITkL3U"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+  },
+  {
+    "name": "Apache Kafka", "category": "stack",
+    "aliases": ["kafka","apache kafka"],
+    "resources": [
+      {"type":"docs","title":"Apache Kafka Documentation","url":"https://kafka.apache.org/documentation/"},
+      {"type":"video","title":"Apache Kafka Course","url":"https://youtu.be/ZJJHm_bd9Zo"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "RabbitMQ", "category": "stack",
+    "aliases": ["rabbitmq"],
+    "resources": [
+      {"type":"docs","title":"RabbitMQ Documentation","url":"https://www.rabbitmq.com/documentation.html"},
+      {"type":"video","title":"RabbitMQ Tutorial","url":"https://youtu.be/FGU3oFIeG0Q"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Unit Testing", "category": "stack",
+    "aliases": ["unit testing","unit-testing","automated testing","integration testing","unit/integration","testing","software testing","automated testing (unit/integration)","automated testing (unit/e2e)","unit and integration testing","professional software testing"],
+    "resources": [
+      {"type":"docs","title":"Unit Testing Guide","url":"https://www.softwaretestinghelp.com/unit-testing/"},
+      {"type":"video","title":"Unit Testing Full Course","url":"https://youtube.com/playlist?list=PL4cUxeGkcC9iyuClsf48SSgsJPBStHo7F"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "Jest", "category": "stack",
+    "aliases": ["jest","jest testing","jest/cypress","jest/mocha","jest/react testing library"],
+    "resources": [
+      {"type":"docs","title":"Jest Docs","url":"https://jestjs.io/docs/getting-started"},
+      {"type":"video","title":"Jest Full Course","url":"https://youtube.com/playlist?list=PL8p2I9GklV47ZpFC9sNHTXwJRgwwzdkNG"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "Cypress", "category": "stack",
+    "aliases": ["cypress"],
+    "resources": [
+      {"type":"docs","title":"Cypress Docs","url":"https://docs.cypress.io/"},
+      {"type":"video","title":"Cypress Crash Course","url":"https://youtu.be/u8vMu7viCm8"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Playwright", "category": "stack",
+    "aliases": ["playwright"],
+    "resources": [
+      {"type":"docs","title":"Playwright Docs","url":"https://playwright.dev/docs/intro"},
+      {"type":"video","title":"Playwright Crash Course","url":"https://youtu.be/mX6fK9q_lq4"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Mocha", "category": "stack",
+    "aliases": ["mocha"],
+    "resources": [
+      {"type":"docs","title":"Mocha Docs","url":"https://mochajs.org/"},
+      {"type":"video","title":"Mocha & Chai Crash Course","url":"https://youtu.be/QhK4rY4y4y4"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Test-Driven Development", "category": "stack",
+    "aliases": ["test driven development","test-driven development","tdd"],
+    "resources": [
+      {"type":"docs","title":"TDD Guide","url":"https://www.agilealliance.org/glossary/tdd/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Selenium", "category": "stack",
+    "aliases": ["selenium","selenium webdriver"],
+    "resources": [
+      {"type":"docs","title":"Selenium Documentation","url":"https://www.selenium.dev/documentation/"},
+      {"type":"video","title":"Selenium WebDriver Full Course","url":"https://youtu.be/j7VZsCCnptM"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Postman", "category": "stack",
+    "aliases": ["postman","postman api testing"],
+    "resources": [
+      {"type":"docs","title":"Postman Documentation","url":"https://learning.postman.com/docs/"},
+      {"type":"video","title":"Postman API Testing Course","url":"https://youtu.be/VywxIQ2ZXw4"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+  },
+  {
+    "name": "API Testing", "category": "stack",
+    "aliases": ["api testing","rest api testing","api automation testing"],
+    "resources": [
+      {"type":"docs","title":"API Testing Guide","url":"https://www.postman.com/api-platform/api-testing/"},
+      {"type":"video","title":"API Testing Full Course","url":"https://youtu.be/7YcW25PHnAA"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "Swagger / OpenAPI", "category": "stack",
+    "aliases": ["swagger","swagger ui","openapi","openapi specification"],
+    "resources": [
+      {"type":"docs","title":"Swagger Documentation","url":"https://swagger.io/docs/"},
+      {"type":"video","title":"Swagger API Documentation Tutorial","url":"https://youtu.be/S8kmHtQeflo"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Data Structures", "category": "dsa",
+    "aliases": ["data structures","data structure","dsa","competitive programming","advanced competitive programming","data structures and algorithms"],
+    "resources": [
+      {"type":"docs","title":"Data Structures Guide","url":"https://www.geeksforgeeks.org/data-structures/"},
+      {"type":"video","title":"Data Structures Full Course","url":"https://youtube.com/playlist?list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz"}
+    ],
+    "prepstack": {"dsaTopics":["Arrays & Hashing","Stack","Linked List","Trees","Heap/Priority Queue","Trie","Graph"],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Algorithms", "category": "dsa",
+    "aliases": ["algorithm","algorithms","algorithmic problem solving","algorithm design"],
+    "resources": [
+      {"type":"docs","title":"Algorithms Guide","url":"https://www.geeksforgeeks.org/fundamentals-of-algorithms/"}
+    ],
+    "prepstack": {"dsaTopics":["Two Pointers","Sliding Window","Binary Search","Backtracking","Dynamic Programming","Greedy"],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "System Design", "category": "cs-core",
+    "aliases": ["system design","systems design","architecting systems","system design & scalability","scalability"],
+    "resources": [
+      {"type":"docs","title":"System Design Primer","url":"https://github.com/donnemartin/system-design-primer"},
+      {"type":"video","title":"System Design Full Course","url":"https://youtube.com/playlist?list=PLMCXHnjXnTnvo6alSjVkgxV-VH6EPyvoX"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","section":"System Design Concepts"},{"subject":"dbms","section":"Advanced Concepts"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Object-Oriented Programming", "category": "cs-core",
+    "aliases": ["object oriented programming","object-oriented","oop"],
+    "resources": [
+      {"type":"docs","title":"OOP Concepts Guide","url":"https://docs.oracle.com/javase/tutorial/java/concepts/"},
+      {"type":"video","title":"OOP Crash Course","url":"https://youtube.com/playlist?list=PL9gnSGHSqcno1G3XjUbwzXHL8_EttOuKk"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"oops","section":"Basics"},{"subject":"oops","section":"Pillars of OOP"},{"subject":"oops","section":"Polymorphism"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Design Patterns", "category": "cs-core",
+    "aliases": ["design patterns","design pattern"],
+    "resources": [
+      {"type":"docs","title":"Design Patterns Guide","url":"https://refactoring.guru/design-patterns"},
+      {"type":"video","title":"Design Patterns Crash Course","url":"https://youtu.be/vNXuyhsSFbg"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"oops","section":"SOLID Principles"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Big O / Time Complexity", "category": "dsa",
+    "aliases": ["space complexity","time complexity","big o"],
+    "resources": [
+      {"type":"docs","title":"Big O Notation Guide","url":"https://www.bigocheatsheet.com/"},
+      {"type":"video","title":"Big O Crash Course","url":"https://youtu.be/5T0SiJocPCI"}
+    ],
+    "prepstack": {"dsaTopics":["Binary Search","Sliding Window"],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Microservices", "category": "cs-core",
+    "aliases": ["microservice","microservices"],
+    "resources": [
+      {"type":"docs","title":"Microservices Guide","url":"https://microservices.io/"},
+      {"type":"video","title":"Microservices Crash Course","url":"https://youtu.be/Jl9OKQ92SJU"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Load Balancing", "category": "cs-core",
+    "aliases": ["load balancer","load balancing","load-balancer","load-balancing"],
+    "resources": [
+      {"type":"docs","title":"Load Balancing Guide","url":"https://www.nginx.com/resources/glossary/load-balancing/"},
+      {"type":"video","title":"Load Balancing Crash Course","url":"https://youtu.be/C842vFY5kRo"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","section":"System Design Concepts"}],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "Message Queues", "category": "cs-core",
+    "aliases": ["message queues","message queue","queue systems"],
+    "resources": [
+      {"type":"docs","title":"Message Queues Guide","url":"https://www.redhat.com/en/topics/integration/what-is-a-message-queue"},
+      {"type":"video","title":"Message Queues Crash Course","url":"https://youtu.be/IJkYipYNEtI"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Authentication & Authorization", "category": "stack",
+    "aliases": ["authorization","authentication","auth","authn","authz"],
+    "resources": [
+      {"type":"docs","title":"Auth Concepts Guide","url":"https://developer.okta.com/docs/concepts/authentication/"},
+      {"type":"video","title":"Authentication Crash Course","url":"https://youtu.be/A95rliroC8Q"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+  },
+  {
+    "name": "JWT", "category": "stack",
+    "aliases": ["json web token","jwt","jwts","json web tokens"],
+    "resources": [
+      {"type":"docs","title":"JWT Introduction","url":"https://jwt.io/introduction/"},
+      {"type":"video","title":"JWT Crash Course","url":"https://youtu.be/pkKn8q5AvsY"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+  },
+  {
+    "name": "OAuth 2.0", "category": "stack",
+    "aliases": ["oauth2","oauth 2.0","oauth"],
+    "resources": [
+      {"type":"docs","title":"OAuth 2.0 Guide","url":"https://oauth.net/2/"},
+      {"type":"video","title":"OAuth 2.0 Crash Course","url":"https://youtu.be/WSsOXo07LeE"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+  },
+  {
+    "name": "Web Security (OWASP)", "category": "stack",
+    "aliases": ["sql injection","csrf","xss","owasp","web security","cybersecurity","application security"],
+    "resources": [
+      {"type":"docs","title":"OWASP Top 10","url":"https://owasp.org/www-project-top-ten/"},
+      {"type":"video","title":"Web Security Crash Course","url":"https://youtu.be/pG2wDIG3Kww"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "React Native", "category": "stack",
+    "aliases": ["react native","reactnative"],
+    "resources": [
+      {"type":"docs","title":"React Native Documentation","url":"https://reactnative.dev/docs/getting-started"},
+      {"type":"video","title":"React Native Full Course","url":"https://youtu.be/0-S5a0eXPoc"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"React Native"}
+  },
+  {
+    "name": "Flutter", "category": "stack",
+    "aliases": ["flutter"],
+    "resources": [
+      {"type":"docs","title":"Flutter Documentation","url":"https://docs.flutter.dev/"},
+      {"type":"video","title":"Flutter Full Course","url":"https://youtu.be/VPvVD8t02U8"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Flutter"}
+  },
+  {
+    "name": "Android Development", "category": "stack",
+    "aliases": ["android","android development"],
+    "resources": [
+      {"type":"docs","title":"Android Developers Documentation","url":"https://developer.android.com/docs"},
+      {"type":"video","title":"Android Development Full Course","url":"https://youtu.be/fis26HvvDII"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"android","projectStack":"Kotlin (Android)"}
+  },
+  {
+    "name": "iOS Development", "category": "stack",
+    "aliases": ["ios","ios development","iphone development"],
+    "resources": [
+      {"type":"docs","title":"Apple iOS Developer Documentation","url":"https://developer.apple.com/documentation/"},
+      {"type":"video","title":"iOS Development Course","url":"https://youtu.be/CwA1VWP0Ldw"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Swift", "category": "stack",
+    "aliases": ["swift","swift language"],
+    "resources": [
+      {"type":"docs","title":"Swift Documentation","url":"https://www.swift.org/documentation/"},
+      {"type":"video","title":"Swift Programming Course","url":"https://youtu.be/comQ1-x2a1Q"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "SwiftUI", "category": "stack",
+    "aliases": ["swiftui","swift ui"],
+    "resources": [
+      {"type":"docs","title":"SwiftUI Documentation","url":"https://developer.apple.com/xcode/swiftui/"},
+      {"type":"video","title":"SwiftUI Tutorial","url":"https://youtu.be/b1oC7sLIgpI"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Kotlin", "category": "stack",
+    "aliases": ["kotlin"],
+    "resources": [
+      {"type":"docs","title":"Kotlin Documentation","url":"https://kotlinlang.org/docs/home.html"},
+      {"type":"video","title":"Kotlin Full Course","url":"https://youtu.be/EExSSotojVI"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"android","projectStack":"Kotlin (Android)"}
+  },
+  {
+    "name": "Android SDK", "category": "stack",
+    "aliases": ["android sdk","sdk android"],
+    "resources": [
+      {"type":"docs","title":"Android SDK Documentation","url":"https://developer.android.com/tools"},
+      {"type":"video","title":"Android SDK Tutorial","url":"https://youtu.be/Vw1zT6vV9KQ"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"android","projectStack":"Kotlin (Android)"}
+  },
+  {
+    "name": "Firebase Mobile", "category": "stack",
+    "aliases": ["firebase mobile","firebase android","firebase ios"],
+    "resources": [
+      {"type":"video","title":"Firebase Mobile Course","url":"https://youtu.be/9kRgVxULbag"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"android","projectStack":null}
+  },
+  {
+    "name": "UI/UX Design", "category": "other",
+    "aliases": ["ui/ux","ux research","user testing","visual hierarchy","typography","user experience","user interface","design theory","advanced ux research","visual hierarchy and typography","typography theory","visual hierarchy and typography theory"],
+    "resources": [
+      {"type":"docs","title":"Interaction Design Foundation","url":"https://www.interaction-design.org/literature"},
+      {"type":"video","title":"UI/UX Design Full Course - freeCodeCamp","url":"https://youtu.be/c9Wg6Ry_OMY"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Figma", "category": "other",
+    "aliases": ["figma","figma mastery","figma prototyping","figma design","professional figma","prototyping & design","professional figma mastery"],
+    "resources": [
+      {"type":"docs","title":"Figma Help Center","url":"https://help.figma.com/hc/en-us"},
+      {"type":"video","title":"Figma UI/UX Design Tutorial - freeCodeCamp","url":"https://youtu.be/Ft-FtV-bHkE"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Operating Systems", "category": "cs-core",
+    "aliases": ["operating systems","os concepts","operating system fundamentals","concurrency and threading","process scheduling"],
+    "resources": [
+      {"type":"docs","title":"Operating Systems Three Easy Pieces (OSTEP)","url":"https://pages.cs.wisc.edu/~remzi/OSTEP/"},
+      {"type":"video","title":"Operating Systems Full Course - freeCodeCamp","url":"https://youtu.be/26QPDBe-NB8"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","section":"Processes & Threads"},{"subject":"os","section":"CPU Scheduling"},{"subject":"os","section":"Synchronization"},{"subject":"os","section":"Deadlocks"},{"subject":"os","section":"Memory Management"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Computer Networks", "category": "cs-core",
+    "aliases": ["computer networks","networking","tcp/ip","osi model","http/https","dns networking"],
+    "resources": [
+      {"type":"docs","title":"MDN Web Docs - How the Web Works","url":"https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Web_mechanics/How_does_the_Internet_work"},
+      {"type":"video","title":"Computer Networking Course - NetworkChuck","url":"https://youtu.be/IPvYjXCsTg8"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","section":"OSI Model"},{"subject":"cn","section":"TCP/IP Model"},{"subject":"cn","section":"Transport Layer"},{"subject":"cn","section":"Application Layer"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Database Indexing & Optimization", "category": "cs-core",
+    "aliases": ["database indexing","db indexing","b-tree indexing","indexing strategies","query optimization","explain analyze"],
+    "resources": [
+      {"type":"docs","title":"Use The Index, Luke! - Guide to DB Performance","url":"https://use-the-index-luke.com/"},
+      {"type":"video","title":"Database Indexing Fundamentals - Hussein Nasser","url":"https://youtu.be/-qNSXK7s7_w"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","section":"Indexing & File Organization"},{"subject":"dbms","section":"Advanced Concepts"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Apache Cassandra & NoSQL", "category": "cs-core",
+    "aliases": ["cassandra","apache cassandra","nosql databases","wide-column store","nosql modeling"],
+    "resources": [
+      {"type":"docs","title":"Apache Cassandra Official Documentation","url":"https://cassandra.apache.org/doc/latest/"},
+      {"type":"video","title":"Apache Cassandra in 100 Seconds - Fireship","url":"https://youtu.be/4GWzU_mXyHQ"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","section":"Advanced Concepts"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Machine Learning Fundamentals", "category": "stack",
+    "aliases": ["machine learning","ml fundamentals","scikit-learn","deep learning","ai and ml"],
+    "resources": [
+      {"type":"docs","title":"Scikit-Learn Official User Guide","url":"https://scikit-learn.org/stable/user_guide.html"},
+      {"type":"video","title":"Machine Learning Course for Beginners - freeCodeCamp","url":"https://youtu.be/NWONtOF6Vno"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"machine-learning","projectStack":null}
+  },
+  {
+    "name": "gRPC & Protocol Buffers", "category": "stack",
+    "aliases": ["grpc","protocol buffers","protobuf","grpc microservices"],
+    "resources": [
+      {"type":"docs","title":"gRPC Official Documentation","url":"https://grpc.io/docs/"},
+      {"type":"video","title":"gRPC Crash Course - Hussein Nasser","url":"https://youtu.be/gn73U174YgU"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Agile & Scrum", "category": "soft",
+    "aliases": ["agile","scrum","agile development","kanban","sprint planning"],
+    "resources": [
+      {"type":"docs","title":"The Scrum Guide","url":"https://scrumguides.org/scrum-guide.html"},
+      {"type":"video","title":"Agile Scrum Methodology - Edureka","url":"https://youtu.be/9TycLR0TqFA"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "HTML", "category": "stack",
+    "aliases": ["html","html5","semantic html","markup"],
+    "resources": [
+      {"type":"docs","title":"HTML Docs - MDN","url":"https://developer.mozilla.org/en-US/docs/Web/HTML"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"frontend","projectStack":null}
+  },
+  {
+    "name": "CSS", "category": "stack",
+    "aliases": ["css","css3","stylesheets","cascading style sheets"],
+    "resources": [
+      {"type":"docs","title":"CSS Docs - MDN","url":"https://developer.mozilla.org/en-US/docs/Web/CSS"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"frontend","projectStack":null}
+  },
+  {
+    "name": "Responsive Design", "category": "stack",
+    "aliases": ["responsive design","responsive web design","mobile first","mobile-first","media queries"],
+    "resources": [
+      {"type":"docs","title":"Learn Responsive Design - web.dev","url":"https://web.dev/learn/design"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"frontend","projectStack":null}
+  },
+  {
+    "name": "Web Accessibility", "category": "stack",
+    "aliases": ["web accessibility","accessibility","a11y","wcag"],
+    "resources": [
+      {"type":"docs","title":"Accessibility - MDN","url":"https://developer.mozilla.org/en-US/docs/Web/Accessibility"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"frontend","projectStack":null}
+  },
+  {
+    "name": "Build Tools (Webpack/Vite)", "category": "stack",
+    "aliases": ["webpack","vite","module bundler","bundler","build tooling"],
+    "resources": [
+      {"type":"docs","title":"Vite Guide","url":"https://vite.dev/guide/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "C#", "category": "stack",
+    "aliases": ["c#","csharp","c sharp"],
+    "resources": [
+      {"type":"docs","title":"C# Documentation - Microsoft Learn","url":"https://learn.microsoft.com/en-us/dotnet/csharp/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":".NET"}
+  },
+  {
+    "name": "Rust", "category": "stack",
+    "aliases": ["rust","rust lang","rustlang"],
+    "resources": [
+      {"type":"docs","title":"The Rust Programming Language (the book)","url":"https://doc.rust-lang.org/book/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Rust"}
+  },
+  {
+    "name": "Statistics", "category": "cs-core",
+    "aliases": ["statistics","statistical analysis","probability and statistics"],
+    "resources": [
+      {"type":"docs","title":"Statistics and Probability - Khan Academy","url":"https://www.khanacademy.org/math/statistics-probability"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"data-analytics","projectStack":null}
+  },
+  {
+    "name": "Data Analysis", "category": "stack",
+    "aliases": ["data analysis","data analytics","exploratory data analysis","eda"],
+    "resources": [
+      {"type":"docs","title":"pandas User Guide","url":"https://pandas.pydata.org/docs/user_guide/index.html"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"data-analytics","projectStack":null}
+  },
+  {
+    "name": "Data Cleaning", "category": "stack",
+    "aliases": ["data cleaning","data cleansing","data wrangling","data preprocessing","data preparation"],
+    "resources": [
+      {"type":"docs","title":"Working with missing data - pandas","url":"https://pandas.pydata.org/docs/user_guide/missing_data.html"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"data-analytics","projectStack":null}
+  },
+  {
+    "name": "Pandas & NumPy", "category": "stack",
+    "aliases": ["pandas","numpy","pandas and numpy"],
+    "resources": [
+      {"type":"docs","title":"Getting started - pandas","url":"https://pandas.pydata.org/docs/getting_started/index.html"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"data-analytics","projectStack":null}
+  },
+  {
+    "name": "Excel", "category": "stack",
+    "aliases": ["excel","microsoft excel","ms excel","spreadsheets"],
+    "resources": [
+      {"type":"docs","title":"Excel Help - Microsoft Support","url":"https://support.microsoft.com/en-us/excel"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"data-analytics","projectStack":null}
+  },
+  {
+    "name": "Tableau", "category": "stack",
+    "aliases": ["tableau"],
+    "resources": [
+      {"type":"docs","title":"Tableau Get Started Tutorial","url":"https://help.tableau.com/current/guides/get-started-tutorial/en-us/get-started-tutorial-home.htm"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Power BI", "category": "stack",
+    "aliases": ["power bi","powerbi"],
+    "resources": [
+      {"type":"docs","title":"Power BI Overview - Microsoft Learn","url":"https://learn.microsoft.com/en-us/power-bi/fundamentals/power-bi-overview"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "TensorFlow", "category": "stack",
+    "aliases": ["tensorflow","keras"],
+    "resources": [
+      {"type":"docs","title":"TensorFlow Learn","url":"https://www.tensorflow.org/learn"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"machine-learning","projectStack":null}
+  },
+  {
+    "name": "PyTorch", "category": "stack",
+    "aliases": ["pytorch","torch"],
+    "resources": [
+      {"type":"docs","title":"PyTorch Tutorials","url":"https://pytorch.org/tutorials/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"machine-learning","projectStack":null}
+  },
+  {
+    "name": "Concurrency & Multithreading", "category": "cs-core",
+    "aliases": ["concurrency","multithreading","multi-threading","threading","parallel programming","thread safety"],
+    "resources": [
+      {"type":"docs","title":"Concurrency - The Java Tutorials","url":"https://docs.oracle.com/javase/tutorial/essential/concurrency/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","section":"Processes & Threads"},{"subject":"os","section":"Synchronization"},{"subject":"os","section":"Deadlocks"}],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Caching", "category": "cs-core",
+    "aliases": ["caching","cache","http caching"],
+    "resources": [
+      {"type":"docs","title":"HTTP Caching - MDN","url":"https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+  },
+  {
+    "name": "Nginx", "category": "stack",
+    "aliases": ["nginx","reverse proxy"],
+    "resources": [
+      {"type":"docs","title":"nginx documentation","url":"https://nginx.org/en/docs/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Jenkins", "category": "stack",
+    "aliases": ["jenkins","jenkins pipeline"],
+    "resources": [
+      {"type":"docs","title":"Jenkins User Documentation","url":"https://www.jenkins.io/doc/"}
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+  },
+  {
+    "name": "Communication", "category": "soft",
+    "aliases": ["communication","communication skills","verbal communication","written communication","presentation skills"],
+    "resources": [
+
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null,"behavioral":true}
+  },
+  {
+    "name": "Teamwork", "category": "soft",
+    "aliases": ["teamwork","team player","collaboration","collaborative"],
+    "resources": [
+
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null,"behavioral":true}
+  },
+  {
+    "name": "Leadership & Mentoring", "category": "soft",
+    "aliases": ["leadership","mentoring","mentorship","mentor others","technical leadership","team lead"],
+    "resources": [
+
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null,"behavioral":true}
+  },
+  {
+    "name": "Problem Solving", "category": "soft",
+    "aliases": ["problem solving","problem-solving","analytical thinking","analytical skills","critical thinking"],
+    "resources": [
+
+    ],
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null,"behavioral":true}
   }
 ]

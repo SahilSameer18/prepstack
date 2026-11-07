@@ -27,8 +27,8 @@ describe('copies of client data stay in sync', { skip: !hasClient && 'client fol
 });
 
 describe('the skill catalog', () => {
-  it('has 94 skills with unique names and a list of lower-case aliases', () => {
-    assert.equal(catalog.length, 94);
+  it('has at least the 94 original skills, with unique names and a list of lower-case aliases', () => {
+    assert.ok(catalog.length >= 94);
     assert.equal(new Set(catalog.map((s) => s.name)).size, catalog.length);
     for (const s of catalog) {
       assert.ok(s.name.trim() && Array.isArray(s.aliases) && s.aliases.length > 0, s.name);
@@ -53,7 +53,7 @@ describe('buildContext: built from what PrepStack really contains', () => {
     const ctx = await ctxService.buildContext();
     assert.deepEqual(ctx.dsaRefs, ['dsa:Arrays', 'dsa:Strings']);
     for (const slug of ctxService.ROADMAP_SLUGS) assert.ok(ctx.refs.includes(`roadmap:${slug}`));
-    assert.equal(ctx.skillNames.length, 94);
+    assert.equal(ctx.skillNames.length, catalog.length);
     assert.equal(ctx.behavioral.length, behavioral.length);
   });
   it('picks up CS notes sections from the database (and nothing when there are none)', async () => {
