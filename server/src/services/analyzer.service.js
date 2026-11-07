@@ -1,5 +1,5 @@
 // Role Analyzer: compare a resume with a job description and build a preparation report.
-// DRAFT for Phase 0 (see ANALYZER_PLAN.md). Everything here is pure or goes through the shared AI cascade, and it never
+// DRAFT for Phase 0 (see docs/plans/ANALYZER_PLAN.md). Everything here is pure or goes through the shared AI cascade, and it never
 // touches a database: the caller passes in a context `ctx` built from the catalog and PrepStack's content:
 //   ctx = {
 //     skillNames: string[]                       the skill catalog (closed list the AI must choose from)

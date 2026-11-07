@@ -1,3 +1,7 @@
+# Growth ideas: what would make PrepStack stand out
+
+Ideas only, nothing here is built or promised. Kept for reference.
+
 The 7 levers, in order of impact
 
 1. Real users and measured outcomes (biggest jump)

@@ -200,7 +200,7 @@ const evaluate = async (name, run, sample) => {
     }
   }
 
-  // ── totals and the gate from ANALYZER_PLAN.md ──
+  // ── totals and the gate from docs/plans/ANALYZER_PLAN.md ──
   console.log('\n\n================= TOTALS =================');
   const totals = {};
   for (const name of ['old', 'new']) {

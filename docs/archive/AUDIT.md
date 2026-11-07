@@ -1,5 +1,11 @@
 # PrepStack code audit
 
+> **Status (checked 2026-11-07): archived, historical report.** Do not treat it as current.
+> - **Fixed in code:** login limiter skips successful requests (1); dead "Forgot password" button removed (2); `GOOGLE_CLIENT_ID` startup check (4); AI model names from env, `GEMINI_PRIMARY_MODEL` etc. (6); attempt limiter on password change and delete (11); sheet slug lowercased (12); docs mostly fixed (7).
+> - **Still open:** no cache for DSA sheet reads (3); no client tests (8); unused `lucide-react` still in `client/package.json` (9); project list has no `.limit(100)` (10).
+> - **Not verified:** a Google account with no name crashing the username helper (5).
+> - Paths and file names below are as they were on the audit date; some docs mentioned here have since moved or been deleted.
+
 Date: 2026-11-07. Report only: no code was changed by this audit.
 
 **What this repo does:** PrepStack is a website where students track DSA sheets, read CS notes, follow roadmaps and generate AI project ideas. It has a React front end and an Express and MongoDB back end.

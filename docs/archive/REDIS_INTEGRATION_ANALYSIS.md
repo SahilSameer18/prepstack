@@ -1,4 +1,6 @@
 # Comprehensive Architectural & Implementation Analysis
+
+> **Note:** written Aug 2026 as an analysis. Redis was never implemented, and code samples here may not match the current code.
 # Redis Integration Plan: PrepStack Backend (Upstash · 3 Phases)
 
 **Date:** August 5, 2026  
