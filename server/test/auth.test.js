@@ -182,6 +182,14 @@ describe('Authentication: register, login, refresh, sessions', () => {
       const other = await t.api.post('/api/auth/login', { body: { email: 'x@example.com', password: 'WrongPass1' } });
       assert.equal(other.status, 401); // a different IP is unaffected
     });
+
+    it('does not count successful logins, so many students behind one Wi-Fi address can all log in', async () => {
+      const acct = await t.register();
+      const ip = '203.0.113.77';
+      const statuses = [];
+      for (let i = 0; i < 12; i++) statuses.push((await t.api.post('/api/auth/login', { ip, body: { email: acct.email, password: acct.password } })).status);
+      assert.deepEqual(statuses, Array(12).fill(200));
+    });
   });
 
   // ───────────────────────────── access-token middleware ─────────────────────────────

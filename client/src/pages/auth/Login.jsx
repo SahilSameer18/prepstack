@@ -245,12 +245,6 @@ const Login = () => {
               </div>
             </motion.div>
 
-            <motion.div className="flex justify-end" variants={formItem}>
-              <button type="button" className="text-sm text-[#ffa116] hover:text-[#ffb84d] transition-colors font-medium">
-                Forgot password?
-              </button>
-            </motion.div>
-
             <motion.button
               type="submit"
               disabled={loading}

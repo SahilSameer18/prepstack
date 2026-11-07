@@ -15,12 +15,28 @@ const aiProjectLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Login / Google sign-in / set-password: only FAILED attempts count, so wrong-password guessing is throttled
+// but a whole college behind one campus Wi-Fi address can still log in normally.
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // 10 login/register attempts per 15 min
+  max: 10, // 10 failed attempts per 15 min per IP
+  skipSuccessfulRequests: true,
   message: {
     success: false,
     message: "Too many attempts. Please try again after 15 minutes.",
+    errors: ["Rate limit exceeded. Please try again after 15 minutes."],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Sign-ups: every request counts (stops one address mass-creating accounts), with room for a class signing up together.
+const registerLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: {
+    success: false,
+    message: "Too many sign-up attempts. Please try again after 15 minutes.",
     errors: ["Rate limit exceeded. Please try again after 15 minutes."],
   },
   standardHeaders: true,
@@ -51,4 +67,4 @@ const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter };
+module.exports = { authLimiter, registerLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter };
