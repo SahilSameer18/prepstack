@@ -3,7 +3,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import {
   FiCode, FiMap, FiCpu, FiBook, FiMessageSquare, FiFileText,
-  FiHelpCircle, FiActivity, FiArrowRight, FiZap, FiLogOut, FiGrid, FiUser
+  FiArrowRight, FiZap, FiLogOut, FiGrid, FiUser, FiTarget
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
@@ -53,15 +53,15 @@ const Navbar = () => {
   const mainLinks = [
     { name: "DSA Sheets", path: "/dsa", icon: <FiCode /> },
     { name: "AI Projects", path: "/ai-projects", icon: <FiCpu /> },
-    { name: "Roadmaps", path: "/roadmaps", icon: <FiMap /> },
+    { name: "Role Analyzer", path: "/analyzer", icon: <FiTarget /> },
   ];
 
   const exploreLinks = [
     { name: "CS Notes", path: "/notes", icon: <FiBook />, desc: "OS, DBMS, Networks & OOPs" },
+    { name: "Roadmaps", path: "/roadmaps", icon: <FiMap />, desc: "Step-by-step learning paths" },
     { name: "Behavioral Prep", path: "/behavioral", icon: <FiMessageSquare />, desc: "HR & soft skills questions" },
     { name: "Resume Guide", path: "/resume", icon: <FiFileText />, desc: "Build an ATS-ready resume" },
-    { name: "Quiz", path: "/quiz", icon: <FiHelpCircle />, desc: "Test your knowledge" },
-    { name: "Aptitude", path: "/aptitude", icon: <FiActivity />, desc: "Placement aptitude prep" },
+    // Quiz (/quiz) and Aptitude (/aptitude) are hidden until they are built. The pages and routes still exist, so old links work.
   ];
 
   return (

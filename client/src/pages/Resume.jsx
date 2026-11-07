@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   FaCheckCircle,
   FaTimesCircle,
@@ -196,6 +197,7 @@ const Resume = () => {
         <p className="text-zinc-400 text-base sm:text-lg max-w-2xl font-normal leading-relaxed">
           The tactical blueprint for building an ATS-optimized, high-signal engineering resume designed to clear FAANG and tier-1 screening rounds.
         </p>
+        <Link to="/analyzer" className="inline-block mt-3 text-sm text-[#ffa116] hover:underline">Check your resume against a real job with the Role Analyzer &rarr;</Link>
       </div>
 
       {/* Engineering Rule Callout */}

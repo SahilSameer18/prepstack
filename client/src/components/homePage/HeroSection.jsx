@@ -61,6 +61,8 @@ const HeroSection = () => {
             )}
           </div>
 
+          <Link to="/analyzer" className="inline-block text-sm text-[#ffa116] hover:underline">New: match your resume to a job with the Role Analyzer &rarr;</Link>
+
           {/* Target Placement Ticker */}
           <div className="pt-2 flex flex-wrap items-center gap-2 font-ui text-xs text-zinc-400">
             <span className="text-zinc-300 font-semibold flex items-center gap-1">

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FiSearch, FiChevronDown, FiChevronUp, FiMessageSquare, FiZap, FiUsers, FiTarget, FiCpu, FiStar } from "react-icons/fi";
 import { behavioralQuestions } from "../data/behavioralQuestions";
 import { motion, AnimatePresence } from "framer-motion";
@@ -133,6 +134,7 @@ const Behavioral = () => {
         <p className="text-zinc-400 max-w-2xl text-sm sm:text-base leading-relaxed">
           Master the behavioral and leadership rounds for top-tier tech roles. Practice curated question archetypes with STAR answer frameworks and strategic evaluation signals.
         </p>
+        <Link to="/analyzer" className="inline-block mt-3 text-sm text-[#ffa116] hover:underline">Get questions picked for a specific job with the Role Analyzer &rarr;</Link>
       </div>
 
       {/* ── STAR Method callout ── */}

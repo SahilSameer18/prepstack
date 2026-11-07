@@ -12,6 +12,7 @@ import { useProject } from "../../hooks/useProject";
 import { getDashboardSummary } from "../../api/services/userService";
 import DSADash from "./DsaDash";
 import ProjectDash from "./ProjectDash";
+import RecentReports from "../../components/analyzer/RecentReports";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
 
 // ── UnifiedDashboard ───────────────────────────────────────────────────────
@@ -162,6 +163,7 @@ const UnifiedDashboard = () => {
       ) : (
         <DSADash dsaData={dsaData} loading={loading} stats={stats} />
       )}
+      <RecentReports />
       <ProjectDash />
     </div>
   );

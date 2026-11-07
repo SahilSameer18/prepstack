@@ -8,10 +8,10 @@ const Footer = () => {
     { name: "CS Notes", url: "/notes" },
     { name: "Roadmaps", url: "/roadmaps" },
     { name: "AI Projects", url: "/ai-projects" },
+    { name: "Role Analyzer", url: "/analyzer" },
     { name: "Behavioral Prep", url: "/behavioral" },
     { name: "Resume Guide", url: "/resume" },
-    { name: "Quiz Practice", url: "/quiz" },
-    { name: "Aptitude Tests", url: "/aptitude" },
+    // Quiz and Aptitude are hidden until they are built (their routes still work)
   ];
 
   const social = [

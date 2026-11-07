@@ -17,6 +17,8 @@ const NotesDetail = lazy(() => import('./pages/csNotes/NotesDetail'));
 const Roadmap = lazy(() => import('./pages/roadmaps/Roadmap'));
 const RoadmapDetail = lazy(() => import('./pages/roadmaps/RoadmapDetail'));
 const AIProjectIdeas = lazy(() => import('./pages/project/AIProjectIdeas'));
+const Analyzer = lazy(() => import('./pages/analyzer/Analyzer'));
+const AnalyzerReport = lazy(() => import('./pages/analyzer/AnalyzerReport'));
 const Resume = lazy(() => import('./pages/Resume'));
 const Behavioral = lazy(() => import('./pages/Behavioral'));
 const Quiz = lazy(() => import('./pages/Quiz'));
@@ -80,6 +82,20 @@ export const router = createBrowserRouter([
         element:
           <ProtectedRoute>
             <AIProjectIdeas />
+          </ProtectedRoute>
+      },
+      {
+        path: "/analyzer",
+        element:
+          <ProtectedRoute>
+            <Analyzer />
+          </ProtectedRoute>
+      },
+      {
+        path: "/analyzer/:id",
+        element:
+          <ProtectedRoute>
+            <AnalyzerReport />
           </ProtectedRoute>
       },
       {

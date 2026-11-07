@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiCpu, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiLoader, FiList } from "react-icons/fi";
 import { useProject } from '../../hooks/useProject'
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 
 // KEEP IN SYNC with KNOWN_STACKS in server/src/services/ai.service.js: typed names that are not in this list are
@@ -15,11 +15,15 @@ const domains = ["FinTech", "HealthTech", "EdTech", "E-Commerce", "SaaS", "Web3"
 const AIProjectIdeas = () => {
   const navigate = useNavigate();
   const { projectId } = useParams();
-  const [form, setForm] = useState({ techStack: "", complexity: "", domain: "", notes: "" });
+  const [searchParams] = useSearchParams();
+  // The Role Analyzer links here with ?stack=Docker: a known stack selects its button, anything else fills the "Other" box.
+  const wanted = (searchParams.get("stack") || "").trim().slice(0, 40);
+  const known = techStacks.find((s) => s.toLowerCase() === wanted.toLowerCase());
+  const [form, setForm] = useState({ techStack: known || (isValidStackName(wanted) ? wanted : ""), complexity: "", domain: "", notes: "" });
   const { generateProject, getProjectById, loading, project, setProject } = useProject();
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(null);
-  const [customStack, setCustomStack] = useState(false); // "Other": the user types their own tech stack
+  const [customStack, setCustomStack] = useState(!known && isValidStackName(wanted)); // "Other": the user types their own tech stack
 
   useEffect(() => {
     if (projectId) {

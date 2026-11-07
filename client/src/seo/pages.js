@@ -121,6 +121,7 @@ const pages = [
     ['/dashboard', 'Dashboard | PrepStack', 'Your PrepStack dashboard.'],
     ['/profile', 'Profile | PrepStack', 'Your PrepStack profile.'],
     ['/ai-projects', 'AI Project Ideas | PrepStack', 'Generate project ideas with AI.'],
+    ['/analyzer', 'Role Analyzer | PrepStack', 'Match your resume to a job description.'],
     ['/login', 'Log in | PrepStack', 'Log in to PrepStack.'],
     ['/register', 'Create your account | PrepStack', 'Create a free PrepStack account.'],
     ['/quiz', 'Quiz (coming soon) | PrepStack', 'Quizzes are coming soon.'],
@@ -140,6 +141,7 @@ const byPath = new Map(allPages.map((p) => [p.path, p]));
 /** SEO data for any URL path. Unknown paths (wrong slug, typos) get a noindex "not found" page. */
 export const pageFor = (pathname) => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  if (clean.startsWith('/analyzer/')) return { ...byPath.get('/analyzer'), path: clean, title: 'Your role report | PrepStack' }; // private report pages: noindex like /analyzer
   return byPath.get(clean) || { ...NOT_FOUND, path: clean };
 };
 

@@ -60,7 +60,7 @@ const PrivacyPolicy = () => {
                 <FiDatabase className="text-cyan-400" /> Practice & Learning Progress
               </div>
               <p className="text-xs text-gray-400">
-                We store which DSA problems you have marked as solved on each sheet, and the AI project ideas generated for you (title, description, features, tech stack, difficulty, time estimate and the domain you chose), so your progress is available on all your devices.
+                We store which DSA problems you have marked as solved on each sheet, the AI project ideas generated for you (title, description, features, tech stack, difficulty, time estimate and the domain you chose), and your Role Analyzer reports (the job description you pasted and the report: score, skill gaps, questions and study plan, including short quotes from your resume), so your progress is available on all your devices.
               </p>
             </div>
             <div className="bg-[#111] border border-white/[0.08] rounded-xl p-4 space-y-2 sm:col-span-2">
@@ -99,6 +99,7 @@ const PrivacyPolicy = () => {
             <li>To authenticate your sessions and manage secure token renewal across up to 10 concurrent devices.</li>
             <li>To persist and display your DSA problem progress and completion statistics.</li>
             <li>To generate AI project ideas: the options you enter on the AI Projects page (tech stack, complexity, domain and any extra notes) are sent to Google's Gemini API and, if Gemini is busy or unavailable, to Groq's API. Please do not put personal information in the extra notes.</li>
+            <li>To write a Role Analyzer report: the job description you paste and the text of your resume (with email addresses, phone numbers and links removed first) are sent to Google's Gemini API and, if Gemini is busy or unavailable, to Groq's API. We do not keep your resume or the PDF. We keep only the job description and the report, so you can open it again, and you can delete any report or your whole account at any time.</li>
             <li>To detect abuse, enforce rate limits, and protect user accounts from credential stuffing attacks.</li>
             <li>To operate and debug the service using the request logs described above.</li>
           </ul>
@@ -150,8 +151,8 @@ const PrivacyPolicy = () => {
           </p>
           <ul className="list-disc pl-5 space-y-1 text-gray-400">
             <li><strong className="text-white">Google OAuth 2.0:</strong> Identity provider for single sign-on.</li>
-            <li><strong className="text-white">Google Gemini API:</strong> Generative AI engine for project ideas. It receives the options you enter when you generate an idea.</li>
-            <li><strong className="text-white">Groq API:</strong> Backup AI engine used only when Gemini is busy or unavailable. It receives the same options. We use the free plans of both AI services, and under their own terms they may use what is sent to them to improve their services, so please keep personal information out of the extra notes.</li>
+            <li><strong className="text-white">Google Gemini API:</strong> Generative AI engine for project ideas. It receives the options you enter when you generate an idea, and the text you submit to the Role Analyzer.</li>
+            <li><strong className="text-white">Groq API:</strong> Backup AI engine used only when Gemini is busy or unavailable. It receives the same text. We use the free plans of both AI services, and under their own terms they may use what is sent to them to improve their services, so please keep personal information out of the extra notes, the job description and your resume text.</li>
             <li><strong className="text-white">MongoDB Atlas:</strong> Encrypted cloud database for accounts, progress and sessions.</li>
             <li><strong className="text-white">Our hosting providers:</strong> serve the website and the API and keep standard server logs.</li>
             <li><strong className="text-white">DiceBear (api.dicebear.com):</strong> generates the default avatar image. Your browser requests it directly, and the request contains your username as the image seed.</li>

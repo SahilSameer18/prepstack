@@ -72,6 +72,7 @@ const TermsOfUse = () => {
             <li>Attempt to bypass rate limiting, authentication safeguards, or DDoS protections.</li>
             <li>Share access tokens or compromise the security of other students' accounts.</li>
             <li>Use the AI generation endpoints to produce malicious, fraudulent, or harmful code.</li>
+            <li>Upload another person's resume or personal details to the Role Analyzer without their permission. Its reports are AI-written advice and do not promise an interview or a job.</li>
           </ul>
           <p className="text-xs text-gray-400 pt-1">
             <strong className="text-white">User Session Responsibility:</strong> You are responsible for safeguarding your credentials and monitoring your active logins. We provide an in-app <strong className="text-white">Active Devices & Sessions Manager</strong> allowing you to inspect logged-in devices and revoke remote sessions at any time.
