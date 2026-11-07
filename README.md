@@ -9,7 +9,7 @@
 [![Express Version](https://img.shields.io/badge/Express-5.2-000000.svg?logo=express&style=for-the-badge)](https://expressjs.com/)
 [![AI Integration](https://img.shields.io/badge/Gemini--AI-Structured-red.svg?logo=googlegemini&style=for-the-badge)](https://ai.google.dev/)
 
-**A premium, full-stack SDE interview preparation ecosystem.**
+**A full-stack SDE interview preparation platform: DSA sheets, CS notes, AI project ideas and a resume-vs-job analyzer.**
 
 [Live Demo](https://prepstack-ss.vercel.app) · [Report Bug](https://github.com/SahilSameer18/prepstack/issues) · [Request Feature](https://github.com/SahilSameer18/prepstack/issues)
 
@@ -17,7 +17,7 @@
 
 ---
 
-PrepStack is a full-stack SDE interview preparation platform that unifies **AI-powered project generation**, **DSA progress tracking**, **CS fundamentals revision**, and **behavioral interview workflows** in one place.
+PrepStack is a full-stack SDE interview preparation platform that unifies **AI-powered project generation**, **DSA progress tracking**, **CS fundamentals revision**, **behavioral interview workflows** and a **Role Analyzer** (match your resume to a job description) in one place.
 
 ---
 
@@ -33,6 +33,8 @@ PrepStack is a full-stack SDE interview preparation platform that unifies **AI-p
 - [🔗 API Endpoint Reference](#-api-endpoint-reference)
 - [🚀 Local Installation \& Seeding Guide](#-local-installation--seeding-guide)
 - [💼 Available Scripts](#-available-scripts)
+- [🧪 Testing](#-testing)
+- [⚠️ Known Limitations](#️-known-limitations)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 
@@ -47,6 +49,7 @@ PrepStack centralizes the workflow:
 1. **Generates unique, recruiter-ready SDE project profiles** tailored to your tech stack and domain, returning STAR-style resume bullet points via Gemini AI.
 2. **Tracks problem-solving progress asynchronously** across industry-standard DSA sheets (Striver A2Z + SDE, Blind75, NeetCode, Love Babbar) in one clean dashboard.
 3. **Consolidates core CS theory revisions** (OS, DBMS, Networks, OOP) and behavioral STAR strategies in an interactive hub.
+4. **Matches your resume to a real job description** and turns the gaps into a study plan that links back to PrepStack's own sheets, notes and roadmaps (the Role Analyzer: score computed by code, every quote checked against the resume).
 
 ---
 
@@ -54,25 +57,15 @@ PrepStack centralizes the workflow:
 
 - **Single-Roundtrip Dashboard Engine:** Aggregates all sheet progress, problem statistics, and AI project metrics into a single optimized `/api/user/dashboard-summary` endpoint using parallel Mongoose lookups and O(1) in-memory progress mapping.
 - **Type-Safe GenAI Pipeline:** Builds the response schema with Zod's built-in `z.toJSONSchema` and sends it to the Gemini SDK. The reply is then checked again with `safeParse` before anything is saved; a malformed or incomplete reply never reaches the database.
-- **Enterprise Multi-Device Hashed Auth:** Refresh tokens are never stored in plaintext: they are stored at rest as cryptographic **SHA-256 hashes** (`crypto.createHash('sha256')`), delivering sub-millisecond OpenSSL performance without blocking the Node.js event loop. Supports up to 10 simultaneous active devices with single-device logout and global session flushing (`/logout-all`).
-- **Device Fingerprinting & Active Sessions Manager:** Native, zero-dependency User-Agent and client IP resolution utility mapping active sessions into human-readable device identifiers (*"Chrome on Windows 11"*, *"Safari on iPhone"*) with an interactive Profile UI supporting granular remote revocation.
-- **Automated Password Revocation Policy:** Changing an account password immediately purges all *other* active device sessions from the database while seamlessly preserving the user's current device session.
-- **GDPR Self-Service Data Erasure:** Full GDPR Article 17 compliance via `DELETE /api/user/account` featuring dual-mode credential verification (password check or email confirmation) and an atomic cascade wipeout across user progress, saved AI projects, and credentials.
+- **Multi-Device Hashed Auth:** Refresh tokens are never stored in plaintext: they are stored at rest as **SHA-256 hashes** (`crypto.createHash('sha256')`, from Node's built-in `crypto`, no extra package). Supports up to 10 simultaneous active devices with single-device logout and global session flushing (`/logout-all`).
+- **Refresh-Token Replay Defence:** if a refresh token that was already rotated is used again after the 10-second grace window, the whole login session is deleted, so a stolen copy and the real user are both signed out. Password change and account deletion allow 10 failed attempts per 15 minutes per signed-in user.
 - **Layered Request Validation:** Custom Express middleware `validate(schema)` intercepts and validates incoming HTTP requests using Zod schemas before hitting controllers, returning structured `422` field-specific errors.
-- **Centralized Error Middleware:** Uniform error handler intercepts Zod validation errors, Mongoose validator/CastErrors (preventing internal DB leaks on invalid object IDs), JWT errors, and duplicate key constraints.
 - **Route Rate Limiting:** In-memory, fixed-window limits via `express-rate-limit`, keyed by client IP (`req.ip`, using Express `trust proxy`) for `authLimiter` (10 failed tries / 15 min, used by login, Google sign-in and set-password), `registerLimiter` (30 / 15 min), `linkGoogleLimiter` (5 / 15 min) and `refreshLimiter` (30 / 15 min), and by user id for the AI generator (4 / hour) and the Role Analyzer (3 / hour). On login and Google sign-in only **failed** attempts count (so wrong-password guessing is throttled, but many students behind one campus Wi-Fi address can still log in); sign-ups and refreshes count every request; the AI limiter skips failed requests. Counters live in the server process: they reset on restart and are not shared between instances, so run a single instance or move them to a shared store (e.g. Redis) before scaling out.
-- **Security Headers:** `helmet` sets standard hardening headers (`X-Content-Type-Options`, `Strict-Transport-Security`, `X-Frame-Options`, ...) and removes `X-Powered-By`.
+- **Startup Secret Validation:** Fail-fast environment checks on server boot enforce the presence and minimum cryptographic length (≥32 characters) for `ACCESS_SECRET` and `REFRESH_SECRET`, and the presence of `GOOGLE_CLIENT_ID` (without it the Google sign-in token check would silently weaken).
 - **Safe Startup & Shutdown:** The server listens only after MongoDB is connected, and `SIGTERM`/`SIGINT`/unhandled errors close the HTTP server and the database connection before exiting.
 - **Health Check & Access Log:** `GET /health` (no login) returns `200 {"status":"ok","db":"up"}` while the database is connected and `503` when it is not, for hosts and uptime monitors. Every other request writes one log line (`METHOD /path status ms`); query strings and bodies are never logged.
-- **Robust OAuth 2.0 Integration:** Built-in Google Sign-In with advanced account linking, anti-hijacking conflict resolution, and automatic unique username generation for OAuth users.
-- **Interactive Live Avatar Customizer:** Integrates deterministic DiceBear bottts generation supporting live preset switching, randomized seed generation, and real-time reactive SVG previews.
-- **Strict Cookie-Only Auth Transport:** Stripped raw JWTs from JSON responses; enforced 100% `httpOnly`, `secure`, and `sameSite` cookie transport across all auth endpoints to prevent client-side token leakage and XSS vulnerabilities.
-- **Atomic Cascade Erasure:** MongoDB multi-document transactions (`session.withTransaction`) guarantee atomic deletion across user records, problem progress, and AI projects during GDPR account deletion.
-- **Startup Secret Validation:** Fail-fast environment checks on server boot enforce the presence and minimum cryptographic length (≥32 characters) for `ACCESS_SECRET` and `REFRESH_SECRET`, and the presence of `GOOGLE_CLIENT_ID` (without it the Google sign-in token check would silently weaken).
-- **Refresh-Token Replay Defence:** if a refresh token that was already rotated is used again after the 10-second grace window, the whole login session is deleted, so a stolen copy and the real user are both signed out. Password change and account deletion allow 10 failed attempts per 15 minutes per signed-in user.
-- **Typed CS Notes Schema:** Enforced explicit `sectionSchema` validation ensuring structured and predictable payloads across all CS fundamental revision topics.
-- **Apple Fluid Motion & Tactile Feedback:** Integrated physics-based spring curves across accordions, drawers, and modal sheets, paired with mobile-safe haptic taps (`navigator.vibrate(10)`) and full accessibility support (`prefers-reduced-motion`, `prefers-reduced-transparency`, `forced-colors`).
-- **Zero-CLS Skeletons & Fluid UX:** Custom pixel-matched skeleton loaders prevent Cumulative Layout Shift (CLS) during asynchronous data fetching, coupled with a full-screen animated logout transition overlay.
+
+> **More:** 12 more engineering details (sessions, account erasure, OAuth, cookies, motion and loading work) are in [docs/ENGINEERING.md](docs/ENGINEERING.md). Testing is described in [TESTING.md](TESTING.md).
 
 ---
 
@@ -80,39 +73,43 @@ PrepStack centralizes the workflow:
 
 ```text
 prepstack/
-├── docs/                   # Design notes, debugging labs and audit write-ups
-├── client/                 # React 19 Frontend
-│   ├── public/             # Static public assets
+├── docs/                        # More technical details (ENGINEERING.md) and working notes
+├── TESTING.md                   # What is tested and how
+├── LICENSE                      # MIT
+├── client/                      # React 19 frontend
+│   ├── public/                  # Static public assets
+│   ├── scripts/                 # Build-time prerender and SEO checks
 │   ├── src/
-│   │   ├── api/            # Axios instance and endpoints service layer
-│   │   ├── components/     # Reusable UI components (skeletons, page loaders, errors)
-│   │   ├── context/        # React Context stores (AuthContext, ProjectContext)
-│   │   ├── data/           # Local static metadata (roadmaps, behavioral questions)
-│   │   ├── hooks/          # React hooks interfacing contexts (useAuth, useProject, useNotes)
-│   │   ├── layout/         # UI templates (NavBar, SideBar)
-│   │   ├── pages/          # Heavy routing pages (DSA, CS Notes, Dashboard, Resume, Profile)
-│   │   ├── utils/          # Client utilities (avatar generator, error extractors)
-│   │   ├── seo/            # Per-page titles, descriptions and share tags (one source of truth)
-│   │   ├── app.routes.jsx  # Route table (login-protected pages use ProtectedRoute)
-│   │   ├── App.jsx         # App shell
-│   │   └── main.jsx        # React entrypoint configuration
-│   ├── scripts/            # Build-time prerender and SEO checks
-│   └── vite.config.js      # Bundling settings
-└── server/                 # Express 5 Backend
+│   │   ├── api/                 # Axios instance (with refresh interceptor) and service layer
+│   │   ├── components/          # Navbar, Footer, home page blocks, auth guard, UI states
+│   │   │   ├── analyzer/        # Score ring, requirement rows, skill gap cards, dashboard reports tab
+│   │   │   └── pdf/             # The report as a PDF (loaded only on download)
+│   │   ├── context/             # React Context stores (Auth, Project)
+│   │   ├── data/                # Static data (roadmaps, behavioral questions)
+│   │   ├── hooks/               # useAuth, useProject, useNotes, ...
+│   │   ├── layout/              # MainLayout
+│   │   ├── pages/               # DSA sheets, CS notes, roadmaps, AI projects, Role Analyzer, Dashboard, Profile, legal
+│   │   ├── seo/                 # Per-page titles, descriptions and share tags (one source of truth)
+│   │   ├── utils/               # Error messages, dates and titles, report links, PDF export, avatars
+│   │   ├── app.routes.jsx       # Route table (login-protected pages use ProtectedRoute)
+│   │   └── main.jsx             # React entrypoint
+│   └── vite.config.js           # Bundling settings
+└── server/                      # Express 5 backend
+    ├── scripts/                 # Hand-run tools: list models, compare models, evaluate the analyzer on sample resumes
     ├── src/
-    │   ├── config/         # Database configurations
-    │   ├── controllers/    # Express controllers (handling requests and next errors)
-    │   ├── data/           # Seeder markdown payloads for notes
-    │   ├── middlewares/    # Custom middlewares (auth, validation, global error, rate limit)
-    │   ├── models/         # MongoDB schemas (User, Notes, Progress, Project, DSASheet)
-    │   ├── routes/         # Express API routers
-    │   ├── seed/           # Seed executors and dataset definitions (LoveBabbar, Striver, NeetCode)
-    │   ├── services/       # AI generation wrappers
-    │   ├── utils/          # Token operations and helper utilities
-    │   ├── validators/     # Zod validation schemas (auth, project, user)
-    │   └── app.js          # Express app entry definition
-    ├── test/               # API tests (node:test + supertest + in-memory MongoDB)
-    └── server.js           # Database listener bootstrap
+    │   ├── config/              # Database configuration
+    │   ├── controllers/         # Request handlers (auth, user, sheets, notes, project, analyzer)
+    │   ├── data/                # CS notes content, skill catalog (120 skills), behavioral question bank
+    │   ├── middlewares/         # Auth, validation, errors, rate limits, PDF upload
+    │   ├── models/              # User, Notes, Progress, Project, DSASheet, InterviewReport
+    │   ├── routes/              # Express routers
+    │   ├── seed/                # Seed scripts and dataset definitions
+    │   ├── services/            # AI provider chain, analyzer, resume reader, skill matcher
+    │   ├── utils/               # Tokens, device parsing, response helpers
+    │   ├── validators/          # Zod schemas (auth, sheets, project, user, analyzer)
+    │   └── app.js               # Express app definition
+    ├── test/                    # API and service tests (node:test + supertest + in-memory MongoDB)
+    └── server.js                # Startup and shutdown
 ```
 
 ---
@@ -128,7 +125,9 @@ flowchart LR
         Pages["React Views"]
         UI["Tailwind UI"]
         HTTP["Axios API Client"]
+        Pdf["Report PDF (built in the browser)"]
         Pages --> UI --> HTTP
+        Pages --> Pdf
     end
 
     subgraph Backend["Server"]
@@ -136,15 +135,19 @@ flowchart LR
         Router["Express Routes"]
         Guard["Validation + Rate Limiting"]
         Auth["JWT Auth"]
+        Upload["Resume PDF upload (kept in memory)"]
+        Resume["Resume reader (PDF to text, contact details removed)"]
         Ctrl["Controllers"]
-        Service["Services"]
+        Service["Services (project ideas, Role Analyzer)"]
         Guard --> Router --> Auth --> Ctrl --> Service
+        Auth -.->|"Role Analyzer only"| Upload --> Resume --> Ctrl
     end
 
     subgraph External["External"]
         direction TB
         Google["Google OAuth"]
-        AI["Gemini AI"]
+        AI["Gemini AI (3 models)"]
+        Groq["Groq (fallback)"]
         DB["MongoDB Atlas"]
     end
 
@@ -153,7 +156,10 @@ flowchart LR
     Google -->|"Identity"| Auth
     Ctrl -->|"Mongoose"| DB
     Service -->|"Prompt + schema"| AI
+    Service -.->|"if Gemini fails"| Groq
 ```
+
+_The Role Analyzer path: the resume PDF is read in memory, contact details are removed, the text goes to the AI, and the reply is checked again by code. The resume itself is never stored._
 
 ---
 
@@ -203,6 +209,8 @@ sequenceDiagram
     CT-->>Browser: 200 / 201 Success Response
 ```
 
+_This is a simplified view. The exact middleware order differs per route: for example the Role Analyzer route runs auth first, then its rate limit, then the PDF upload, then validation._
+
 ---
 
 ### Multi-Device Hashed Token Refresh Flow
@@ -222,7 +230,7 @@ sequenceDiagram
     alt Swap matched (normal case)
         API-->>Browser: 200 OK (Set-Cookie: new accessToken & new refreshToken)
     else No match, but this exact token was rotated less than 10 s ago (two tabs refreshed together)
-        API-->>Browser: 200 OK (new accessToken only; the winning tab already set the new refresh cookie)
+        API-->>Browser: 200 OK (new accessToken only, because the winning tab already set the new refresh cookie)
     else Unknown, revoked, expired or older replayed token
         API-->>Browser: 403 Forbidden { message: "Invalid or expired refresh token" }
     end
@@ -236,8 +244,8 @@ sequenceDiagram
 
 - **Dynamic Prompts:** Accepts tech stack, domain (FinTech, SaaS, Web3), complexity level (`beginner`/`intermediate`/`advanced`), and extra constraints.
 - **Recruiter-Ready Output:** Gemini generates project descriptions, tagging, estimated timeline, and STAR resume bullets.
-- **Reliable AI cascade (free tier only):** idea generation tries `gemini-3-flash-preview`, then `gemini-3.5-flash-lite`, then `gemini-3.1-flash-lite`, then Groq `openai/gpt-oss-120b`. One retry for "overloaded" errors (never for quota errors), 20 s per call, 55 s in total, at most 5 calls, and a circuit breaker that skips a provider that keeps failing. Model names and keys are settings (`GEMINI_*_MODEL`, `GROQ_MODEL`, `GROQ_API_KEY`), so retiring a model is a config change. If every provider fails the user gets a clear message and the attempt does not count. Full design and limits: `GROQ.md`.
-- **Abuse Protection:** 4 project requests per hour and 15 saved ideas per 24 hours per signed-in user (failed requests are not counted), and only one idea can be generated at a time per user (a second request gets `409`). The page offers 14 tech stack buttons plus **Other (type your own)**: a typed name must be 2 to 40 characters of letters, numbers and `+ # . / & ( ) -`, and the AI is first asked whether it is a real technology (answers are remembered; if the check cannot run the idea is still generated). A user who gets 5 "not a technology" answers in an hour is paused for the rest of the hour, so junk input cannot drain the shared free quota.
+- **Reliable AI cascade (free tier only):** idea generation tries `gemini-3-flash-preview`, then `gemini-3.5-flash-lite`, then `gemini-3.1-flash-lite`, then Groq `openai/gpt-oss-120b`. One retry for "overloaded" errors (never for quota errors), 20 s per call, 55 s in total, at most 5 calls, and a circuit breaker that skips a provider that keeps failing. Model names and keys are settings (`GEMINI_*_MODEL`, `GROQ_MODEL`, `GROQ_API_KEY`), so retiring a model is a config change. If every provider fails the user gets a clear message and the attempt does not count.
+- **Abuse Protection:** 4 project requests per hour and 15 saved ideas per 24 hours per signed-in user (failed requests are not counted), and only one idea can be generated at a time per user (a second request gets `409`). The page offers 13 tech stack buttons plus **Other (type your own)**: a typed name must be 2 to 40 characters of letters, numbers and `+ # . / & ( ) -`, and the AI is first asked whether it is a real technology (answers are remembered; if the check cannot run the idea is still generated). A user who gets 5 "not a technology" answers in an hour is paused for the rest of the hour, so junk input cannot drain the shared free quota.
 
 ### 🎯 Role Analyzer (resume vs job description)
 
@@ -274,10 +282,10 @@ Paste a job description and add your resume (PDF or pasted text). You get a repo
 - **Dual-Identity Management:** Seamlessly link Google OAuth and Email/Password authentications, including the ability for OAuth-only users to establish a permanent password directly from their profile page.
 - **Active Devices & Sessions Manager:** Visual inspection of all authenticated devices (*"Chrome on Windows 11"*, *"Safari on iPhone"*) with IP addresses, last-active timestamps, live current device indicators, and individual remote session revocation.
 - **Dual Session Sign-Out Controls:** Supports isolated single-device logout or global session flushing (*"Sign Out of All Devices"* via `POST /api/auth/logout-all`).
-- **GDPR Self-Service Account Deletion:** Built-in modal allowing users to permanently erase their account with password/email verification, executing an atomic cascade wipe of all progress and projects.
+- **Self-Service Account Deletion:** Built-in modal allowing users to permanently erase their account with password/email verification. All of their data (progress, projects and role reports) is wiped in one step; this is a single transaction on a replica set such as MongoDB Atlas, and falls back to a plain sequence of deletes on a standalone MongoDB.
 - **Full-Screen Logout Overlay:** Seamless full-screen transition overlay that smoothly clears session state with visual feedback.
 - **Dynamic Avatars:** Integrates the open-source DiceBear API to automatically generate unique, tech-themed robot avatars for users without Google profile pictures.
-- **Live Stats Engine:** Real-time aggregation of your total solved DSA problems and generated AI projects.
+- **Live Stats Engine:** Aggregation of your total solved DSA problems, generated AI projects and role reports, shown in a dashboard with DSA / Projects / Reports tabs.
 
 ---
 
@@ -295,6 +303,8 @@ Paste a job description and add your resume (PDF or pasted text). You get a repo
 | Axios               | latest  | Configured HTTP client (with credentials)   |
 | @react-oauth/google | latest  | Secure Google Identity Services integration |
 | DiceBear API        | 7.x     | Dynamic, deterministic avatar generation    |
+| @react-pdf/renderer | 4.9     | Role Analyzer report PDF (loaded only on download) |
+| react-hot-toast     | 2.6     | Toast notifications                         |
 
 ### Backend
 
@@ -306,6 +316,8 @@ Paste a job description and add your resume (PDF or pasted text). You get a repo
 | helmet              | 8       | Standard HTTP security headers                        |
 | @google/genai       | 1.47    | Official SDK client for Gemini integrations           |
 | groq-sdk            | 1.6     | Backup AI provider when Gemini is busy                |
+| multer              | 2.5     | Resume PDF upload (kept in memory, never written to disk) |
+| pdf-parse           | 2.4     | Reads the text of an uploaded PDF resume              |
 | jsonwebtoken        | 9       | Cryptographic user session tokens                     |
 | bcrypt              | 6       | Salted security hashing (12 rounds)                   |
 | cookie-parser       | 1.4     | Secure browser cookie management                      |
@@ -372,7 +384,26 @@ erDiagram
         date updatedAt
     }
 
+    INTERVIEWREPORT {
+        ObjectId _id PK
+        ObjectId user FK
+        string title
+        string jobDescription
+        number days
+        number score "computed by the server"
+        array requirements "text, status, resume quote, skill"
+        array priorities
+        array technicalQuestions
+        array behavioralQuestions
+        array plan
+        array codingTopics
+        array resumeTweaks
+        date createdAt
+        date updatedAt
+    }
+
     USER ||--o{ PROJECT : "owns"
+    USER ||--o{ INTERVIEWREPORT : "owns (resume is never stored)"
     USER ||--o{ PROGRESS : "tracks"
     DSASHEET ||--o{ PROGRESS : "tracked by"
 ```
@@ -405,7 +436,7 @@ erDiagram
 | `GET`    | `/stats`             | ✅ JWT | Aggregates and returns total solved DSA and AI projects         |
 | `PUT`    | `/profile`           | ✅ JWT | Updates unique username and avatar with strict Zod validation   |
 | `PUT`    | `/change-password`   | ✅ JWT | Verifies password, updates hash, and revokes other devices      |
-| `DELETE` | `/account`           | ✅ JWT | Permanently deletes account & wipes progress (GDPR Erasure)     |
+| `DELETE` | `/account`           | ✅ JWT | Permanently deletes the account and all of its data              |
 
 ### AI Projects: `/api/project`
 
@@ -553,6 +584,32 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 | `npm run build:app` | Plain Vite build only (no SEO step) |
 | `npm run lint`    | Analyzes code styling with ESLint |
 | `npm run preview` | Previews production bundle output |
+
+---
+
+## 🧪 Testing
+
+The server has **469 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+
+```bash
+cd server
+npm test
+```
+
+They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The screens have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
+
+The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota).
+
+---
+
+## ⚠️ Known Limitations
+
+- **Rate limits live in the server's memory.** They reset on restart and are not shared between servers, so run one instance, or move them to a shared store such as Redis before scaling out.
+- **The AI runs on free tiers** (Gemini, then Groq). A quota or an outage can make generation fail for a while; the user then gets a clear message and the attempt is not counted. Reports and ideas can differ from run to run.
+- **About half of the 120 skills in the Role Analyzer's catalog have no PrepStack lessons yet.** Those skills link only to official documentation.
+- **Resume PDFs must contain text.** Scanned (image-only) PDFs are rejected, and the PDF export uses standard fonts, so characters outside basic Latin may not draw.
+- **Quiz and Aptitude pages exist but are hidden** from the navigation until they are built.
+- **Account deletion is one transaction only on a replica set** (for example MongoDB Atlas). On a standalone MongoDB it falls back to separate deletes.
 
 ---
 

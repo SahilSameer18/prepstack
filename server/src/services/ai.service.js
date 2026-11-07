@@ -1,5 +1,5 @@
 // AI project ideas with automatic fallback: Gemini model 1, Gemini model 2, Gemini model 3, then Groq (all free-tier).
-// Full design and limits: GROQ.md. The rules in short:
+// The rules in short:
 //   - every provider's reply goes through the same Zod check, so a weak or broken reply is never saved
 //   - one retry per request, only for "overloaded" errors (500/502/503/504), never for 429 (quota)
 //   - 20 s per call, 55 s in total, at most 5 calls
