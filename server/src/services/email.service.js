@@ -29,8 +29,10 @@ const getTransport = () => {
   if (!transport || transportKey !== key) {
     transport = nodemailer.createTransport({
       host: 'smtp-relay.brevo.com',
-      port: 587,
-      secure: false, // STARTTLS on port 587
+      // 2525, not the usual 587: Render's free plan blocks outbound ports 25, 465 and 587 (the connection times out),
+      // and Brevo also accepts mail on 2525. The connection starts plain and is upgraded to TLS (STARTTLS).
+      port: 2525,
+      secure: false,
       requireTLS: true,
       auth: { user: s.login, pass: s.key },
       connectionTimeout: 10000,

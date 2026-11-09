@@ -23,7 +23,7 @@ So every step has two halves: a **learning module** (a concept, a practice you t
 | Reset emails | Sent in the background without a retry; the link holds a secret token | No queue: the token must not sit in Redis. Retry in memory instead |
 | Scheduled jobs | None (reset tokens clean themselves up with an expiry) | None needed; Render cron jobs are paid anyway |
 
-**Render's free plan, from its own docs:** one instance only (no scaling beyond it); 512 MB and 0.1 CPU; the service stops after 15 minutes without incoming requests and takes about a minute to wake, and Render "might restart a Free web service at any time"; background workers and cron jobs are paid only; outbound ports 25, 465 and 587 are blocked (this affects the Brevo email port, not Redis). The Render logs confirm the 15 minute sleeps.
+**Render's free plan, from its own docs:** one instance only (no scaling beyond it); 512 MB and 0.1 CPU; the service stops after 15 minutes without incoming requests and takes about a minute to wake, and Render "might restart a Free web service at any time"; background workers and cron jobs are paid only; outbound ports 25, 465 and 587 are blocked (this affects the Brevo email port, not Redis; the live logs showed the reset email timing out on 587, so the email service now uses port 2525). The Render logs confirm the 15 minute sleeps.
 
 **What that means for the plan:**
 - The "state shared across several servers" problem does not exist on a single free instance. What Redis would fix on Render free is **counters and locks being lost at every sleep or restart.**

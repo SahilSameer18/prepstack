@@ -65,7 +65,7 @@ describe('Password reset by email (the email service is faked)', () => {
       const acct = await account();
       await forgot(acct.email);
       assert.equal(t.mail.lastOptions.host, 'smtp-relay.brevo.com');
-      assert.equal(t.mail.lastOptions.port, 587);
+      assert.equal(t.mail.lastOptions.port, 2525, 'not 587: Render\'s free plan blocks that port');
       assert.equal(t.mail.lastOptions.requireTLS, true);
       assert.deepEqual(t.mail.lastOptions.auth, { user: 'fake-login@smtp-brevo.test', pass: 'fake-smtp-key' });
     });
@@ -116,7 +116,7 @@ describe('Password reset by email (the email service is faked)', () => {
 
     it('still answers 200 when the mail server is down (and does not crash)', async () => {
       const acct = await account();
-      t.mail.error = Object.assign(new Error('connect ECONNREFUSED smtp-relay.brevo.com:587 for ' + acct.email), { code: 'ESOCKET' });
+      t.mail.error = Object.assign(new Error('connect ECONNREFUSED smtp-relay.brevo.com:2525 for ' + acct.email), { code: 'ESOCKET' });
       const logged = [];
       const original = console.error;
       console.error = (...a) => logged.push(a.join(' '));
