@@ -53,5 +53,21 @@ const setPasswordSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number'),
 });
 
-module.exports = { registerSchema, loginSchema, googleLoginSchema, setPasswordSchema };
+const forgotPasswordSchema = z.object({
+  email: z
+    .string({ error: 'Email is required' })
+    .trim()
+    .toLowerCase()
+    .email('Please provide a valid email address'),
+});
+
+// The token is 64 hex characters (32 random bytes); anything else cannot be a real link. The new password follows the sign-up rules.
+const resetPasswordSchema = z.object({
+  token: z
+    .string({ error: 'Reset token is required' })
+    .regex(/^[a-f0-9]{64}$/, 'This reset link is invalid or has expired. Please request a new one.'),
+  password: setPasswordSchema.shape.password,
+});
+
+module.exports = { registerSchema, loginSchema, googleLoginSchema, setPasswordSchema, forgotPasswordSchema, resetPasswordSchema };
 

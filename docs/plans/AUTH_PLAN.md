@@ -1,6 +1,8 @@
 # Auth improvement plan
 
-Status (2026-11-07): Phase 1 is built and tested (296 server tests pass; each of the 4 fixes was broken on purpose to confirm a test fails). Phases 2 to 4 are not started.
+Status (2026-11-09): Phases 1 and 2 are built and tested (481 server tests pass; each fix and each lock rule was broken on purpose to confirm a test fails). Phase 3 (password reset by email, with Brevo): built on 2026-11-09. Server: email service, reset token model, forgot-password and reset-password endpoints, limits, 23 tests, 504 server tests pass. Real-inbox test passed: the reset email arrived in the owner's Gmail Inbox (free Gmail sender through Brevo). Client: ForgotPassword and ResetPassword pages, "Forgot password?" link on the login page, noindex SEO entries, Privacy Policy updated. Left: the owner's click-through of the emailed link, and README/TESTING updates (test count is now 504). Phase 4 waits for a domain.
+
+Phase 2 as built: `loginFailures { count, windowStart, lockedUntil }` on the user; one atomic pipeline update per wrong password; the 11th attempt gets 429 (also for the correct password); a correct password after the lock ends clears the counter. Tests are in `server/test/login-lock.test.js` (12 tests).
 
 ## Why
 

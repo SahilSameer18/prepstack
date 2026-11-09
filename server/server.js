@@ -19,6 +19,7 @@ const dns = require('dns');
 const app = require('./src/app');
 const connectToDB = require('./src/config/database')
 const { describeProviders } = require('./src/services/ai.service')
+const { describeEmail, isEmailConfigured } = require('./src/services/email.service')
 
 // Indexes are built in the background when the DB connects. If one fails (e.g. old data already breaks a unique
 // rule), the app keeps running, so say so loudly instead of staying silent.
@@ -86,6 +87,10 @@ const start = async () => {
   const aiProviders = describeProviders();
   if (aiProviders.length) console.log(`AI providers, tried in this order: ${aiProviders.join(' -> ')}`);
   else console.warn('⚠️  No AI provider configured (set GOOGLE_API_KEY and/or GROQ_API_KEY): project idea generation will answer 503.');
+
+  // Same for email (password reset): says whether it is set up, never shows a key or address
+  if (isEmailConfigured()) console.log(describeEmail());
+  else console.warn('⚠️  ' + describeEmail() + ': set EMAIL_PROVIDER, EMAIL_FROM, BREVO_SMTP_LOGIN, BREVO_SMTP_KEY and CLIENT_URL.');
 };
 
 start();

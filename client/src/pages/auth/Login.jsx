@@ -245,6 +245,14 @@ const Login = () => {
               </div>
             </motion.div>
 
+            {!linkingMode && (
+              <motion.div variants={formItem} className="flex justify-end -mt-1">
+                <Link to="/forgot-password" className="inline-flex items-center min-h-[44px] text-xs font-ui text-muted hover:text-brand transition-colors">
+                  Forgot password?
+                </Link>
+              </motion.div>
+            )}
+
             <motion.button
               type="submit"
               disabled={loading}

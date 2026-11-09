@@ -124,6 +124,8 @@ const pages = [
     ['/analyzer', 'Role Analyzer | PrepStack', 'Match your resume to a job description.'],
     ['/login', 'Log in | PrepStack', 'Log in to PrepStack.'],
     ['/register', 'Create your account | PrepStack', 'Create a free PrepStack account.'],
+    ['/forgot-password', 'Forgot your password? | PrepStack', 'Ask for a link to choose a new PrepStack password.'],
+    ['/reset-password', 'Choose a new password | PrepStack', 'Choose a new PrepStack password.'],
     ['/quiz', 'Quiz (coming soon) | PrepStack', 'Quizzes are coming soon.'],
     ['/aptitude', 'Aptitude tests (coming soon) | PrepStack', 'Aptitude tests are coming soon.'],
   ].map(([path, title, description]) => ({ path, kind: 'private', noindex: true, title, description, h1: title.replace(' | PrepStack', ''), intro: [description], links: [link('/', 'PrepStack home')] })),

@@ -1,9 +1,9 @@
 const express = require('express');
 const authController = require('../controllers/auth.controller')
 const authMiddleware = require('../middlewares/auth.middleware')
-const { authLimiter, registerLimiter, linkGoogleLimiter, refreshLimiter } = require('../middlewares/rateLimit.middleware')
+const { authLimiter, registerLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter } = require('../middlewares/rateLimit.middleware')
 const validate = require('../middlewares/validate.middleware')
-const { registerSchema, loginSchema, googleLoginSchema, setPasswordSchema } = require('../validators/auth.validators')
+const { registerSchema, loginSchema, googleLoginSchema, setPasswordSchema, forgotPasswordSchema, resetPasswordSchema } = require('../validators/auth.validators')
 
 const authRouter = express.Router();
 
@@ -12,6 +12,10 @@ authRouter.post('/register', registerLimiter, validate(registerSchema), authCont
 
 // login user
 authRouter.post('/login', authLimiter, validate(loginSchema), authController.loginUser);
+
+// forgotten password: email a one-time link, then set a new password with it
+authRouter.post('/forgot-password', forgotPasswordLimiter, validate(forgotPasswordSchema), authController.forgotPassword);
+authRouter.post('/reset-password', resetPasswordLimiter, validate(resetPasswordSchema), authController.resetPassword);
 
 // refresh access token
 authRouter.post('/refresh', refreshLimiter, authController.refreshAccessToken);

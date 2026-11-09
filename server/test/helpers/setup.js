@@ -85,6 +85,22 @@ class FakeGroq {
   }
 }
 require.cache[groqPath] = { id: groqPath, filename: groqPath, loaded: true, exports: FakeGroq };
+// ── fake email (nodemailer): nothing is ever sent; every message that would have gone out is kept in `mail.sent` ──
+//   set `mail.error` to make sending fail
+const nodemailerPath = require.resolve('nodemailer', { paths: [SERVER_ROOT] });
+const mail = {
+  sent: [], error: null, transports: 0, lastOptions: null,
+  reset() { this.sent = []; this.error = null; },
+};
+require.cache[nodemailerPath] = {
+  id: nodemailerPath, filename: nodemailerPath, loaded: true,
+  exports: {
+    createTransport: (options) => {
+      mail.transports++; mail.lastOptions = options;
+      return { sendMail: async (message) => { if (mail.error) throw mail.error; mail.sent.push(message); return { messageId: 'fake-message-id' }; } };
+    },
+  },
+};
 const goodIdea = (over = {}) => ({
   title: 'Test Idea', tagline: 'tag', description: 'desc', features: ['f1', 'f2'], techStack: 'MERN',
   difficulty: 'Intermediate', estimatedTime: '2 weeks', resumeValue: 'resume value', ...over,
@@ -232,6 +248,6 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const countAt = async (Model, filter) => Model.countDocuments(filter);
 
 module.exports = {
-  SERVER_ROOT, env, start, stop, resetData, getModels, mongoose, gemini, groq, MODELS, apiError, goodIdea, google,
+  SERVER_ROOT, env, start, stop, resetData, getModels, mongoose, gemini, groq, mail, MODELS, apiError, goodIdea, google,
   api, postForm, makePdf, register, login, parseCookies, cookieHeader, UA, PASSWORD, L, seedSheets, sleep, countAt, nextIp,
 };

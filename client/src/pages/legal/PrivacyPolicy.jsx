@@ -52,7 +52,7 @@ const PrivacyPolicy = () => {
                 <FiUserCheck className="text-brand" /> Account Details
               </div>
               <p className="text-xs text-muted">
-                When registering, we collect your username, email address, and a securely salted bcrypt hash (12 rounds) of your password. If you sign in with Google, we receive your verified email, your Google account ID and your profile picture link. Your avatar is stored as an image link (an auto-generated avatar by default).
+                When registering, we collect your username, email address, and a securely salted bcrypt hash (12 rounds) of your password. If you sign in with Google, we receive your verified email, your Google account ID and your profile picture link. Your avatar is stored as an image link (an auto-generated avatar by default). If you ask to reset your password, we keep a one-way hash of the one-time link (never the link itself) for up to 1 hour, and a short-lived record that a reset was requested.
               </p>
             </div>
             <div className="bg-card-hover border border-ink/[0.08] rounded-xl p-4 space-y-2">
@@ -153,6 +153,7 @@ const PrivacyPolicy = () => {
             <li><strong className="text-fg">Google OAuth 2.0:</strong> Identity provider for single sign-on.</li>
             <li><strong className="text-fg">Google Gemini API:</strong> Generative AI engine for project ideas. It receives the options you enter when you generate an idea, and the text you submit to the Role Analyzer.</li>
             <li><strong className="text-fg">Groq API:</strong> Backup AI engine used only when Gemini is busy or unavailable. It receives the same text. We use the free plans of both AI services, and under their own terms they may use what is sent to them to improve their services, so please keep personal information out of the extra notes, the job description and your resume text.</li>
+            <li><strong className="text-fg">Brevo (email delivery):</strong> when you ask to reset your password, it receives your email address and the reset message (which contains your one-time link and username) so it can deliver the email. We send no marketing email.</li>
             <li><strong className="text-fg">MongoDB Atlas:</strong> Encrypted cloud database for accounts, progress and sessions.</li>
             <li><strong className="text-fg">Our hosting providers:</strong> serve the website and the API and keep standard server logs.</li>
             <li><strong className="text-fg">DiceBear (api.dicebear.com):</strong> generates the default avatar image. Your browser requests it directly, and the request contains your username as the image seed.</li>

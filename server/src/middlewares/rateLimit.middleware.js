@@ -89,6 +89,33 @@ const analyzerLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Reset emails: every request counts (each one can cost an email), 5 per 15 minutes per address.
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    success: false,
+    message: "Too many reset requests. Please try again after 15 minutes.",
+    errors: ["Rate limit exceeded. Please try again after 15 minutes."],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Setting the new password: only failed tries count (a wrong or already-used link).
+const resetPasswordLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  skipSuccessfulRequests: true,
+  message: {
+    success: false,
+    message: "Too many attempts. Please try again after 15 minutes.",
+    errors: ["Rate limit exceeded. Please try again after 15 minutes."],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const refreshLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 30, // 30 refresh attempts per 15 min per IP
@@ -101,4 +128,4 @@ const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter };
+module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter };
