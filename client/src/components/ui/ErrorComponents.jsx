@@ -16,6 +16,7 @@ export const InlineErrorAlert = ({ message, onDismiss, className = "" }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.25 }}
+      role="alert"
       className={`flex items-start gap-3 bg-bad-solid/10 border border-bad-solid/25 rounded-xl px-4 py-3 ${className}`}
     >
       <FiAlertCircle className="text-bad flex-shrink-0 mt-0.5 text-base" />
@@ -40,6 +41,7 @@ export const InlineErrorAlert = ({ message, onDismiss, className = "" }) => {
  * Usage: <PageErrorState message="..." backTo="/somewhere" backLabel="Go Back" onRetry={fn} />
  */
 export const PageErrorState = ({
+  title = "Something went wrong",
   message = "Something went wrong. Please try again.",
   backTo,
   backLabel = "Go Back",
@@ -50,7 +52,7 @@ export const PageErrorState = ({
       <FiAlertTriangle className="text-4xl text-bad" />
     </div>
     <div>
-      <h2 className="text-xl font-bold text-fg mb-2">Something went wrong</h2>
+      <h2 className="text-xl font-bold text-fg mb-2">{title}</h2>
       <p className="text-muted text-sm max-w-sm">{message}</p>
     </div>
     <div className="flex items-center gap-3">

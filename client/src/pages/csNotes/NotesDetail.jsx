@@ -4,6 +4,7 @@ import { FiChevronLeft, FiMenu, FiX, FiInfo, FiAlertTriangle, FiCheckCircle, FiM
 import { useNotes } from '../../hooks/useNotes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SkeletonNotesDetail } from '../../components/ui/Skeletons';
+import { PageErrorState } from '../../components/ui/ErrorComponents';
 
 const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderClass }) => {
   if (!items || items.length === 0) return null;
@@ -58,16 +59,7 @@ export default function NotesDetail() {
   }
 
   if (error || !noteConfig) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh]">
-        <FiAlertTriangle className="text-bad-solid text-4xl mb-4" />
-        <h2 className="text-xl font-bold text-fg mb-2">Failed to load notes</h2>
-        <p className="text-muted mb-6 text-sm">{error || "Notes not found"}</p>
-        <Link to="/notes" className="px-5 py-2 bg-ink/10 hover:bg-ink/20 rounded-full text-fg transition-colors text-sm">
-          Go Back
-        </Link>
-      </div>
-    );
+    return <PageErrorState title="Failed to load notes" message={error || "Notes not found"} backTo="/notes" />;
   }
 
   const { sections, subject: subjectTitle } = noteConfig;

@@ -14,6 +14,7 @@ import DSADash from "./DsaDash";
 import ProjectDash from "./ProjectDash";
 import ReportsDash from "../../components/analyzer/ReportsDash";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
+import { SectionLoader } from "../../components/ui/Skeletons";
 
 const TABS = ["dsa", "projects", "reports"];
 
@@ -180,7 +181,7 @@ const UnifiedDashboard = () => {
           )
         )}
         {tab === "projects" && <ProjectDash />}
-        {tab === "reports" && (reports ? <ReportsDash reports={reports} onDelete={removeReport} /> : <p className="text-sm text-muted">Loading your reports...</p>)}
+        {tab === "reports" && (reports ? <ReportsDash reports={reports} onDelete={removeReport} /> : <SectionLoader message="Loading your reports..." />)}
       </div>
     </div>
   );

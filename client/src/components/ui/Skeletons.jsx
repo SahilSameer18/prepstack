@@ -49,6 +49,23 @@ export const SkeletonProjectCard = () => (
 );
 
 /**
+ * SkeletonDSACard - Placeholder for a per-sheet progress card on the dashboard
+ */
+export const SkeletonDSACard = () => (
+  <div className="bg-card border border-ink/[0.08] rounded-2xl p-5 space-y-3">
+    <div className="flex items-center justify-between">
+      <div className="h-4 w-28 rounded skeleton-shine" />
+      <div className="h-5 w-16 rounded-full skeleton-shine" />
+    </div>
+    <div className="h-2 w-full rounded-full skeleton-shine" />
+    <div className="flex items-center justify-between">
+      <div className="h-3 w-20 rounded skeleton-shine" />
+      <div className="h-3 w-12 rounded skeleton-shine" />
+    </div>
+  </div>
+);
+
+/**
  * SkeletonTextRows - Generic shimmer rows for any list/detail view
  */
 export const SkeletonTextRows = ({ rows = 4 }) => (

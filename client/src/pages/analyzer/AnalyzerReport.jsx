@@ -1,9 +1,10 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FiArrowLeft, FiArrowRight, FiDownload, FiFlag, FiLoader } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiDownload, FiFlag } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { getReport, deleteReport } from "../../api/services/analyzerService";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
+import { InlineSpinner, SectionLoader } from "../../components/ui/Skeletons";
 import { extractError } from "../../utils/extractError";
 import { refLink } from "../../utils/reportLinks";
 import { formatTitle } from "../../utils/formatTitle";
@@ -54,7 +55,7 @@ const AnalyzerReport = () => {
   };
 
   if (error) return <PageErrorState message={error} backTo="/analyzer" backLabel="Back to Role Analyzer" />;
-  if (!report) return <div className="flex justify-center py-24 text-muted"><FiLoader className="animate-spin text-2xl" aria-label="Loading" /></div>;
+  if (!report) return <SectionLoader message="Loading your report..." />;
 
   const advice = report.skillAdvice || {};
   const reqs = [...report.requirements].sort((a, b) => ORDER[a.status] - ORDER[b.status]);
@@ -82,7 +83,7 @@ const AnalyzerReport = () => {
         <Link to="/analyzer" className="inline-flex items-center gap-2 text-sm text-muted hover:text-fg min-h-[44px]"><FiArrowLeft /> New report</Link>
         <div className="flex items-center gap-1">
           <button onClick={download} disabled={downloading} className="inline-flex items-center gap-1.5 text-xs text-fg-3 hover:text-fg min-h-[44px] px-2 cursor-pointer disabled:opacity-60">
-            {downloading ? <FiLoader className="animate-spin" /> : <FiDownload />} {downloading ? "Preparing..." : "Download PDF"}
+            {downloading ? <InlineSpinner size={16} color="currentColor" /> : <FiDownload />} {downloading ? "Preparing..." : "Download PDF"}
           </button>
           <button onClick={remove} className="text-xs text-muted hover:text-bad min-h-[44px] px-2 cursor-pointer">Delete report</button>
         </div>

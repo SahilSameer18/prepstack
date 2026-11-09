@@ -4,6 +4,7 @@ import { FaSearch, FaStar, FaCode, FaCheckCircle, FaExternalLinkAlt } from "reac
 import { FiBook, FiTarget, FiZap, FiLayers } from "react-icons/fi";
 import { dsaSheet } from "../../api/services/sheetService";
 import { SkeletonCard } from "../../components/ui/Skeletons";
+import { EmptyState } from "../../components/ui/StateComponents";
 
 const CATEGORY_DEFINITIONS = [
   {
@@ -308,11 +309,7 @@ const Sheets = () => {
               })}
             </div>
           ) : (
-            <div className="py-20 text-center text-muted border border-dashed border-ink/[0.08] rounded-3xl bg-card/50">
-              <FaSearch className="text-3xl mx-auto mb-3 opacity-30 text-brand" />
-              <p className="text-lg font-bold text-fg mb-1">No matching sheets found</p>
-              <p className="text-sm text-muted">Try searching for a different pattern name or topic</p>
-            </div>
+            <EmptyState icon={FaSearch} title="No matching sheets found" text="Try searching for a different pattern name or topic." />
           )}
         </div>
       )}

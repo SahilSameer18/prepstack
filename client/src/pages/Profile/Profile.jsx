@@ -7,6 +7,7 @@ import SecurityCard from "./components/SecurityCard";
 import SessionsCard from "./components/SessionsCard";
 import SignOutCard from "./components/SignOutCard";
 import DeleteAccountCard from "./components/DeleteAccountCard";
+import PageLoader from "../../components/ui/PageLoader";
 
 // The profile page: six independent cards. Only the identity form values live here, because the hero banner
 // previews the avatar live while the user is still editing it.
@@ -28,7 +29,7 @@ const Profile = () => {
     if (user) setProfileForm(formFor(user));
   }
 
-  if (!user) return <div className="p-8 text-center text-muted">Loading profile...</div>;
+  if (!user) return <PageLoader message="Loading profile..." />;
 
   const liveAvatarUrl = profileForm.avatar || user.avatar || getDiceBearAvatar(user.username);
 

@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { SkeletonDSACard } from "../../components/ui/Skeletons";
 import {
   FiCode,
   FiExternalLink,
@@ -42,21 +43,6 @@ const getSheetMeta = (slug) =>
     badge: "Sheet",
     badgeColor: "text-fg-3 bg-ink/[0.04] border-ink/[0.08]",
   };
-
-// ── Skeleton ───────────────────────────────────────────────────────────────
-const SkeletonDSACard = memo(() => (
-  <div className="bg-card border border-ink/[0.08] rounded-2xl p-5 space-y-3 animate-pulse">
-    <div className="flex items-center justify-between">
-      <div className="h-4 w-28 rounded bg-ink/[0.06]" />
-      <div className="h-5 w-16 rounded-full bg-ink/[0.06]" />
-    </div>
-    <div className="h-2 w-full rounded-full bg-ink/[0.04]" />
-    <div className="flex items-center justify-between">
-      <div className="h-3 w-20 rounded bg-ink/[0.06]" />
-      <div className="h-3 w-12 rounded bg-ink/[0.06]" />
-    </div>
-  </div>
-));
 
 // ── Mini circular progress ring ────────────────────────────────────────────
 const MiniRing = memo(({ pct, color }) => {

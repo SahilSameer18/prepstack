@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiBook, FiSearch, FiArrowRight, FiClock, FiLayers } from "react-icons/fi";
 import { FaCode, FaDatabase, FaNetworkWired, FaSitemap, FaProjectDiagram } from "react-icons/fa";
+import { EmptyState } from "../../components/ui/StateComponents";
 
 const subjects = [
   {
@@ -207,11 +208,7 @@ const Notes = () => {
         ))}
 
         {filtered.length === 0 && (
-          <div className="col-span-full py-20 text-center text-muted border border-dashed border-ink/[0.08] rounded-3xl bg-card/50">
-            <FiSearch className="text-3xl mx-auto mb-3 opacity-30 text-brand" />
-            <p className="text-lg font-bold text-fg mb-1">No subjects found</p>
-            <p className="text-sm text-muted">Try a different search query</p>
-          </div>
+          <EmptyState className="col-span-full" icon={FiSearch} title="No subjects found" text="Try a different search query." />
         )}
       </div>
     </div>

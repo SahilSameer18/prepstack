@@ -4,16 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FiCpu,
   FiPlus,
-  FiLoader,
   FiTrash2,
   FiExternalLink,
-  FiZap,
   FiSearch,
-  FiAlertCircle,
 } from "react-icons/fi";
 import { useProject } from "../../hooks/useProject";
-import { SkeletonProjectCard } from "../../components/ui/Skeletons";
+import { SkeletonProjectCard, InlineSpinner } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
+import { EmptyState } from "../../components/ui/StateComponents";
 
 // ── ProjectDash ────────────────────────────────────────────────────────────
 // Owns its own filter/sort/delete state; reads projects from useProject hook.
@@ -150,7 +148,7 @@ const ProjectDash = () => {
                   className="flex-1 py-2.5 h-11 rounded-xl bg-bad-solid text-fg font-semibold text-xs sm:text-sm hover:bg-bad-solid transition-colors shadow-lg shadow-bad-solid/20 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {isDeleting ? (
-                    <FiLoader className="animate-spin text-sm" />
+                    <InlineSpinner size={14} color="currentColor" />
                   ) : (
                     "Delete project idea"
                   )}
@@ -224,23 +222,12 @@ const ProjectDash = () => {
 
         {/* Empty state */}
         {!projectsLoading && projects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 bg-card border border-ink/[0.08] rounded-2xl text-center px-4 shadow-xl">
-            <div className="w-14 h-14 rounded-2xl bg-ink/[0.03] border border-ink/[0.08] flex items-center justify-center mb-4">
-              <FiCpu className="text-2xl text-muted" />
-            </div>
-            <h3 className="font-display text-lg font-bold text-fg mb-2">
-              No project ideas yet
-            </h3>
-            <p className="text-muted text-xs sm:text-sm max-w-sm mb-6 leading-relaxed">
-              Generate a project idea for your tech stack and level, with real-world challenges to solve.
-            </p>
-            <Link
-              to="/ai-projects"
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl amber-specular-button text-on-brand font-bold text-xs sm:text-sm min-h-[44px]"
-            >
-              <FiZap className="text-xs" /> Generate your first idea
-            </Link>
-          </div>
+          <EmptyState
+            icon={FiCpu}
+            title="No project ideas yet"
+            text="Generate a project idea for your tech stack and level, with real-world challenges to solve."
+            action={{ label: "Generate your first idea", to: "/ai-projects" }}
+          />
         ) : projectsLoading && projects.length === 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -334,12 +321,12 @@ const ProjectDash = () => {
                   </div>
                 ))
               ) : (
-                <div className="col-span-full text-center py-10 bg-card border border-ink/[0.08] rounded-2xl">
-                  <FiAlertCircle className="mx-auto text-2xl text-muted mb-2" />
-                  <p className="text-muted text-xs sm:text-sm font-ui">
-                    No project ideas match your search or filters.
-                  </p>
-                </div>
+                <EmptyState
+                  className="col-span-full"
+                  icon={FiSearch}
+                  title="No matching ideas"
+                  text="No project ideas match your search or filters."
+                />
               )}
             </AnimatePresence>
           </div>
@@ -359,7 +346,7 @@ const ProjectDash = () => {
                 disabled={loadingMoreProjects}
                 className="titanium-button inline-flex items-center justify-center gap-2 px-6 min-h-[44px] rounded-xl text-sm font-semibold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {loadingMoreProjects ? (<><FiLoader className="animate-spin text-sm" /><span>Loading...</span></>) : "Load more"}
+                {loadingMoreProjects ? (<><InlineSpinner size={14} color="currentColor" /><span>Loading...</span></>) : "Load more"}
               </button>
             )}
             <InlineErrorAlert message={loadMoreError} onDismiss={() => setLoadMoreError(null)} />

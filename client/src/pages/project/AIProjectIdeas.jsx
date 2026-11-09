@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { FiCpu, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiLoader, FiList } from "react-icons/fi";
+import { FiCpu, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiList } from "react-icons/fi";
 import { useProject } from '../../hooks/useProject'
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
+import { InlineSpinner } from "../../components/ui/Skeletons";
 
 // KEEP IN SYNC with KNOWN_STACKS in server/src/services/ai.service.js: typed names that are not in this list are
 // checked by the AI ("is this a real technology?") before an idea is generated.
@@ -249,7 +250,7 @@ const AIProjectIdeas = () => {
               }`}
             >
               {loading ? (
-                <><FiLoader className="animate-spin text-muted" /> Generating...</>
+                <><InlineSpinner size={16} color="currentColor" /> Generating...</>
               ) : (
                 <><FiZap /> Generate project idea</>
               )}

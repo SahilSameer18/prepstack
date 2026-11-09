@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FiSearch, FiChevronDown, FiChevronUp, FiMessageSquare, FiZap, FiUsers, FiTarget, FiCpu, FiStar } from "react-icons/fi";
 import { behavioralQuestions } from "../data/behavioralQuestions";
 import { motion, AnimatePresence } from "framer-motion";
+import { EmptyState } from "../components/ui/StateComponents";
 
 const CATEGORIES = [
   { label: "All", icon: <FiStar /> },
@@ -213,11 +214,7 @@ const Behavioral = () => {
         ))}
 
         {filteredQuestions.length === 0 && (
-          <div className="py-16 text-center text-muted border border-ink/[0.08] rounded-2xl bg-card">
-            <FiSearch className="text-3xl mx-auto mb-2 text-muted" />
-            <p className="text-base font-semibold text-fg mb-1">No questions match criteria</p>
-            <p className="text-xs font-ui text-muted">Try adjusting your search keywords or switching category filters.</p>
-          </div>
+          <EmptyState icon={FiSearch} title="No questions match" text="Try different search keywords or another category." />
         )}
       </div>
     </div>

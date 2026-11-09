@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiTarget, FiUploadCloud, FiLoader, FiFileText, FiX, FiTrash2, FiArrowRight } from "react-icons/fi";
+import { FiTarget, FiUploadCloud, FiFileText, FiX, FiTrash2, FiArrowRight } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { createReport, listReports, deleteReport } from "../../api/services/analyzerService";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
+import { InlineSpinner } from "../../components/ui/Skeletons";
 import { extractError } from "../../utils/extractError";
 import { formatDate } from "../../utils/formatDate";
 import { formatTitle } from "../../utils/formatTitle";
@@ -148,7 +149,7 @@ const Analyzer = () => {
           disabled={!valid || loading}
           className={`w-full py-3 min-h-[44px] rounded-xl font-display font-semibold text-sm flex items-center justify-center gap-2 transition-colors ${valid && !loading ? "amber-specular-button text-on-brand font-bold cursor-pointer" : "bg-ink/[0.04] border border-ink/[0.08] text-muted cursor-not-allowed"}`}
         >
-          {loading ? <><FiLoader className="animate-spin" /> Reading your resume. This can take up to a minute...</> : <><FiTarget /> Analyze my resume</>}
+          {loading ? <><InlineSpinner size={16} color="currentColor" /> Reading your resume. This can take up to a minute...</> : <><FiTarget /> Analyze my resume</>}
         </button>
         <p className="text-xs text-muted text-center">You can create 3 reports per hour and 5 per day.</p>
       </form>
