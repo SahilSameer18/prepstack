@@ -10,7 +10,10 @@ export const useProject = () => {
     throw new Error('useProject must be used within ProjectProvider');
   }
 
-  const { project, setProject, projects, setProjects, loading, setLoading } = context;
+  const {
+    project, setProject, projects, setProjects, loading, setLoading,
+    projectsTotal, setProjectsTotal, hasMoreProjects, setHasMoreProjects, loadingMoreProjects, setLoadingMoreProjects,
+  } = context;
 
   const generateProject = useCallback(async (data) => {
     setLoading(true);
@@ -20,6 +23,7 @@ export const useProject = () => {
       setProject(newProj);
       if (newProj && newProj._id) {
         setProjects((prev) => [newProj, ...(prev || [])]);
+        setProjectsTotal((n) => (n === null ? n : n + 1));
       }
       return response;
     } catch (error) {
@@ -27,20 +31,48 @@ export const useProject = () => {
     } finally {
       setLoading(false);
     }
-  }, [setProject, setProjects, setLoading]);
+  }, [setProject, setProjects, setProjectsTotal, setLoading]);
 
+  // First page (the newest 20). Also learns the true total and whether there is more to load.
   const getProjects = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getAllProjects();
-      setProjects(response?.data?.projects || response?.projects || (Array.isArray(response) ? response : []));
+      const data = response?.data || response;
+      const list = data?.projects || (Array.isArray(response) ? response : []);
+      setProjects(list);
+      setProjectsTotal(typeof data?.total === 'number' ? data.total : list.length);
+      setHasMoreProjects(Boolean(data?.hasMore));
       return response;
     } catch (error) {
       throw new Error(extractError(error, 'Failed to fetch projects. Please try again.'));
     } finally {
       setLoading(false);
     }
-  }, [setProjects, setLoading]);
+  }, [setProjects, setProjectsTotal, setHasMoreProjects, setLoading]);
+
+  // Next 20 (older) ideas, added after the ones already shown. Asks for "everything older than the last idea we have".
+  const loadMoreProjects = useCallback(async () => {
+    const last = projects?.[projects.length - 1];
+    if (!last?._id || loadingMoreProjects) return;
+    setLoadingMoreProjects(true);
+    try {
+      const response = await getAllProjects(last._id);
+      const data = response?.data || response;
+      const next = data?.projects || [];
+      setProjects((prev) => {
+        const seen = new Set((prev || []).map((p) => p._id));
+        return [...(prev || []), ...next.filter((p) => !seen.has(p._id))];
+      });
+      if (typeof data?.total === 'number') setProjectsTotal(data.total);
+      setHasMoreProjects(Boolean(data?.hasMore));
+      return response;
+    } catch (error) {
+      throw new Error(extractError(error, 'Failed to load more project ideas. Please try again.'));
+    } finally {
+      setLoadingMoreProjects(false);
+    }
+  }, [projects, loadingMoreProjects, setProjects, setProjectsTotal, setHasMoreProjects, setLoadingMoreProjects]);
 
   const getProjectById = useCallback(async (projectId) => {
     setLoading(true);
@@ -61,6 +93,7 @@ export const useProject = () => {
       const response = await deleteProject(projectId);
       // Optimistically remove deleted project from local state
       setProjects((prev) => (prev || []).filter((p) => p._id !== projectId));
+      setProjectsTotal((n) => (n === null ? n : Math.max(0, n - 1)));
       setProject((curr) => (curr?._id === projectId ? null : curr));
       return response;
     } catch (error) {
@@ -68,7 +101,7 @@ export const useProject = () => {
     } finally {
       setLoading(false);
     }
-  }, [setProjects, setProject, setLoading]);
+  }, [setProjects, setProject, setProjectsTotal, setLoading]);
 
   return {
     project,
@@ -77,8 +110,12 @@ export const useProject = () => {
     setProjects,
     loading,
     setLoading,
+    projectsTotal,
+    hasMoreProjects,
+    loadingMoreProjects,
     generateProject,
     getProjects,
+    loadMoreProjects,
     getProjectById,
     deleteProjectById,
   };

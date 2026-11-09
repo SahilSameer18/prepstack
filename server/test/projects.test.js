@@ -169,14 +169,86 @@ describe('AI project ideas: generate, list, open, delete', () => {
       assert.deepEqual(res.body.data.projects.map((p) => p.title), ['Third', 'Second', 'First']);
       assert.deepEqual(Object.keys(res.body.data.projects[0]).sort(), ['_id', 'createdAt', 'difficulty', 'domain', 'features', 'tagline', 'techStack', 'title']);
     });
-    it('returns at most the newest 20 ideas', async () => {
-      const acct = await t.register();
-      const now = Date.now();
-      await Project.insertMany(Array.from({ length: 25 }, (_, i) => ({ title: `Idea ${i}`, tagline: 't', description: 'd', techStack: 'x', difficulty: 'Beginner', user: acct.id, createdAt: new Date(now + i * 1000) })));
-      const { projects } = (await t.api.get('/api/project', { cookies: acct.cookies })).body.data;
-      assert.equal(projects.length, 20);
-      assert.equal(projects[0].title, 'Idea 24'); // newest first
-      assert.equal(projects.at(-1).title, 'Idea 5'); // the 5 oldest are the ones left out
+    describe('paging (20 at a time, newest first)', () => {
+      const seed = async (acct, n) => {
+        const docs = [];
+        for (let i = 0; i < n; i++) docs.push(await Project.create({ title: `Idea ${i}`, tagline: 't', description: 'd', techStack: 'x', difficulty: 'Beginner', user: acct.id }));
+        return docs; // oldest first
+      };
+      const list = (acct, before) => t.api.get(before ? `/api/project?before=${before}` : '/api/project', { cookies: acct.cookies });
+
+      it('the first page has the newest 20, the true total, and says there are more', async () => {
+        const acct = await t.register();
+        await seed(acct, 45);
+        const { body } = await list(acct);
+        assert.equal(body.data.projects.length, 20);
+        assert.equal(body.data.projects[0].title, 'Idea 44'); // newest first
+        assert.equal(body.data.projects.at(-1).title, 'Idea 25');
+        assert.equal(body.data.total, 45, 'the total is the real count, not the page size');
+        assert.equal(body.data.hasMore, true);
+        assert.equal(body.total, 45); // the legacy top-level copy carries it too
+      });
+
+      it('"before" gives the next 20, then the rest, with no gaps and no repeats', async () => {
+        const acct = await t.register();
+        await seed(acct, 45);
+        const one = (await list(acct)).body.data;
+        const two = (await list(acct, one.projects.at(-1)._id)).body.data;
+        assert.equal(two.projects.length, 20);
+        assert.equal(two.projects[0].title, 'Idea 24');
+        assert.equal(two.hasMore, true);
+        const three = (await list(acct, two.projects.at(-1)._id)).body.data;
+        assert.equal(three.projects.length, 5);
+        assert.equal(three.projects.at(-1).title, 'Idea 0');
+        assert.equal(three.hasMore, false);
+        assert.equal(three.total, 45);
+        const titles = [...one.projects, ...two.projects, ...three.projects].map((p) => p.title);
+        assert.equal(new Set(titles).size, 45);
+        assert.deepEqual(titles, Array.from({ length: 45 }, (_, i) => `Idea ${44 - i}`));
+      });
+
+      it('exactly 20 ideas: one page, no "load more"', async () => {
+        const acct = await t.register();
+        await seed(acct, 20);
+        const { data } = (await list(acct)).body;
+        assert.equal(data.projects.length, 20);
+        assert.equal(data.hasMore, false);
+      });
+
+      it('stays correct when an idea is deleted or added between pages', async () => {
+        const acct = await t.register();
+        const docs = await seed(acct, 30);
+        const first = (await list(acct)).body.data; // Idea 29 .. Idea 10
+        await Project.deleteOne({ _id: docs[15]._id }); // an idea on the first page disappears
+        await Project.create({ title: 'Brand new', tagline: 't', description: 'd', techStack: 'x', difficulty: 'Beginner', user: acct.id }); // and a new one is added
+        const second = (await list(acct, first.projects.at(-1)._id)).body.data;
+        assert.deepEqual(second.projects.map((p) => p.title), Array.from({ length: 10 }, (_, i) => `Idea ${9 - i}`), 'the next page continues exactly after the last idea we had');
+        assert.equal(second.total, 30); // 30 - 1 deleted + 1 added
+      });
+
+      it("never shows another user's ideas, even with another user's id as the cursor", async () => {
+        const acct = await t.register(); const other = await t.register();
+        await seed(acct, 3);
+        const theirs = await seed(other, 3);
+        const { data } = (await list(acct, theirs.at(-1)._id)).body;
+        assert.equal(data.projects.length, 3);
+        assert.equal(data.total, 3);
+        assert.equal((await list(other)).body.data.total, 3);
+      });
+
+      it('rejects a malformed "before" (400) and a missing login (401)', async () => {
+        const acct = await t.register();
+        for (const bad of ['abc', '123', 'zzzzzzzzzzzzzzzzzzzzzzzz']) assert.equal((await list(acct, bad)).status, 400, bad);
+        const twice = await t.api.get('/api/project?before=aaaaaaaaaaaaaaaaaaaaaaaa&before=bbbbbbbbbbbbbbbbbbbbbbbb', { cookies: acct.cookies });
+        assert.equal(twice.status, 400, 'two values are refused');
+        assert.equal((await t.api.get('/api/project')).status, 401);
+      });
+
+      it('an empty list has total 0 and no more', async () => {
+        const acct = await t.register();
+        const { data } = (await list(acct)).body;
+        assert.deepEqual([data.projects, data.total, data.hasMore], [[], 0, false]);
+      });
     });
     it('returns an empty list for a new user', async () => {
       const acct = await t.register();

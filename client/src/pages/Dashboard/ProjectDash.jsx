@@ -18,7 +18,7 @@ import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 // ── ProjectDash ────────────────────────────────────────────────────────────
 // Owns its own filter/sort/delete state; reads projects from useProject hook.
 const ProjectDash = () => {
-  const { projects, deleteProjectById, loading: projectsLoading } =
+  const { projects, projectsTotal, hasMoreProjects, loadingMoreProjects, loadMoreProjects, deleteProjectById, loading: projectsLoading } =
     useProject();
   const navigate = useNavigate();
 
@@ -26,6 +26,16 @@ const ProjectDash = () => {
   const [projectSort, setProjectSort] = useState("newest");
   const [projectFilter, setProjectFilter] = useState("all");
   const [projectSearch, setProjectSearch] = useState("");
+
+  const [loadMoreError, setLoadMoreError] = useState(null);
+  const handleLoadMore = async () => {
+    setLoadMoreError(null);
+    try {
+      await loadMoreProjects();
+    } catch (err) {
+      setLoadMoreError(err.message);
+    }
+  };
 
   // Delete modal
   const [deletingId, setDeletingId] = useState(null);
@@ -332,6 +342,27 @@ const ProjectDash = () => {
                 </div>
               )}
             </AnimatePresence>
+          </div>
+        )}
+
+        {/* How many are shown, and the button for the next 20 */}
+        {projects.length > 0 && (
+          <div className="mt-6 flex flex-col items-center gap-3">
+            <p className="text-xs font-ui text-muted text-center">
+              Showing {projects.length} of {projectsTotal ?? projects.length} ideas
+              {hasMoreProjects && (projectSearch || projectFilter !== "all") ? ". Search and filters work on the ideas shown so far." : ""}
+            </p>
+            {hasMoreProjects && (
+              <button
+                type="button"
+                onClick={handleLoadMore}
+                disabled={loadingMoreProjects}
+                className="titanium-button inline-flex items-center justify-center gap-2 px-6 min-h-[44px] rounded-xl text-sm font-semibold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loadingMoreProjects ? (<><FiLoader className="animate-spin text-sm" /><span>Loading...</span></>) : "Load more"}
+              </button>
+            )}
+            <InlineErrorAlert message={loadMoreError} onDismiss={() => setLoadMoreError(null)} />
           </div>
         )}
       </section>

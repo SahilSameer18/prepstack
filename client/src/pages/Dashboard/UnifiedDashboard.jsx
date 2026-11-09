@@ -22,7 +22,7 @@ const TABS = ["dsa", "projects", "reports"];
 // The open tab lives in the address (?tab=projects), so a refresh, the back button and links all land on the right tab.
 const UnifiedDashboard = () => {
   const { user } = useAuth();
-  const { getProjects, projects } = useProject();
+  const { getProjects, projects, projectsTotal } = useProject();
   const [searchParams, setSearchParams] = useSearchParams();
   const tab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "dsa";
   const openTab = (t) => setSearchParams(t === "dsa" ? {} : { tab: t }, { replace: true });
@@ -86,10 +86,10 @@ const UnifiedDashboard = () => {
   const best = reports?.length ? Math.max(...reports.map((r) => r.score)) : null;
   const overview = [
     { key: "dsa", label: "DSA solved", value: loading ? "-" : stats.totalSolved, sub: loading ? "" : `of ${stats.totalQuestions}` },
-    { key: "projects", label: "Project ideas", value: projects ? projects.length : "-", sub: "" },
+    { key: "projects", label: "Project ideas", value: projects ? (projectsTotal ?? projects.length) : "-", sub: "" },
     { key: "reports", label: "Role reports", value: reports ? reportTotal : "-", sub: best !== null ? `best ${best}` : "" },
   ];
-  const counts = { dsa: dsaData.length ? `${dsaData.length} sheets` : "", projects: projects?.length ?? "", reports: reports ? reportTotal : "" };
+  const counts = { dsa: dsaData.length ? `${dsaData.length} sheets` : "", projects: projectsTotal ?? projects?.length ?? "", reports: reports ? reportTotal : "" };
 
   const dsaStats = [
     { label: "Problems solved", value: stats.totalSolved, sub: "Across all sheets", icon: <FaCheckCircle className="text-ok text-sm" />, color: "text-fg" },

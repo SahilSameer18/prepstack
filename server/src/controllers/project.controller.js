@@ -81,18 +81,32 @@ const generateProject = async (req, res, next) => {
 };
 
 // controller to get all the project idea of the logged in user
+// The list comes 20 at a time, newest first. "Next page" = pass `before` = the _id of the last idea you already have.
+// An id (not a page number) is used so the list stays correct while ideas are added or deleted between requests.
+const PROJECT_PAGE_SIZE = 20;
+
 const getAllProjects = async (req, res, next) => {
   try {
     const userId = req.user._id;
+    const { before } = req.query;
 
-    const projects = await projectModel
-      .find({ user: userId })
-      .sort({ createdAt: -1 })
-      .limit(20) // shortcut: newest 20 only, so a heavy user cannot make the list huge; add paging (and a total count) when anyone gets close to 20
+    const filter = { user: userId };
+    if (before !== undefined) {
+      if (typeof before !== 'string' || !/^[a-f0-9]{24}$/i.test(before)) return next(new AppError(400, 'Invalid "before" value'));
+      filter._id = { $lt: before };
+    }
+
+    // one extra row tells us whether there is another page, without a second query
+    const rows = await projectModel
+      .find(filter)
+      .sort({ _id: -1 })
+      .limit(PROJECT_PAGE_SIZE + 1)
       .select('title tagline difficulty createdAt techStack domain features');
+    const hasMore = rows.length > PROJECT_PAGE_SIZE;
+    const total = await projectModel.countDocuments({ user: userId }); // the true number, whatever page this is
 
-    const sanitizedProjects = sanitizeDoc(projects);
-    return sendSuccess(res, 200, 'Projects fetched successfully', { projects: sanitizedProjects }, { projects: sanitizedProjects });
+    const sanitizedProjects = sanitizeDoc(rows.slice(0, PROJECT_PAGE_SIZE));
+    return sendSuccess(res, 200, 'Projects fetched successfully', { projects: sanitizedProjects, total, hasMore }, { projects: sanitizedProjects, total, hasMore });
   } catch (error) {
     next(error);
   }

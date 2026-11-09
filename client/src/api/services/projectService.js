@@ -8,9 +8,10 @@ export const generateProjectIdea = async (data) => {
   return response.data;
 }
 
-// service get all project ideas of the logged in user
-export const getAllProjects = async () => {
-  const response = await api.get('/api/project');
+// service get project ideas of the logged in user, 20 at a time, newest first.
+// Pass `before` (the _id of the last idea you already have) to get the next 20.
+export const getAllProjects = async (before) => {
+  const response = await api.get('/api/project', { params: before ? { before } : undefined });
   return response.data;
 }
 

@@ -7,6 +7,10 @@ export const ProjectProvider = ({ children }) => {
   const [project, setProject] = useState(null);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  // The list loads 20 at a time: how many ideas exist in total, whether more can be loaded, and whether a page is loading
+  const [projectsTotal, setProjectsTotal] = useState(null);
+  const [hasMoreProjects, setHasMoreProjects] = useState(false);
+  const [loadingMoreProjects, setLoadingMoreProjects] = useState(false);
 
   const value = useMemo(
     () => ({
@@ -16,8 +20,14 @@ export const ProjectProvider = ({ children }) => {
       setProjects,
       loading,
       setLoading,
+      projectsTotal,
+      setProjectsTotal,
+      hasMoreProjects,
+      setHasMoreProjects,
+      loadingMoreProjects,
+      setLoadingMoreProjects,
     }),
-    [project, projects, loading]
+    [project, projects, loading, projectsTotal, hasMoreProjects, loadingMoreProjects]
   );
 
   return (

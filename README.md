@@ -459,7 +459,7 @@ erDiagram
 | Method   | Endpoint      | Auth   | Description                                          |
 | -------- | ------------- | ------ | ---------------------------------------------------- |
 | `POST`   | `/generate`   | ✅ JWT | Generates an idea with the AI cascade _(4/hr, 15/24h, one at a time)_ |
-| `GET`    | `/`           | ✅ JWT | Returns your newest 20 saved projects _(older ones are not listed yet)_ |
+| `GET`    | `/`           | ✅ JWT | Returns 20 saved projects, newest first, with the total; `?before=<id>` gives the next 20 |
 | `GET`    | `/:projectId` | ✅ JWT | Returns specific project metadata                    |
 | `DELETE` | `/:projectId` | ✅ JWT | Deletes project profile                              |
 
@@ -612,7 +612,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **505 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **511 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
 
 ```bash
 cd server

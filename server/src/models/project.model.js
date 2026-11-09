@@ -28,6 +28,7 @@ const projectSchema = new mongoose.Schema(
 
 // Compound index for fast queries sorting user's projects by creation date
 projectSchema.index({ user: 1, createdAt: -1 });
+projectSchema.index({ user: 1, _id: -1 }); // the list is read newest first by _id, 20 at a time
 
 const projectModel = mongoose.model("Project", projectSchema);
 projectModel.DIFFICULTIES = DIFFICULTIES;
