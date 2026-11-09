@@ -11,7 +11,6 @@ const Footer = () => {
     { name: "Role Analyzer", url: "/analyzer" },
     { name: "Behavioral Prep", url: "/behavioral" },
     { name: "Resume Guide", url: "/resume" },
-    // Quiz and Aptitude are hidden until they are built (their routes still work)
   ];
 
   const social = [

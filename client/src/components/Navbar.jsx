@@ -61,7 +61,6 @@ const Navbar = () => {
     { name: "Roadmaps", path: "/roadmaps", icon: <FiMap />, desc: "Step-by-step learning paths" },
     { name: "Behavioral Prep", path: "/behavioral", icon: <FiMessageSquare />, desc: "HR & soft skills questions" },
     { name: "Resume Guide", path: "/resume", icon: <FiFileText />, desc: "Build an ATS-ready resume" },
-    // Quiz (/quiz) and Aptitude (/aptitude) are hidden until they are built. The pages and routes still exist, so old links work.
   ];
 
   return (

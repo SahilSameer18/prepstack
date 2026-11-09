@@ -1,6 +1,6 @@
 # PrepStack improvement plan
 
-Written 7 Nov 2026. Status: **planned, nothing started.** Work begins next week.
+Written 7 Nov 2026, order and gaps revised 9 Nov 2026. Status: **planned, nothing started.** Follow the stage order in section 5. Related plan: `docs/plans/REDIS_PLAN.md` (Redis, BullMQ and background jobs: a separate learning track; its production steps start only after B3 and B4).
 
 **Updated 7 Nov 2026 (planner positioning):** the Role Analyzer and the planner are one connected system, not two separate plans. The analyzer **checks** a job; "My plan" **schedules** your days. There is only one daily plan, one place to see it, and a stop point if students find it confusing. See section 4, "How the Role Analyzer and the planner fit together".
 
@@ -15,7 +15,7 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 
 ## 0. How to use this plan
 
-- Work top to bottom inside each phase. Every item has **Done when** so you know it is finished.
+- Work in the stage order of section 5, and top to bottom inside each stage. Every item has **Done when** so you know it is finished.
 - Effort numbers are rough guesses for one developer, in working days. Treat them as order of magnitude, and re-estimate after the first item of each track.
 - Items marked **DECIDE** need an answer from you before starting (all listed in section 8).
 - Each item should ship on its own. Never leave the site half-changed overnight.
@@ -36,8 +36,9 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 | Role Analyzer | Built, tested, live-checked. 120-skill catalog, 53 skills without PrepStack lessons | Plan is read-only. Skill advice links to thin notes |
 | AI project ideas | Cascade of Gemini then Groq, capped per user | Not linked to roadmaps |
 | Dashboard | Tabs: DSA, Projects, Reports | DSA shows a total, not progress per sheet. No streak, no "today" |
-| Quiz and Aptitude | Hidden pages (stubs) | Decide: build or remove |
-| Tests | 469 server tests | No client tests, no CI |
+| Quiz and Aptitude | Removed in stage 0 (B10, 9 Nov 2026): pages, routes and SEO entries are gone | The Quiz comes back later from the notes quizzes (B7) |
+| Tests | 514 server tests and 19 client tests (token refresh, raw-color guard), 9 Nov 2026 | No CI |
+| Accounts | Password reset by email, a per-account login lock, up to 10 device sessions (built and tested) | Login cookies use SameSite=None; changing that needs the website and the API on one domain |
 
 ---
 
@@ -85,15 +86,20 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 
 **Process per section:** outline, draft, fact-check against the review checklist (section 6), add quiz, link, publish. Aim for one subject to completion before starting the next.
 
-**Data change needed:** the notes shape today is `{ title, overview, topics: [...] }` with free-form topic fields. Add `questions`, `mistakes`, `quiz` and `links` to the section shape, and validate it with the existing `sectionSchema`. This also needs updates to the notes seed, the notes API tests and the client notes page.
+**Data change needed:** the notes shape today is `{ title, overview, topics: [...] }` with free-form topic fields, and a section is found by its title. Give every section a stable `id` (never the title) and add `questions`, `mistakes`, `quiz`, `links`, optional `diagrams` and `lastChecked`; reading time is computed from the word count. Validate it with the existing `sectionSchema`. This also needs updates to the notes seed, the notes API tests, the analyzer's references (from titles to ids) and the client notes page.
 
-**Effort:** about 3 to 4 working days per subject for writing and checking (DBMS, CN, OOP), 2 days to deepen OS, 4 days for System Design basics; 2 days for the data shape and page changes. **Total about 17 to 22 days.**
+**Page redesign and diagrams (decided 7 Nov).** The notes and roadmap pages are redesigned together with the content: one clear layout for overview, topics, interview questions, mistakes, quiz and links, with a "Report a mistake" link and a "last checked" date on every section. A small component draws a diagram from inline SVG data where a topic needs one, not on every topic. This is done in stage 2, before the writing starts. **Effort:** about 3 days for the two pages and 1 to 2 days for the diagram component.
+
+**Effort:** about 3 to 4 working days per subject for writing and checking (DBMS, CN, OOP), 2 days to deepen OS, 4 days for System Design basics; 2 days for the data shape and ids, plus the redesign and diagrams above. **Total about 22 to 27 days.**
 
 **Done when:**
 - Every section meets the template above (a script checks the counts: topics, questions, quiz length, links).
 - All quizzes score correctly in a test.
 - No section has a claim that fails the review checklist.
 - The analyzer's `skillCatalog.json` mappings are updated to point at the new sections (see A5).
+- Every section shows its reading time, its "last checked" date and a "Report a mistake" link.
+- Diagrams render where a topic has one.
+- Every link between notes, sheets and roadmaps resolves (an automatic test).
 
 ### A2. Roadmaps
 
@@ -113,11 +119,11 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 
 **Scope.** 54 existing steps across 6 roadmaps. Do not add new tracks until the existing ones meet the template. Optional later tracks (confirm demand first): Java and Spring backend, DevOps basics, System Design, DSA-only path.
 
-**Data change:** the step moves from a string plus a `details` entry to one structured object. Update the Roadmap pages, the SEO data (`seo/pages.js`), the analyzer's roadmap list (a server copy exists and a sync test guards it), and the tests.
+**Data change:** the step moves from a string plus a `details` entry (matched by position) to one structured object with a stable `id`. Update the Roadmap pages (redesigned in stage 2), the SEO data (`seo/pages.js`), the analyzer's roadmap list (a server copy exists and a sync test guards it), and the tests.
 
 **Link health:** add a small script that checks every roadmap and catalog link (status codes only) and reports broken ones. Run it before each release.
 
-**Effort:** about 1 day per roadmap for content, 2 days for the new data shape and pages, 1 day for the link-check script. **Total about 9 days.**
+**Effort:** about 1 day per roadmap for content, 2 days for the new data shape, 1 day for the link-check script (the page redesign is counted in A1). **Total about 9 days.**
 
 **Done when:** all 54 steps use the template, every link returns a good response, and every step links to at least one in-app page.
 
@@ -153,10 +159,10 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 
 ### A5. Tie-ins that must follow content changes
 
-- **`skillCatalog.json`:** 53 of 120 skills have no PrepStack lessons today. As notes and roadmaps grow, update each skill's `prepstack` mapping (notes section, roadmap, project stack). The existing tests check that mappings point at real content.
+- **`skillCatalog.json`:** 53 of 120 skills have no PrepStack lessons today. After each notes subject and each roadmap is finished (not at the end), update each skill's `prepstack` mapping using the stable ids (notes section id, roadmap step id, project stack). The existing tests check that mappings point at real content.
 - **SEO:** update `client/src/seo/pages.js` and run the build's SEO check whenever pages are added.
 - **README and TESTING.md:** update the counts and test totals (computed, not typed).
-- **Quiz and Aptitude pages:** after A1, either build the Quiz page from the section quizzes or remove the two hidden routes. Aptitude: **DECIDE** whether it is in scope at all.
+- **Quiz and Aptitude pages:** removed in stage 0 (B10). The Quiz page comes back later from the section quizzes (B7). Aptitude is out of scope.
 
 ---
 
@@ -203,7 +209,7 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 **Plan.**
 - New collection `ProblemNote { user, sheetSlug, problemLink, text, updatedAt }`, text limited (suggest 5,000 characters), one note per user per problem.
 - API: list, upsert, delete. Rate-limited like other write routes.
-- Client: on first sign-in after the update, offer to import the existing browser notes (once, with a clear message), then save to the server. Keep a quiet local copy for offline.
+- Client: on the first load after the update, move the existing browser notes to the account automatically, once, with no prompt (decision 7), then save to the server. Keep a quiet local copy for offline. It runs exactly once and never overwrites a newer note already on the server.
 - A "My notes" page listing notes by sheet with search. The account-deletion cascade needs no change (the `user` field is picked up automatically), but add a test.
 - Update the privacy policy: notes are now stored on the server. Revise the line saying notes stay in the browser.
 - Optional later: story bank from A4 uses the same pattern.
@@ -274,28 +280,57 @@ A shareable page showing sheet progress, streak, and (only if the user turns it 
 
 ### B9. Foundations worth doing alongside
 
-- Client tests for the token refresh (`client/src/api/axios.js`): a 401 then a refresh and retry, a failed refresh logs out, a timeout does not log out. **1 day.**
-- A basic CI run of the server tests. **0.5 day.** (You decided against CI earlier; revisit if the team grows.)
+**Status (9 Nov 2026):** the first two items below are done. Client tests run with `cd client && npm test` (Vitest). `client/src/api/axios.test.js` has 14 tests for the token refresh; `client/src/test/colorGuard.test.js` has 5 tests that fail on a raw color. Each rule was checked by breaking the code on purpose. The CI and counts items are still open.
+
+- Client test setup, then tests for the token refresh (`client/src/api/axios.js`): a 401 then a refresh and retry, a failed refresh logs out, a timeout does not log out. **1 day.** This also gives later client work (the notes import, the checklist, quiz scoring) a place for its tests.
+- A guard test that fails when a component uses a raw color (a hex value, `rgb()` or a Tailwind palette class such as `text-zinc-400`) instead of a named token. It keeps the tokens the only source of colors, which is what makes the light theme (B12) cheap. **0.5 day.**
+- A basic CI run of the server tests (stage 6, optional). **0.5 day.** (You decided against CI earlier; revisit if the team grows.)
 - A check that run-together numbers cannot appear: counts shown on pages come from one function. **0.5 day.**
+
+### B10. Remove the Quiz and Aptitude pages (decided 7 Nov)
+
+**Status: done 9 Nov 2026.** The two pages and `ComingSoon.jsx` (used only by them) are deleted, with their routes, SEO entries, the menu and footer comments and the README bullet. Not part of B10: the "System Design" card marked coming soon on the Notes page.
+
+Remove the two hidden routes, their page files, the "coming soon" SEO entries, any menu or footer link, and the line about them in the README's Known Limitations. The Quiz page returns later as B7. **Effort:** 0.5 day. **Done when:** no route, link or SEO entry mentions them, the build's SEO check passes, and the README matches.
+
+### B11. Cache the DSA sheet reads (decided 9 Nov: with Redis, not before)
+
+The dashboard and the sheet list read all 5 sheets (about 1,300 links) from the database on every request, and the sheets only change when the seed runs. **Decision: no cache now.** It is built as step R4 of `docs/plans/REDIS_PLAN.md`, so it is also the first real use of Redis. Until then both endpoints keep reading from the database: heavier, but never wrong. **Done when** (in R4): the second request does not read the sheets from the database, totals still match everywhere (the stats-equals-dashboard tests), the seed clears the cached copy, and the endpoints still work when Redis is down.
+### B12. Light theme (later)
+
+The colors are named tokens in `client/src/index.css`, so a light theme is a second set of values, a toggle, a small script in `index.html` that sets the theme before the first paint, and a check of every page for contrast (the amber accent needs a darker value on white). From now on new pages use tokens only (the guard test in B9 enforces it). **Effort:** 3 to 4 days. **Done when:** every page is checked in both themes at phone and desktop width, and the loading screen and the PDF report are unaffected. Start after the notes and roadmap redesign (stage 2) is stable.
 
 ---
 
-## 5. Schedule
+## 5. Implementation order (revised 9 Nov 2026)
 
-Rough sequence for one developer. Weeks are working weeks; the plan fits in about 9 to 10.
+This replaces the earlier six-phase table. It orders the work by what depends on what, and every item in this plan has a place in it (see the coverage line below the table).
 
-| Phase | Weeks | Content (Track A) | Features (Track B) |
-|---|---|---|---|
-| 0. Decide and set up | 0.5 | Answer the DECIDE items; write the section template and the review checklist | none |
-| 1. Foundations | 1 to 2 | A3 Resume guide (low risk, quick win) | B1 progress record, B3 limits and state, B6 shared states |
-| 2. Notes and plans | 3 to 5 | A1 DBMS, then CN | B2 notes sync, B4 plan checklist |
-| 3. Roadmaps and behavioral | 5 to 7 | A2 roadmaps, A4 behavioral guide | B9 client tests |
-| 4. Planner | 7 to 8 | A1 OOP and OS deepening | **Gate first (below)**, then B5 goal planner |
-| 5. Quizzes and extras | 9 to 10 | A1 System Design basics, A5 catalog updates | B7 quizzes, B8 public profile (optional) |
+| Stage | What | Why this position |
+|---|---|---|
+| 0. Cleanup and foundations (about 1 week) | Deploy and verify the pending fixes; remove the Quiz and Aptitude pages (B10, decision 4); client test setup plus the token-refresh tests and the raw-color guard test (B9); write the notes template, review checklist and sources file; start finding outside readers and students now | Small, unblocks the rest, and people take weeks to find |
+| 1. Foundations (1 to 2 weeks) | B6 shared states, then B1 progress with dates and IST streaks, then B3 limits on the page; A3 resume guide in parallel | B6 first, because B1, B3 and every later page use those components. B1 before anything that plans |
+| 2. Content foundation (about 1.5 weeks, new) | One slice with tests: stable ids and the new shapes for notes and roadmaps; analyzer references changed from titles to ids; the notes and roadmap page redesign (decided); diagrams; "report a mistake" link, "last checked" date and reading time; link-check script; internal-link test | Must exist before writing. This is the biggest hidden risk |
+| 3. Notes and checklist (about 3 weeks) | A1 DBMS, then update `skillCatalog.json` for it; B2 notes sync (and the privacy policy); B4 checklist and "Today" card; A1 networks, then update the catalog | The catalog and server copies are updated after each subject, not at the end |
+| 4. Roadmaps and behavioral (about 2.5 weeks) | A2 content for 6 roadmaps; A4 behavioral (server copy, the live analyzer check, the story bank on top of B2) | The story bank needs B2. The live check needs AI quota |
+| 5. Student gate, then B5 | Show the checklist to 3 to 5 students and 2 to 3 job switchers. Before the planner: DBMS and OS at the template, B1 and B4 live. A1 Java OOP and OS depth run alongside | If they say no, stop at B4 (as planned) |
+| 6. Later | B7 quizzes (from the notes quiz data), System Design basics, B8 public profile, B12 light theme, CI | All depend on earlier content or user feedback |
 
-**Gate before the planner (end of Phase 3, after B4 is live).** Show the dashboard and a report with tick-off boxes to 3 to 5 students and 2 to 3 job switchers (section 9). Go on to B5 only if most of them say they would use a daily checklist and they understand what each page is for. If not, **stop at B4** and spend the planner's days on content.
+**Stage 0 status (9 Nov 2026):** done: B10, B9 (client test setup, token-refresh tests, raw-color guard test), and the notes template, review checklist and sources file in `docs/content/`. Yours to do: deploy and check the pending fixes on Render and Vercel; fill in the outside readers table and the students table in `docs/content/SOURCES.md` (start asking now, people take weeks).
 
-**Why this order.** Phase 1 is small and makes the app feel connected at once. B1 must come before the planner. Notes content must exist before a planner points at it. The planner comes after both so it launches with something worth planning.
+**Coverage:** A1 (stages 2, 3, 5, 6), A2 (2, 4), A3 (1), A4 (4), A5 (3, 4), B1 (1), B2 (3), B3 (1), B4 (3), B5 (5), B6 (1), B7 (6), B8 (6), B9 (0; CI in 6), B10 (0), B11 (with Redis: step R4 of the Redis plan), B12 (6).
+
+**Time:** about 11 to 12 weeks for stages 0 to 5 (my estimate; re-estimate after stage 2). Stage 6 adds about 3 weeks.
+
+**Rules that decide this order**
+- **Stable ids before content.** A roadmap step is a plain string matched by position to a separate details list, and a notes section is found by its title. Everything that links (notes, roadmaps, sheets, the skill catalog, planner items, quizzes) needs ids first.
+- **Shared states (B6) before the pages that use them.**
+- **Client test setup (B9) before logic-heavy UI** such as the notes import and the checklist.
+- **After each notes subject and each roadmap:** update the skill catalog mapping, the server copies, the SEO data, and re-run the live analyzer check when the behavioral bank changes.
+- **B1 before B5, B4 before the gate, B2 before the story bank.**
+- **Redis, BullMQ and background jobs** (`docs/plans/REDIS_PLAN.md`) run alongside as a learning track. Its production steps start after B3 and B4, so the same controllers are not edited twice. The DSA sheet cache (B11) is built there, as R4, not before.
+
+**Gate before the planner (stage 5).** Show the dashboard and a report with tick-off boxes to 3 to 5 students and 2 to 3 job switchers (section 9). Go on to B5 only if most of them say they would use a daily checklist and they understand what each page is for. If not, **stop at B4** and spend the planner's days on content.
 
 ---
 
@@ -343,6 +378,8 @@ Honest limit: this lowers the chance of a wrong fact a lot, but it cannot make i
 
 | Risk | Reduction |
 |---|---|
+| Links between notes, roadmaps and sheets break when a title changes | Stable ids (stage 2), analyzer references by id, an automatic internal-link test |
+| Raw colors creep back into components and block the light theme | The guard test in B9 |
 | Writing takes longer than planned | Finish one subject fully before the next. Cut scope by reducing topics per section, not the template |
 | Wrong technical content | The review checklist; ask a senior student to read each subject once |
 | The planner is good but the notes are thin | Launch the planner only after DBMS and OS reach the template |
@@ -375,27 +412,20 @@ Honest limit: this lowers the chance of a wrong fact a lot, but it cannot make i
 - **#11 Report tasks when a plan exists: ask each time**, merge is the default.
 
 - **Story bank (A4): saved to the account** (add to B2; privacy policy line needed).
-- **Time available: full-time**, so the 9 to 10 week schedule holds.
+- **Time available: full-time**, so the 11 to 12 week order in section 5 holds (stages 0 to 5).
 - **Outside readers: maybe.** Find one per subject before that subject finishes (college groups, seniors, Reddit); do not depend on it.
-- **Student validation: no one lined up yet.** Find 3 to 5 students and 2 to 3 job switchers before the Phase 3 gate. If none are found, the gate answer is "stop at B4".
+- **Student validation: no one lined up yet.** Find 3 to 5 students and 2 to 3 job switchers before the stage 5 gate. If none are found, the gate answer is "stop at B4".
 
 - **#12 Plan name: "My Plan"** (tab and "Add to My plan" button). The small dashboard card is called **"Today"**.
 
 **All 13 decisions are now made.** Status: still planning, no work started.
 
-1. **OOP notes language:** C++, Java, or both?
-2. **Notes scope:** do you want the proposed new sections (section 3, A1 table), or a shorter list?
-3. **System Design basics:** in scope or not yet?
-4. **Quiz and Aptitude pages:** build Quiz from the section quizzes and remove Aptitude, or remove both for now?
-5. **Streak rule:** a day counts in the user's local time or UTC?
-6. **Time estimates for the planner:** accept the starting numbers (20, 35, 60 minutes by difficulty) or choose your own?
-7. **Notes import:** import browser notes automatically on first login, or ask first?
-8. **Public profile (B8):** include, or skip until after launch feedback?
-9. **Who reviews content:** you alone, or also a friend or senior student?
-10. **New roadmap tracks:** none for now, or one extra (which)?
-11. **Adding a report's tasks to My plan when a plan already exists:** merge into the current plan, replace the plan, or ask each time? (Suggested: ask each time, with merge as the default.)
-12. **Name of the daily plan:** "My plan", "Planner", or something else?
-13. **Dashboard tab order:** My plan first, or keep DSA first? (Suggested: My plan first once it exists.)
+**Decided 9 Nov 2026 (order, light theme and Redis), answered by you:**
+- **Implementation order:** the stage table in section 5.
+- **First work: stage 0 cleanups.**
+- **Light theme (B12): stage 6, after the main work.**
+- **DSA sheet cache (B11): no cache now; it is built with Redis (step R4 of `docs/plans/REDIS_PLAN.md`).**
+- **Redis, BullMQ and background jobs: learned alongside the app work, in the evenings.** Redis host: Aiven for Valkey (free plan). Details and the still-open Redis questions are in section 8 of the Redis plan.
 
 ---
 
@@ -416,7 +446,7 @@ Record answers in a short file. If most say they would not use a planner, stop a
 
 ## 10. Non-goals (for now)
 
-- Videos, your own code judge or compiler, coins or a store, ads, paid tiers, a light theme, user-submitted interview stories, AI hints on sheet problems, a community feed.
+- Videos, your own code judge or compiler, coins or a store, ads, paid tiers, user-submitted interview stories, AI hints on sheet problems, a community feed. (A light theme is no longer a non-goal: it is B12, after the main work.)
 - Copying any other site's text, structure or design.
 - New AI features. The two unique ones (project ideas and the Role Analyzer) stay as they are, improved only by better content and links.
 
@@ -470,6 +500,10 @@ Strong: "Built JWT login with refresh-token rotation in Node.js, cutting repeat 
 
 | Task | Likely files |
 |---|---|
+| Stage 2 content foundation | notes model and seed, `server/src/validators/` (notes schema), `server/src/services/analyzerContext.service.js` (references by id), `client/src/data/roadmaps.js`, `client/src/pages/csNotes/*`, `client/src/pages/roadmaps/*`, a new diagram component, a link-check script, internal-link and sync tests |
+| B10 Quiz and Aptitude removal | `client/src/app.routes.jsx`, `client/src/pages/Quiz.jsx` and `Aptitude.jsx`, `client/src/seo/pages.js`, menu and footer links, README (Known Limitations) |
+| B11 sheet cache (with Redis, R4) | `server/src/controllers/sheets.controller.js`, `server/src/controllers/user.controller.js`, the seed scripts, tests |
+| B12 light theme | `client/src/index.css` (a second set of values), a theme toggle component, an early script in `client/index.html`, every page checked |
 | A1 notes | `server/src/data/notes/*.js`, `server/src/validators/` (notes schema), notes controller and tests, `client/src/pages/csNotes/*`, `server/src/data/skillCatalog.json`, `client/src/seo/pages.js` |
 | A2 roadmaps | `client/src/data/roadmaps.js`, roadmap pages, `server/src/services/analyzerContext.service.js` (slug copy), sync test, `client/src/seo/pages.js` |
 | A3 resume | `client/src/pages/Resume.jsx` |

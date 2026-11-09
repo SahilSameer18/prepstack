@@ -23,8 +23,6 @@ const Analyzer = lazy(() => import('./pages/analyzer/Analyzer'));
 const AnalyzerReport = lazy(() => import('./pages/analyzer/AnalyzerReport'));
 const Resume = lazy(() => import('./pages/Resume'));
 const Behavioral = lazy(() => import('./pages/Behavioral'));
-const Quiz = lazy(() => import('./pages/Quiz'));
-const Aptitude = lazy(() => import('./pages/Aptitude'));
 const UnifiedDashboard = lazy(() => import('./pages/Dashboard/UnifiedDashboard'));
 const Profile = lazy(() => import('./pages/Profile/Profile'));
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
@@ -127,14 +125,6 @@ export const router = createBrowserRouter([
           <ProtectedRoute>
             <Behavioral />
           </ProtectedRoute>
-      },
-      {
-        path: "/quiz",
-        element: <Quiz />
-      },
-      {
-        path: "/aptitude",
-        element: <Aptitude />
       },
       {
         path: "/privacy",
