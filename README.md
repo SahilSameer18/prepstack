@@ -383,7 +383,7 @@ erDiagram
         ObjectId _id PK
         ObjectId user FK
         string sheetSlug
-        array solvedProblems
+        array solvedProblems "each: link, solvedAt"
         date createdAt
         date updatedAt
     }
@@ -448,11 +448,17 @@ erDiagram
 
 | Method   | Endpoint             | Auth   | Description                                                     |
 | -------- | -------------------- | ------ | --------------------------------------------------------------- |
-| `GET`    | `/dashboard-summary` | ✅ JWT | Single-roundtrip pre-aggregated dashboard metrics & sheet stats |
+| `GET`    | `/dashboard-summary` | ✅ JWT | Single-roundtrip pre-aggregated dashboard metrics & sheet stats, plus the current streak (IST days) and each sheet's last solved date |
 | `GET`    | `/stats`             | ✅ JWT | Aggregates and returns total solved DSA and AI projects         |
 | `PUT`    | `/profile`           | ✅ JWT | Updates unique username and avatar with strict Zod validation   |
 | `PUT`    | `/change-password`   | ✅ JWT | Verifies password, updates hash, and revokes other devices      |
 | `DELETE` | `/account`           | ✅ JWT | Permanently deletes the account and all of its data              |
+
+### Usage: `/api/usage`
+
+| Method   | Endpoint | Auth   | Description                                                                                      |
+| -------- | -------- | ------ | ------------------------------------------------------------------------------------------------ |
+| `GET`    | `/`      | ✅ JWT | How much of today's allowance is used for project ideas and reports (`used`, `allowed`, `resetsAt`, last 24 hours) |
 
 ### AI Projects: `/api/project`
 
@@ -595,6 +601,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 | `npm start`          | Launches server                            |
 | `npm run seed:notes` | Seeds CS Note items                        |
 | `npm run seed:all`   | Idempotently seeds DSA Sheets and CS notes |
+| `node scripts/migrate-solved-at.js` | One-time: converts old solved-problem links to the dated format (`--dry-run` only prints counts). Run it on the live database before deploying the dated-progress code |
 | `npm test`           | Runs the API test suite (in-memory database, no real keys needed) |
 | `npm run test:coverage` | Same, with a coverage report              |
 
@@ -612,14 +619,14 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **514 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **542 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
 
 ```bash
 cd server
 npm test
 ```
 
-They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **19 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) and 5 that fail when a component uses a raw color instead of a design token. The screens themselves have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
+They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **21 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, and 2 for the resume checklist PDF (it must draw as one page). The screens themselves have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
 
 The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota).
 
@@ -629,6 +636,7 @@ The Role Analyzer was also checked against the real AI with hand-run scripts in 
 
 - **Rate limits live in the server's memory.** They reset on restart and are not shared between servers, so run one instance, or move them to a shared store such as Redis before scaling out.
 - **The AI runs on free tiers** (Gemini, then Groq). A quota or an outage can make generation fail for a while; the user then gets a clear message and the attempt is not counted. Reports and ideas can differ from run to run.
+- **Progress dates start on 9 Nov 2026.** Problems ticked before that have no date, so they do not count toward the streak or the last solved date. The streak is counted in IST (Indian time). The "used / allowed today" numbers on the forms count the last 24 hours; the hourly limit is not shown because it lives in server memory.
 - **About half of the 120 skills in the Role Analyzer's catalog have no PrepStack lessons yet.** Those skills link only to official documentation.
 - **Resume PDFs must contain text.** Scanned (image-only) PDFs are rejected, and the PDF export uses standard fonts, so characters outside basic Latin may not draw.
 - **Password reset emails go out through Brevo's free plan (300 a day) from a free Gmail address.** They reached the inbox in the owner's test, but other mail providers may put them in spam. A domain you own, authenticated in Brevo, is the proper fix.

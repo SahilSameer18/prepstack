@@ -27,17 +27,17 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 | Area | What exists | Gaps found |
 |---|---|---|
 | DSA sheets | 5 sheets (Blind 75, NeetCode 150, Striver SDE, Striver A2Z, Love Babbar 450), about 1,300 problem links out to LeetCode, GeeksforGeeks and similar. Each problem has a title, link, difficulty and tags | Links only. Progress is a list of solved links per sheet |
-| Progress data | `Progress`: one document per user per sheet, `solvedProblems` = array of links | **No dates**, so no streak, no heatmap, no "solved this week", no time-based plan |
+| Progress data | `Progress`: one document per user per sheet, `solvedProblems` = array of `{ link, solvedAt }` (since 9 Nov 2026; ticks from before have `solvedAt: null`) | Old ticks have no date, so the streak and "last solved" only count ticks made since the change. No heatmap or "solved this week" yet |
 | Problem notes | A notes box per problem | Saved only in the browser (`localStorage`). Lost on another device or after clearing data |
 | CS notes | 4 subjects, 38 sections, 84 topics, about 4,400 words in total | OS about 2,800 words; DBMS about 450; CN about 460; OOPs about 700. Topics are bullet lists (concept, insight, real world, traps). No quizzes, no links to sheets or roadmaps |
 | Roadmaps | 6 tracks (Frontend, Backend, Full Stack MERN, Android, Data Analytics, Machine Learning), 9 steps each (54 steps) | A step is a title, one line, and 2 to 3 external links. No checkpoints, no projects, no links to PrepStack pages, no progress tracking |
-| Resume guide | 6 section cards (Contact, Education, Skills, Experience, Projects, Honors), do and don't lists, link to the Role Analyzer | Few examples, no before/after bullets, no role variants |
+| Resume guide | Rewritten in stage 1 (A3): 6 section cards with tips, what recruiters look for, weak and strong bullets and mistakes; basics (one page, bullet formula, file format, ATS notes, links); role notes; a fictional sample resume; a checklist PDF. Login-only | Needs an outside reader before it counts as reviewed. Its claims are listed in `docs/content/SOURCES.md` |
 | Behavioral guide | 22 questions: 13 Personal, 4 Teamwork, 4 Problem Solving, **1 Leadership**. Each has a tip and one example answer | Thin: no failure, conflict, ownership, deadline, ambiguity or feedback questions. No story-building help |
 | Role Analyzer | Built, tested, live-checked. 120-skill catalog, 53 skills without PrepStack lessons | Plan is read-only. Skill advice links to thin notes |
-| AI project ideas | Cascade of Gemini then Groq, capped per user | Not linked to roadmaps |
-| Dashboard | Tabs: DSA, Projects, Reports | DSA shows a total, not progress per sheet. No streak, no "today" |
+| AI project ideas | Cascade of Gemini then Groq, capped per user. The form shows how many are left today (`GET /api/usage`) | Not linked to roadmaps |
+| Dashboard | Tabs: DSA, Projects, Reports. The DSA tab has a streak tile (IST days) and per-sheet cards with the last solved date | No "today" card yet (B4) |
 | Quiz and Aptitude | Removed in stage 0 (B10, 9 Nov 2026): pages, routes and SEO entries are gone | The Quiz comes back later from the notes quizzes (B7) |
-| Tests | 514 server tests and 19 client tests (token refresh, raw-color guard), 9 Nov 2026 | No CI |
+| Tests | 542 server tests and 21 client tests (token refresh, raw-color guard, resume PDF), 9 Nov 2026 | No CI |
 | Accounts | Password reset by email, a per-account login lock, up to 10 device sessions (built and tested) | Login cookies use SameSite=None; changing that needs the website and the API on one domain |
 
 ---
@@ -129,6 +129,8 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 
 ### A3. Resume guide
 
+**Status: built 9 Nov 2026 (stage 1); not yet reviewed.** Content is in `client/src/data/resumeGuide.js`, the page in `client/src/pages/Resume.jsx`, the checklist PDF in `client/src/components/pdf/ResumeChecklistPDF.jsx` (a test checks it is one page). The page stays login-only (decided). Wording is advice, with no statistics. Still open: an outside reader (a recruiter or working engineer) must check it, and the claims table in `docs/content/SOURCES.md` has no outside sources yet.
+
 **Goal.** A guide that a fresher can follow to build a resume that the Role Analyzer would score well.
 
 **Content plan:**
@@ -190,6 +192,8 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 
 ### B1. Shared progress record (do this first)
 
+**Status: built 9 Nov 2026 (stage 1).** Each tick stores `{ link, solvedAt }`. The API still sends plain links, so the sheet page did not change. The dashboard summary returns `streak` (days in a row, counted in IST) and each sheet's `lastSolvedAt`. One-time migration: `node scripts/migrate-solved-at.js [--dry-run]`; it was run on the database used by the local server. **Before deploying the server, run it on the live database first** (the new code cannot read old data, so the live site shows 0 solved until the migration is run and the new code is live). Tests: `server/test/progress-dates.test.js` (20), plus updated `sheets.test.js` and `user.test.js`.
+
 **Why.** Everything else (streak, "today", plans, profile) needs dates on progress.
 
 **Data change.** `Progress.solvedProblems` is an array of link strings. Change each entry to `{ link, solvedAt }`, with a one-time migration that gives existing entries a `solvedAt` of the migration date (clearly flagged as unknown, so streaks do not count old data). Keep the existing toggle endpoint working through the migration.
@@ -217,6 +221,8 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 **Effort:** 3 days. **Done when:** a note survives a new device, import works exactly once, deletion removes notes, and the privacy page matches.
 
 ### B3. Limits shown on the page, and state kept in the address
+
+**Status: built 9 Nov 2026 (stage 1).** `server/src/config/limits.js` holds all limit numbers, and the real checks and the page read from it. `GET /api/usage` returns used, allowed and resetsAt for ideas and reports over the last 24 hours. Both forms show what is left and disable the button at the limit. Hourly limits are not shown as counts (they live in server memory). Sheet topic state in the address was not needed and is not done. Tests: `server/test/usage.test.js` (8).
 
 - Add a small endpoint (or extend an existing one) returning "used / allowed today" for the analyzer and project ideas. Show "2 of 5 reports left today" on both forms.
 - Keep tab and open-section state in the URL where it helps (the dashboard tabs already do this; sheet topics could follow).
@@ -268,6 +274,8 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 
 ### B6. Consistent empty, locked and limit states
 
+**Status: built 9 Nov 2026 (stage 1).** `client/src/components/ui/StateComponents.jsx` has `EmptyState`, `LimitState` and `UsageNotice`; `PageErrorState` takes a `title`, and `InlineErrorAlert` has `role="alert"`. The hand-written empty and error screens on the Projects tab, Reports tab, Sheets, Notes and Behavioral pages now use them, and the loaders were tidied (one spinner for buttons, shared skeletons). Left as they are: the one-line "no devices" note in the Profile sessions card, and the Sheets page fetch failure (it already falls back to a built-in list). The Projects tab still shows no error when its list fails to load.
+
 A single set of small components for: empty (icon, one line, one button), at-limit (what the limit is, when it resets), and error. Replace the ad hoc versions across the dashboard, analyzer, projects and notes pages. **Effort:** 2 days.
 
 ### B7. Quizzes
@@ -317,6 +325,8 @@ This replaces the earlier six-phase table. It orders the work by what depends on
 | 6. Later | B7 quizzes (from the notes quiz data), System Design basics, B8 public profile, B12 light theme, CI | All depend on earlier content or user feedback |
 
 **Stage 0 status (9 Nov 2026):** done: B10, B9 (client test setup, token-refresh tests, raw-color guard test), and the notes template, review checklist and sources file in `docs/content/`. Yours to do: deploy and check the pending fixes on Render and Vercel; fill in the outside readers table and the students table in `docs/content/SOURCES.md` (start asking now, people take weeks).
+
+**Stage 1 status (9 Nov 2026):** built: B6, B1, B3 and A3. Not done by me: the forms (AI ideas, Analyzer) and the new Resume guide page and its PDF have not been looked at in a browser at phone and desktop width, because those pages need login. Yours to do: run the progress migration on the live database, then deploy the server (in that order); get an outside reader for the Resume guide; keep asking readers and students (`docs/content/SOURCES.md`).
 
 **Coverage:** A1 (stages 2, 3, 5, 6), A2 (2, 4), A3 (1), A4 (4), A5 (3, 4), B1 (1), B2 (3), B3 (1), B4 (3), B5 (5), B6 (1), B7 (6), B8 (6), B9 (0; CI in 6), B10 (0), B11 (with Redis: step R4 of the Redis plan), B12 (6).
 
