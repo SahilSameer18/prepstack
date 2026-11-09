@@ -41,3 +41,23 @@ export const LimitState = ({ title, text, used, allowed, resetsAt, className = "
     </div>
   );
 };
+
+// What is left of today's allowance, shown on a form before the user hits the limit. usage is { used, allowed, resetsAt }
+// from useUsage (null while loading: nothing is shown). noun is the plural, for example "ideas".
+export const UsageNotice = ({ usage, noun, className = "" }) => {
+  if (!usage) return null;
+  const left = usage.allowed - usage.used;
+  if (left <= 0) {
+    return (
+      <LimitState
+        className={className}
+        title={`Daily limit reached: ${usage.used} of ${usage.allowed} ${noun} used`}
+        text="You can make more once your oldest one is over 24 hours old."
+        used={usage.used}
+        allowed={usage.allowed}
+        resetsAt={usage.resetsAt}
+      />
+    );
+  }
+  return <p className={`text-xs text-muted text-center ${className}`}>{left} of {usage.allowed} {noun} left today</p>;
+};

@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 import { createReport, listReports, deleteReport } from "../../api/services/analyzerService";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 import { InlineSpinner } from "../../components/ui/Skeletons";
+import { UsageNotice } from "../../components/ui/StateComponents";
+import { useUsage } from "../../hooks/useUsage";
 import { extractError } from "../../utils/extractError";
 import { formatDate } from "../../utils/formatDate";
 import { formatTitle } from "../../utils/formatTitle";
@@ -23,6 +25,7 @@ const Analyzer = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [recent, setRecent] = useState([]);
+  const { usage, refresh: refreshUsage } = useUsage();
 
   useEffect(() => {
     listReports().then((r) => setRecent(r?.reports || r?.data?.reports || [])).catch(() => {}); // the list is optional: the form works without it
@@ -37,7 +40,8 @@ const Analyzer = () => {
   };
 
   const hasResume = !!file || resumeText.trim().length > 0;
-  const valid = hasResume && jobDescription.trim().length >= 30 && consent;
+  const limitReached = !!usage && usage.reports.used >= usage.reports.allowed;
+  const valid = hasResume && jobDescription.trim().length >= 30 && consent && !limitReached;
 
   const submit = async (e) => {
     e.preventDefault();
@@ -57,6 +61,7 @@ const Analyzer = () => {
       navigate(`/analyzer/${report._id}`);
     } catch (err) {
       setError(extractError(err, "Could not create the report. Please try again."));
+      refreshUsage();
     } finally {
       setLoading(false);
     }
@@ -151,7 +156,7 @@ const Analyzer = () => {
         >
           {loading ? <><InlineSpinner size={16} color="currentColor" /> Reading your resume. This can take up to a minute...</> : <><FiTarget /> Analyze my resume</>}
         </button>
-        <p className="text-xs text-muted text-center">You can create 3 reports per hour and 5 per day.</p>
+        <UsageNotice usage={usage?.reports} noun="reports" />
       </form>
 
       {/* Recent reports */}

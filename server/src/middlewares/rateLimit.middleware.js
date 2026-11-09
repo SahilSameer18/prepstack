@@ -1,15 +1,16 @@
 const rateLimit = require("express-rate-limit");
+const { HOUR_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR } = require("../config/limits");
 
 const aiProjectLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 4, // 4 requests per hour per user
+  windowMs: HOUR_MS,
+  max: PROJECTS_PER_HOUR, // per user
   skipFailedRequests: true, // if response is 4xx/5xx, don't count it
   keyGenerator: (req) => req.user?._id?.toString() || req.ip,
   validate: { keyGeneratorIpFallback: false },
   message: {
     success: false,
     message: "Too many Project idea generation requests. Please try again after an hour.",
-    errors: ["Rate limit exceeded. Maximum 4 project ideas generated per hour."],
+    errors: [`Rate limit exceeded. Maximum ${PROJECTS_PER_HOUR} project ideas generated per hour.`],
   },
   standardHeaders: true, // sends RateLimit headers in response
   legacyHeaders: false,
@@ -75,15 +76,15 @@ const accountActionLimiter = rateLimit({
 // Role Analyzer reports: 3 per hour per signed-in user. Only SAVED reports count (a failed attempt is free), because a
 // report is a large AI call and the free AI quota is shared by everyone.
 const analyzerLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 3,
+  windowMs: HOUR_MS,
+  max: REPORTS_PER_HOUR,
   skipFailedRequests: true,
   keyGenerator: (req) => req.user?._id?.toString() || req.ip,
   validate: { keyGeneratorIpFallback: false },
   message: {
     success: false,
     message: "You've created several reports in the last hour. Please try again later.",
-    errors: ["Rate limit exceeded. Maximum 3 reports per hour."],
+    errors: [`Rate limit exceeded. Maximum ${REPORTS_PER_HOUR} reports per hour.`],
   },
   standardHeaders: true,
   legacyHeaders: false,

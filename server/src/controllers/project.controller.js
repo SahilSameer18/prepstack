@@ -3,13 +3,14 @@ const { generateProjectIdea } = require("../services/ai.service");
 const projectModel = require('../models/project.model');
 const AppError = require('../utils/AppError');
 const { sendSuccess, sanitizeDoc } = require('../utils/responseFormatter');
+const { HOUR_MS, projectsPerDay } = require('../config/limits');
+const { countLast24h } = require('../services/usage.service');
 
 // Times (ms) at which the AI said a user's typed tech stack was not a real technology, per user. A rejected check still
 // costs an AI call and the hourly limit does not count failed requests, so without this someone could type junk in a
 // loop and use up the shared free quota. Kept in server memory (resets on restart).
 const notATechnology = new Map();
 const NOT_A_TECHNOLOGY_LIMIT = 5; // per user per hour
-const HOUR_MS = 60 * 60 * 1000;
 const recentNotATechnology = (key) => {
   const fresh = (notATechnology.get(key) || []).filter((at) => Date.now() - at < HOUR_MS);
   if (fresh.length) notATechnology.set(key, fresh); else notATechnology.delete(key);
@@ -22,12 +23,7 @@ const generatingNow = new Set();
 
 // Most ideas one user may save in any 24 hours (the hourly limit of 4 stays as well). The AI quota is shared by
 // everyone on the free plan, so this stops one user from using it all up. Counted from the database, so it
-// survives restarts. Deleting ideas lowers the count; the hourly limit still caps total use.
-const DAY_MS = 24 * 60 * 60 * 1000;
-const dailyLimit = () => {
-  const n = Number(process.env.AI_DAILY_LIMIT);
-  return Number.isInteger(n) && n > 0 ? n : 15;
-};
+// survives restarts. Deleting ideas lowers the count; the hourly limit still caps total use. The number is in config/limits.js.
 
 // controller to generate project idea
 const generateProject = async (req, res, next) => {
@@ -48,8 +44,8 @@ const generateProject = async (req, res, next) => {
       return next(new AppError(429, "You've tried several names we don't recognise. Please pick a tech stack from the list, or try again in an hour."));
     }
 
-    const limit = dailyLimit();
-    const recent = await projectModel.countDocuments({ user: userId, createdAt: { $gte: new Date(Date.now() - DAY_MS) } });
+    const limit = projectsPerDay();
+    const recent = await countLast24h(projectModel, userId);
     if (recent >= limit) {
       return next(new AppError(429, `You've reached the limit of ${limit} project ideas per 24 hours. Please try again later.`));
     }

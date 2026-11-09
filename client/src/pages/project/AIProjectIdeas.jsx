@@ -4,6 +4,8 @@ import { useProject } from '../../hooks/useProject'
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 import { InlineSpinner } from "../../components/ui/Skeletons";
+import { UsageNotice } from "../../components/ui/StateComponents";
+import { useUsage } from "../../hooks/useUsage";
 
 // KEEP IN SYNC with KNOWN_STACKS in server/src/services/ai.service.js: typed names that are not in this list are
 // checked by the AI ("is this a real technology?") before an idea is generated.
@@ -22,6 +24,7 @@ const AIProjectIdeas = () => {
   const known = techStacks.find((s) => s.toLowerCase() === wanted.toLowerCase());
   const [form, setForm] = useState({ techStack: known || (isValidStackName(wanted) ? wanted : ""), complexity: "", domain: "", notes: "" });
   const { generateProject, getProjectById, loading, project, setProject } = useProject();
+  const { usage, refresh: refreshUsage } = useUsage();
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(null);
   const [customStack, setCustomStack] = useState(!known && isValidStackName(wanted)); // "Other": the user types their own tech stack
@@ -45,6 +48,8 @@ const AIProjectIdeas = () => {
       await generateProject({ ...form, techStack: form.techStack.trim() });
     } catch (err) {
       setError(err.message || "Failed to generate project idea. Please try again.");
+    } finally {
+      refreshUsage();
     }
   };
 
@@ -66,7 +71,9 @@ const AIProjectIdeas = () => {
 
   const stackOk = customStack ? isValidStackName(form.techStack.trim()) : !!form.techStack;
   const stackError = customStack && form.techStack.trim() !== "" && !stackOk ? "Use 2 to 40 letters, numbers or + # . / & ( ) -" : null;
+  const limitReached = !!usage && usage.projects.used >= usage.projects.allowed;
   const isFormValid = stackOk && !!form.complexity;
+  const canGenerate = isFormValid && !loading && !limitReached;
 
   return (
     <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto page-enter">
@@ -238,13 +245,15 @@ const AIProjectIdeas = () => {
             className=""
           />
 
+          <UsageNotice usage={usage?.projects} noun="ideas" />
+
           {/* Actions */}
           <div className="flex flex-col gap-3">
             <button
               onClick={handleGenerate}
-              disabled={!isFormValid || loading}
+              disabled={!canGenerate}
               className={`w-full py-3 rounded-xl font-display font-semibold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer ${
-                isFormValid && !loading 
+                canGenerate
                   ? "amber-specular-button text-on-brand font-bold" 
                   : "bg-ink/[0.04] border border-ink/[0.08] text-muted cursor-not-allowed"
               }`}

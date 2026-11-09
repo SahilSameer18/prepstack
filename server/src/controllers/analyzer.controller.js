@@ -6,18 +6,15 @@ const { extractPdfText, prepareResumeText } = require('../services/resume.servic
 const { buildContext } = require('../services/analyzerContext.service');
 const { analyze } = require('../services/analyzer.service');
 const { adviceForReport } = require('../services/skills.service');
+const { reportsPerDay } = require('../config/limits');
+const { countLast24h } = require('../services/usage.service');
 
 // Users with a report being written right now (a second request gets a 409). Kept in server memory, so it resets on
 // restart and is per server process: fine for a single instance, the same trade-off as the project-idea generator.
 const generatingNow = new Set();
 
 // Most reports one user may save in 24 hours (the hourly limit of 3 stays as well). Counted from the database, so it
-// survives restarts. A report is a big AI call and the free AI quota is shared by everyone.
-const DAY_MS = 24 * 60 * 60 * 1000;
-const dailyLimit = () => {
-  const n = Number(process.env.ANALYZER_DAILY_LIMIT);
-  return Number.isInteger(n) && n > 0 ? n : 5;
-};
+// survives restarts. A report is a big AI call and the free AI quota is shared by everyone. The number is in config/limits.js.
 
 // What the browser gets back. The resume is not in here (it is never stored) and neither is the answering model.
 const present = (doc) => {
@@ -50,8 +47,8 @@ const createReport = async (req, res, next) => {
     const resume = prepareResumeText(raw);
 
     // 2. The daily limit (only saved reports count, so a failed attempt costs nothing)
-    const limit = dailyLimit();
-    const recent = await Report.countDocuments({ user: userId, createdAt: { $gte: new Date(Date.now() - DAY_MS) } });
+    const limit = reportsPerDay();
+    const recent = await countLast24h(Report, userId);
     if (recent >= limit) return next(new AppError(429, `You've reached the limit of ${limit} reports per 24 hours. Please try again later.`));
 
     // 3. The AI work. The resume text lives only in this function.

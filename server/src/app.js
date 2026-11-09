@@ -62,6 +62,7 @@ const projectRouter = require('./routes/project.routes')
 const notesRouter = require('./routes/notes.routes')
 const userRouter = require('./routes/user.routes')
 const analyzerRouter = require('./routes/analyzer.routes')
+const usageRouter = require('./routes/usage.routes')
 
 
 // use all the routes here
@@ -71,6 +72,7 @@ app.use('/api/project', projectRouter)
 app.use('/api/notes', notesRouter)
 app.use('/api/user', userRouter)
 app.use('/api/analyzer', analyzerRouter)
+app.use('/api/usage', usageRouter)
 
 
 // 404: catch any unmatched routes and forward to error handler
