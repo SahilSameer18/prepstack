@@ -13,6 +13,24 @@
   <meta name="theme-color" content="#060608" />
   <meta name="color-scheme" content="dark" />
 
+  <!-- Loading screen shown from the first paint until React starts (the build puts its markup inside #root). Colors come from the tokens in index.css. -->
+  <style>
+    #boot { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; }
+    #boot .boot-mark { position: relative; width: 72px; height: 72px; border-radius: 9999px; display: flex; align-items: center; justify-content: center;
+      background: color-mix(in srgb, var(--brand) 10%, transparent); border: 1px solid color-mix(in srgb, var(--brand) 20%, transparent); }
+    #boot .boot-ring { position: absolute; inset: -1px; border-radius: 9999px; border: 2px solid transparent; border-top-color: var(--brand); animation: boot-spin 1s linear infinite; }
+    #boot .boot-p { font: 900 1.5rem Inter, system-ui, sans-serif; color: var(--brand); }
+    #boot .boot-name { margin: 0; font: 700 1.25rem 'Plus Jakarta Sans', Inter, system-ui, sans-serif; letter-spacing: -0.02em; color: var(--fg); }
+    #boot .boot-name span { color: var(--brand); }
+    #boot .boot-dots { display: flex; gap: 6px; }
+    #boot .boot-dots i { width: 6px; height: 6px; border-radius: 9999px; background: color-mix(in srgb, var(--brand) 60%, transparent); animation: boot-dot 1.2s ease-in-out infinite; }
+    #boot .boot-dots i:nth-child(2) { animation-delay: .15s; }
+    #boot .boot-dots i:nth-child(3) { animation-delay: .3s; }
+    #boot .boot-dots i:nth-child(4) { animation-delay: .45s; }
+    @keyframes boot-spin { to { transform: rotate(360deg); } }
+    @keyframes boot-dot { 0%, 80%, 100% { transform: scale(.6); opacity: .4; } 40% { transform: scale(1.2); opacity: 1; } }
+  </style>
+
   <!-- Icons -->
   <link rel="icon" href="/favicon.ico" sizes="48x48" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />

@@ -49,14 +49,22 @@ const headFor = (page) => {
   return lines.join('\n  ');
 };
 
-// Readable content for crawlers and non-JS readers, shown until React mounts. Only for pages meant to be indexed.
+// What a visitor sees from the first paint until React starts: a dark loading screen that matches the app's own loader.
+// React replaces everything inside #root when it starts, so this disappears by itself.
+const SPLASH = '<div id="boot" role="status" aria-label="Loading PrepStack"><div class="boot-mark"><span class="boot-ring"></span><span class="boot-p">P</span></div>' +
+  '<p class="boot-name">Prep<span>Stack</span></p><div class="boot-dots"><i></i><i></i><i></i><i></i></div></div>';
+// The readable page text for crawlers and non-JS readers stays in the HTML, but out of sight and out of reach of the keyboard,
+// so a visitor never sees the plain, unstyled version flash before the real page.
+const HIDDEN = 'position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
+
+// Readable content for crawlers and non-JS readers (hidden from view, see HIDDEN). Only for pages meant to be indexed.
 const bodyFor = (page) => {
-  if (page.noindex) return '<div id="root"></div>';
+  if (page.noindex) return `<div id="root">${SPLASH}</div>`;
   const crumbs = page.parent
     ? `<nav aria-label="Breadcrumb" style="font-size:.85rem;color:#a1a1aa;margin-bottom:1.25rem"><a href="/" style="color:#a1a1aa">Home</a>${page.parent.path !== '/' ? ` / <a href="${page.parent.path}" style="color:#a1a1aa">${esc(page.parent.name)}</a>` : ''}</nav>`
     : '';
   const links = (page.links || []).map((l) => `<li><a href="${l.path}" style="color:#ffa116">${esc(l.label)}</a></li>`).join('');
-  return `<div id="root"><main data-prerender style="max-width:48rem;margin:0 auto;padding:7rem 1.5rem 4rem;color:#e4e4e7;font-family:Inter,system-ui,sans-serif;line-height:1.6">${crumbs}<h1 style="font-size:2.25rem;line-height:1.15;color:#fff;margin:0 0 1rem">${esc(page.h1)}</h1>${page.intro.map((p) => `<p style="color:#d4d4d8">${esc(p)}</p>`).join('')}${links ? `<ul style="padding-left:1.25rem;margin-top:1.5rem">${links}</ul>` : ''}</main></div>`;
+  return `<div id="root">${SPLASH}<main data-prerender inert style="${HIDDEN}">${crumbs}<h1 style="font-size:2.25rem;line-height:1.15;color:#fff;margin:0 0 1rem">${esc(page.h1)}</h1>${page.intro.map((p) => `<p style="color:#d4d4d8">${esc(p)}</p>`).join('')}${links ? `<ul style="padding-left:1.25rem;margin-top:1.5rem">${links}</ul>` : ''}</main></div>`;
 };
 
 const render = (page) =>
