@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const userModel = require('../models/auth.model');
 const projectModel = require('../models/project.model');
 const progressModel = require('../models/progress.model');
+const PasswordReset = require('../models/passwordReset.model');
 const DSASheet = require('../models/sheets.model');
 const AppError = require('../utils/AppError');
 const { findUserByUsername } = require('../utils/usernameHelper');
@@ -176,6 +177,9 @@ const changePassword = async (req, res, next) => {
       { _id: userId },
       { $set: { password: hash }, $pull: { refreshTokens: { _id: { $ne: req.user.sid } } } }
     );
+
+    // An emailed reset link that is still waiting must not work after the password was changed here
+    await PasswordReset.deleteMany({ user: userId });
 
     const userResponse = formatUserResponse(user);
     sendSuccess(res, 200, 'Password changed successfully. Other active devices have been signed out.', { user: userResponse }, { user: userResponse });

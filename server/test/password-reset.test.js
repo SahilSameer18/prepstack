@@ -214,6 +214,38 @@ describe('Password reset by email (the email service is faked)', () => {
       assert.equal((await reset(token, NEW_PASSWORD)).status, 200);
     });
 
+    it('changing the password in Settings cancels a link that is still waiting', async () => {
+      const acct = await account();
+      const token = await askFor(acct);
+      assert.equal(await PasswordReset.countDocuments({ user: acct.userId }), 1);
+      const change = await t.api.put('/api/user/change-password', { cookies: acct.cookies, body: { currentPassword: acct.password, newPassword: 'ChangedInSettings1' } });
+      assert.equal(change.status, 200);
+      assert.equal(await PasswordReset.countDocuments({ user: acct.userId }), 0, 'the waiting link is removed');
+      assert.equal((await reset(token, NEW_PASSWORD)).status, 400, 'and the old email can no longer be used');
+      assert.equal((await t.api.post('/api/auth/login', { body: { email: acct.email, password: 'ChangedInSettings1' } })).status, 200, 'the password chosen in Settings is the one that works');
+    });
+
+    it("changing one user's password never cancels another user's waiting link", async () => {
+      const mine = await account();
+      const other = await account();
+      const otherToken = await askFor(other);
+      const myToken = await askFor(mine);
+      const change = await t.api.put('/api/user/change-password', { cookies: mine.cookies, body: { currentPassword: mine.password, newPassword: 'ChangedInSettings1' } });
+      assert.equal(change.status, 200);
+      assert.equal(await PasswordReset.countDocuments({ user: other.userId }), 1, "the other user's link is untouched");
+      assert.equal((await reset(myToken)).status, 400);
+      assert.equal((await reset(otherToken)).status, 200, "and it still works");
+    });
+
+    it('a failed change in Settings (wrong current password) leaves the link working', async () => {
+      const acct = await account();
+      const token = await askFor(acct);
+      const change = await t.api.put('/api/user/change-password', { cookies: acct.cookies, body: { currentPassword: 'NotMyPassword1', newPassword: 'ChangedInSettings1' } });
+      assert.equal(change.status, 401);
+      assert.equal(await PasswordReset.countDocuments({ user: acct.userId }), 1);
+      assert.equal((await reset(token)).status, 200);
+    });
+
     it('does not log the user in (no cookies are set)', async () => {
       const acct = await account();
       const res = await reset(await askFor(acct));

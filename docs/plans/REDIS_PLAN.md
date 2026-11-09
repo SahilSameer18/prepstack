@@ -164,8 +164,9 @@ Each pattern is a small script plus a test that proves it.
 - **Done when:** a test proves a revoked session fails on its next request, and a measurement shows the lookups per minute drop. Without that measurement this step is not started.
 - **Rollback:** remove the cache read; the database check is untouched underneath.
 
-### R4. Content and per-user stats (measure first) (after L3)
-- Public content (sheet lists, notes) goes first to HTTP cache headers and the website's CDN, which beat Redis for public pages. Use Redis only for a per-user dashboard summary with a short lifetime.
+### R4. DSA sheet reads, content and per-user stats (after L3)
+- **The DSA sheet reads are cached here (decided 9 Nov 2026: no cache before Redis).** The dashboard and the sheet list read all 5 sheets (about 1,300 links) from the database on every request, and the sheets only change when the seed runs. Cache-aside: read the cache; on a miss read the database and store the result with an expiry. The seed scripts clear it, and when Redis is down the endpoints read from the database. This is the first real use of Redis in the app (item B11 in `IMPROVEMENT_PLAN.md`).
+- Other public content (notes) can use HTTP cache headers and the website's CDN first. A per-user dashboard summary with a short lifetime comes after, only if it shows up as slow.
 - Every action that changes a user's totals clears it: solving a problem, creating or deleting a project, creating or deleting a report, and any new writer added later (progress dates, saved notes, plans). The list of writers is written down in the step, and a test fails if a new one is missing.
 
 ### R5. Absorb failed-login traffic (optional, after an attack)
@@ -251,7 +252,8 @@ Re-check each provider's live page before signing up: free tiers change, and som
 | R1 to R3 | Shared limits and locks, the AI budget, the session cache | about 7 days |
 | L4 to L6 | Background jobs, BullMQ, running it for real | about 7 days |
 | R6 | The AI job queue (project ideas first) | about 1 week |
-| R4, R5, R7 | Only when measured or needed | later |
+| R4 | The sheet cache is decided (it is the first real use of Redis); the per-user summary only if it is slow | after R1 |
+| R5, R7 | Only when measured or needed | later |
 
 About 6 to 7 weeks of full-time work, because learning is part of every step. It can run alongside `IMPROVEMENT_PLAN.md` Phase 1, but do not interleave inside a single step.
 
@@ -281,11 +283,14 @@ About 6 to 7 weeks of full-time work, because learning is part of every step. It
 
 ## 8. Decisions needed from you
 
-1. **Learning style:** you type the practice code and I review (recommended), or I write it and you read and modify it?
-2. **Local Redis:** WSL2 with Ubuntu (recommended, no Docker needed): okay to install it?
-3. **Redis host: decided 9 Nov 2026.** Learning: Redis on your computer in WSL. Live: **Aiven for Valkey (free plan)**, the only host, for limits, locks and the queue, and only after it passes the host acceptance check in section 3b. No paid plan. If it fails the check, the queue is a MongoDB job collection and there is no Redis host.
-4. **The analyzer in a queue:** keep it inside the request, or change the Privacy Policy to allow a few minutes of storage?
-5. **Fail open** for the sign-up and reset-email limits during an outage: acceptable?
+Answered by you on 9 Nov 2026. A decision is recorded only after you answered.
+
+1. **Learning style: open.** You had no preference. Options: you type the practice code and I review, or I write it and you read and modify it, or a mix.
+2. **Local Redis (WSL2 with Ubuntu): not now.** Nothing is installed. L0 (no code) can start any time; L1 starts when you decide to install it.
+3. **Redis host: Aiven for Valkey (free plan), confirmed by you.** It is the only host, for limits, locks and the queue, and only after it passes the host acceptance check in section 3b. No paid plan. If it fails the check, the queue is a MongoDB job collection and there is no Redis host.
+4. **The analyzer in a queue: decide later.** Until then it stays inside the request and only project ideas are planned for the queue.
+5. **Fail open** for the sign-up and reset-email limits during an outage: **yes**, confirmed by you.
+6. **When to learn it: alongside the app work, in the evenings.** A little each week next to stages 0 to 3 of `IMPROVEMENT_PLAN.md`. No live Redis until the first Redis step (R0/R1), which starts after B3 and B4.
 
 ---
 
