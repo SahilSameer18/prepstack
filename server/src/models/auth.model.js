@@ -52,6 +52,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  // Wrong-password counter for this account (see loginUser). Never sent to the browser: formatUserResponse picks fields by name.
+  loginFailures: {
+    type: new mongoose.Schema({
+      count: { type: Number, default: 0 },
+      windowStart: { type: Date },
+      lockedUntil: { type: Date }
+    }, { _id: false }),
+    default: undefined
+  },
   // Multi-device active refresh tokens stored as SHA-256 hashes with device fingerprinting
   refreshTokens: [{
     tokenHash: {

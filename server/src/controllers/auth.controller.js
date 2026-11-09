@@ -1,4 +1,6 @@
 const userModel = require('../models/auth.model')
+const PasswordReset = require('../models/passwordReset.model');
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -9,6 +11,7 @@ const { generateUniqueUsername, findUserByUsername } = require('../utils/usernam
 const { parseDeviceInfo } = require('../utils/deviceParser');
 const { sendSuccess } = require('../utils/responseFormatter');
 const { formatUserResponse, defaultAvatar } = require('../utils/userResponse');
+const { sendEmail, isEmailConfigured, passwordResetEmail, googleOnlyEmail, settings: emailSettings } = require('../services/email.service');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -119,6 +122,34 @@ const registerUser = async (req, res, next) => {
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 
+// ── Per-account login lock ─────────────────────────────────────
+// 10 wrong passwords within 15 minutes lock PASSWORD logins for that account for 15 minutes, even when the guesses come
+// from many different internet addresses. Google sign-in, token refresh and devices that are already logged in keep working.
+// Known trade-off: someone can lock a victim out for 15 minutes by failing on purpose; the short lock limits the harm.
+const LOGIN_MAX_FAILURES = 10;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+
+// One atomic update (two pipeline stages), so parallel guesses cannot slip past the counter.
+const recordLoginFailure = (userId) => {
+  const now = new Date();
+  const windowCutoff = new Date(now.getTime() - LOGIN_WINDOW_MS);
+  const lockUntil = new Date(now.getTime() + LOGIN_WINDOW_MS);
+  return userModel.updateOne({ _id: userId }, [
+    {
+      $set: {
+        loginFailures: {
+          $cond: [
+            { $gt: ['$loginFailures.windowStart', windowCutoff] },
+            { count: { $add: [{ $ifNull: ['$loginFailures.count', 0] }, 1] }, windowStart: '$loginFailures.windowStart', lockedUntil: '$loginFailures.lockedUntil' },
+            { count: 1, windowStart: now } // no counting window open (or it ended): start a new one
+          ]
+        }
+      }
+    },
+    { $set: { 'loginFailures.lockedUntil': { $cond: [{ $gte: ['$loginFailures.count', LOGIN_MAX_FAILURES] }, lockUntil, '$loginFailures.lockedUntil'] } } }
+  ], { updatePipeline: true, timestamps: false });
+};
+
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -134,10 +165,22 @@ const loginUser = async (req, res, next) => {
       return next(new AppError(401, 'This account uses Google Sign-In. Please click "Continue with Google" to log in.'));
     }
 
+    // Locked account: refuse before looking at the password, so the answer never depends on whether the guess was right
+    const lockedUntil = user.loginFailures?.lockedUntil;
+    if (lockedUntil && lockedUntil > new Date()) {
+      await bcrypt.compare(password, DUMMY_PASSWORD_HASH); // keep the response time like a normal attempt
+      const minutes = Math.ceil((lockedUntil - Date.now()) / 60000);
+      return next(new AppError(429, `Too many failed attempts on this account. Please try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`));
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
+      await recordLoginFailure(user._id);
       return next(new AppError(401, 'Invalid email or password'));
     }
+
+    // Right password: clear any earlier failures (one cheap write, only when there is something to clear)
+    if (user.loginFailures) await userModel.updateOne({ _id: user._id }, { $unset: { loginFailures: 1 } }, { timestamps: false });
 
     await startSession(user, req, res);
 
@@ -524,7 +567,67 @@ const revokeSession = async (req, res, next) => {
   }
 };
 
-module.exports = { 
+// ── Password reset by email ─────────────────────────────────────
+// forgot-password always gives the SAME answer for known and unknown emails (so it cannot be used to find out who has an account),
+// and the email is sent in the background so a slow mail server does not make known addresses answer more slowly.
+// Known limits: a few milliseconds of database work still differ between a known and an unknown address, and a Google-only
+// account can be sent the "sign in with Google" email again and again (only the per-address limit applies to those).
+const RESET_TTL_MS = 60 * 60 * 1000; // a link works for 1 hour
+const RESET_COOLDOWN_MS = 60 * 1000; // at most one reset email per account per minute
+const RESET_ASKED = 'If an account with that email exists, we have sent a password reset link.';
+const RESET_INVALID = 'This reset link is invalid or has expired. Please request a new one.';
+
+const sendInBackground = (to, message) => {
+  // log only an error code, never the address, the link or the SMTP key
+  sendEmail({ to, ...message }).catch((err) => console.error('Password reset email failed:', err.code || err.responseCode || 'unknown error'));
+};
+
+const forgotPassword = async (req, res, next) => {
+  try {
+    if (!isEmailConfigured()) return next(new AppError(503, 'Password reset is not available right now. Please try again later.'));
+
+    const user = await userModel.findOne({ email: req.body.email });
+    if (user && !user.password) {
+      // Google-only account: nothing to reset, so tell them how to get in (no link)
+      sendInBackground(user.email, googleOnlyEmail({ username: user.username }));
+    } else if (user) {
+      const recent = await PasswordReset.exists({ user: user._id, createdAt: { $gt: new Date(Date.now() - RESET_COOLDOWN_MS) } });
+      if (!recent) {
+        const token = crypto.randomBytes(32).toString('hex'); // only its hash is stored
+        await PasswordReset.deleteMany({ user: user._id }); // a new link replaces any older one
+        await PasswordReset.create({ user: user._id, tokenHash: hashToken(token), expiresAt: new Date(Date.now() + RESET_TTL_MS) });
+        const link = `${emailSettings().clientUrl}/reset-password?token=${token}`;
+        sendInBackground(user.email, passwordResetEmail({ username: user.username, link }));
+      }
+    }
+    sendSuccess(res, 200, RESET_ASKED, null);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    // find-and-delete in one step: a link can only ever be used once, even if two requests arrive together
+    const record = await PasswordReset.findOneAndDelete({ tokenHash: hashToken(token), expiresAt: { $gt: new Date() } });
+    if (!record) return next(new AppError(400, RESET_INVALID));
+
+    const hash = await bcrypt.hash(password, 12);
+    // new password, every device signed out (empty session list), and any login lock cleared
+    const result = await userModel.updateOne({ _id: record.user }, { $set: { password: hash, refreshTokens: [] }, $unset: { loginFailures: 1 } });
+    if (result.matchedCount === 0) return next(new AppError(400, RESET_INVALID));
+    await PasswordReset.deleteMany({ user: record.user });
+
+    sendSuccess(res, 200, 'Your password has been updated. Please log in with your new password.', null);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  forgotPassword,
+  resetPassword,
   registerUser, 
   loginUser, 
   logoutUser, 
