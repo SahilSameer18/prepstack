@@ -1,6 +1,6 @@
 # Comprehensive Architectural & Implementation Analysis
 
-> **Note:** written Aug 2026 as an analysis. Redis was never implemented, and code samples here may not match the current code.
+> **Note:** written Aug 2026 as an analysis. Redis was never implemented, and code samples here may not match the current code. The current plan is `docs/plans/REDIS_PLAN.md`. Do not copy code from this file: its `authLimiter` sample uses `skipFailedRequests: true`, which would stop wrong passwords from being counted.
 # Redis Integration Plan: PrepStack Backend (Upstash · 3 Phases)
 
 **Date:** August 5, 2026  
