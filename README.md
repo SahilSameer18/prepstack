@@ -59,8 +59,10 @@ PrepStack centralizes the workflow:
 - **Type-Safe GenAI Pipeline:** Builds the response schema with Zod's built-in `z.toJSONSchema` and sends it to the Gemini SDK. The reply is then checked again with `safeParse` before anything is saved; a malformed or incomplete reply never reaches the database.
 - **Multi-Device Hashed Auth:** Refresh tokens are never stored in plaintext: they are stored at rest as **SHA-256 hashes** (`crypto.createHash('sha256')`, from Node's built-in `crypto`, no extra package). Supports up to 10 simultaneous active devices with single-device logout and global session flushing (`/logout-all`).
 - **Refresh-Token Replay Defence:** if a refresh token that was already rotated is used again after the 10-second grace window, the whole login session is deleted, so a stolen copy and the real user are both signed out. Password change and account deletion allow 10 failed attempts per 15 minutes per signed-in user.
+- **Per-Account Login Lock:** 10 wrong passwords on one account within 15 minutes lock password logins for that account for 15 minutes, even when the guesses come from many different addresses. Google sign-in, token refresh and devices that are already logged in are not affected. The count is one atomic database update, so parallel guesses cannot skip it. Known trade-off: someone can lock a victim out for 15 minutes by failing on purpose.
+- **Password Reset by Email:** "Forgot password?" answers the same for known and unknown emails, and sends the mail in the background through Brevo's SMTP relay. The link holds 32 random bytes; only its SHA-256 hash is stored; it works once for 1 hour; setting the new password signs out every device and lifts any login lock.
 - **Layered Request Validation:** Custom Express middleware `validate(schema)` intercepts and validates incoming HTTP requests using Zod schemas before hitting controllers, returning structured `422` field-specific errors.
-- **Route Rate Limiting:** In-memory, fixed-window limits via `express-rate-limit`, keyed by client IP (`req.ip`, using Express `trust proxy`) for `authLimiter` (10 failed tries / 15 min, used by login, Google sign-in and set-password), `registerLimiter` (30 / 15 min), `linkGoogleLimiter` (5 / 15 min) and `refreshLimiter` (30 / 15 min), and by user id for the AI generator (4 / hour) and the Role Analyzer (3 / hour). On login and Google sign-in only **failed** attempts count (so wrong-password guessing is throttled, but many students behind one campus Wi-Fi address can still log in); sign-ups and refreshes count every request; the AI limiter skips failed requests. Counters live in the server process: they reset on restart and are not shared between instances, so run a single instance or move them to a shared store (e.g. Redis) before scaling out.
+- **Route Rate Limiting:** In-memory, fixed-window limits via `express-rate-limit`, keyed by client IP (`req.ip`, using Express `trust proxy`) for `authLimiter` (10 failed tries / 15 min, used by login, Google sign-in and set-password), `registerLimiter` (30 / 15 min), `linkGoogleLimiter` (5 / 15 min), `refreshLimiter` (30 / 15 min), `forgotPasswordLimiter` (5 / 15 min) and `resetPasswordLimiter` (10 failed / 15 min), and by user id for the AI generator (4 / hour) and the Role Analyzer (3 / hour). On login and Google sign-in only **failed** attempts count (so wrong-password guessing is throttled, but many students behind one campus Wi-Fi address can still log in); sign-ups and refreshes count every request; the AI limiter skips failed requests. Counters live in the server process: they reset on restart and are not shared between instances, so run a single instance or move them to a shared store (e.g. Redis) before scaling out.
 - **Startup Secret Validation:** Fail-fast environment checks on server boot enforce the presence and minimum cryptographic length (≥32 characters) for `ACCESS_SECRET` and `REFRESH_SECRET`, and the presence of `GOOGLE_CLIENT_ID` (without it the Google sign-in token check would silently weaken).
 - **Safe Startup & Shutdown:** The server listens only after MongoDB is connected, and `SIGTERM`/`SIGINT`/unhandled errors close the HTTP server and the database connection before exiting.
 - **Health Check & Access Log:** `GET /health` (no login) returns `200 {"status":"ok","db":"up"}` while the database is connected and `503` when it is not, for hosts and uptime monitors. Every other request writes one log line (`METHOD /path status ms`); query strings and bodies are never logged.
@@ -101,10 +103,10 @@ prepstack/
     │   ├── controllers/         # Request handlers (auth, user, sheets, notes, project, analyzer)
     │   ├── data/                # CS notes content, skill catalog (120 skills), behavioral question bank
     │   ├── middlewares/         # Auth, validation, errors, rate limits, PDF upload
-    │   ├── models/              # User, Notes, Progress, Project, DSASheet, InterviewReport
+    │   ├── models/              # User, Notes, Progress, Project, DSASheet, InterviewReport, PasswordReset
     │   ├── routes/              # Express routers
     │   ├── seed/                # Seed scripts and dataset definitions
-    │   ├── services/            # AI provider chain, analyzer, resume reader, skill matcher
+    │   ├── services/            # AI provider chain, analyzer, resume reader, skill matcher, email sender
     │   ├── utils/               # Tokens, device parsing, response helpers
     │   ├── validators/          # Zod schemas (auth, sheets, project, user, analyzer)
     │   └── app.js               # Express app definition
@@ -281,6 +283,7 @@ Paste a job description and add your resume (PDF or pasted text). You get a repo
 
 - **Dual-Identity Management:** Seamlessly link Google OAuth and Email/Password authentications, including the ability for OAuth-only users to establish a permanent password directly from their profile page.
 - **Active Devices & Sessions Manager:** Visual inspection of all authenticated devices (*"Chrome on Windows 11"*, *"Safari on iPhone"*) with IP addresses, last-active timestamps, live current device indicators, and individual remote session revocation.
+- **Password Reset by Email:** "Forgot password?" on the login page sends a one-time link (valid for 1 hour, works once). Setting a new password signs out all devices.
 - **Dual Session Sign-Out Controls:** Supports isolated single-device logout or global session flushing (*"Sign Out of All Devices"* via `POST /api/auth/logout-all`).
 - **Self-Service Account Deletion:** Built-in modal allowing users to permanently erase their account with password/email verification. All of their data (progress, projects and role reports) is wiped in one step; this is a single transaction on a replica set such as MongoDB Atlas, and falls back to a plain sequence of deletes on a standalone MongoDB.
 - **Full-Screen Logout Overlay:** Seamless full-screen transition overlay that smoothly clears session state with visual feedback.
@@ -316,6 +319,7 @@ Paste a job description and add your resume (PDF or pasted text). You get a repo
 | helmet              | 8       | Standard HTTP security headers                        |
 | @google/genai       | 1.47    | Official SDK client for Gemini integrations           |
 | groq-sdk            | 1.6     | Backup AI provider when Gemini is busy                |
+| nodemailer          | 10.4    | Sends the password reset email (Brevo SMTP)           |
 | multer              | 2.5     | Resume PDF upload (kept in memory, never written to disk) |
 | pdf-parse           | 2.4     | Reads the text of an uploaded PDF resume              |
 | jsonwebtoken        | 9       | Cryptographic user session tokens                     |
@@ -338,6 +342,7 @@ erDiagram
         array providers "OAuth links (Google)"
         string avatar "Profile picture URL"
         array refreshTokens "Hashed session pool (tokenHash, device, ip, lastActive)"
+        object loginFailures "Wrong-password count and lock time (never sent to the browser)"
         date createdAt
         date updatedAt
     }
@@ -356,6 +361,14 @@ erDiagram
         string domain
         date createdAt
         date updatedAt
+    }
+
+    PASSWORDRESET {
+        ObjectId _id PK
+        ObjectId user FK
+        string tokenHash "SHA-256 of the emailed link token, unique"
+        date expiresAt "1 hour, removed by a TTL index"
+        date createdAt
     }
 
     DSASHEET {
@@ -405,6 +418,7 @@ erDiagram
     USER ||--o{ PROJECT : "owns"
     USER ||--o{ INTERVIEWREPORT : "owns (resume is never stored)"
     USER ||--o{ PROGRESS : "tracks"
+    USER ||--o{ PASSWORDRESET : "asks for"
     DSASHEET ||--o{ PROGRESS : "tracked by"
 ```
 
@@ -417,10 +431,12 @@ erDiagram
 | Method   | Endpoint                | Auth   | Description                                                    |
 | -------- | ----------------------- | ------ | -------------------------------------------------------------- |
 | `POST`   | `/register`             | None   | Register user _(rate-limited: 30/15min)_                       |
-| `POST`   | `/login`                | None   | Login user _(10 failed tries/15min)_                           |
+| `POST`   | `/login`                | None   | Login user _(10 failed tries/15min per address; 10 per account locks it for 15min)_ |
 | `POST`   | `/google`               | None   | Google OAuth login/registration                                |
 | `POST`   | `/link-google`          | ✅ JWT | Link Google account to existing user _(rate-limited: 5/15min)_ |
 | `PUT`    | `/set-password`         | ✅ JWT | Sets a permanent password for OAuth-only users                 |
+| `POST`   | `/forgot-password`      | None   | Emails a one-time reset link _(same answer for any email; 5/15min)_ |
+| `POST`   | `/reset-password`       | None   | Sets a new password with the link, signs out all devices _(10 failed/15min)_ |
 | `POST`   | `/refresh`              | Cookie | Rotates access token and refresh token hash _(30/15min)_        |
 | `POST`   | `/logout`               | ✅ JWT | Clears session cookie on current device                        |
 | `POST`   | `/logout-all`           | ✅ JWT | Revokes all active device sessions globally                    |
@@ -443,7 +459,7 @@ erDiagram
 | Method   | Endpoint      | Auth   | Description                                          |
 | -------- | ------------- | ------ | ---------------------------------------------------- |
 | `POST`   | `/generate`   | ✅ JWT | Generates an idea with the AI cascade _(4/hr, 15/24h, one at a time)_ |
-| `GET`    | `/`           | ✅ JWT | Returns all saved projects                           |
+| `GET`    | `/`           | ✅ JWT | Returns your newest 20 saved projects _(older ones are not listed yet)_ |
 | `GET`    | `/:projectId` | ✅ JWT | Returns specific project metadata                    |
 | `DELETE` | `/:projectId` | ✅ JWT | Deletes project profile                              |
 
@@ -509,6 +525,13 @@ GEMINI_FALLBACK_2_MODEL=gemini-3.1-flash-lite
 GROQ_MODEL=openai/gpt-oss-120b
 AI_DAILY_LIMIT=15
 ANALYZER_DAILY_LIMIT=5
+
+# Password reset email (Brevo SMTP). Without these, "Forgot password?" answers 503.
+EMAIL_PROVIDER=brevo
+EMAIL_FROM="PrepStack <your-verified-sender@example.com>"
+BREVO_SMTP_LOGIN=
+BREVO_SMTP_KEY=
+CLIENT_URL=http://localhost:5173
 
 # Optional (all explained in server/.env.example)
 NODE_ENV=development
@@ -589,14 +612,14 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **469 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **505 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
 
 ```bash
 cd server
 npm test
 ```
 
-They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The screens have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
+They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The screens have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
 
 The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota).
 
@@ -608,6 +631,7 @@ The Role Analyzer was also checked against the real AI with hand-run scripts in 
 - **The AI runs on free tiers** (Gemini, then Groq). A quota or an outage can make generation fail for a while; the user then gets a clear message and the attempt is not counted. Reports and ideas can differ from run to run.
 - **About half of the 120 skills in the Role Analyzer's catalog have no PrepStack lessons yet.** Those skills link only to official documentation.
 - **Resume PDFs must contain text.** Scanned (image-only) PDFs are rejected, and the PDF export uses standard fonts, so characters outside basic Latin may not draw.
+- **Password reset emails go out through Brevo's free plan (300 a day) from a free Gmail address.** They reached the inbox in the owner's test, but other mail providers may put them in spam. A domain you own, authenticated in Brevo, is the proper fix.
 - **Quiz and Aptitude pages exist but are hidden** from the navigation until they are built.
 - **Account deletion is one transaction only on a replica set** (for example MongoDB Atlas). On a standalone MongoDB it falls back to separate deletes.
 

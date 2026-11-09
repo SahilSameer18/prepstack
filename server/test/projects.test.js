@@ -169,6 +169,15 @@ describe('AI project ideas: generate, list, open, delete', () => {
       assert.deepEqual(res.body.data.projects.map((p) => p.title), ['Third', 'Second', 'First']);
       assert.deepEqual(Object.keys(res.body.data.projects[0]).sort(), ['_id', 'createdAt', 'difficulty', 'domain', 'features', 'tagline', 'techStack', 'title']);
     });
+    it('returns at most the newest 20 ideas', async () => {
+      const acct = await t.register();
+      const now = Date.now();
+      await Project.insertMany(Array.from({ length: 25 }, (_, i) => ({ title: `Idea ${i}`, tagline: 't', description: 'd', techStack: 'x', difficulty: 'Beginner', user: acct.id, createdAt: new Date(now + i * 1000) })));
+      const { projects } = (await t.api.get('/api/project', { cookies: acct.cookies })).body.data;
+      assert.equal(projects.length, 20);
+      assert.equal(projects[0].title, 'Idea 24'); // newest first
+      assert.equal(projects.at(-1).title, 'Idea 5'); // the 5 oldest are the ones left out
+    });
     it('returns an empty list for a new user', async () => {
       const acct = await t.register();
       assert.deepEqual((await t.api.get('/api/project', { cookies: acct.cookies })).body.data.projects, []);

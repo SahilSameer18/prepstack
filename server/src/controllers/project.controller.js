@@ -88,6 +88,7 @@ const getAllProjects = async (req, res, next) => {
     const projects = await projectModel
       .find({ user: userId })
       .sort({ createdAt: -1 })
+      .limit(20) // shortcut: newest 20 only, so a heavy user cannot make the list huge; add paging (and a total count) when anyone gets close to 20
       .select('title tagline difficulty createdAt techStack domain features');
 
     const sanitizedProjects = sanitizeDoc(projects);
