@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { SkeletonDSACard } from "../../components/ui/Skeletons";
+import { formatDate } from "../../utils/formatDate";
 import {
   FiCode,
   FiExternalLink,
@@ -111,7 +112,7 @@ const DSADash = ({ dsaData, loading, stats }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading
           ? Array.from({ length: 3 }).map((_, i) => <SkeletonDSACard key={i} />)
-          : dsaData.map(({ sheet, solved, total }) => {
+          : dsaData.map(({ sheet, solved, total, lastSolvedAt }) => {
               const meta = getSheetMeta(sheet.slug);
               const pct = total === 0 ? 0 : Math.round((solved / total) * 100);
               const remaining = total - solved;
@@ -176,6 +177,9 @@ const DSADash = ({ dsaData, loading, stats }) => {
                         <p className="text-xs font-ui text-ok mt-2 font-medium">
                           Sheets completed
                         </p>
+                      )}
+                      {lastSolvedAt && (
+                        <p className="text-xs font-ui text-muted mt-1">Last solved {formatDate(lastSolvedAt)}</p>
                       )}
                     </div>
                   </Link>

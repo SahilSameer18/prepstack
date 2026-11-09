@@ -2,8 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiActivity, FiTrendingUp } from "react-icons/fi";
-import { FaCheckCircle } from "react-icons/fa";
-import { FiAward } from "react-icons/fi";
+import { FaCheckCircle, FaFire } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useAuth } from "../../hooks/useAuth";
 import { useProject } from "../../hooks/useProject";
@@ -36,6 +35,7 @@ const UnifiedDashboard = () => {
     sheetsInProgress: 0,
     sheetsCompleted: 0,
     overallPct: 0,
+    streak: 0,
   });
   const [loading, setLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState(null);
@@ -94,8 +94,8 @@ const UnifiedDashboard = () => {
 
   const dsaStats = [
     { label: "Problems solved", value: stats.totalSolved, sub: "Across all sheets", icon: <FaCheckCircle className="text-ok text-sm" />, color: "text-fg" },
+    { label: "Current streak", value: `${stats.streak} ${stats.streak === 1 ? "day" : "days"}`, sub: stats.streak > 0 ? "Days in a row" : "Solve one today to start", icon: <FaFire className="text-orange text-sm" />, color: "text-fg" },
     { label: "Sheets in progress", value: stats.sheetsInProgress, sub: "Active sheets", icon: <FiActivity className="text-info text-sm" />, color: "text-fg" },
-    { label: "Sheets Completed", value: stats.sheetsCompleted, sub: "100% finished", icon: <FiAward className="text-brand text-sm" />, color: "text-fg" },
     { label: "Overall progress", value: `${stats.overallPct}%`, sub: "Of all problems", icon: <FiTrendingUp className="text-violet text-sm" />, color: "text-brand" },
   ];
 

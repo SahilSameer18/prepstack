@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 let Progress, DSASheet;
 const toggle = (acct, link, slug = 'blind-75') => t.api.post(`/api/sheets/${slug}/progress`, { cookies: acct.cookies, body: { problemLink: link } });
 const progressDoc = (acct, slug = 'blind-75') => Progress.findOne({ user: acct.id, sheetSlug: slug });
+const solvedLinks = async (acct, slug) => (await progressDoc(acct, slug)).solvedProblems.map((e) => e.link);
 
 describe('DSA sheets and per-user progress', () => {
   before(async () => {
@@ -108,8 +109,8 @@ describe('DSA sheets and per-user progress', () => {
       const a = await t.register(); const b = await t.register();
       await toggle(a, t.L('two-sum'));
       await toggle(b, t.L('3sum'));
-      assert.deepEqual((await progressDoc(a)).solvedProblems, [t.L('two-sum')]);
-      assert.deepEqual((await progressDoc(b)).solvedProblems, [t.L('3sum')]);
+      assert.deepEqual(await solvedLinks(a), [t.L('two-sum')]);
+      assert.deepEqual(await solvedLinks(b), [t.L('3sum')]);
     });
     it('rejects a link that is NOT in this sheet (400) and stores nothing', async () => {
       const acct = await t.register();
@@ -136,15 +137,15 @@ describe('DSA sheets and per-user progress', () => {
     });
     it('lets the user un-tick a "stale" link that a later re-seed removed from the sheet', async () => {
       const acct = await t.register();
-      await Progress.create({ user: acct.id, sheetSlug: 'blind-75', solvedProblems: [t.L('two-sum'), t.L('removed-from-sheet-later')] });
+      await Progress.create({ user: acct.id, sheetSlug: 'blind-75', solvedProblems: [{ link: t.L('two-sum') }, { link: t.L('removed-from-sheet-later') }] });
       const res = await toggle(acct, t.L('removed-from-sheet-later'));
       assert.equal(res.status, 200);
-      assert.deepEqual((await progressDoc(acct)).solvedProblems, [t.L('two-sum')]);
+      assert.deepEqual(await solvedLinks(acct), [t.L('two-sum')]);
     });
     it('can never hold more solved problems than the sheet has, and never duplicates', async () => {
       const acct = await t.register();
       for (const slug of ['two-sum', '3sum', 'valid-anagram']) await toggle(acct, t.L(slug));
-      const solved = (await progressDoc(acct)).solvedProblems;
+      const solved = await solvedLinks(acct);
       assert.equal(solved.length, 3);
       assert.equal(new Set(solved).size, 3);
     });

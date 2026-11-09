@@ -9,11 +9,14 @@ const { findUserByUsername } = require('../utils/usernameHelper');
 const bcrypt = require('bcrypt');
 const { formatUserResponse } = require('../utils/userResponse');
 const { sendSuccess } = require('../utils/responseFormatter');
+const { currentStreak } = require('../utils/istDay');
 
 // The ONE place that decides how many problems a user has solved: only links that still exist in a sheet,
 // each counted once (a link repeated in two topics is one problem). Used by both stats endpoints so they agree.
-const summarizeProgress = (sheets, userProgress) => {
+// Also works out, from the dates on the ticks, when each sheet was last worked on and the current streak in IST.
+const summarizeProgress = (sheets, userProgress, now = new Date()) => {
   const progressMap = new Map(userProgress.map((p) => [p.sheetSlug, p.solvedProblems || []]));
+  const solveDates = [];
 
   let totalSolved = 0;
   let totalQuestions = 0;
@@ -29,7 +32,11 @@ const summarizeProgress = (sheets, userProgress) => {
     });
 
     const total = linkSet.size;
-    const solved = new Set((progressMap.get(sheet.slug) || []).filter((link) => linkSet.has(link))).size;
+    const entries = (progressMap.get(sheet.slug) || []).filter((entry) => linkSet.has(entry.link));
+    const solved = new Set(entries.map((entry) => entry.link)).size;
+    const dates = entries.map((entry) => entry.solvedAt).filter(Boolean);
+    solveDates.push(...dates);
+    const lastSolvedAt = dates.length ? new Date(Math.max(...dates.map((d) => new Date(d).getTime()))) : null;
 
     totalSolved += solved;
     totalQuestions += total;
@@ -44,10 +51,11 @@ const summarizeProgress = (sheets, userProgress) => {
       },
       solved,
       total,
+      lastSolvedAt,
     };
   });
 
-  return { totalSolved, totalQuestions, sheetsInProgress, sheetsCompleted, dsaSheets };
+  return { totalSolved, totalQuestions, sheetsInProgress, sheetsCompleted, dsaSheets, streak: currentStreak(solveDates, now) };
 };
 
 // Parallel server queries: all DSA sheets, the user's progress records, and the project count
@@ -84,7 +92,7 @@ const getDashboardSummary = async (req, res, next) => {
     const userId = req.user._id;
 
     const [sheets, userProgress, generatedProjectsCount] = await loadProgressData(userId);
-    const { totalSolved, totalQuestions, sheetsInProgress, sheetsCompleted, dsaSheets } =
+    const { totalSolved, totalQuestions, sheetsInProgress, sheetsCompleted, dsaSheets, streak } =
       summarizeProgress(sheets, userProgress);
 
     const overallPct =
@@ -100,6 +108,7 @@ const getDashboardSummary = async (req, res, next) => {
         sheetsCompleted,
         overallPct,
         generatedProjectsCount,
+        streak,
       },
       dsaSheets,
     });

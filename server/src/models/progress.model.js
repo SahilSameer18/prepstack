@@ -11,9 +11,12 @@ const progressSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  // The link is the problem's identifier (it survives re-seeding). solvedAt is when it was ticked; entries from before
+  // dates were recorded have null, and streaks and "last solved" ignore them.
   solvedProblems: [{
-    type: String, // Storing problem link as unique identifier to survive re-seeding
-    trim: true
+    _id: false,
+    link: { type: String, trim: true, required: true },
+    solvedAt: { type: Date, default: null }
   }]
 }, {
   timestamps: true

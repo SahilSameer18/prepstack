@@ -55,8 +55,8 @@ describe('User: stats, dashboard, profile, password, account deletion', () => {
     it('stats and dashboard AGREE even with stale links, links from missing sheets, and repeated links', async () => {
       const acct = await t.register();
       await Progress.collection.insertMany([
-        { user: mid(acct.id), sheetSlug: 'blind-75', solvedProblems: [t.L('two-sum'), t.L('3sum'), t.L('removed-from-sheet-later'), t.L('3sum')] },
-        { user: mid(acct.id), sheetSlug: 'ghost-sheet', solvedProblems: ['https://x.example.com/a', 'https://x.example.com/b'] },
+        { user: mid(acct.id), sheetSlug: 'blind-75', solvedProblems: [t.L('two-sum'), t.L('3sum'), t.L('removed-from-sheet-later'), t.L('3sum')].map((link) => ({ link, solvedAt: null })) },
+        { user: mid(acct.id), sheetSlug: 'ghost-sheet', solvedProblems: ['https://x.example.com/a', 'https://x.example.com/b'].map((link) => ({ link, solvedAt: null })) },
       ]);
       const stats = (await t.api.get('/api/user/stats', { cookies: acct.cookies })).body.data.stats;
       const dash = (await t.api.get('/api/user/dashboard-summary', { cookies: acct.cookies })).body.data.stats;

@@ -62,6 +62,12 @@ exports.getSheetBySlug = async (req, res, next) => {
   }
 };
 
+// The API still sends solvedProblems as a plain list of links; the dates stay on the server (the dashboard gets them as a streak).
+const withLinks = (progress) => {
+  const plain = typeof progress.toObject === 'function' ? progress.toObject() : progress;
+  return { ...plain, solvedProblems: (plain.solvedProblems || []).map((entry) => entry.link) };
+};
+
 // get user progress for a sheet (read-only: never writes)
 exports.getUserSheetProgress = async (req, res, next) => {
   try {
@@ -76,7 +82,7 @@ exports.getUserSheetProgress = async (req, res, next) => {
     const progress = await Progress.findOne({ user: userId, sheetSlug: slug }).lean()
       ?? { user: userId, sheetSlug: slug, solvedProblems: [] };
 
-    sendSuccess(res, 200, 'Sheet progress fetched successfully', progress);
+    sendSuccess(res, 200, 'Sheet progress fetched successfully', withLinks(progress));
   } catch (error) {
     next(error);
   }
@@ -100,14 +106,14 @@ exports.toggleProblemCompletion = async (req, res, next) => {
     const inSheet = await DSASheet.exists({ slug, 'topics.problems.link': problemLink });
     if (!inSheet) {
       const removed = await Progress.findOneAndUpdate(
-        { ...filter, solvedProblems: problemLink },
-        { $pull: { solvedProblems: problemLink } },
+        { ...filter, 'solvedProblems.link': problemLink },
+        { $pull: { solvedProblems: { link: problemLink } } },
         { returnDocument: 'after' }
       );
       if (!removed) {
         return next(new AppError(400, 'This problem is not part of this sheet'));
       }
-      return sendSuccess(res, 200, 'Problem completion toggled successfully', removed);
+      return sendSuccess(res, 200, 'Problem completion toggled successfully', withLinks(removed));
     }
 
     // Add-or-remove in ONE atomic update, so a double click or two tabs can never read a stale state.
@@ -120,9 +126,9 @@ exports.toggleProblemCompletion = async (req, res, next) => {
             vars: { list: { $ifNull: ['$solvedProblems', []] } },
             in: {
               $cond: [
-                { $in: [link, '$$list'] },
-                { $filter: { input: '$$list', cond: { $ne: ['$$this', link] } } },
-                { $concatArrays: ['$$list', [link]] }
+                { $in: [link, { $map: { input: '$$list', in: '$$this.link' } }] },
+                { $filter: { input: '$$list', cond: { $ne: ['$$this.link', link] } } },
+                { $concatArrays: ['$$list', [{ link, solvedAt: '$$NOW' }]] }
               ]
             }
           }
@@ -142,7 +148,7 @@ exports.toggleProblemCompletion = async (req, res, next) => {
       progress = await Progress.findOneAndUpdate(filter, toggle, options);
     }
 
-    sendSuccess(res, 200, 'Problem completion toggled successfully', progress);
+    sendSuccess(res, 200, 'Problem completion toggled successfully', withLinks(progress));
   } catch (error) {
     next(error);
   }
