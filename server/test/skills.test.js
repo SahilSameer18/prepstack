@@ -172,7 +172,7 @@ describe('the catalog itself', () => {
 });
 
 describe('every link into PrepStack still points at something real (the dangling-link test)', () => {
-  const readBlind75Topics = () => [...fs.readFileSync(path.join(t.SERVER_ROOT, 'src/seed/sheetSeeds/blind75.js'), 'utf8').matchAll(/\{\s*title:\s*["']([^"']+)["'],\s*problems:/g)].map((m) => m[1].trim());
+  const readBlind75Topics = () => t.sheetSeedData()[0].topics.map((topic) => topic.title.trim());
   const notesSections = (subject) => require(`../src/data/notes/${subject}.js`).sections.map((s) => s.title);
 
   it('the DSA topics exist in the Blind 75 sheet', () => {

@@ -6,6 +6,7 @@ const oopNotes = {
     // 1. BASICS
     // ===========================
     {
+  id: "oops-basics",
   title: "Basics",
   topics: [
 
@@ -97,6 +98,7 @@ const oopNotes = {
     // 2. PILLARS
     // ===========================
     {
+  id: "oops-pillars",
   title: "Pillars of OOP",
   topics: [
 
@@ -208,6 +210,7 @@ const oopNotes = {
     // 3. POLYMORPHISM (IMPORTANT)
     // ===========================
     {
+      id: "oops-polymorphism",
       title: "Polymorphism",
       topics: [
 
@@ -248,6 +251,7 @@ const oopNotes = {
     // 4. CONSTRUCTORS
     // ===========================
     {
+      id: "oops-constructors-destructors",
       title: "Constructors & Destructors",
       topics: [
 
@@ -298,6 +302,7 @@ const oopNotes = {
     // 5. VIRTUAL FUNCTIONS
     // ===========================
     {
+      id: "oops-virtual-functions",
       title: "Virtual Functions",
       topics: [
 
@@ -340,6 +345,7 @@ const oopNotes = {
     // 6. OBJECT RELATIONSHIPS
     // ===========================
     {
+      id: "oops-relationships",
       title: "Relationships",
       topics: [
 
@@ -371,6 +377,7 @@ const oopNotes = {
     // 7. ADVANCED
     // ===========================
     {
+      id: "oops-advanced-concepts",
       title: "Advanced Concepts",
       topics: [
 
@@ -405,6 +412,7 @@ const oopNotes = {
     // 8. SOLID PRINCIPLES
     // ===========================
     {
+      id: "oops-solid-principles",
       title: "SOLID Principles",
       topics: [
 
@@ -436,6 +444,7 @@ const oopNotes = {
     // 9. INTERVIEW BOOST
     // ===========================
     {
+      id: "oops-interview-boost",
       title: "Interview Boost",
       topics: [
 

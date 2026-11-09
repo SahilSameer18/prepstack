@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const connectDB = require('./seedConfig');
 const notesModel = require('../models/notes.model');
+const { checkNotesSubject } = require('../validators/notes.validators');
 
 const osNotes = require('../data/notes/os');
 const dbmsNotes = require('../data/notes/dbms');
@@ -9,13 +10,6 @@ const oopsNotes = require('../data/notes/oops');
 
 const seedNotes = async () => {
   try {
-    await connectDB();
-
-    console.log('Clearing existing notes...');
-    await notesModel.deleteMany({});
-
-    console.log('Seeding new rich structured notes...');
-    
     // Add subjectSlug to each object before saving
     const notesToInsert = [
       { subject: osNotes.subject, subjectSlug: 'os', sections: osNotes.sections },
@@ -24,6 +18,20 @@ const seedNotes = async () => {
       { subject: oopsNotes.subject, subjectSlug: 'oops', sections: oopsNotes.sections },
     ];
 
+    // Check the data before touching the database, so bad data can never wipe good notes
+    const problems = notesToInsert.flatMap(({ subjectSlug, subject, sections }) => checkNotesSubject(subjectSlug, { subject, sections }));
+    if (problems.length > 0) {
+      console.error('The notes data has problems, nothing was changed:\n- ' + problems.join('\n- '));
+      process.exitCode = 1;
+      return;
+    }
+
+    await connectDB();
+
+    console.log('Clearing existing notes...');
+    await notesModel.deleteMany({});
+
+    console.log('Seeding new rich structured notes...');
     await notesModel.insertMany(notesToInsert);
     console.log('Notes seeded successfully!');
 

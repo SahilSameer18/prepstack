@@ -88,7 +88,11 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 
 **Data change needed:** the notes shape today is `{ title, overview, topics: [...] }` with free-form topic fields, and a section is found by its title. Give every section a stable `id` (never the title) and add `questions`, `mistakes`, `quiz`, `links`, optional `diagrams` and `lastChecked`; reading time is computed from the word count. Validate it with the existing `sectionSchema`. This also needs updates to the notes seed, the notes API tests, the analyzer's references (from titles to ids) and the client notes page.
 
+**Shape decided in stage 2 planning (9 Nov 2026).** A section id is `<subject>-<words>` (for example `os-deadlocks`) and never changes. Ids are always required and unique. The full template (overview, 4 to 8 topics each with definition, why, example and how it fails, 3 to 5 questions, 2 to 3 mistakes, a 5-question quiz, links that resolve) is enforced only on a section that has `lastChecked`, so old sections keep working until they are rewritten and the strict check turns on section by section. A rewritten section is shown in the new layout; an old one shows its old topic blocks inside the same page frame until the last section is rewritten (end of stage 3), when the old renderer is deleted. Section pages are at `/notes/:subject/:sectionId`. Reading time, counts and the latest checked date come from the data through `GET /api/notes`, not typed by hand.
+
 **Page redesign and diagrams (decided 7 Nov).** The notes and roadmap pages are redesigned together with the content: one clear layout for overview, topics, interview questions, mistakes, quiz and links, with a "Report a mistake" link and a "last checked" date on every section. A small component draws a diagram from inline SVG data where a topic needs one, not on every topic. This is done in stage 2, before the writing starts. **Effort:** about 3 days for the two pages and 1 to 2 days for the diagram component.
+
+**Decided 9 Nov 2026:** a diagram is plain data (kinds: `flow`, `layers`, `graph`, each with a text caption) drawn by one SVG component that takes its colours from the design tokens. "Report a mistake" is an email link with the section id and title filled in (the address is still to be chosen).
 
 **Effort:** about 3 to 4 working days per subject for writing and checking (DBMS, CN, OOP), 2 days to deepen OS, 4 days for System Design basics; 2 days for the data shape and ids, plus the redesign and diagrams above. **Total about 22 to 27 days.**
 
@@ -120,6 +124,8 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 **Scope.** 54 existing steps across 6 roadmaps. Do not add new tracks until the existing ones meet the template. Optional later tracks (confirm demand first): Java and Spring backend, DevOps basics, System Design, DSA-only path.
 
 **Data change:** the step moves from a string plus a `details` entry (matched by position) to one structured object with a stable `id`. Update the Roadmap pages (redesigned in stage 2), the SEO data (`seo/pages.js`), the analyzer's roadmap list (a server copy exists and a sync test guards it), and the tests.
+
+**Shape decided in stage 2 planning (9 Nov 2026).** The dead string list `steps` is dropped and `details` becomes `steps[]` of objects `{ id, title, desc, resources, ... }` with the template fields (goal, topics, time, practice, checkpoint, project) added as they are written; a step that has all of them is checked against the template. Android keeps its 8 real steps (its ninth string had no content). Steps get an anchor `#<stepId>`. The four hand-copied slug lists (`seo/pages.js`, `reportLinks.js`, `skills.service.js`, `analyzerContext.service.js`) get a sync test against `roadmaps.js`.
 
 **Link health:** add a small script that checks every roadmap and catalog link (status codes only) and reports broken ones. Run it before each release.
 
@@ -161,7 +167,7 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 
 ### A5. Tie-ins that must follow content changes
 
-- **`skillCatalog.json`:** 53 of 120 skills have no PrepStack lessons today. After each notes subject and each roadmap is finished (not at the end), update each skill's `prepstack` mapping using the stable ids (notes section id, roadmap step id, project stack). The existing tests check that mappings point at real content.
+- **`skillCatalog.json`:** 53 of 120 skills have no PrepStack lessons today. After each notes subject and each roadmap is finished (not at the end), update each skill's `prepstack` mapping using the stable ids (notes section id, roadmap step id, project stack). The existing tests check that mappings point at real content. In stage 2 every one of the 120 skills also gets a typed, permanent skill `id` (a lower-case slug), with a uniqueness test and a lookup by id; the analyzer still chooses skills by name until My Plan needs ids. Analyzer references to notes, sheet topics and roadmap steps use ids, and the server adds the readable titles when a report is read. Saved reports keep their old title-style references (their links go to the subject page).
 - **SEO:** update `client/src/seo/pages.js` and run the build's SEO check whenever pages are added.
 - **README and TESTING.md:** update the counts and test totals (computed, not typed).
 - **Quiz and Aptitude pages:** removed in stage 0 (B10). The Quiz page comes back later from the section quizzes (B7). Aptitude is out of scope.
@@ -318,7 +324,7 @@ This replaces the earlier six-phase table. It orders the work by what depends on
 |---|---|---|
 | 0. Cleanup and foundations (about 1 week) | Deploy and verify the pending fixes; remove the Quiz and Aptitude pages (B10, decision 4); client test setup plus the token-refresh tests and the raw-color guard test (B9); write the notes template, review checklist and sources file; start finding outside readers and students now | Small, unblocks the rest, and people take weeks to find |
 | 1. Foundations (1 to 2 weeks) | B6 shared states, then B1 progress with dates and IST streaks, then B3 limits on the page; A3 resume guide in parallel | B6 first, because B1, B3 and every later page use those components. B1 before anything that plans |
-| 2. Content foundation (about 1.5 weeks, new) | One slice with tests: stable ids and the new shapes for notes and roadmaps; analyzer references changed from titles to ids; the notes and roadmap page redesign (decided); diagrams; "report a mistake" link, "last checked" date and reading time; link-check script; internal-link test | Must exist before writing. This is the biggest hidden risk |
+| 2. Content foundation (about 13 working days, re-estimated 9 Nov) | Five sub-phases, each with tests: **2.1** section ids, notes validator, computed counts and reading time, ids on every DSA sheet topic (2 days); **2.2** analyzer references by id, permanent ids for the 120 catalog skills (2.5 days); **2.3** notes pages, quiz and diagram components, report-a-mistake link, last checked date (4 days); **2.4** roadmap steps as objects with ids and the roadmap pages (3 days); **2.5** internal-link test and the external link-check script (1.5 days); plus half a day to update this plan | Must exist before writing. This is the biggest hidden risk |
 | 3. Notes and checklist (about 3 weeks) | A1 DBMS, then update `skillCatalog.json` for it; B2 notes sync (and the privacy policy); B4 checklist and "Today" card; A1 networks, then update the catalog | The catalog and server copies are updated after each subject, not at the end |
 | 4. Roadmaps and behavioral (about 2.5 weeks) | A2 content for 6 roadmaps; A4 behavioral (server copy, the live analyzer check, the story bank on top of B2) | The story bank needs B2. The live check needs AI quota |
 | 5. Student gate, then B5 | Show the checklist to 3 to 5 students and 2 to 3 job switchers. Before the planner: DBMS and OS at the template, B1 and B4 live. A1 Java OOP and OS depth run alongside | If they say no, stop at B4 (as planned) |
@@ -330,7 +336,7 @@ This replaces the earlier six-phase table. It orders the work by what depends on
 
 **Coverage:** A1 (stages 2, 3, 5, 6), A2 (2, 4), A3 (1), A4 (4), A5 (3, 4), B1 (1), B2 (3), B3 (1), B4 (3), B5 (5), B6 (1), B7 (6), B8 (6), B9 (0; CI in 6), B10 (0), B11 (with Redis: step R4 of the Redis plan), B12 (6).
 
-**Time:** about 11 to 12 weeks for stages 0 to 5 (my estimate; re-estimate after stage 2). Stage 6 adds about 3 weeks.
+**Time:** about 12 to 13 weeks for stages 0 to 5 (my estimate; stage 2 was re-estimated on 9 Nov at about 13 working days instead of 1.5 weeks; re-estimate again after the first notes subject). Stage 6 adds about 3 weeks.
 
 **Rules that decide this order**
 - **Stable ids before content.** A roadmap step is a plain string matched by position to a separate details list, and a notes section is found by its title. Everything that links (notes, roadmaps, sheets, the skill catalog, planner items, quizzes) needs ids first.
@@ -389,6 +395,9 @@ Honest limit: this lowers the chance of a wrong fact a lot, but it cannot make i
 | Risk | Reduction |
 |---|---|
 | Links between notes, roadmaps and sheets break when a title changes | Stable ids (stage 2), analyzer references by id, an automatic internal-link test |
+| Re-seeding the notes and the sheets (needed after stage 2 data changes) wipes and re-inserts them | Users' progress is keyed by problem link, so it is safe; run the seed only on a database you are sure about |
+| Old saved Analyzer reports keep title-style references | Their links go to the subject page, not the section; accepted |
+| Hand-typed ids on about 100 DSA sheet topics may contain mistakes | Uniqueness test and the internal-link test |
 | Raw colors creep back into components and block the light theme | The guard test in B9 |
 | Writing takes longer than planned | Finish one subject fully before the next. Cut scope by reducing topics per section, not the template |
 | Wrong technical content | The review checklist; ask a senior student to read each subject once |
@@ -436,6 +445,12 @@ Honest limit: this lowers the chance of a wrong fact a lot, but it cannot make i
 - **Light theme (B12): stage 6, after the main work.**
 - **DSA sheet cache (B11): no cache now; it is built with Redis (step R4 of `docs/plans/REDIS_PLAN.md`).**
 - **Redis, BullMQ and background jobs: learned alongside the app work, in the evenings.** Redis host: Aiven for Valkey (free plan). Details and the still-open Redis questions are in section 8 of the Redis plan.
+
+**Decided 9 Nov 2026 (stage 2 design), answered by you:**
+- **Diagrams:** small data shapes drawn by one SVG component, not hand-written SVG.
+- **"Report a mistake":** an email link (address to be chosen).
+- **DSA sheet topic ids:** a typed id on every topic.
+- **The two product PDFs** (`PrepStack_Five_Connected_Systems.pdf` and `PrepStack_Strategic_Differentiation_Guidance.pdf`, now in the docs folder): to be decided later. Parked, not part of the plan yet.
 
 ---
 

@@ -25,6 +25,7 @@ const dsaProblemSchema = new mongoose.Schema({
 
 // schema for dsa topic
 const dsaTopicSchema = new mongoose.Schema({
+  id: { type: String, required: true, trim: true, lowercase: true }, // permanent, for example arrays-hashing; links use this, never the title
   title: {
     type: String,
     required: true,

@@ -6,6 +6,7 @@ const computerNetworksNotes = {
     // 1. BASICS
     // ===========================
     {
+      id: "cn-basics",
       title: "Basics",
       topics: [
 
@@ -56,6 +57,7 @@ const computerNetworksNotes = {
     // 2. OSI MODEL
     // ===========================
     {
+      id: "cn-osi-model",
       title: "OSI Model",
       topics: [
 
@@ -96,6 +98,7 @@ const computerNetworksNotes = {
     // 3. TCP/IP MODEL
     // ===========================
     {
+      id: "cn-tcp-ip-model",
       title: "TCP/IP Model",
       topics: [
 
@@ -123,6 +126,7 @@ const computerNetworksNotes = {
     // 4. IP ADDRESSING
     // ===========================
     {
+      id: "cn-ip-addressing",
       title: "IP Addressing",
       topics: [
 
@@ -182,6 +186,7 @@ const computerNetworksNotes = {
     // 5. TRANSPORT LAYER
     // ===========================
     {
+      id: "cn-transport-layer",
       title: "Transport Layer",
       topics: [
 
@@ -258,6 +263,7 @@ const computerNetworksNotes = {
     // 6. APPLICATION LAYER
     // ===========================
     {
+      id: "cn-application-layer",
       title: "Application Layer",
       topics: [
 
@@ -313,6 +319,7 @@ const computerNetworksNotes = {
     // 7. IMPORTANT PROTOCOLS
     // ===========================
     {
+      id: "cn-protocols",
       title: "Protocols",
       topics: [
 
@@ -343,6 +350,7 @@ const computerNetworksNotes = {
     // 8. DEVICES
     // ===========================
     {
+      id: "cn-networking-devices",
       title: "Networking Devices",
       topics: [
 
@@ -381,6 +389,7 @@ const computerNetworksNotes = {
     // 9. KEY FLOWS
     // ===========================
     {
+      id: "cn-key-flows",
       title: "Key Flows",
       topics: [
 
@@ -414,6 +423,7 @@ const computerNetworksNotes = {
     // 10. SYSTEM DESIGN
     // ===========================
     {
+      id: "cn-system-design-concepts",
       title: "System Design Concepts",
       topics: [
 

@@ -6,6 +6,7 @@ const operatingSystemsNotes = {
     // 1. INTRODUCTION
     // ===========================
     {
+      "id": "os-introduction",
       "title": "Introduction",
       "topics": [
         {
@@ -48,6 +49,7 @@ const operatingSystemsNotes = {
     // 2. PROCESSES & THREADS
     // ===========================
     {
+      id: "os-processes-threads",
       title: "Processes & Threads",
 
       overview: [
@@ -222,6 +224,7 @@ const operatingSystemsNotes = {
     // 3. CPU SCHEDULING
     // ===========================
     {
+      "id": "os-cpu-scheduling",
       "title": "CPU Scheduling",
       "topics": [
         {
@@ -283,6 +286,7 @@ const operatingSystemsNotes = {
     // 4. SYNCHRONIZATION
     // ===========================
     {
+      "id": "os-synchronization",
       "title": "Synchronization",
       "topics": [
         {
@@ -327,6 +331,7 @@ const operatingSystemsNotes = {
     // 5. DEADLOCKS
     // ===========================
     {
+  id: "os-deadlocks",
   title: "Deadlocks",
 
   overview: [
@@ -588,6 +593,7 @@ const operatingSystemsNotes = {
     // 6. MEMORY MANAGEMENT
     // ===========================
     {
+      id: "os-memory-management",
       title: "Memory Management",
       overview: [
         "Manages how processes use main memory efficiently",
@@ -751,6 +757,7 @@ const operatingSystemsNotes = {
     // 7. DISK SCHEDULING
     // ===========================
     {
+      id: "os-disk-scheduling",
       title: "Disk Scheduling",
 
       overview: [
@@ -923,6 +930,7 @@ const operatingSystemsNotes = {
     // 8. SYSTEM CONCEPTS
     // ===========================
     {
+      id: "os-system-concepts",
       title: "System Concepts",
       overview: [
         "Core concepts that define interaction between user programs and OS",
@@ -1067,6 +1075,7 @@ const operatingSystemsNotes = {
     // 9. INTERVIEW BOOST
     // ===========================
     {
+      id: "os-interview-boost",
       title: "Interview Boost",
       topics: [
 

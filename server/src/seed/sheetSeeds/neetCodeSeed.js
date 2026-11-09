@@ -7,6 +7,7 @@ const neetcode150Data = {
   description: "Complete list of 150 essential LeetCode problems curated by NeetCode.",
   topics: [
     {
+      id: "arrays-hashing",
       title: "Arrays & Hashing",
       problems: [
         { title: "Contains Duplicate", link: "https://leetcode.com/problems/contains-duplicate/", difficulty: "Easy", tags: ["array", "hashset"] },
@@ -21,6 +22,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "two-pointers",
       title: "Two Pointers",
       problems: [
         { title: "Valid Palindrome", link: "https://leetcode.com/problems/valid-palindrome/", difficulty: "Easy", tags: ["string", "two-pointers"] },
@@ -31,6 +33,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "sliding-window",
       title: "Sliding Window",
       problems: [
         { title: "Best Time to Buy and Sell Stock", link: "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/", difficulty: "Easy", tags: ["array"] },
@@ -42,6 +45,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "stack",
       title: "Stack",
       problems: [
         { title: "Valid Parentheses", link: "https://leetcode.com/problems/valid-parentheses/", difficulty: "Easy", tags: ["stack"] },
@@ -53,6 +57,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "binary-search",
       title: "Binary Search",
       problems: [
         { title: "Binary Search", link: "https://leetcode.com/problems/binary-search/", difficulty: "Easy", tags: ["binary-search"] },
@@ -65,6 +70,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "linked-list",
       title: "Linked List",
       problems: [
         { title: "Reverse Linked List", link: "https://leetcode.com/problems/reverse-linked-list/", difficulty: "Easy", tags: ["linked-list"] },
@@ -81,6 +87,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "trees",
       title: "Trees",
       problems: [
         { title: "Invert Binary Tree", link: "https://leetcode.com/problems/invert-binary-tree/", difficulty: "Easy", tags: ["tree"] },
@@ -101,6 +108,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "heap-priority-queue",
       title: "Heap / Priority Queue",
       problems: [
         { title: "Kth Largest Element in a Stream", link: "https://leetcode.com/problems/kth-largest-element-in-a-stream/", difficulty: "Medium", tags: ["heap"] },
@@ -113,6 +121,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "backtracking",
       title: "Backtracking",
       problems: [
         { title: "Generate Parentheses", link: "https://leetcode.com/problems/generate-parentheses/", difficulty: "Medium", tags: ["backtracking"] },
@@ -128,6 +137,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "trie",
       title: "Trie",
       problems: [
         { title: "Implement Trie", link: "https://leetcode.com/problems/implement-trie-prefix-tree/", difficulty: "Medium", tags: ["trie"] },
@@ -136,6 +146,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "graph",
       title: "Graph",
       problems: [
         { title: "Number of Islands", link: "https://leetcode.com/problems/number-of-islands/", difficulty: "Medium", tags: ["graph"] },
@@ -154,6 +165,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "advanced-graphs",
       title: "Advanced Graphs",
       problems: [
         { title: "Network Delay Time", link: "https://leetcode.com/problems/network-delay-time/", difficulty: "Medium", tags: ["graph"] },
@@ -165,6 +177,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "1d-dynamic-programming",
       title: "1D Dynamic Programming",
       problems: [
         { title: "Climbing Stairs", link: "https://leetcode.com/problems/climbing-stairs/", difficulty: "Easy", tags: ["dp"] },
@@ -183,6 +196,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "2d-dynamic-programming",
       title: "2D Dynamic Programming",
       problems: [
         { title: "Unique Paths", link: "https://leetcode.com/problems/unique-paths/", difficulty: "Medium", tags: ["dp"] },
@@ -199,6 +213,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "greedy",
       title: "Greedy",
       problems: [
         { title: "Maximum Subarray", link: "https://leetcode.com/problems/maximum-subarray/", difficulty: "Medium", tags: ["greedy"] },
@@ -212,6 +227,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "intervals",
       title: "Intervals",
       problems: [
         { title: "Insert Interval", link: "https://leetcode.com/problems/insert-interval/", difficulty: "Medium", tags: ["intervals"] },
@@ -223,6 +239,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "math-geometry",
       title: "Math & Geometry",
       problems: [
         { title: "Rotate Image", link: "https://leetcode.com/problems/rotate-image/", difficulty: "Medium", tags: ["math", "geometry"] },
@@ -236,6 +253,7 @@ const neetcode150Data = {
       ]
     },
     {
+      id: "bit-manipulation",
       title: "Bit Manipulation",
       problems: [
         { title: "Single Number", link: "https://leetcode.com/problems/single-number/", difficulty: "Easy", tags: ["bit-manipulation"] },
@@ -264,3 +282,4 @@ const seedNeetCode150 = async () => {
 
 
 module.exports = seedNeetCode150;
+module.exports.data = neetcode150Data;

@@ -7,6 +7,7 @@ const striverSDEData = {
   description: "The famous SDE sheet by Striver for interview preparation.",
   topics: [
     {
+      id: "arrays-i",
       title: "Arrays - I",
       problems: [
         { title: "Set Matrix Zeros", link: "https://takeuforward.org/data-structure/set-matrix-zero/", difficulty: "Medium", tags: ["array", "matrix"] },
@@ -18,6 +19,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "arrays-ii",
       title: "Arrays - II",
       problems: [
         { title: "Rotate Matrix", link: "https://takeuforward.org/data-structure/rotate-image-by-90-degree/", difficulty: "Medium", tags: ["array", "matrix"] },
@@ -29,6 +31,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "arrays-iii",
       title: "Arrays - III",
       problems: [
         { title: "Search in a 2D Matrix", link: "https://takeuforward.org/data-structure/search-in-a-sorted-2d-matrix/", difficulty: "Medium", tags: ["array", "binary-search"] },
@@ -40,6 +43,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "arrays-iv",
       title: "Arrays - IV",
       problems: [
         { title: "2-Sum Problem", link: "https://takeuforward.org/data-structure/two-sum-check-if-a-pair-with-given-sum-exists-in-array/", difficulty: "Easy", tags: ["array", "hashmap"] },
@@ -51,6 +55,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "linked-list-i",
       title: "Linked List - I",
       problems: [
         { title: "Reverse a Linked List", link: "https://takeuforward.org/data-structure/reverse-a-linked-list/", difficulty: "Easy", tags: ["linked-list"] },
@@ -62,6 +67,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "linked-list-ii",
       title: "Linked List - II",
       problems: [
         { title: "Find Intersection Point of Y LinkedList", link: "https://takeuforward.org/data-structure/find-intersection-of-two-linked-lists/", difficulty: "Easy", tags: ["linked-list", "two-pointers"] },
@@ -73,6 +79,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "linked-list-arrays",
       title: "Linked List and Arrays",
       problems: [
         { title: "Rotate a Linked List", link: "https://takeuforward.org/data-structure/rotate-a-linked-list/", difficulty: "Medium", tags: ["linked-list"] },
@@ -84,6 +91,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "greedy",
       title: "Greedy",
       problems: [
         { title: "N meetings in one room", link: "https://takeuforward.org/data-structure/n-meetings-in-one-room/", difficulty: "Medium", tags: ["greedy"] },
@@ -95,6 +103,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "recursion",
       title: "Recursion",
       problems: [
         { title: "Subset Sums", link: "https://takeuforward.org/data-structure/subset-sum-sum-of-all-subsets/", difficulty: "Medium", tags: ["recursion"] },
@@ -106,6 +115,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "recursion-backtracking",
       title: "Recursion and Backtracking",
       problems: [
         { title: "Permutation Sequence", link: "https://takeuforward.org/data-structure/find-all-the-permutations-of-the-string/", difficulty: "Medium", tags: ["backtracking"] },
@@ -117,6 +127,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "binary-search",
       title: "Binary Search",
       problems: [
         { title: "The N-th Root of an Integer", link: "https://takeuforward.org/data-structure/nth-root-of-a-number-using-binary-search/", difficulty: "Medium", tags: ["binary-search"] },
@@ -130,6 +141,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "heaps",
       title: "Heaps",
       problems: [
         { title: "Max Heap, Min Heap Implementation", link: "https://takeuforward.org/data-structure/min-heap-and-max-heap-implementation/", difficulty: "Medium", tags: ["heap"] },
@@ -141,6 +153,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "stack-queue-i",
       title: "Stack and Queue - I",
       problems: [
         { title: "Implement Stack Using Arrays", link: "https://takeuforward.org/data-structure/implement-stack-using-array/", difficulty: "Easy", tags: ["stack"] },
@@ -153,6 +166,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "stack-queue-ii",
       title: "Stack and Queue - II",
       problems: [
         { title: "Next Smaller Element", link: "https://takeuforward.org/data-structure/next-smaller-element/", difficulty: "Medium", tags: ["stack", "monotonic-stack"] },
@@ -168,6 +182,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "string-i",
       title: "String - I",
       problems: [
         { title: "Reverse Words in a String", link: "https://takeuforward.org/data-structure/reverse-words-in-a-string/", difficulty: "Easy", tags: ["string"] },
@@ -179,6 +194,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "string-ii",
       title: "String - II",
       problems: [
         { title: "Z-Function", link: "https://takeuforward.org/data-structure/z-function/", difficulty: "Hard", tags: ["string", "algorithm"] },
@@ -190,6 +206,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "binary-tree-i",
       title: "Binary Tree - I",
       problems: [
         { title: "Inorder Traversal", link: "https://takeuforward.org/data-structure/inorder-traversal-of-binary-tree/", difficulty: "Easy", tags: ["tree", "dfs"] },
@@ -203,6 +220,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "binary-tree-ii",
       title: "Binary Tree - II",
       problems: [
         { title: "Level Order Traversal / Spiral Traversal", link: "https://takeuforward.org/data-structure/level-order-traversal-of-a-binary-tree/", difficulty: "Medium", tags: ["tree", "bfs"] },
@@ -216,6 +234,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "binary-tree-iii",
       title: "Binary Tree - III",
       problems: [
         { title: "Maximum Path Sum", link: "https://takeuforward.org/data-structure/maximum-sum-path-in-binary-tree/", difficulty: "Hard", tags: ["tree"] },
@@ -229,6 +248,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "binary-search-tree-i",
       title: "Binary Search Tree - I",
       problems: [
         { title: "Populate Next Right Pointers of Tree", link: "https://takeuforward.org/data-structure/populate-next-right-pointers-of-tree/", difficulty: "Medium", tags: ["tree"] },
@@ -242,6 +262,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "binary-search-tree-ii",
       title: "Binary Search Tree - II",
       problems: [
         { title: "Find a pair with a given sum in BST", link: "https://takeuforward.org/data-structure/find-a-pair-with-a-given-sum-in-bst/", difficulty: "Medium", tags: ["bst"] },
@@ -255,6 +276,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "graph-i",
       title: "Graph - I",
       problems: [
         { title: "Clone a Graph", link: "https://takeuforward.org/graph/clone-graph-leetcode/", difficulty: "Medium", tags: ["graph"] },
@@ -269,6 +291,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "graph-ii",
       title: "Graph - II",
       problems: [
         { title: "Strongly Connected Components (Kosaraju)", link: "https://takeuforward.org/graph/strongly-connected-components-kosarajus-algorithm/", difficulty: "Hard", tags: ["graph"] },
@@ -280,6 +303,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "dynamic-programming-i",
       title: "Dynamic Programming - I",
       problems: [
         { title: "Max Product Subarray", link: "https://takeuforward.org/data-structure/maximum-product-subarray-in-an-array/", difficulty: "Medium", tags: ["dp", "array"] },
@@ -292,6 +316,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "dynamic-programming-ii",
       title: "Dynamic Programming - II",
       problems: [
         { title: "Minimum Sum Path in Matrix", link: "https://takeuforward.org/data-structure/minimum-path-sum-in-a-grid-dp-10/", difficulty: "Medium", tags: ["dp"] },
@@ -305,6 +330,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "dynamic-programming-iii",
       title: "Dynamic Programming - III",
       problems: [
         { title: "Count Square Submatrices with All Ones", link: "https://takeuforward.org/data-structure/count-square-submatrices-with-all-ones/", difficulty: "Medium", tags: ["dp"] },
@@ -317,6 +343,7 @@ const striverSDEData = {
       ]
     },
     {
+      id: "trie",
       title: "Trie",
       problems: [
         { title: "Implement Trie", link: "https://takeuforward.org/data-structure/implement-trie-ii/", difficulty: "Medium", tags: ["trie"] },
@@ -329,6 +356,7 @@ const striverSDEData = {
       ]
     },
     {
+        id: "segment-tree-binary-indexed-tree",
         title: "Segment Tree / Binary Indexed Tree",
         problems: [
           { title: "Segment Tree - Build", link: "https://takeuforward.org/data-structures/segment-tree-build/", difficulty: "Medium", tags: ["segment-tree"] },
@@ -353,3 +381,4 @@ const seedStriverSDE = async () => {
 };
 
 module.exports = seedStriverSDE;
+module.exports.data = striverSDEData;

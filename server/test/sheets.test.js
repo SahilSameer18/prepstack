@@ -12,7 +12,7 @@ describe('DSA sheets and per-user progress', () => {
     await t.start();
     ({ Progress, DSASheet } = t.getModels());
     await t.seedSheets();
-    await DSASheet.create({ name: 'Odd Links', slug: 'odd-links', description: 'd', topics: [{ title: 'Odd', problems: [
+    await DSASheet.create({ name: 'Odd Links', slug: 'odd-links', description: 'd', topics: [{ id: 'odd', title: 'Odd', problems: [
       { title: 'Dollar and quotes', link: 'https://x.example.com/p?a=$b&c="q"', difficulty: 'Easy', tags: [] },
       { title: 'Plain', link: 'https://x.example.com/plain', difficulty: 'Easy', tags: [] },
     ] }] });

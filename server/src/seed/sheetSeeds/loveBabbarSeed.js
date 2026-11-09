@@ -7,6 +7,7 @@ const loveBabbarData = {
   description: "A comprehensive DSA sheet by Love Babbar covering 450+ problems.",
   topics: [
     {
+      id: "array",
       title: "Array",
       problems: [
         { title: "Reverse the array", link: "https://www.geeksforgeeks.org/write-a-program-to-reverse-an-array-or-string/", difficulty: "Easy", tags: ["array"] },
@@ -48,6 +49,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "matrix",
       title: "Matrix",
       problems: [
         { title: "Spiral traversal on a Matrix", link: "https://practice.geeksforgeeks.org/problems/spirally-traversing-a-matrix/0", difficulty: "Medium", tags: ["matrix", "simulation"] },
@@ -63,6 +65,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "string",
       title: "String",
       problems: [
         { title: "Reverse a String", link: "https://leetcode.com/problems/reverse-string/", difficulty: "Easy", tags: ["string", "two-pointers"] },
@@ -111,6 +114,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "searching-sorting",
       title: "Searching & Sorting",
       problems: [
         { title: "Find first and last positions of an element in a sorted array", link: "https://practice.geeksforgeeks.org/problems/first-and-last-occurrences-of-x/0", difficulty: "Easy", tags: ["array", "binary-search"] },
@@ -152,6 +156,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "linked-list",
       title: "Linked List",
       problems: [
         { title: "Reverse the Linked List (Iterative and Recursive)", link: "https://www.geeksforgeeks.org/reverse-a-linked-list/", difficulty: "Easy", tags: ["linked-list", "recursion"] },
@@ -193,6 +198,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "stacks-queues",
       title: "Stacks & Queues",
       problems: [
         { title: "Implement Stack from Scratch", link: "https://www.tutorialspoint.com/javaexamples/data_stack.htm", difficulty: "Easy", tags: ["stack"] },
@@ -236,6 +242,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "binary-tree",
       title: "Binary Tree",
       problems: [
         { title: "Level order traversal", link: "https://practice.geeksforgeeks.org/problems/level-order-traversal/1", difficulty: "Easy", tags: ["tree", "bfs"] },
@@ -276,6 +283,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "binary-search-tree",
       title: "Binary Search Tree",
       problems: [
         { title: "Find a value in a BST", link: "https://www.geeksforgeeks.org/binary-search-tree-set-1-search-and-insertion/", difficulty: "Easy", tags: ["bst", "recursion"] },
@@ -303,6 +311,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "greedy",
       title: "Greedy",
       problems: [
         { title: "Activity Selection Problem", link: "https://practice.geeksforgeeks.org/problems/n-meetings-in-one-room/0", difficulty: "Easy", tags: ["greedy", "sorting"] },
@@ -343,6 +352,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "backtracking",
       title: "Backtracking",
       problems: [
         { title: "Rat in a Maze Problem", link: "https://practice.geeksforgeeks.org/problems/rat-in-a-maze-problem/1", difficulty: "Medium", tags: ["backtracking", "matrix"] },
@@ -367,6 +377,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "dynamic-programming",
       title: "Dynamic Programming",
       problems: [
         { title: "Coin Change Problem", link: "https://practice.geeksforgeeks.org/problems/coin-change2448/1", difficulty: "Medium", tags: ["dp", "array"] },
@@ -431,6 +442,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "heap",
       title: "Heap",
       problems: [
         { title: "Implement a MaxHeap/MinHeap using arrays and recursion", link: "https://www.geeksforgeeks.org/building-heap-from-array/", difficulty: "Medium", tags: ["heap", "array"] },
@@ -454,6 +466,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "graph",
       title: "Graph",
       problems: [
         { title: "Create a Graph and print it", link: "https://www.geeksforgeeks.org/graph-and-its-representations/", difficulty: "Easy", tags: ["graph"] },
@@ -502,6 +515,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "trie",
       title: "Trie",
       problems: [
         { title: "Construct a Trie from scratch", link: "https://www.geeksforgeeks.org/trie-insert-and-search/", difficulty: "Medium", tags: ["trie", "string", "design"] },
@@ -517,6 +531,7 @@ const loveBabbarData = {
       ]
     },
     {
+      id: "bit-manipulation",
       title: "Bit Manipulation",
       problems: [
         { title: "Count set bits in an integer", link: "https://practice.geeksforgeeks.org/problems/set-bits0143/1", difficulty: "Easy", tags: ["bit-manipulation"] },
@@ -546,3 +561,4 @@ const seedLoveBabbar = async () => {
 };
 
 module.exports = seedLoveBabbar;
+module.exports.data = loveBabbarData;

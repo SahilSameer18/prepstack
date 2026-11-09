@@ -59,7 +59,7 @@ describe('buildContext: built from what PrepStack really contains', () => {
   it('picks up CS notes sections from the database (and nothing when there are none)', async () => {
     const { Notes } = t.getModels();
     assert.ok(!(await ctxService.buildContext()).refs.some((r) => r.startsWith('notes:')));
-    await Notes.create({ subject: 'Operating Systems', subjectSlug: 'os', sections: [{ title: 'Deadlocks' }, { title: 'Scheduling' }] });
+    await Notes.create({ subject: 'Operating Systems', subjectSlug: 'os', sections: [{ id: 'os-deadlocks', title: 'Deadlocks' }, { id: 'os-scheduling', title: 'Scheduling' }] });
     const ctx = await ctxService.buildContext();
     assert.ok(ctx.refs.includes('notes:os:Deadlocks') && ctx.refs.includes('notes:os:Scheduling'));
   });

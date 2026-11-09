@@ -6,6 +6,7 @@ const dbmsNotes = {
     // 1. INTRODUCTION
     // ===========================
     {
+      id: "dbms-introduction",
       title: "Introduction",
       topics: [
 
@@ -55,6 +56,7 @@ const dbmsNotes = {
     // 2. ER MODEL
     // ===========================
     {
+      id: "dbms-er-model",
       title: "ER Model",
       topics: [
 
@@ -102,6 +104,7 @@ const dbmsNotes = {
     // 3. KEYS & CONSTRAINTS
     // ===========================
     {
+      id: "dbms-keys-constraints",
       title: "Keys & Constraints",
       topics: [
 
@@ -150,6 +153,7 @@ const dbmsNotes = {
     // 4. FUNCTIONAL DEPENDENCY
     // ===========================
     {
+      id: "dbms-functional-dependency",
       title: "Functional Dependency",
       topics: [
 
@@ -181,6 +185,7 @@ const dbmsNotes = {
     // 5. NORMALIZATION
     // ===========================
     {
+      id: "dbms-normalization",
       title: "Normalization",
       topics: [
 
@@ -226,6 +231,7 @@ const dbmsNotes = {
     // 6. TRANSACTIONS
     // ===========================
     {
+      id: "dbms-transactions",
       title: "Transactions",
       topics: [
 
@@ -263,6 +269,7 @@ const dbmsNotes = {
     // 7. CONCURRENCY CONTROL
     // ===========================
     {
+      id: "dbms-concurrency-control",
       title: "Concurrency Control",
       topics: [
 
@@ -321,6 +328,7 @@ const dbmsNotes = {
     // 8. INDEXING
     // ===========================
     {
+      id: "dbms-indexing-file-organization",
       title: "Indexing & File Organization",
       topics: [
 
@@ -363,6 +371,7 @@ const dbmsNotes = {
     // 9. SQL
     // ===========================
     {
+      id: "dbms-sql",
       title: "SQL",
       topics: [
 
@@ -402,6 +411,7 @@ const dbmsNotes = {
     // 10. ADVANCED
     // ===========================
     {
+      id: "dbms-advanced-concepts",
       title: "Advanced Concepts",
       topics: [
 

@@ -230,24 +230,31 @@ async function seedSheets() {
   const { DSASheet } = getModels();
   await DSASheet.create([
     { name: 'Blind 75', slug: 'blind-75', description: 'd', topics: [
-      { title: 'Arrays', problems: [
+      { id: 'arrays', title: 'Arrays', problems: [
         { title: 'Two Sum', link: L('two-sum'), difficulty: 'Easy', tags: ['array', 'hashmap', 'extra'] },
         { title: '3Sum', link: L('3sum'), difficulty: 'Medium', tags: [] },
       ] },
-      { title: 'Strings', problems: [
+      { id: 'strings', title: 'Strings', problems: [
         { title: 'Valid Anagram', link: L('valid-anagram'), difficulty: 'Easy', tags: ['string'] },
         { title: '3Sum again', link: L('3sum'), difficulty: 'Medium', tags: [] }, // same link repeated in another topic
       ] },
     ] },
     { name: 'Other Sheet', slug: 'other-sheet', description: 'd', topics: [
-      { title: 'Only', problems: [{ title: 'Only Problem', link: L('only-in-other'), difficulty: 'Hard', tags: [] }] },
+      { id: 'only', title: 'Only', problems: [{ title: 'Only Problem', link: L('only-in-other'), difficulty: 'Hard', tags: [] }] },
     ] },
   ]);
+}
+// The data of the five DSA sheets, as written in the seed files. Those files connect to the real database when they are
+// loaded (seedConfig), so that connection helper is replaced first and nothing outside the test is touched.
+function sheetSeedData() {
+  const configPath = require.resolve('../../src/seed/seedConfig');
+  require.cache[configPath] = { id: configPath, filename: configPath, loaded: true, exports: async () => {} };
+  return ['blind75', 'loveBabbarSeed', 'neetCodeSeed', 'striverA2ZSeed', 'striverSDESeed'].map((f) => require(`../../src/seed/sheetSeeds/${f}`).data);
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const countAt = async (Model, filter) => Model.countDocuments(filter);
 
 module.exports = {
   SERVER_ROOT, env, start, stop, resetData, getModels, mongoose, gemini, groq, mail, MODELS, apiError, goodIdea, google,
-  api, postForm, makePdf, register, login, parseCookies, cookieHeader, UA, PASSWORD, L, seedSheets, sleep, countAt, nextIp,
+  api, postForm, makePdf, register, login, parseCookies, cookieHeader, UA, PASSWORD, L, seedSheets, sheetSeedData, sleep, countAt, nextIp,
 };

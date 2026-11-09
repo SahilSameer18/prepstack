@@ -7,6 +7,7 @@ const striverA2ZData = {
   description: "A comprehensive DSA path by Striver (Placeholder).",
   topics: [
     {
+      id: "basics-things-to-know-in-c-java-python",
       title: "Basics – Things to Know in C++/Java/Python",
       problems: [
         { title: "User Input / Output", link: "https://takeuforward.org/c/user-input-output/", difficulty: "Easy", tags: ["basics"] },
@@ -21,6 +22,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "basics-build-up-mathematical-thinking",
       title: "Basics – Build-up Mathematical Thinking",
       problems: [
         { title: "Count Digits", link: "https://takeuforward.org/maths/count-digits-in-a-number/", difficulty: "Easy", tags: ["math"] },
@@ -33,6 +35,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "basics-learn-stl-collections",
       title: "Basics – Learn STL / Collections",
       problems: [
         { title: "C++ STL", link: "https://takeuforward.org/c/c-stl/", difficulty: "Easy", tags: ["stl"] },
@@ -41,6 +44,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "basics-basic-recursion",
       title: "Basics – Basic Recursion",
       problems: [
         { title: "Print 1 to N using Recursion", link: "https://takeuforward.org/recursion/print-1-to-n-using-recursion/", difficulty: "Easy", tags: ["recursion"] },
@@ -55,6 +59,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "basics-basic-hashing",
       title: "Basics – Basic Hashing",
       problems: [
         { title: "Counting Frequencies of Array Elements", link: "https://takeuforward.org/hashing/counting-frequencies-of-array-elements/", difficulty: "Easy", tags: ["hashing", "array"] },
@@ -62,6 +67,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "step-2-1-sorting-i",
       title: "Step 2.1 – Sorting-I",
       problems: [
         { title: "Selection Sort", link: "https://takeuforward.org/sorting/selection-sort-algorithm/", difficulty: "Easy", tags: ["sorting"] },
@@ -70,6 +76,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "step-2-2-sorting-ii",
       title: "Step 2.2 – Sorting-II",
       problems: [
         { title: "Merge Sort", link: "https://takeuforward.org/sorting/merge-sort-algorithm/", difficulty: "Medium", tags: ["sorting", "divide-and-conquer"] },
@@ -79,6 +86,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "array-easy-array-problems",
       title: "Array – Easy Array Problems",
       problems: [
         { title: "Largest Element in an Array", link: "https://takeuforward.org/arrays/find-the-largest-element-in-an-array/", difficulty: "Easy", tags: ["array"] },
@@ -98,6 +106,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "array-medium-array-problems",
       title: "Array – Medium Array Problems",
       problems: [
         { title: "Two Sum", link: "https://takeuforward.org/arrays/two-sum-check-if-a-pair-with-given-sum-exists-in-array/", difficulty: "Medium", tags: ["array", "hashing"] },
@@ -116,6 +125,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "array-hard-array-problems",
       title: "Array – Hard Array Problems",
       problems: [
         { title: "Pascal's Triangle", link: "https://takeuforward.org/arrays/program-to-generate-pascals-triangle/", difficulty: "Medium", tags: ["array", "math"] },
@@ -133,6 +143,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "binary-search-binary-search-on-1d-arrays",
       title: "Binary Search – Binary Search on 1D Arrays",
       problems: [
         { title: "Binary Search to find X in sorted array", link: "https://takeuforward.org/binary-search/binary-search-to-find-x-in-sorted-array/", difficulty: "Easy", tags: ["binary-search", "array"] },
@@ -151,6 +162,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "binary-search-binary-search-on-answers",
       title: "Binary Search – Binary Search on Answers",
       problems: [
         { title: "Find Square Root of a Number in Log N", link: "https://takeuforward.org/binary-search/finding-sqrt-of-a-number-using-binary-search/", difficulty: "Easy", tags: ["binary-search", "math"] },
@@ -170,6 +182,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "binary-search-binary-search-on-2d-arrays",
       title: "Binary Search – Binary Search on 2D Arrays",
       problems: [
         { title: "Find the row with maximum number of 1s", link: "https://takeuforward.org/binary-search/find-the-row-with-maximum-number-of-1s/", difficulty: "Easy", tags: ["binary-search", "matrix"] },
@@ -180,6 +193,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "strings-basic-string-problems",
       title: "Strings – Basic String Problems",
       problems: [
         { title: "Remove Outermost Parentheses", link: "https://takeuforward.org/string/remove-outermost-parentheses/", difficulty: "Easy", tags: ["string", "stack"] },
@@ -192,6 +206,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "strings-medium-string-problems",
       title: "Strings – Medium String Problems",
       problems: [
         { title: "Sort Characters by Frequency", link: "https://takeuforward.org/string/sort-characters-by-frequency/", difficulty: "Medium", tags: ["string", "hashing", "sorting"] },
@@ -205,6 +220,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "strings-hard-string-problems",
       title: "Strings – Hard String Problems",
       problems: [
         { title: "Count and Say", link: "https://takeuforward.org/string/count-and-say/", difficulty: "Medium", tags: ["string"] },
@@ -219,6 +235,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "linked-list-learning-linked-list",
       title: "Linked List – Learning Linked List",
       problems: [
         { title: "Introduction to LinkedList, learn about struct, and how is a linked list formed", link: "https://takeuforward.org/linked-list/introduction-to-linked-list/", difficulty: "Easy", tags: ["linked-list"] },
@@ -229,6 +246,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "linked-list-learn-doubly-linkedlist",
       title: "Linked List – Learn Doubly LinkedList",
       problems: [
         { title: "Introduction to DLL, learn about struct, and how is a DLL formed", link: "https://takeuforward.org/linked-list/introduction-to-doubly-linked-list/", difficulty: "Easy", tags: ["linked-list", "doubly-linked-list"] },
@@ -238,6 +256,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "linked-list-medium-problems-of-ll",
       title: "Linked List – Medium Problems of LL",
       problems: [
         { title: "Middle of a LinkedList", link: "https://takeuforward.org/linked-list/find-middle-of-linked-list/", difficulty: "Easy", tags: ["linked-list", "slow-fast-pointer"] },
@@ -257,6 +276,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "linked-list-hard-problems-of-ll",
       title: "Linked List – Hard Problems of LL",
       problems: [
         { title: "Reverse LL in group of given size K", link: "https://takeuforward.org/linked-list/reverse-linked-list-in-groups-of-size-k/", difficulty: "Hard", tags: ["linked-list", "recursion"] },
@@ -267,6 +287,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "recursion-get-a-strong-hold",
       title: "Recursion – Get a Strong Hold",
       problems: [
         { title: "Recursive Implementation of atoi()", link: "https://takeuforward.org/recursion/recursive-implementation-of-atoi/", difficulty: "Medium", tags: ["recursion", "string"] },
@@ -277,6 +298,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "recursion-subsequences-pattern",
       title: "Recursion – Subsequences Pattern",
       problems: [
         { title: "Generate all binary strings", link: "https://takeuforward.org/recursion/generate-all-binary-strings/", difficulty: "Medium", tags: ["recursion", "backtracking"] },
@@ -293,6 +315,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "recursion-trying-out-all-combos-hard",
       title: "Recusrion – Trying out all Combos / Hard",
       problems: [
         { title: "Permutation Sequence", link: "https://takeuforward.org/recursion/permutation-sequence/", difficulty: "Hard", tags: ["recursion", "math"] },
@@ -306,6 +329,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "learn-bit-manipulation",
       title: "Learn Bit Manipulation",
       problems: [
         { title: "Introduction to Bit Manipulation (Theory)", link: "https://takeuforward.org/bit-manipulation/introduction-to-bit-manipulation/", difficulty: "Easy", tags: ["bit-manipulation"] },
@@ -319,6 +343,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "bit-manipulation-interview-problems",
       title: "Bit Manipulation – Interview Problems",
       problems: [
         { title: "Count number of bits to be flipped to convert A to B", link: "https://takeuforward.org/bit-manipulation/count-bits-to-flip/", difficulty: "Easy", tags: ["bit-manipulation"] },
@@ -329,6 +354,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "bit-manipulation-advanced-maths",
       title: "Bit Manipulation – Advanced Maths",
       problems: [
         { title: "Print Prime Factors of a Number", link: "https://takeuforward.org/bit-manipulation/print-prime-factors/", difficulty: "Medium", tags: ["bit-manipulation", "math"] },
@@ -339,6 +365,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "stack-queues-learning",
       title: "Stack and Queues – Learning",
       problems: [
         { title: "Implement Stack using Arrays", link: "https://takeuforward.org/stack-and-queue/implement-stack-using-array/", difficulty: "Easy", tags: ["stack"] },
@@ -352,6 +379,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "prefix-infix-postfix-conversion-problems",
       title: "Prefix, Infix, PostFix Conversion Problems",
       problems: [
         { title: "Infix to Postfix Conversion using Stack", link: "https://takeuforward.org/stack-and-queue/infix-to-postfix-conversion/", difficulty: "Medium", tags: ["stack"] },
@@ -363,6 +391,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "monotonic-stack-queue-problems",
       title: "Monotonic Stack/Queue Problems",
       problems: [
         { title: "Next Greater Element", link: "https://takeuforward.org/stack-and-queue/next-greater-element/", difficulty: "Medium", tags: ["stack", "monotonic-stack"] },
@@ -379,6 +408,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "stack-queue-implementation-problems",
       title: "Stack and Queue – Implementation Problems",
       problems: [
         { title: "Sliding Window Maximum", link: "https://takeuforward.org/stack-and-queue/sliding-window-maximum/", difficulty: "Hard", tags: ["queue", "sliding-window", "monotonic-queue"] },
@@ -389,6 +419,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "sliding-window-two-pointers-medium-problems",
       title: "Sliding Window & Two Pointers – Medium Problems",
       problems: [
         { title: "Longest Substring Without Repeating Characters", link: "https://takeuforward.org/sliding-window-two-pointer/longest-substring-without-repeating-characters/", difficulty: "Medium", tags: ["sliding-window", "string", "hashing"] },
@@ -402,6 +433,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "sliding-window-two-pointers-hard-problems",
       title: "Sliding Window & Two Pointers – Hard Problems",
       problems: [
         { title: "Longest Substring with At Most K Distinct Characters", link: "https://takeuforward.org/sliding-window-two-pointer/longest-substring-with-at-most-k-distinct-chars/", difficulty: "Hard", tags: ["sliding-window", "string", "hashing"] },
@@ -411,6 +443,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "heaps-learning",
       title: "Heaps – Learning",
       problems: [
         { title: "Introduction to Priority Queue", link: "https://takeuforward.org/heap/introduction-to-priority-queue/", difficulty: "Easy", tags: ["heap"] },
@@ -420,6 +453,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "heaps-medium-problems",
       title: "Heaps – Medium Problems",
       problems: [
         { title: "Kth largest element in an array", link: "https://takeuforward.org/heap/kth-largest-element/", difficulty: "Medium", tags: ["heap", "array"] },
@@ -432,6 +466,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "heaps-hard-problems",
       title: "Heaps – Hard Problems",
       problems: [
         { title: "Design Twitter", link: "https://takeuforward.org/heap/design-twitter/", difficulty: "Hard", tags: ["heap", "design", "hashing"] },
@@ -443,6 +478,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "greedy-algo-easy-problems",
       title: "Greedy Algo – Easy Problems",
       problems: [
         { title: "Assign Cookies", link: "https://takeuforward.org/greedy/assign-cookies/", difficulty: "Easy", tags: ["greedy"] },
@@ -453,6 +489,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "greedy-algo-medium-hard-problems",
       title: "Greedy Algo – Medium/Hard Problems",
       problems: [
         { title: "N meetings in one room", link: "https://takeuforward.org/greedy/n-meetings-in-one-room/", difficulty: "Easy", tags: ["greedy", "sorting"] },
@@ -468,6 +505,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "binary-trees-traversals",
       title: "Binary Trees – Traversals",
       problems: [
         { title: "Introduction to Trees", link: "https://takeuforward.org/binary-tree/introduction-to-trees/", difficulty: "Easy", tags: ["tree"] },
@@ -484,6 +522,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "binary-trees-medium-problems",
       title: "Binary Trees – Medium Problems",
       problems: [
         { title: "Height of a Binary Tree", link: "https://takeuforward.org/binary-tree/height-of-binary-tree/", difficulty: "Easy", tags: ["tree", "dfs"] },
@@ -501,6 +540,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "binary-trees-hard-problems",
       title: "Binary Trees – Hard Problems",
       problems: [
         { title: "Root to Node Path in Binary Tree", link: "https://takeuforward.org/binary-tree/root-to-node-path/", difficulty: "Medium", tags: ["tree", "dfs"] },
@@ -520,6 +560,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "binary-search-tree-concept",
       title: "Binary Search Tree – Concept",
       problems: [
         { title: "Introduction to Binary Search Tree", link: "https://takeuforward.org/binary-search-tree/introduction-to-bst/", difficulty: "Easy", tags: ["bst"] },
@@ -528,6 +569,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "binary-search-tree-practice-problems",
       title: "Binary Search Tree – Practice Problems",
       problems: [
         { title: "Ceil in a BST", link: "https://takeuforward.org/binary-search-tree/ceil-in-bst/", difficulty: "Medium", tags: ["bst"] },
@@ -546,6 +588,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "graphs-learning",
       title: "Graphs – Learning",
       problems: [
         { title: "Graph and Types", link: "https://takeuforward.org/graph/graph-and-types/", difficulty: "Easy", tags: ["graph"] },
@@ -556,6 +599,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "graphs-problems-on-bfs-dfs",
       title: "Graphs – Problems on BFS/DFS",
       problems: [
         { title: "Number of provinces (leetcode)", link: "https://takeuforward.org/graph/number-of-provinces/", difficulty: "Medium", tags: ["graph", "dfs", "union-find"] },
@@ -575,6 +619,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "graphs-topo-sort-problems",
       title: "Graphs – Topo Sort and Problems",
       problems: [
         { title: "Topo Sort", link: "https://takeuforward.org/graph/topological-sort-dfs/", difficulty: "Medium", tags: ["graph", "dfs", "topological-sort"] },
@@ -591,6 +636,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "graphs-shortest-path-algorithms",
       title: "Graphs – Shortest Path Algorithms",
       problems: [
         { title: "Dijkstra's Algorithm", link: "https://takeuforward.org/graph/dijkstras-algorithm/", difficulty: "Medium", tags: ["graph", "dijkstra", "heap"] },
@@ -607,6 +653,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "graphs-minimum-spanning-tree-disjoint-set",
       title: "Graphs – Minimum Spanning Tree/Disjoint Set",
       problems: [
         { title: "Minimum Spanning Tree – Theory", link: "https://takeuforward.org/graph/minimum-spanning-tree/", difficulty: "Easy", tags: ["graph", "mst"] },
@@ -622,6 +669,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "graphs-other-algorithms",
       title: "Graphs – Other Algorithms",
       problems: [
         { title: "Bridges in Graph – Using Tarjan's Algorithm of time in and low time", link: "https://takeuforward.org/graph/bridges-in-graph/", difficulty: "Hard", tags: ["graph", "tarjan"] },
@@ -631,6 +679,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "introduction-to-dp",
       title: "Introduction to DP",
       problems: [
         { title: "Dynamic Programming Introduction", link: "https://takeuforward.org/dynamic-programming/introduction-to-dynamic-programming/", difficulty: "Easy", tags: ["dp"] },
@@ -642,6 +691,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "2d-3d-dp-dp-on-grids",
       title: "2D/3D DP and DP on Grids",
       problems: [
         { title: "Ninja's Training (DP 7)", link: "https://takeuforward.org/dynamic-programming/ninjas-training/", difficulty: "Medium", tags: ["dp"] },
@@ -654,6 +704,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "dp-on-subsequences",
       title: "DP on Subsequences",
       problems: [
         { title: "Subset sum equal to target (DP-14)", link: "https://takeuforward.org/dynamic-programming/subset-sum-equal-to-target/", difficulty: "Medium", tags: ["dp", "recursion"] },
@@ -670,6 +721,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "dp-on-strings",
       title: "DP on Strings",
       problems: [
         { title: "Longest Common Subsequence (DP-25)", link: "https://takeuforward.org/dynamic-programming/longest-common-subsequence/", difficulty: "Medium", tags: ["dp", "string"] },
@@ -685,6 +737,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "dp-on-stocks",
       title: "DP on Stocks",
       problems: [
         { title: "Best Time to Buy and Sell Stock (DP-35)", link: "https://takeuforward.org/dynamic-programming/best-time-to-buy-sell-stock-i/", difficulty: "Easy", tags: ["dp", "array"] },
@@ -696,6 +749,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "dp-on-lis",
       title: "DP on LIS",
       problems: [
         { title: "Longest Increasing Subsequence (DP-41)", link: "https://takeuforward.org/dynamic-programming/longest-increasing-subsequence/", difficulty: "Medium", tags: ["dp", "array"] },
@@ -708,6 +762,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "mcm-dp-interval-dp",
       title: "MCM DP / Interval DP",
       problems: [
         { title: "Matrix Chain Multiplication (DP-48)", link: "https://takeuforward.org/dynamic-programming/matrix-chain-multiplication/", difficulty: "Hard", tags: ["dp"] },
@@ -722,6 +777,7 @@ const striverA2ZData = {
       ]
     },
     {
+      id: "tries-theory",
       title: "Tries – Theory",
       problems: [
         { title: "Implement Trie – I (Prefix Tree)", link: "https://takeuforward.org/trie/implement-trie-prefix-tree/", difficulty: "Medium", tags: ["trie"] },
@@ -747,3 +803,4 @@ const seedStriverA2Z = async () => {
 };
 
 module.exports = seedStriverA2Z;
+module.exports.data = striverA2ZData;

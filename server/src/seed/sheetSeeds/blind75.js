@@ -7,6 +7,7 @@ const blind75Data = {
   description: "A curated list of 75 essential LeetCode problems to ace coding interviews.",
   topics: [
     {
+      id: "arrays-hashing",
       title: "Arrays & Hashing",
       problems: [
         { title: "Two Sum", link: "https://leetcode.com/problems/two-sum/", difficulty: "Easy", tags: ["array", "hashmap"] },
@@ -20,6 +21,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "two-pointers",
       title: "Two Pointers",
       problems: [
         { title: "Valid Palindrome", link: "https://leetcode.com/problems/valid-palindrome/", difficulty: "Easy", tags: ["string", "two-pointers"] },
@@ -28,6 +30,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "sliding-window",
       title: "Sliding Window",
       problems: [
         {
@@ -42,12 +45,14 @@ const blind75Data = {
       ]
     },
     {
+      id: "stack",
       title: "Stack",
       problems: [
         { title: "Valid Parentheses", link: "https://leetcode.com/problems/valid-parentheses/", difficulty: "Easy", tags: ["stack"] },
       ]
     },
     {
+      id: "binary-search",
       title: "Binary Search",
       problems: [
         { title: "Find Minimum In Rotated Sorted Array", link: "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/", difficulty: "Medium", tags: ["binary-search"] },
@@ -55,6 +60,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "linked-list",
       title: "Linked List",
       problems: [
         { title: "Reverse Linked List", link: "https://leetcode.com/problems/reverse-linked-list/", difficulty: "Easy", tags: ["linked-list"] },
@@ -66,6 +72,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "trees",
       title: "Trees",
       problems: [
         { title: "Invert Binary Tree", link: "https://leetcode.com/problems/invert-binary-tree/", difficulty: "Easy", tags: ["tree"] },
@@ -82,12 +89,14 @@ const blind75Data = {
       ]
     },
     {
+      id: "heap-priority-queue",
       title: " Heap/Priority Queue",
       problems: [
         { title: "Find Median from Data Stream", link: "https://leetcode.com/problems/find-median-from-data-stream/", difficulty: "Hard", tags: ["heap", "priority-queue"] }
       ]
     },
     {
+      id: "backtracking",
       title: "Backtracking",
       problems: [
         { title: "Word Search", link: "https://leetcode.com/problems/word-search/", difficulty: "Medium", tags: ["backtracking"] },
@@ -95,6 +104,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "trie",
       title: "Trie",
       problems: [
         { title: "Implement Trie (Prefix Tree)", link: "https://leetcode.com/problems/implement-trie-prefix-tree/", difficulty: "Medium", tags: ["trie"] },
@@ -103,6 +113,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "graph",
       title: "Graph",
       problems: [
         { title: "Clone Graph", link: "https://leetcode.com/problems/clone-graph/", difficulty: "Medium", tags: ["graph", "dfs", "bfs"] },
@@ -115,6 +126,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "dynamic-programming",
       title: "Dynamic Programming",
       problems: [
         { title: "Climbing Stairs", link: "https://leetcode.com/problems/climbing-stairs/", difficulty: "Easy", tags: ["dp"] },
@@ -130,6 +142,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "2-d-dynamic-programming",
       title: "2-D Dynamic Programming",
       problems: [
         { title: "Longest Common Subsequence", link: "https://leetcode.com/problems/longest-common-subsequence/", difficulty: "Medium", tags: ["dp"] },
@@ -137,6 +150,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "greedy",
       title: "Greedy",
       problems: [
         { title: "Maximum Subarray", link: "https://leetcode.com/problems/maximum-subarray/", difficulty: "Medium", tags: ["greedy", "dp"] },
@@ -144,6 +158,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "intervals",
       title: "Intervals",
       problems: [
         { title: "Insert Interval", link: "https://leetcode.com/problems/insert-interval/", difficulty: "Medium", tags: ["intervals"] },
@@ -154,6 +169,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "math-geometry",
       title: "Math & Geometry",
       problems: [
         { title: "Rotate Image", link: "https://leetcode.com/problems/rotate-image/", difficulty: "Medium", tags: ["matrix", "geometry"] },
@@ -162,6 +178,7 @@ const blind75Data = {
       ]
     },
     {
+      id: "bit-manipulation",
       title: "Bit Manipulation",
       problems: [
         { title: "Number of 1 Bits", link: "https://leetcode.com/problems/number-of-1-bits/", difficulty: "Easy", tags: ["bit-manipulation"] },
@@ -185,3 +202,4 @@ const seedBlind75 = async () => {
 };
 
 module.exports = seedBlind75;
+module.exports.data = blind75Data; // also exported so tests can check the data
