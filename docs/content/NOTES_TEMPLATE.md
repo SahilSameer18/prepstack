@@ -57,6 +57,9 @@ Only where a picture explains faster than text, not on every topic. A diagram is
 
 ## Writing rules
 
+- **Interview utility over academic depth**: Explain concepts so a student can state them aloud to an interviewer in 45–60 seconds. Do not write a textbook chapter when a crisp definition, diagram, and code snippet do the job better.
+- **High-frequency topics first**: Focus depth on the concepts asked in 80% of interviews (e.g., in DBMS: B+ Trees, Isolation Levels, Normalization, Joins). Keep niche/obscure topics concise.
+- **We are not writing a book, we are targeting interviews**
 - Plain words. A sentence a second-year student can read once and understand.
 - Every claim that someone could dispute (a number, a default value, a version, "always" or "never") has a source in `SOURCES.md` before it is published.
 - No filler ("In today's world...", "It is important to note...").
