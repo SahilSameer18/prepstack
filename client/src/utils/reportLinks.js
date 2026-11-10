@@ -3,7 +3,7 @@
 // Reports saved before ids were used have refs like "dsa:Arrays" or "notes:os:Deadlocks": their text after the last ":" is the title.
 // The server only keeps refs that exist, so every one of these resolves to a real page. Used by the report page and the PDF.
 const SUBJECT = { os: "OS", dbms: "DBMS", cn: "Networks", oops: "OOP" };
-const ROADMAP = { frontend: "Frontend", backend: "Backend", fullstack: "Full Stack", android: "Android", "data-analytics": "Data Analytics", "machine-learning": "Machine Learning" };
+export const ROADMAP = { frontend: "Frontend", backend: "Backend", fullstack: "Full Stack", android: "Android", "data-analytics": "Data Analytics", "machine-learning": "Machine Learning" };
 
 export const refLink = (ref, titles) => {
   if (!ref) return null;

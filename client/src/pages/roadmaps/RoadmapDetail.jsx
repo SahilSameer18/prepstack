@@ -1,26 +1,80 @@
-import React, { useState } from "react";
-import { useParams, Link, Navigate } from "react-router-dom";
-import { FiArrowLeft, FiClock, FiCheckCircle, FiExternalLink, FiChevronDown, FiChevronUp, FiBookOpen } from "react-icons/fi";
+import React, { useState, useEffect } from "react";
+import { useParams, useLocation, Link, Navigate } from "react-router-dom";
+import { FiArrowLeft, FiClock, FiCheckCircle, FiExternalLink, FiChevronDown, FiChevronUp, FiBookOpen, FiFlag, FiTool, FiArrowRight } from "react-icons/fi";
 import { roadmaps } from "../../data/roadmaps.js";
-import { FaLaptopCode, FaMobileAlt, FaDatabase, FaServer, FaBrain, FaChartLine } from "react-icons/fa";
+import { iconMap } from "./roadmapIcons";
+import { practiceLink, projectLink } from "./roadmapLinks";
 
-const iconMap = {
-  FaLaptopCode: <FaLaptopCode />,
-  FaMobileAlt: <FaMobileAlt />,
-  FaDatabase: <FaDatabase />,
-  FaServer: <FaServer />,
-  FaBrain: <FaBrain />,
-  FaChartLine: <FaChartLine />
-};
+// What a step can say beyond its description. Each part is drawn only when the step has it (they are written in stage 4).
+const StepExtras = ({ step, roadmap }) => (
+  <div className="space-y-4 mb-6">
+    {step.goal && (
+      <div className={`rounded-xl border border-ink/[0.08] p-4 ${roadmap.bg}`}>
+        <p className={`text-xs font-ui font-bold uppercase tracking-wider mb-1 ${roadmap.color}`}>Goal</p>
+        <p className="text-fg-2 text-sm leading-relaxed">{step.goal}</p>
+      </div>
+    )}
+    {(step.time || step.topics) && (
+      <div className="rounded-xl bg-card-hover border border-ink/[0.08] p-4">
+        {step.time && <p className="flex items-center gap-1.5 text-xs font-ui font-semibold text-muted mb-2"><FiClock /> {step.time}</p>}
+        {step.topics && (
+          <ul className="grid sm:grid-cols-2 gap-x-4 gap-y-1.5">
+            {step.topics.map((topic) => (
+              <li key={topic} className="flex items-start gap-2 text-fg-3 text-sm"><FiCheckCircle className={`mt-1 shrink-0 text-xs ${roadmap.color}`} />{topic}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )}
+    {step.practice && (
+      <div>
+        <p className="text-xs font-ui font-bold text-muted mb-2.5">Practise in PrepStack</p>
+        <div className="flex flex-wrap gap-2">
+          {step.practice.map((entry) => {
+            const l = practiceLink(entry);
+            return <Link key={entry.target} to={l.path} className="inline-flex items-center gap-1.5 px-3 min-h-[44px] rounded-xl bg-card-hover border border-ink/[0.08] hover:border-ink/[0.18] text-xs text-fg-2 font-medium transition-colors">{l.label} <FiArrowRight className="text-xs" /></Link>;
+          })}
+        </div>
+      </div>
+    )}
+    {step.checkpoint && (
+      <div className="rounded-xl bg-ok-solid/[0.04] border border-ok-solid/[0.12] p-4">
+        <p className="flex items-center gap-1.5 text-xs font-ui font-bold uppercase tracking-wider text-ok mb-2"><FiFlag /> Checkpoint</p>
+        <ul className="space-y-1.5">
+          {step.checkpoint.map((c) => <li key={c} className="text-fg-3 text-sm leading-relaxed">{c}</li>)}
+        </ul>
+      </div>
+    )}
+    {step.project && (
+      <div className="rounded-xl bg-warn-solid/[0.04] border border-warn-solid/[0.12] p-4">
+        <p className="flex items-center gap-1.5 text-xs font-ui font-bold uppercase tracking-wider text-warn mb-2"><FiTool /> Mini-project</p>
+        <p className="text-fg-3 text-sm leading-relaxed mb-3">{step.project.brief}</p>
+        <Link to={projectLink(step.project)} className="inline-flex items-center gap-2 px-4 min-h-[44px] rounded-xl amber-specular-button text-on-brand font-bold text-xs">Generate an idea with {step.project.stack}</Link>
+      </div>
+    )}
+  </div>
+);
 
 const RoadmapDetail = () => {
   const { slug, id } = useParams();
   const param = slug || id;
+  const { hash } = useLocation();
   const [expandedIdx, setExpandedIdx] = useState(null);
 
   // Lookup by semantic slug, or fallback to numeric index for backward compatibility
   const roadmap = roadmaps.find((r) => r.slug === param) ||
     (!isNaN(parseInt(param, 10)) ? roadmaps[parseInt(param, 10)] : null);
+
+  // /roadmaps/frontend#react-basics opens that step: the link works from anywhere, because the step id never changes
+  const hashIdx = roadmap ? roadmap.steps.findIndex((s) => `#${s.id}` === hash) : -1;
+  const [syncedHash, setSyncedHash] = useState(null);
+  if (hash !== syncedHash) {
+    setSyncedHash(hash);
+    if (hashIdx !== -1) setExpandedIdx(hashIdx);
+  }
+  useEffect(() => {
+    if (hashIdx !== -1) document.getElementById(roadmap.steps[hashIdx].id)?.scrollIntoView({ block: "start" });
+  }, [hashIdx, roadmap]);
 
   if (!roadmap) {
     return <Navigate to="/roadmaps" replace />;
@@ -60,7 +114,7 @@ const RoadmapDetail = () => {
                 <FiClock className="text-muted" /> {roadmap.duration}
               </span>
               <span className="flex items-center gap-1.5 text-xs text-fg-3 font-ui">
-                <FiBookOpen className={roadmap.color} /> {roadmap.details.length} Modules
+                <FiBookOpen className={roadmap.color} /> {roadmap.steps.length} Modules
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-fg mb-2 leading-tight">
@@ -79,7 +133,7 @@ const RoadmapDetail = () => {
           <h2 className="text-xl font-display font-bold text-fg shrink-0">Step-by-step path</h2>
           <div className="h-px bg-ink/[0.08] flex-1" />
           <span className="text-xs font-ui font-semibold text-muted shrink-0">
-            {roadmap.details.length} phases
+            {roadmap.steps.length} phases
           </span>
         </div>
 
@@ -88,14 +142,15 @@ const RoadmapDetail = () => {
           <div className="absolute left-5 top-5 bottom-5 w-px bg-gradient-to-b from-ink/[0.12] via-ink/[0.08] to-transparent hidden md:block" />
 
           <div className="space-y-3">
-            {roadmap.details.map((detail, idx) => {
+            {roadmap.steps.map((detail, idx) => {
               const num = (idx + 1).toString().padStart(2, '0');
               const isOpen = expandedIdx === idx;
 
               return (
                 <div
-                  key={idx}
-                  className={`relative transition-colors duration-200 ml-0 md:ml-12 rounded-2xl overflow-hidden border ${
+                  key={detail.id}
+                  id={detail.id}
+                  className={`relative scroll-mt-24 transition-colors duration-200 ml-0 md:ml-12 rounded-2xl overflow-hidden border ${
                     isOpen
                       ? `border-ink/[0.15] bg-card shadow-xl shadow-scrim/40`
                       : 'border-ink/[0.08] bg-card hover:border-ink/[0.15]'
@@ -159,6 +214,8 @@ const RoadmapDetail = () => {
                       <p className="text-fg-3 text-sm leading-relaxed mb-6">
                         {detail.desc}
                       </p>
+
+                      <StepExtras step={detail} roadmap={roadmap} />
 
                       {/* Resources */}
                       {detail.resources && detail.resources.length > 0 && (

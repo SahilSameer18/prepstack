@@ -1,17 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
-import { FaLaptopCode, FaMobileAlt, FaDatabase, FaServer, FaBrain, FaChartLine } from "react-icons/fa";
 import { roadmaps } from "../../data/roadmaps.js";
-
-const iconMap = {
-  FaLaptopCode: <FaLaptopCode />,
-  FaMobileAlt: <FaMobileAlt />,
-  FaDatabase: <FaDatabase />,
-  FaServer: <FaServer />,
-  FaBrain: <FaBrain />,
-  FaChartLine: <FaChartLine />,
-};
+import { iconMap } from "./roadmapIcons";
 
 const Roadmap = () => {
   return (
@@ -45,11 +36,6 @@ const Roadmap = () => {
                 {r.recommended && (
                   <span className="font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-brand/10 border border-brand/30 text-brand">
                     Core Track
-                  </span>
-                )}
-                {r.isNew && (
-                  <span className="font-ui text-xs font-bold px-2 py-0.5 rounded-md bg-ok-solid/10 border border-ok-solid/20 text-ok">
-                    Updated
                   </span>
                 )}
               </div>
