@@ -32,7 +32,8 @@ const reportSchema = new mongoose.Schema({
     _id: false,
     day: Number,
     focus: String,
-    items: [{ _id: false, ref: String, skillKey: String, task: String }],
+    // done / doneAt belong to the student, not the AI: the AI reply schema (analyzer.service.js) never has them. A report saved before ticks existed has no `done`, which reads as false.
+    items: [{ _id: false, ref: String, skillKey: String, task: String, done: { type: Boolean, default: false }, doneAt: Date }],
     extra: String,
   }],
   codingTopics: [{ _id: false, ref: String, why: String }],

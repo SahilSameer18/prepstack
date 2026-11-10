@@ -1,5 +1,5 @@
 const rateLimit = require("express-rate-limit");
-const { HOUR_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR } = require("../config/limits");
+const { HOUR_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE } = require("../config/limits");
 
 const aiProjectLimiter = rateLimit({
   windowMs: HOUR_MS,
@@ -90,6 +90,21 @@ const analyzerLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Ticking a study-plan item: cheap, so a high limit; it only stops a stuck script from hammering the database.
+const planTickLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: PLAN_TICKS_PER_MINUTE,
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip,
+  validate: { keyGeneratorIpFallback: false },
+  message: {
+    success: false,
+    message: "You're ticking items too fast. Please wait a moment.",
+    errors: [`Rate limit exceeded. Maximum ${PLAN_TICKS_PER_MINUTE} ticks per minute.`],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Reset emails: every request counts (each one can cost an email), 5 per 15 minutes per address.
 const forgotPasswordLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -129,4 +144,4 @@ const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter };
+module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, planTickLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter };

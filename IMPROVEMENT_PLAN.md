@@ -37,7 +37,7 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 | AI project ideas | Cascade of Gemini then Groq, capped per user. The form shows how many are left today (`GET /api/usage`) | Not linked to roadmaps |
 | Dashboard | Tabs: DSA, Projects, Reports. The DSA tab has a streak tile (IST days) and per-sheet cards with the last solved date | No "today" card yet (B4) |
 | Quiz and Aptitude | Removed in stage 0 (B10, 9 Nov 2026): pages, routes and SEO entries are gone | The Quiz comes back later from the notes quizzes (B7) |
-| Tests | 628 server tests and 51 client tests (token refresh, raw-color guard, resume PDF, notes components, roadmap data), 10 Nov 2026 | No CI |
+| Tests | 659 server tests and 58 client tests (token refresh, raw-color guard, resume PDF, notes components, roadmap data, study-plan checklist), 10 Nov 2026 | No CI |
 | Accounts | Password reset by email, a per-account login lock, up to 10 device sessions (built and tested) | Login cookies use SameSite=None; changing that needs the website and the API on one domain |
 
 ---
@@ -235,6 +235,8 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 - **Effort:** 1 to 1.5 days. **Done when:** the numbers on screen match the server's real limits (test that they come from the same constants).
 
 ### B4. One shared checklist, first used on Role Analyzer reports
+
+**Status: built 10 Nov 2026 (stage 3, step 1), checked in a browser at desktop and 375 px.** Plan items have `done` and `doneAt` (set by the student, never by the AI). `PATCH /api/analyzer/:id/plan` sets an item to the wanted state (60 a minute per user); `GET /api/analyzer/today` gives the latest report's plan for today; a report carries `todayDay`, worked out on the server in IST (a plan that skips days or is past its end shows the first day with unfinished items). One `PlanChecklist` component is used by the report page and the dashboard "Today" card, and is the one My plan (B5) will reuse. Tests: `server/test/analyzer-plan.test.js` (20), `plan-day.test.js` (11), `client/src/components/analyzer/planProgress.test.js` (7); each new rule was broken on purpose and a test failed. Not checked: a failed save in the browser (the tick rolls back with a message; covered by code reading only). No data migration is needed; old reports read as not done.
 
 **Why.** The report's day-by-day plan is read-only, so students cannot track it. This item also creates the checklist component that My plan (B5) will reuse.
 

@@ -12,6 +12,7 @@ import { extractError } from "../../utils/extractError";
 import DSADash from "./DsaDash";
 import ProjectDash from "./ProjectDash";
 import ReportsDash from "../../components/analyzer/ReportsDash";
+import TodayCard from "../../components/analyzer/TodayCard";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
 import { SectionLoader } from "../../components/ui/Skeletons";
 
@@ -128,6 +129,8 @@ const UnifiedDashboard = () => {
           </button>
         ))}
       </section>
+
+      <TodayCard />
 
       {/* ── Tabs ──────────────────────────────────────────────────────────── */}
       <div role="tablist" aria-label="Dashboard sections" className="flex gap-1 border-b border-ink/[0.08] overflow-x-auto mb-6">

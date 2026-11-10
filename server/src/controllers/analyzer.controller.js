@@ -8,6 +8,7 @@ const { analyze } = require('../services/analyzer.service');
 const { adviceForReport } = require('../services/skills.service');
 const { reportsPerDay } = require('../config/limits');
 const { countLast24h } = require('../services/usage.service');
+const { todayPlanDay } = require('../utils/planDay');
 
 // Users with a report being written right now (a second request gets a 409). Kept in server memory, so it resets on
 // restart and is per server process: fine for a single instance, the same trade-off as the project-idea generator.
@@ -26,6 +27,8 @@ const present = (doc, titles) => {
   // Readable titles for the refs this report points at, worked out on every read (titles can change, the ids in the refs never do)
   const refs = new Set([...(o.plan || []).flatMap((d) => (d.items || []).map((i) => i.ref)), ...(o.codingTopics || []).map((c) => c.ref)]);
   o.refTitles = Object.fromEntries([...refs].filter((r) => titles[r]).map((r) => [r, titles[r]]));
+  // Which plan day is today (IST), worked out here so the browser has no copy of the rule
+  o.todayDay = todayPlanDay(o.plan, o.createdAt);
   return o;
 };
 
@@ -131,7 +134,54 @@ const deleteReport = async (req, res, next) => {
   }
 };
 
-module.exports = { createReport, listReports, getReport, deleteReport };
+// PATCH /api/analyzer/:id/plan   body { day, index, done }
+// Sets the item to the wanted state (it does not flip it), so a double click or a second open tab cannot undo a tick.
+// One update that also checks the owner and that the day and the item exist: no match means 404.
+const setPlanItem = async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return next(new AppError(400, 'Invalid report id'));
+    const { day, index, done } = req.body;
+    const doneAt = done ? new Date() : null;
+    const updated = await Report.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id, plan: { $elemMatch: { day, [`items.${index}`]: { $exists: true } } } },
+      { $set: { [`plan.$[d].items.${index}.done`]: done, [`plan.$[d].items.${index}.doneAt`]: doneAt } },
+      { arrayFilters: [{ 'd.day': day }], returnDocument: 'after' }
+    );
+    if (!updated) return next(new AppError(404, 'Plan item not found'));
+    const todayDay = todayPlanDay(updated.plan, updated.createdAt);
+    return sendSuccess(res, 200, 'Plan item updated successfully', { day, index, done, doneAt, todayDay });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+
+// GET /api/analyzer/today
+// The latest report's plan for today, for the dashboard card. null when there is no report or it has no plan.
+const getToday = async (req, res, next) => {
+  try {
+    const report = await Report.findOne({ user: req.user._id }).sort({ createdAt: -1 });
+    if (!report || !report.plan?.length) return sendSuccess(res, 200, 'No plan yet', null);
+    const { titles } = await buildContext();
+    const { plan, refTitles, todayDay } = present(report, titles);
+    const all = plan.flatMap((d) => d.items || []);
+    const progress = { done: all.filter((i) => i.done).length, total: all.length };
+    const day = plan.find((d) => d.day === todayDay);
+    return sendSuccess(res, 200, 'Today fetched successfully', {
+      reportId: report._id,
+      title: report.title,
+      totalDays: plan.length,
+      progress,
+      allDone: progress.total > 0 && progress.done === progress.total,
+      day: day ? { day: day.day, focus: day.focus, extra: day.extra, items: (day.items || []).map((it, index) => ({ index, task: it.task, ref: it.ref, done: !!it.done, doneAt: it.doneAt || null })) } : null,
+      refTitles,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = { createReport, listReports, getReport, deleteReport, setPlanItem, getToday };
 
 
 

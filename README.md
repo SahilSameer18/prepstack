@@ -475,7 +475,9 @@ erDiagram
 | -------- | -------- | ------ | ---------------------------------------------------------------------------------------------------- |
 | `POST`   | `/`      | ✅ JWT | Creates a report from a resume (PDF field `resume` or `resumeText`), `jobDescription`, `days`, `consent` _(3/hr, 5/24h, one at a time)_ |
 | `GET`    | `/`      | ✅ JWT | Lists your reports (title, score, date), newest first                                                |
-| `GET`    | `/:id`   | ✅ JWT | Returns one report with computed skill advice                                                        |
+| `GET`    | `/today` | ✅ JWT | Today's plan items from your latest report (the dashboard "Today" card); `null` when there is no report with a plan |
+| `GET`    | `/:id`   | ✅ JWT | Returns one report with computed skill advice and `todayDay` (the plan day that is today, in IST)     |
+| `PATCH`  | `/:id/plan` | ✅ JWT | Ticks or unticks one study-plan item: body `{ day, index, done }`; sets the state (does not flip it) _(60/min)_ |
 | `DELETE` | `/:id`   | ✅ JWT | Deletes a report                                                                                     |
 
 ### DSA Sheets: `/api/sheets`
@@ -620,14 +622,14 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **628 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **659 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
 
 ```bash
 cd server
 npm test
 ```
 
-They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **51 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, 2 for the resume checklist PDF (it must draw as one page), and the rest for the notes quiz scoring and diagram layout, the roadmap data rules and links, the Analyzer link builder and the page titles. The screens themselves have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
+They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **58 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, 2 for the resume checklist PDF (it must draw as one page), and the rest for the notes quiz scoring and diagram layout, the roadmap data rules and links, the Analyzer link builder, the study-plan checklist helpers and the page titles. The screens themselves have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
 
 The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota).
 

@@ -17,7 +17,19 @@ export const getReport = async (id) => {
   return response.data;
 };
 
-export const deleteReport = async (id) => {
+// Tick (done: true) or untick one item of the study plan. The server sets the state, it does not flip it.
+export const setPlanItem = async (id, day, index, done) => {
+  const response = await api.patch(`/api/analyzer/${id}/plan`, { day, index, done });
+  return response.data;
+};
+
+// The latest report's plan for today, for the dashboard card (data is null when there is no report or plan).
+export const getToday = async () => {
+  const response = await api.get('/api/analyzer/today');
+  return response.data;
+};
+
+export const deleteReport =async (id) => {
   const response = await api.delete(`/api/analyzer/${id}`);
   return response.data;
 };

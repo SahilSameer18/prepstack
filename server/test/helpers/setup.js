@@ -201,7 +201,7 @@ function makePdf(pages) {
   return Buffer.from(out, 'latin1');
 }
 
-const api = { get: (p, o) => call('get', p, o), post: (p, o) => call('post', p, o), put: (p, o) => call('put', p, o), del: (p, o) => call('delete', p, o), options: (p, o) => call('options', p, o) };
+const api = { get: (p, o) => call('get', p, o), post: (p, o) => call('post', p, o), put: (p, o) => call('put', p, o), patch: (p, o) => call('patch', p, o), del: (p, o) => call('delete', p, o), options: (p, o) => call('options', p, o) };
 
 // ── account helpers ──
 let userCounter = 0;

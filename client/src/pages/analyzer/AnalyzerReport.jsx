@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft, FiArrowRight, FiDownload, FiFlag } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { getReport, deleteReport } from "../../api/services/analyzerService";
+import { getReport, deleteReport, setPlanItem } from "../../api/services/analyzerService";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
 import { InlineSpinner, SectionLoader } from "../../components/ui/Skeletons";
 import { extractError } from "../../utils/extractError";
@@ -11,6 +11,8 @@ import { formatTitle } from "../../utils/formatTitle";
 import ScoreRing from "../../components/analyzer/ScoreRing";
 import RequirementRow from "../../components/analyzer/RequirementRow";
 import SkillGapCard from "../../components/analyzer/SkillGapCard";
+import PlanChecklist from "../../components/analyzer/PlanChecklist";
+import { countPlan, setItemDone } from "../../components/analyzer/planProgress";
 
 const ORDER = { missing: 0, partial: 1, met: 2 };
 const card = "rounded-xl bg-card-hover border border-ink/[0.08] p-4";
@@ -23,6 +25,24 @@ const AnalyzerReport = () => {
   const [error, setError] = useState(null);
   const [tab, setTab] = useState("plan");
   const [downloading, setDownloading] = useState(false);
+  const [busyKey, setBusyKey] = useState(null);
+
+  // Tick at once, then ask the server; if it fails, put the box back and say so.
+  const toggleItem = async (day, index, done) => {
+    const before = report.plan;
+    setBusyKey(`${day}:${index}`);
+    setReport((r) => ({ ...r, plan: setItemDone(r.plan, day, index, done, new Date().toISOString()) }));
+    try {
+      const res = await setPlanItem(id, day, index, done);
+      const saved = res?.data;
+      setReport((r) => ({ ...r, todayDay: saved?.todayDay ?? r.todayDay, plan: setItemDone(r.plan, day, index, done, saved?.doneAt) }));
+    } catch (err) {
+      setReport((r) => ({ ...r, plan: before }));
+      toast.error(extractError(err, "Could not save that tick. Please try again."));
+    } finally {
+      setBusyKey(null);
+    }
+  };
 
   useEffect(() => {
     let live = true;
@@ -66,7 +86,8 @@ const AnalyzerReport = () => {
   const first = report.priorities?.[0];
   // "Start here" links to the first plan item that points at real PrepStack content. No such item: it is shown without a link.
   const startLink = report.plan?.flatMap((d) => d.items || []).map((i) => refLink(i.ref, report.refTitles)).find(Boolean);
-  const questionCount = (report.technicalQuestions?.length || 0) + (report.behavioralQuestions?.length || 0);
+  const planCount = countPlan(report.plan);
+  const questionCount =(report.technicalQuestions?.length || 0) + (report.behavioralQuestions?.length || 0);
 
   const tabs = [
     { key: "plan", label: "Plan", n: report.plan?.length || 0 },
@@ -140,26 +161,14 @@ const AnalyzerReport = () => {
                     ))}
                   </ol>
                 )}
-                <ol className="space-y-3 pt-2">
-                  {(report.plan || []).map((d, idx) => (
-                    <li key={d.day} className={`${card} border-l-2 ${idx === 0 ? "border-l-brand" : "border-l-ink/[0.12]"}`}>
-                      <p className="text-xs font-ui font-bold text-brand mb-1">DAY {d.day}</p>
-                      <p className="text-sm text-fg font-semibold">{d.focus}</p>
-                      <ul className="mt-2 space-y-2">
-                        {(d.items || []).map((it, i) => {
-                          const l = refLink(it.ref, report.refTitles);
-                          return (
-                            <li key={i} className="text-sm text-fg-3 leading-relaxed">
-                              {it.task}
-                              {l && <> <Link to={l.path} className="text-xs text-info hover:text-info">{l.label}</Link></>}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                      {d.extra && <p className="text-xs text-muted mt-2">{d.extra}</p>}
-                    </li>
-                  ))}
-                </ol>
+                <div className="pt-2">
+                  {planCount.total > 0 && (
+                    <p className="text-sm text-fg-2 mb-2" aria-live="polite">
+                      <span className="font-semibold text-fg">{planCount.done} of {planCount.total}</span> plan items done
+                    </p>
+                  )}
+                  <PlanChecklist days={report.plan} todayDay={report.todayDay} refTitles={report.refTitles} onToggle={toggleItem} busyKey={busyKey} />
+                </div>
                 {report.codingTopics?.length > 0 && (
                   <div className="pt-4">
                     <h2 className="font-display font-bold text-fg text-base mb-2">Coding topics to practise</h2>
