@@ -8,6 +8,29 @@ This file describes the **data format that exists since stage 2**. The rules are
 
 One file per subject in `server/src/data/notes/` (`os.js`, `dbms.js`, `cn.js`, `oops.js`), each `{ subject, sections: [...] }`. After changing one, run `npm run seed:notes` (it wipes and re-inserts the notes collection).
 
+**Sections written as Markdown (DBMS first).** A rewritten section is one Markdown file in `server/src/data/notes/dbms/`, named after the section id (`dbms-normalization.md`). `dbms.js` loads the sections that are not rewritten yet from `dbms.legacy.js` and replaces any of them with the Markdown file of the same id (same place in the list); a Markdown file with a new id is added at the end. When a section is published, delete its old version from `dbms.legacy.js`. The loader is `server/src/data/notes/markdownSections.js`; a starter file is `server/src/data/notes/dbms/_example.md` (files starting with `_` are ignored). The result is exactly the data described below, so the validator, the seed and the API do not change.
+
+```markdown
+---
+id: dbms-normalization            (must equal the file name)
+title: Normalization
+lastChecked: 2026-11-10          (leave out while the section is a draft)
+next: dbms-transactions          (or "none")
+sheetTopics: blind-75:arrays-hashing, striver-sde:arrays-i
+roadmapSteps: backend:database-design
+---
+## Overview               paragraphs separated by a blank line
+## Topic: Second normal form      then **Definition:** **Why:** **Example:** **Failure:** (each runs until the next)
+## Questions              ### the question, then the answer
+## Mistakes               - one per bullet
+## Quiz                   ### the question, "- [ ] option" lines, one "- [x] right option", then "Explanation: ..."
+## Diagram                a fenced json block (kinds below); repeat the heading for more diagrams
+```
+
+**Drafts.** A section that has been written but not reviewed lives in `server/src/data/notes/dbms/drafts/<section-id>.md`. The loader reads only the top folder, so a draft is **not** on the site. `server/test/notes-markdown.test.js` keeps the drafts honest: each has no `lastChecked`, would pass the full template if it had one, points at a next section and roadmap step that exist, and the `next` links follow the order of the subject. To publish one: get the outside reader's answers (`REVIEW_CHECKLIST.md`), fix what they found, add `lastChecked: YYYY-MM-DD` to the header, move the file up one folder (to `server/src/data/notes/dbms/`), delete the old section from `dbms.legacy.js`, run `npm run seed:notes` and both test suites, and fill the "Checked by" and date cells of its rows in the claims table in `SOURCES.md`. The source notes behind each draft are in `docs/content/source-notes/`.
+
+A mistake in the format (an unknown heading, two right answers, broken diagram JSON, an id that is not the file name) stops the seed with the file name and line. Windows line endings are fine. Code fence lines are dropped from an example but the code stays, and a heading or field line inside a code fence is just text. `<!-- comments -->` are ignored.
+
 ## A section
 
 ```js
