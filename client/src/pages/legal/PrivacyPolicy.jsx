@@ -60,7 +60,7 @@ const PrivacyPolicy = () => {
                 <FiDatabase className="text-cyan" /> Practice & Learning Progress
               </div>
               <p className="text-xs text-muted">
-                We store which DSA problems you have marked as solved on each sheet, the AI project ideas generated for you (title, description, features, tech stack, difficulty, time estimate and the domain you chose), and your Role Analyzer reports (the job description you pasted and the report: score, skill gaps, questions and study plan, including short quotes from your resume), so your progress is available on all your devices.
+                We store which DSA problems you have marked as solved on each sheet, the notes you write on those problems (pattern, complexity and your own text), the AI project ideas generated for you (title, description, features, tech stack, difficulty, time estimate and the domain you chose), and your Role Analyzer reports (the job description you pasted and the report: score, skill gaps, questions and study plan, including short quotes from your resume), so your progress is available on all your devices.
               </p>
             </div>
             <div className="bg-card-hover border border-ink/[0.08] rounded-xl p-4 space-y-2 sm:col-span-2">
@@ -73,10 +73,10 @@ const PrivacyPolicy = () => {
             </div>
             <div className="bg-card-hover border border-ink/[0.08] rounded-xl p-4 space-y-2">
               <div className="flex items-center gap-2 text-fg font-semibold text-xs">
-                <FiLock className="text-violet" /> Notes Stored in Your Browser
+                <FiLock className="text-violet" /> Your Problem Notes
               </div>
               <p className="text-xs text-muted">
-                The approach notes you write on DSA problems (pattern, complexity, free text) are saved only in your own browser. They are never sent to our servers, so we cannot see or recover them.
+                The approach notes you write on DSA problems (pattern, complexity, free text, up to 5,000 characters each) are saved to your account so they appear on every device you sign in on. They are deleted with your account. Notes you wrote before this change were kept only in your browser and are moved to your account the next time you sign in.
               </p>
             </div>
             <div className="bg-card-hover border border-ink/[0.08] rounded-xl p-4 space-y-2">
@@ -98,6 +98,7 @@ const PrivacyPolicy = () => {
           <ul className="list-disc pl-5 space-y-2 text-muted">
             <li>To authenticate your sessions and manage secure token renewal across up to 10 concurrent devices.</li>
             <li>To persist and display your DSA problem progress and completion statistics.</li>
+            <li>To save the notes you write on DSA problems to your account, so you can read them on any device.</li>
             <li>To generate AI project ideas: the options you enter on the AI Projects page (tech stack, complexity, domain and any extra notes) are sent to Google's Gemini API and, if Gemini is busy or unavailable, to Groq's API. Please do not put personal information in the extra notes.</li>
             <li>To write a Role Analyzer report: the job description you paste and the text of your resume (with email addresses, phone numbers and links removed first) are sent to Google's Gemini API and, if Gemini is busy or unavailable, to Groq's API. We do not keep your resume or the PDF. We keep only the job description and the report, so you can open it again, and you can delete any report or your whole account at any time.</li>
             <li>To detect abuse, enforce rate limits, and protect user accounts from credential stuffing attacks.</li>
@@ -117,7 +118,7 @@ const PrivacyPolicy = () => {
             <li><strong className="text-fg">Access cookie:</strong> proves who you are for 15 minutes at a time.</li>
             <li><strong className="text-fg">Refresh cookie:</strong> renews your access for up to 7 days, and is replaced every time it is used.</li>
             <li>Both cookies are HttpOnly (page scripts cannot read them) and Secure.</li>
-            <li><strong className="text-fg">Browser storage:</strong> your approach notes (see above) are kept in your browser&apos;s local storage until you clear your browser data.</li>
+            <li><strong className="text-fg">Browser storage:</strong> notes you wrote before they were saved to your account stay in your browser&apos;s local storage only until they are moved to your account on your next sign-in, and are then removed from the browser.</li>
           </ul>
         </section>
 
@@ -170,13 +171,13 @@ const PrivacyPolicy = () => {
             <span className="text-brand">7.</span> Your Rights & Self-Service Account Erasure (GDPR Article 17)
           </h2>
           <p>
-            You have full ownership of your data under GDPR Article 17 (Right to Erasure). You can permanently and irreversibly delete your account, solved DSA problem history, and generated projects at any moment directly from your <strong className="text-fg">Profile &gt; Delete Account</strong> dashboard.
+            You have full ownership of your data under GDPR Article 17 (Right to Erasure). You can permanently and irreversibly delete your account, solved DSA problem history, problem notes, Role Analyzer reports and generated projects at any moment directly from your <strong className="text-fg">Profile &gt; Delete Account</strong> dashboard.
           </p>
           <p className="text-xs text-muted">
-            Upon confirmation, our backend deletes your account record, solved-problem history, saved AI project ideas and all session records from our database in one operation, and clears your authentication cookies.
+            Upon confirmation, our backend deletes your account record, solved-problem history, problem notes, saved AI project ideas, Role Analyzer reports (with their study-plan ticks) and all session records from our database in one operation, and clears your authentication cookies.
           </p>
           <p className="text-xs text-muted">
-            Notes stored in your own browser are not removed by account deletion because we cannot access them. Clear your browser&apos;s site data to remove them.
+            Notes that were never moved to your account (for example, you did not sign in again after this change) are still only in your browser, and account deletion cannot remove them. Clear your browser&apos;s site data to remove them.
           </p>
         </section>
 

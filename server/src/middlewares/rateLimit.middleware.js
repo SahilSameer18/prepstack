@@ -1,5 +1,5 @@
 const rateLimit = require("express-rate-limit");
-const { HOUR_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE } = require("../config/limits");
+const { HOUR_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE, PROBLEM_NOTE_WRITES_PER_MINUTE } = require("../config/limits");
 
 const aiProjectLimiter = rateLimit({
   windowMs: HOUR_MS,
@@ -105,6 +105,21 @@ const planTickLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Saving, deleting or importing problem notes (reading is not limited).
+const problemNoteLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: PROBLEM_NOTE_WRITES_PER_MINUTE,
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip,
+  validate: { keyGeneratorIpFallback: false },
+  message: {
+    success: false,
+    message: "You're saving notes too fast. Please wait a moment.",
+    errors: [`Rate limit exceeded. Maximum ${PROBLEM_NOTE_WRITES_PER_MINUTE} note saves per minute.`],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Reset emails: every request counts (each one can cost an email), 5 per 15 minutes per address.
 const forgotPasswordLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -144,4 +159,4 @@ const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, planTickLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter };
+module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, planTickLimiter, problemNoteLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter };

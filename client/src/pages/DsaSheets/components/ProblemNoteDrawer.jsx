@@ -1,24 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiFileText, FiTrash2, FiCheck, FiCpu, FiClock, FiX } from 'react-icons/fi';
+import { FiFileText, FiTrash2, FiCheck, FiCpu, FiClock, FiX, FiAlertCircle, FiLoader } from 'react-icons/fi';
+import { TIME_COMPLEXITIES, SPACE_COMPLEXITIES, COMMON_PATTERNS, APPROACH_MAX } from '../../../data/problemNoteOptions';
 
-// ── Cockpit Approach Drawer Constants ─────────────────────────────────────
-const TIME_COMPLEXITIES = ['O(1)', 'O(log N)', 'O(N)', 'O(N log N)', 'O(N²)', 'O(2ⁿ)'];
-const SPACE_COMPLEXITIES = ['O(1)', 'O(log N)', 'O(N)', 'O(N²)'];
-const COMMON_PATTERNS = [
-  'Two Pointers',
-  'Sliding Window',
-  'Binary Search',
-  'Monotonic Stack',
-  'Fast & Slow Pointers',
-  'DFS / Backtracking',
-  'BFS / Level Order',
-  'Dynamic Programming',
-  'Prefix Sums',
-  'Greedy',
-  'Union Find / Graph',
-  'Trie',
-  'Bit Manipulation',
-];
+// The drawer's save status, in words (never colour alone)
+const STATUS = {
+  saved: { Icon: FiCheck, text: 'Saved to your account', className: 'text-ok/80' },
+  saving: { Icon: FiLoader, text: 'Saving...', className: 'text-muted' },
+  error: { Icon: FiAlertCircle, text: 'Not saved. Change anything to try again.', className: 'text-bad' },
+};
 
 const LABEL_CLASS = 'text-xs font-ui text-muted uppercase tracking-wider';
 
@@ -50,7 +39,9 @@ const ChipGroup = ({ label, labelClassName, options, selected, onSelect, selecte
 );
 
 // ── Expandable Cockpit Approach & Invariants Drawer (one per problem row) ──
-const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClose }) => (
+const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, saveStatus = 'saved', onUpdate, onClear, onClose }) => {
+  const status = STATUS[saveStatus] || STATUS.saved;
+  return (
   <AnimatePresence initial={false}>
     {isOpen && (
       <motion.div
@@ -67,12 +58,6 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
                 <FiFileText className="text-warn" />
                 Your notes
               </span>
-              <span
-                className="text-xs font-ui text-muted bg-ink/[0.04] px-2 py-0.5 rounded"
-                title="Notes are saved only in this browser on this device. They won't appear on other devices and are lost if you clear your browser data."
-              >
-                This device only
-              </span>
             </div>
 
             <div className="flex items-center gap-3">
@@ -87,9 +72,9 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
                   Clear
                 </button>
               )}
-              <span className="inline-flex items-center gap-1 text-xs font-ui text-ok/80">
-                <FiCheck className="text-xs text-ok" />
-                Auto-saved
+              <span className={`inline-flex items-center gap-1 text-xs font-ui ${status.className}`} role="status" aria-live="polite">
+                <status.Icon className="text-xs" aria-hidden="true" />
+                {status.text}
               </span>
               <button
                 type="button"
@@ -139,6 +124,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
             </label>
             <textarea
               rows={3}
+              maxLength={APPROACH_MAX}
               value={noteData?.approach || ''}
               onChange={(e) => onUpdate({ approach: e.target.value })}
               placeholder="e.g. Invariant: Maintain a monotonically decreasing stack of indices. When current element exceeds stack top, pop and compute trapped water width/height. Edge cases: empty array, strictly decreasing values."
@@ -149,6 +135,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, onUpdate, onClear, onClo
       </motion.div>
     )}
   </AnimatePresence>
-);
+  );
+};
 
 export default ProblemNoteDrawer;

@@ -63,7 +63,7 @@ const DeleteAccountCard = () => {
             <FiAlertTriangle /> Delete account
           </h3>
           <p className="text-xs font-ui text-muted mt-1 max-w-xl leading-relaxed">
-            Permanently delete your profile, your solved-problem progress and your saved project ideas. This action is irreversible.
+            Permanently delete your profile, your solved-problem progress, your problem notes, your saved project ideas and your role reports. This action is irreversible.
           </p>
         </div>
 
@@ -117,7 +117,9 @@ const DeleteAccountCard = () => {
                 <p>This action is irreversible. The following data will be permanently wiped:</p>
                 <ul className="list-disc list-inside space-y-1 text-muted pl-1 font-ui text-xs">
                   <li>All solved DSA problem tracker entries across all sheets.</li>
-                  <li>All compiled system architecture blueprints.</li>
+                  <li>All your notes on DSA problems.</li>
+                  <li>All your saved AI project ideas.</li>
+                  <li>All your Role Analyzer reports and their study-plan ticks.</li>
                   <li>Your sign-in details and all signed-in devices.</li>
                 </ul>
               </div>

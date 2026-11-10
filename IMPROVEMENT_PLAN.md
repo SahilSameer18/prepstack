@@ -28,7 +28,7 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 |---|---|---|
 | DSA sheets | 5 sheets (Blind 75, NeetCode 150, Striver SDE, Striver A2Z, Love Babbar 450), about 1,300 problem links out to LeetCode, GeeksforGeeks and similar. Each problem has a title, link, difficulty and tags | Links only. Progress is a list of solved links per sheet |
 | Progress data | `Progress`: one document per user per sheet, `solvedProblems` = array of `{ link, solvedAt }` (since 9 Nov 2026; ticks from before have `solvedAt: null`) | Old ticks have no date, so the streak and "last solved" only count ticks made since the change. No heatmap or "solved this week" yet |
-| Problem notes | A notes box per problem | Saved only in the browser (`localStorage`). Lost on another device or after clearing data |
+| Problem notes | A notes box per problem | Saved to the account (stage 3, 10 Nov 2026); older browser notes are moved once |
 | CS notes | 4 subjects, 38 sections, 84 topics, about 4,400 words in total | OS about 2,800 words; DBMS about 450; CN about 460; OOPs about 700. Topics are bullet lists (concept, insight, real world, traps). No quizzes, no links to sheets or roadmaps |
 | Roadmaps | 6 tracks (Frontend, Backend, Full Stack MERN, Android, Data Analytics, Machine Learning), 9 steps each (54 steps) | A step is a title, one line, and 2 to 3 external links. No checkpoints, no projects, no links to PrepStack pages, no progress tracking |
 | Resume guide | Rewritten in stage 1 (A3): 6 section cards with tips, what recruiters look for, weak and strong bullets and mistakes; basics (one page, bullet formula, file format, ATS notes, links); role notes; a fictional sample resume; a checklist PDF. Login-only | Needs an outside reader before it counts as reviewed. Its claims are listed in `docs/content/SOURCES.md` |
@@ -37,7 +37,7 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 | AI project ideas | Cascade of Gemini then Groq, capped per user. The form shows how many are left today (`GET /api/usage`) | Not linked to roadmaps |
 | Dashboard | Tabs: DSA, Projects, Reports. The DSA tab has a streak tile (IST days) and per-sheet cards with the last solved date | No "today" card yet (B4) |
 | Quiz and Aptitude | Removed in stage 0 (B10, 9 Nov 2026): pages, routes and SEO entries are gone | The Quiz comes back later from the notes quizzes (B7) |
-| Tests | 659 server tests and 58 client tests (token refresh, raw-color guard, resume PDF, notes components, roadmap data, study-plan checklist), 10 Nov 2026 | No CI |
+| Tests | 683 server tests and 72 client tests (token refresh, raw-color guard, resume PDF, notes components, roadmap data, study-plan checklist, problem notes), 10 Nov 2026 | No CI |
 | Accounts | Password reset by email, a per-account login lock, up to 10 device sessions (built and tested) | Login cookies use SameSite=None; changing that needs the website and the API on one domain |
 
 ---
@@ -213,6 +213,8 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 **Effort:** 3 to 4 days. **Done when:** old users' progress is intact after migration, the dashboard shows per-sheet cards and a streak, and numbers match everywhere.
 
 ### B2. Notes saved to the account
+
+**Status: built 10 Nov 2026 (stage 3, step 2), checked in a browser.** `ProblemNote { user, problemLink, pattern, timeComplexity, spaceComplexity, approach (max 5000), timestamps }`, unique on `{ user, problemLink }` (keyed by link, not by sheet, as the browser notes were; this also keeps the later DSA problem-id migration simple). Routes `/api/problem-notes`: list, save (the link must belong to a sheet), delete, and a one-time import (at most 15 per request because of the 100 KB body limit; it only adds, never overwrites, and keeps the original time). The hook saves after a 600 ms pause, shows the real status ("Saving...", "Saved to your account", "Not saved"), and removes the browser copy only after the server confirmed every batch. Account deletion removes notes (and now the delete card and the privacy page say what is really deleted: progress, notes, project ideas, reports, sign-in details). Tests: `server/test/problem-notes.test.js` (24), two new checks in `user.test.js`, `client/src/hooks/problemNotesSync.test.js` (14); each new rule was broken on purpose and a test failed. Decisions in the build: no offline copy (the browser copy exists only until the import), no "My notes" page yet, an old note longer than 5000 characters is cut to 5000 on import, and a value that is not one of the drawer choices is emptied. Not checked: a failed save or a failed import in the browser (read in the code only), and a very large import (15 notes of 5000 characters is covered by a server test).
 
 **Why.** Today notes live only in the browser and can vanish.
 

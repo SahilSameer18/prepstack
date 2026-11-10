@@ -19,7 +19,7 @@ const SheetsDetail = () => {
   const [fetchError, setFetchError] = useState(null);
   const [solved, setSolved] = useState([]);
   const [openTopics, setOpenTopics] = useState(new Set());
-  const { notesMap, updateNote, clearNote } = useProblemNotes();
+  const { notesMap, updateNote, clearNote, saveStatus } = useProblemNotes();
   const [activeNoteLink, setActiveNoteLink] = useState(null);
 
   const toggleNoteDrawer = (link) => {
@@ -188,6 +188,7 @@ const SheetsDetail = () => {
                         index={pIdx}
                         isCompleted={solved.includes(problem.link)}
                         noteData={notesMap[problem.link] || null}
+                        saveStatus={saveStatus}
                         isDrawerOpen={activeNoteLink === problem.link}
                         onToggleSolved={handleToggleProblem}
                         onToggleDrawer={toggleNoteDrawer}

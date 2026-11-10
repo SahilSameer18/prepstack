@@ -2,7 +2,7 @@ const t = require('./helpers/setup');
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 
-let User, Project, Progress, DSASheet, ExtraOwned, NotOurs;
+let User, Project, Progress, DSASheet, ExtraOwned, NotOurs, ProblemNote, Report;
 const mid = (id) => new t.mongoose.Types.ObjectId(id);
 const toggle = (acct, link, slug = 'blind-75') => t.api.post(`/api/sheets/${slug}/progress`, { cookies: acct.cookies, body: { problemLink: link } });
 const putProfile = (acct, body) => t.api.put('/api/user/profile', { cookies: acct.cookies, body });
@@ -16,6 +16,8 @@ describe('User: stats, dashboard, profile, password, account deletion', () => {
   before(async () => {
     await t.start();
     ({ User, Project, Progress, DSASheet } = t.getModels());
+    ProblemNote = t.mongoose.model('ProblemNote'); // both are registered when the app loads; they own data through a user reference
+    Report = t.mongoose.model('InterviewReport');
     await t.seedSheets();
     await DSASheet.create({ name: 'Empty', slug: 'empty-sheet', description: 'no problems yet', topics: [] });
     // two extra models to prove the delete cascade finds user-owned data by itself
@@ -262,6 +264,8 @@ describe('User: stats, dashboard, profile, password, account deletion', () => {
       await Project.create({ title: 't', tagline: 't', description: 'd', techStack: 'x', difficulty: 'Beginner', user: acct.id });
       await ExtraOwned.create({ user: acct.id, v: 'x' });
       await NotOurs.create({ user: acct.id, v: 'x' });
+      await ProblemNote.create({ user: acct.id, problemLink: t.L('two-sum'), approach: 'x' });
+      await Report.create({ user: acct.id, title: 'r', jobDescription: 'x'.repeat(40), days: 3, score: 50 });
     };
 
     it('asks for the password (400) and rejects a wrong one (401), deleting nothing', async () => {
@@ -281,6 +285,10 @@ describe('User: stats, dashboard, profile, password, account deletion', () => {
       assert.equal(await User.exists({ _id: victim.id }), null);
       assert.equal(await Progress.countDocuments({ user: victim.id }), 0);
       assert.equal(await Project.countDocuments({ user: victim.id }), 0);
+      assert.equal(await ProblemNote.countDocuments({ user: victim.id }), 0, 'saved problem notes must be deleted with the account');
+      assert.equal(await Report.countDocuments({ user: victim.id }), 0, 'role reports (with their plan ticks) must be deleted with the account');
+      assert.equal(await ProblemNote.countDocuments({ user: bystander.id }), 1);
+      assert.equal(await Report.countDocuments({ user: bystander.id }), 1);
       assert.equal(await ExtraOwned.countDocuments({ user: victim.id }), 0, 'a NEW model with a user ref must be cascaded without editing the delete code');
       assert.equal(await NotOurs.countDocuments({ user: victim.id }), 1, 'a model whose "user" points somewhere else must NOT be touched');
       assert.ok(await User.exists({ _id: bystander.id }));

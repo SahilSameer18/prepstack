@@ -69,6 +69,7 @@ const ProblemRow = ({
   index,
   isCompleted,
   noteData,
+  saveStatus,
   isDrawerOpen,
   onToggleSolved,
   onToggleDrawer,
@@ -197,6 +198,7 @@ const ProblemRow = ({
         isOpen={isDrawerOpen}
         noteData={noteData}
         hasNote={hasNote}
+        saveStatus={saveStatus}
         onUpdate={(updates) => onUpdateNote(problem.link, updates)}
         onClear={() => onClearNote(problem.link)}
         onClose={onCloseDrawer}
