@@ -302,7 +302,7 @@
       {"type":"docs","title":"PostgreSQL Docs","url":"https://www.postgresql.org/docs/"},
       {"type":"video","title":"PostgreSQL Full Course","url":"https://youtu.be/cnzka7kF5Zk"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","sectionId":"dbms-sql"},{"subject":"dbms","sectionId":"dbms-indexing-file-organization"}],"roadmap":null,"projectStack":"PERN Stack"}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","sectionId":"dbms-sql"},{"subject":"dbms","sectionId":"dbms-indexing-file-organization"},{"subject":"dbms","sectionId":"dbms-concurrency-control"}],"roadmap":null,"projectStack":"PERN Stack"}
   },
   {
     "id": "mongodb", "name": "MongoDB", "category": "stack",
@@ -355,7 +355,7 @@
     "resources": [
       {"type":"docs","title":"MySQL Documentation","url":"https://dev.mysql.com/doc/"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","sectionId":"dbms-sql"}],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","sectionId":"dbms-sql"},{"subject":"dbms","sectionId":"dbms-indexing-file-organization"},{"subject":"dbms","sectionId":"dbms-concurrency-control"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "sqlite", "name": "SQLite", "category": "stack",

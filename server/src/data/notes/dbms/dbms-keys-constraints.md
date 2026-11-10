@@ -1,12 +1,14 @@
 ---
 id: dbms-keys-constraints
 title: Keys & Constraints
+lastChecked: 2026-11-10
 next: dbms-functional-dependency
 roadmapSteps: backend:database-design
 ---
 
-<!-- DRAFT written 10 Nov 2026 from docs/content/source-notes/dbms-batch-a.md (S1 slides ch2, S2 PostgreSQL docs, S8 MySQL manual, S4/S7/S9 for alternate and composite key).
-     Not reviewed: no lastChecked. To publish: outside reader + REVIEW_CHECKLIST.md, add lastChecked, move this file up one folder (to ../), delete the old section from dbms.legacy.js. -->
+<!-- Published 10 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date this section was checked against its sources by the author, not by a second person.
+     Written from docs/content/source-notes/dbms-batch-a.md (S1 slides ch2, S2 PostgreSQL docs, S8 MySQL manual, S4/S7/S9 for alternate and composite key).
+     Claims and sources: docs/content/SOURCES.md (rows for dbms-keys-constraints). When an outside reader has gone through it, fill the "Checked by" cells of those rows. -->
 
 ## Overview
 
@@ -26,7 +28,7 @@ A key is the rule that says which rows are different, and a constraint is a rule
 
 **Definition:** One candidate key is chosen by the designer as the primary key. Its values must be unique and never NULL, and a table has at most one.
 
-**Why:** Foreign keys and indexes need one agreed way to point at a row.
+**Why:** It gives every row one agreed identifier that other tables normally reference.
 
 **Example:** CREATE TABLE student (roll_no INT PRIMARY KEY, email VARCHAR(100) UNIQUE, name VARCHAR(50) NOT NULL); A second row with roll_no 7 is rejected if 7 already exists, and so is a row with roll_no NULL.
 ```sql
@@ -55,7 +57,7 @@ INSERT INTO student (roll_no, email, name) VALUES (NULL, 'c@x.com', 'Meena'); --
 
 **Example:** In enrollment(student_id, course_id, grade), neither column is unique alone, because one student takes many courses and one course has many students. The pair {student_id, course_id} is a composite key.
 
-**Failure:** A composite key is not automatically the primary key, and a primary key is not automatically composite: the words describe the size of a key and its role separately. These two names are not used by the main textbook, so say what you mean by them when you use them.
+**Failure:** A composite key is not automatically the primary key, and a primary key is not automatically composite: the words describe the size of a key and its role separately. The textbook slides we read do not use these two names, so say what you mean by them when you use them.
 
 ## Topic: Foreign key and referential integrity
 
@@ -72,11 +74,11 @@ CREATE TABLE enrollment (
 );
 ```
 
-**Failure:** The referenced columns should be the primary key or another unique key. PostgreSQL refuses anything else. MySQL InnoDB does not force it, but its manual advises against it. Also, PostgreSQL does not create an index on the referencing column, so add one yourself or joins and parent deletes get slow; MySQL creates one for you if it is missing.
+**Failure:** The referenced columns should be the primary key or another unique key. PostgreSQL refuses anything else. MySQL InnoDB does not force it, but its manual advises against it. Also, PostgreSQL does not create an index on the referencing column, so add one yourself, as the PostgreSQL documentation advises, or joins and parent deletes can get slow; MySQL creates one for you if it is missing.
 
 ## Topic: What happens on delete
 
-**Definition:** ON DELETE and ON UPDATE say what the database does to child rows when the parent row is deleted or changed. CASCADE follows the change, SET NULL blanks the link, RESTRICT and NO ACTION refuse it, and SET DEFAULT puts a default value in.
+**Definition:** ON DELETE and ON UPDATE say what the database does to child rows when the parent row is deleted or changed. CASCADE follows the change, SET NULL blanks the link, RESTRICT refuses it at once, NO ACTION refuses it unless the rule holds again at the end of the statement, and SET DEFAULT puts a default value in.
 
 **Why:** The right choice depends on the relationship: order items should disappear with their order, but a product that has orders should not be deletable.
 
@@ -103,7 +105,7 @@ INSERT INTO product VALUES (2, NULL); -- accepted
 
 ### What is the difference between a primary key and a unique key?
 
-A table has one primary key and it can never be NULL. A table can have many unique keys, and a unique column can usually hold NULL: PostgreSQL and MySQL allow several NULLs there.
+A table has at most one primary key and it can never be NULL. A table can have many unique keys, and a unique column can usually hold NULL: PostgreSQL and MySQL allow several NULLs there.
 
 ### What is the difference between a super key and a candidate key?
 
@@ -111,7 +113,7 @@ A super key is any set of columns that identifies a row. A candidate key is a su
 
 ### Can a foreign key be NULL, and what can it point at?
 
-Yes, unless the column is declared NOT NULL; a NULL foreign key is not checked. It should point at a primary key or another unique key of the referenced table.
+Yes, unless the column is declared NOT NULL. A foreign key with a NULL in it is, by default, not checked (for a key of several columns the rule depends on MATCH SIMPLE or MATCH FULL). It should point at a primary key or another unique key of the referenced table.
 
 ### What happens when you delete a parent row that still has child rows?
 

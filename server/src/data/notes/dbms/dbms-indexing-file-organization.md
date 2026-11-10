@@ -1,22 +1,24 @@
 ---
 id: dbms-indexing-file-organization
 title: Indexing & File Organization
+lastChecked: 2026-11-10
 next: dbms-sql
 roadmapSteps: backend:database-design
 ---
 
-<!-- DRAFT written 10 Nov 2026 from docs/content/source-notes/dbms-batch-c.md (S1c slides ch13 and ch14, S2c PostgreSQL index types and EXPLAIN, S8c MySQL clustered indexes, S7c Use The Index Luke and Wikipedia B+ tree).
-     Not reviewed: no lastChecked. To publish: outside reader + REVIEW_CHECKLIST.md, add lastChecked, move this file up one folder, delete the old section from dbms.legacy.js. -->
+<!-- Published 10 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date this section was checked against its sources by the author, not by a second person.
+     Written from docs/content/source-notes/dbms-batch-c.md (S1c slides ch13 and ch14, S2c PostgreSQL index types and EXPLAIN, S8c MySQL clustered indexes, S7c Use The Index Luke and Wikipedia B+ tree).
+     Claims and sources: docs/content/SOURCES.md (rows for dbms-indexing-file-organization). When an outside reader has gone through it, fill the "Checked by" cells of those rows. -->
 
 ## Overview
 
-An index is a separate, sorted structure that lets the database find rows without reading the whole table. Interviewers ask about it because the B+ tree, clustered versus secondary indexes, and the order of columns in a multi-column index decide whether a query takes milliseconds or minutes. After this section you can explain how a B+ tree lookup works and why it stays shallow, say what an index costs, choose the column order of a composite index, and compare B+ tree and hash indexes.
+An index is a separate structure, usually sorted, that lets the database find rows without reading the whole table. Interviewers ask about it because the B+ tree, clustered versus secondary indexes, and the order of columns in a multi-column index decide whether a query takes milliseconds or minutes. After this section you can explain how a B+ tree lookup works and why it stays shallow, say what an index costs, choose the column order of a composite index, and compare B+ tree and hash indexes.
 
 ## Topic: What an index is and what it costs
 
 **Definition:** An index is a structure that stores search-key values in a form that is fast to search, each with a pointer to the row. It is a redundant copy of part of the data, kept separate from the table.
 
-**Why:** Without an index, finding one row means reading every row. With one, the database goes straight to the row's location.
+**Why:** Without an index, finding one row may mean reading every row. With one, the database goes straight to the row's location.
 
 **Example:** A table of 1,000,000 students with an index on roll_no: the query WHERE roll_no = 42 reads a few index blocks and then one table block. Without the index it reads the whole table.
 ```sql
@@ -27,7 +29,7 @@ CREATE INDEX idx_student_roll ON student (roll_no);
 
 ## Topic: B+ tree
 
-**Definition:** A B+ tree is a balanced tree where all leaves are at the same depth. Internal nodes only route the search by key ranges. The leaves hold the keys with pointers to the rows, and each leaf points to the next leaf in key order.
+**Definition:** A B+ tree is a balanced tree where all leaves are at the same depth. Internal nodes only route the search by key ranges. The leaves hold the keys with pointers to the rows (in a B+ tree file organization they hold the rows themselves), and each leaf points to the next leaf in key order.
 
 **Why:** It is shallow even for millions of keys, because each node is about one disk block and holds around a hundred entries.
 
@@ -46,13 +48,13 @@ CREATE INDEX idx_student_roll ON student (roll_no);
 SELECT * FROM student WHERE marks BETWEEN 80 AND 90;
 ```
 
-**Failure:** A LIKE pattern uses a B-tree index only when the pattern starts with fixed text, such as 'Ra%'. A pattern like '%rao' cannot use the sort order, because any name could end that way.
+**Failure:** In PostgreSQL, a B-tree can serve a LIKE pattern only when it starts with fixed text, such as 'Ra%'. A pattern like '%rao' cannot use the sort order, because any name could end that way.
 
 ## Topic: Clustered and secondary indexes
 
-**Definition:** In a clustering index, the order of the index decides the order in which the rows are stored; a secondary (non-clustering) index has an order different from the stored order. MySQL's InnoDB stores the whole table as a clustered index on the primary key.
+**Definition:** In a clustering index, the order of the index decides the order in which the rows are stored; a secondary (non-clustering) index has an order different from the stored order. MySQL's InnoDB stores the table as a clustered index, normally on the primary key.
 
-**Why:** A clustered lookup goes straight to the row. A secondary index lookup needs an extra step to reach the row.
+**Why:** In InnoDB, a clustered lookup goes straight to the row, and a secondary index lookup needs an extra step to reach the row.
 
 **Example:** In InnoDB, a secondary index on email stores each email together with the row's primary key. Finding a student by email searches the email index to get the primary key, then searches the clustered index with that key to get the full row. Without a declared primary key, InnoDB uses the first UNIQUE index whose columns are all NOT NULL, and if there is none it creates a hidden row id.
 
@@ -64,12 +66,12 @@ SELECT * FROM student WHERE marks BETWEEN 80 AND 90;
 
 **Why:** One index can serve several queries, but only the ones that use its leading columns.
 
-**Example:** An index on person(last_name, first_name). WHERE last_name = 'Rao' can use it, and so can WHERE last_name = 'Rao' AND first_name = 'Asha'. WHERE first_name = 'Asha' alone cannot: the names with first_name 'Asha' are scattered across all last names, so the database scans the table. Checked with a query plan in SQLite: the first two queries show an index search, the third a table scan.
+**Example:** An index on person(last_name, first_name). WHERE last_name = 'Rao' can use it, and so can WHERE last_name = 'Rao' AND first_name = 'Asha'. WHERE first_name = 'Asha' alone cannot: the names with first_name 'Asha' are scattered across all last names, so the database scans the table. A filter on first_name alone cannot use the index order, so the database usually scans the table (some systems have skip-scan tricks).
 ```sql
 CREATE INDEX idx_name ON person (last_name, first_name);
 ```
 
-**Failure:** Think of a phone book sorted by surname, then first name: it does not help you find everyone called Asha. When you create a composite index, put the column you filter on by equality in most queries first. One well-ordered composite index is usually better than adding a second index on the same columns reversed.
+**Failure:** Think of a phone book sorted by surname, then first name: it does not help you find everyone called Asha. When you create a composite index, put first the column your queries filter on most often, because only leading columns can be used. Check the order against your real queries: queries that filter on the second column alone need an index of their own.
 
 ## Topic: Hash index and hashing
 
@@ -79,7 +81,7 @@ CREATE INDEX idx_name ON person (last_name, first_name);
 
 **Example:** WHERE roll_no = 42 hashes 42 to a bucket and reads it. WHERE roll_no BETWEEN 40 AND 50 cannot use the hash index, because hashing destroys the order of the keys. PostgreSQL's hash index stores a 32-bit hash and supports equality only.
 
-**Failure:** Static hashing has a fixed number of buckets: too few and buckets overflow into chains, too many and space is wasted. Dynamic schemes (linear and extendable hashing) change the number of buckets as the table grows. If range queries are common, use an ordered index. Older textbooks discourage PostgreSQL hash indexes for performance reasons; the current PostgreSQL manual simply lists Hash as an equality-only index type.
+**Failure:** Static hashing has a fixed number of buckets: too few and buckets overflow into chains, too many and space is wasted. Dynamic schemes (linear and extendable hashing) change the number of buckets as the table grows. If range queries are common, use an ordered index. The current PostgreSQL manual lists Hash as an equality-only index type.
 
 ## Topic: How rows are stored: file organization
 
@@ -87,9 +89,9 @@ CREATE INDEX idx_name ON person (last_name, first_name);
 
 **Why:** The layout decides which accesses are cheap: a heap is cheap to insert into but needs an index to search; a sorted file is cheap to scan in order.
 
-**Example:** A heap table with 1,000 blocks and no index reads all 1,000 blocks for a single lookup. Table partitioning is a related idea: a transactions table split into one table per year lets a query with year = 2019 read only that year's partition.
+**Example:** A heap table with 1,000 blocks and no index may have to read up to all 1,000 blocks for a single lookup. Table partitioning is a related idea: a transactions table split into one table per year lets a query with year = 2019 read only that year's partition.
 
-**Failure:** A sequential file stays sorted only if inserts are placed in order; extra inserts go to overflow blocks and the file must be reorganized from time to time. The system catalog (data dictionary) stores metadata about all of this: relation and column definitions, views, constraints, statistics such as row counts, and which indexes exist.
+**Failure:** Inserts into a sequential file that do not fit in the right block go to an overflow block, and the file is reorganized from time to time. The system catalog (data dictionary) stores metadata about all of this: relation and column definitions, views, constraints, statistics such as row counts, and which indexes exist.
 
 ## Questions
 
@@ -111,7 +113,7 @@ The index is sorted by the first column, then the second, so it helps queries th
 
 ### When would you use a hash index instead of a B+ tree?
 
-Only for exact-match lookups. A hash index cannot serve ranges or sorted output.
+When your queries are exact-match lookups, hashing is generally good for them. A B+ tree also handles equality, plus ranges and sorted output, which a hash index cannot.
 
 ## Mistakes
 
@@ -128,7 +130,7 @@ Only for exact-match lookups. A hash index cannot serve ranges or sorted output.
 - [ ] About 20
 - [ ] About 1,000
 
-Explanation: The height is at most about log base 50 of a million, which is 4. A balanced binary tree over the same keys needs about 20 node accesses.
+Explanation: The height is at most about log base 50 of a million, which is about 3.5, so at most 4 levels. A balanced binary tree over the same keys needs about 20 node accesses.
 
 ### A composite index exists on person(last_name, first_name). Which query can use it for a direct search?
 

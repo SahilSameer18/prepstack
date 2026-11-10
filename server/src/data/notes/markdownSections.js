@@ -186,4 +186,26 @@ const withMarkdownSections = (data, dir) => {
   return { ...data, sections: [...sections, ...written.filter((s) => !known.has(s.id))] };
 };
 
-module.exports = { parseSection, loadMarkdownSections, withMarkdownSections };
+// Puts the sections in reading order by following their `next` links: it starts at the section that no other section points to
+// and follows `next` to the end. Used for a subject that is written entirely in Markdown, where the file names give no order.
+// Anything that breaks the chain (a section that nothing leads to, a second start, a loop, a `next` that is not a section of the
+// subject) throws, so a mistake in a `next` link stops the seed instead of hiding a section.
+const orderByNext = (sections) => {
+  const byId = new Map(sections.map((s) => [s.id, s]));
+  const pointedAt = new Set(sections.map((s) => s.links?.next).filter(Boolean));
+  for (const s of sections) {
+    const next = s.links?.next;
+    if (next && !byId.has(next)) throw new Error(`${s.id}: next section "${next}" is not in this subject`);
+  }
+  const starts = sections.filter((s) => !pointedAt.has(s.id));
+  if (starts.length !== 1) throw new Error(`the next links must form one chain, but ${starts.length} sections have nothing leading to them (${starts.map((s) => s.id).join(', ') || 'a loop'})`);
+  const ordered = [];
+  for (let s = starts[0]; s; s = byId.get(s.links?.next)) {
+    if (ordered.includes(s)) throw new Error(`the next links loop at "${s.id}"`);
+    ordered.push(s);
+  }
+  if (ordered.length !== sections.length) throw new Error('the next links do not reach every section');
+  return ordered;
+};
+
+module.exports = { parseSection, loadMarkdownSections, withMarkdownSections, orderByNext };

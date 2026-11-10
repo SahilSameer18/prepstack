@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
-const { parseSection, loadMarkdownSections, withMarkdownSections } = require('../src/data/notes/markdownSections');
+const { parseSection, loadMarkdownSections, withMarkdownSections, orderByNext } = require('../src/data/notes/markdownSections');
 const { checkNotesSubject } = require('../src/validators/notes.validators');
 
 const OVERVIEW = [
@@ -226,67 +226,72 @@ describe('loadMarkdownSections and withMarkdownSections', () => {
   });
 });
 
-describe('the real DBMS notes', () => {
-  it('load through the loader with the same 10 sections while no Markdown file is published', () => {
-    const dbms = require('../src/data/notes/dbms');
-    const legacy = require('../src/data/notes/dbms.legacy');
-    const mdDir = path.join(__dirname, '..', 'src', 'data', 'notes', 'dbms');
-    const published = loadMarkdownSections(mdDir).map((s) => s.id);
-    assert.equal(dbms.sections.length, legacy.sections.length + published.filter((id) => !legacy.sections.some((s) => s.id === id)).length);
+describe('the real DBMS notes (all Markdown)', () => {
+  const dir = path.join(__dirname, '..', 'src', 'data', 'notes', 'dbms');
+  const dbms = require('../src/data/notes/dbms');
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md') && !f.startsWith('_'));
+
+  it('has the ten sections, one file each, in reading order', () => {
+    assert.equal(files.length, 10);
+    assert.deepEqual(dbms.sections.map((s) => s.id), [
+      'dbms-introduction', 'dbms-er-model', 'dbms-keys-constraints', 'dbms-functional-dependency', 'dbms-normalization',
+      'dbms-transactions', 'dbms-concurrency-control', 'dbms-indexing-file-organization', 'dbms-sql', 'dbms-advanced-concepts',
+    ]);
+  });
+  it('every section passes the full template and has a lastChecked date', () => {
     assert.deepEqual(checkNotesSubject('dbms', dbms), []);
+    for (const s of dbms.sections) assert.match(s.lastChecked, /^\d{4}-\d{2}-\d{2}$/, s.id);
+  });
+  it('every section points at a roadmap step that exists, and the last section has no next', async () => {
+    const { pathToFileURL } = require('node:url');
+    const roadmapFile = path.join(__dirname, '..', '..', 'client', 'src', 'data', 'roadmaps.js');
+    assert.equal(dbms.sections.at(-1).links.next, null);
+    if (!fs.existsSync(roadmapFile)) return;
+    const { roadmaps } = await import(pathToFileURL(roadmapFile).href);
+    for (const s of dbms.sections) for (const ref of s.links.roadmapSteps) {
+      const [slug, step] = ref.split(':');
+      assert.ok(roadmaps.find((r) => r.slug === slug)?.steps.some((x) => x.id === step), `${s.id}: ${ref} does not exist`);
+    }
+  });
+  it('no two sections share a title or a quiz question', () => {
+    const titles = dbms.sections.map((s) => s.title);
+    assert.equal(new Set(titles).size, titles.length);
+    const questions = dbms.sections.flatMap((s) => s.quiz.map((q) => q.question));
+    assert.equal(new Set(questions).size, questions.length);
+  });
+  it('every quiz has exactly one right answer inside the options, and no option text repeats inside a question', () => {
+    for (const s of dbms.sections) for (const q of s.quiz) {
+      assert.ok(q.answer >= 0 && q.answer < q.options.length, s.id + ': ' + q.question);
+      assert.equal(new Set(q.options).size, q.options.length);
+    }
   });
   it('the starter template parses (it is ignored by the loader because its name starts with "_")', () => {
-    const file = path.join(__dirname, '..', 'src', 'data', 'notes', 'dbms', '_example.md');
-    const s = parseSection(fs.readFileSync(file, 'utf8'), 'dbms-example.md');
+    const s = parseSection(fs.readFileSync(path.join(dir, '_example.md'), 'utf8'), 'dbms-example.md');
     assert.equal(s.topics.length, 2);
     assert.equal(s.quiz[0].answer, 1);
     assert.equal(s.diagrams[0].kind, 'flow');
   });
 });
 
-describe('the draft sections in notes/dbms/drafts', () => {
-  const draftsDir = path.join(__dirname, '..', 'src', 'data', 'notes', 'dbms', 'drafts');
-  const files = fs.existsSync(draftsDir) ? fs.readdirSync(draftsDir).filter((f) => f.endsWith('.md')) : [];
-  const legacy = require('../src/data/notes/dbms.legacy');
-  const drafts = files.map((f) => parseSection(fs.readFileSync(path.join(draftsDir, f), 'utf8'), f));
-
-  it('are not published: no draft has lastChecked, and none is loaded by the site', () => {
-    for (const d of drafts) assert.equal('lastChecked' in d, false, `${d.id} has lastChecked: it must stay a draft until it is reviewed`);
-    const published = require('../src/data/notes/dbms').sections;
-    for (const d of drafts) assert.ok(!published.some((s) => s.id === d.id && s.topics.some((t) => t.definition)), `${d.id} is loaded by the site`);
+describe('orderByNext', () => {
+  const sec = (id, next) => ({ id, links: { next } });
+  it('puts the sections in the order of their next links, whatever order they come in', () => {
+    const out = orderByNext([sec('c', null), sec('a', 'b'), sec('b', 'c')]);
+    assert.deepEqual(out.map((s) => s.id), ['a', 'b', 'c']);
   });
-  it('each draft would pass the full template (checked with a lastChecked added), so publishing it later only needs the review', () => {
-    for (const d of drafts) assert.deepEqual(checkNotesSubject('dbms', { subject: 'DBMS', sections: [{ ...d, lastChecked: '2026-11-10' }] }), [], d.id);
+  it('a single section is fine', () => {
+    assert.deepEqual(orderByNext([sec('a', null)]).map((s) => s.id), ['a']);
   });
-  it('each draft replaces a section that exists, and points at a next section and roadmap step that exist', async () => {
-    const { pathToFileURL } = require('node:url');
-    const roadmapFile = path.join(__dirname, '..', '..', 'client', 'src', 'data', 'roadmaps.js');
-    for (const d of drafts) assert.ok(legacy.sections.some((s) => s.id === d.id), `${d.id} is not a section of the DBMS notes`);
-    const ids = new Set([...legacy.sections.map((s) => s.id), ...drafts.map((d) => d.id)]);
-    for (const d of drafts) if (d.links.next) assert.ok(ids.has(d.links.next), `${d.id}: next section ${d.links.next} does not exist`);
-    if (fs.existsSync(roadmapFile)) {
-      const { roadmaps } = await import(pathToFileURL(roadmapFile).href);
-      for (const d of drafts) for (const ref of d.links.roadmapSteps) {
-        const [slug, step] = ref.split(':');
-        assert.ok(roadmaps.find((r) => r.slug === slug)?.steps.some((s) => s.id === step), `${d.id}: roadmap step ${ref} does not exist`);
-      }
-    }
+  it('refuses a next link to a section that is not in the subject', () => {
+    assert.throws(() => orderByNext([sec('a', 'zzz')]), /not in this subject/);
   });
-  it('all ten DBMS sections have a draft', () => {
-    for (const s of legacy.sections) assert.ok(drafts.some((d) => d.id === s.id), s.id + ' has no draft yet');
-    assert.equal(drafts.length, legacy.sections.length);
+  it('refuses two chains (two sections nothing leads to)', () => {
+    assert.throws(() => orderByNext([sec('a', null), sec('b', null)]), /one chain/);
   });
-  it('the next links of the drafts follow the order of the DBMS sections, and the last one has none', () => {
-    const order = legacy.sections.map((s) => s.id);
-    for (const d of drafts) {
-      const i = order.indexOf(d.id);
-      assert.equal(d.links.next, order[i + 1] ?? null, d.id);
-    }
+  it('refuses a loop', () => {
+    assert.throws(() => orderByNext([sec('a', 'b'), sec('b', 'a')]), /one chain/);
   });
-  it('no two drafts use the same title or the same quiz question', () => {
-    const titles = drafts.map((d) => d.title);
-    assert.equal(new Set(titles).size, titles.length);
-    const questions = drafts.flatMap((d) => d.quiz.map((q) => q.question));
-    assert.equal(new Set(questions).size, questions.length);
+  it('refuses two sections that lead to the same next section', () => {
+    assert.throws(() => orderByNext([sec('a', 'c'), sec('b', 'c'), sec('c', null)]), /one chain/);
   });
 });

@@ -1,12 +1,14 @@
 ---
 id: dbms-transactions
 title: Transactions
+lastChecked: 2026-11-10
 next: dbms-concurrency-control
 roadmapSteps: backend:database-design
 ---
 
-<!-- DRAFT written 10 Nov 2026 from docs/content/source-notes/dbms-batch-b.md (S1b slides ch17, S7b Wikipedia ACID and schedules, S4b supplied notes).
-     Not reviewed: no lastChecked. To publish: outside reader + REVIEW_CHECKLIST.md, add lastChecked, move this file up one folder, delete the old section from dbms.legacy.js. -->
+<!-- Published 10 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date this section was checked against its sources by the author, not by a second person.
+     Written from docs/content/source-notes/dbms-batch-b.md (S1b slides ch17, S7b Wikipedia ACID and schedules, S4b supplied notes).
+     Claims and sources: docs/content/SOURCES.md (rows for dbms-transactions). When an outside reader has gone through it, fill the "Checked by" cells of those rows. -->
 
 ## Overview
 
@@ -36,7 +38,7 @@ COMMIT;   -- or ROLLBACK; to undo both updates
 
 **Example:** The transfer fails after step 3. Atomicity requires the debit of A to be undone, so the database looks as if the transfer never started. If the transfer committed and the machine loses power a second later, durability requires the new balances to be there after restart.
 
-**Failure:** Durability is a promise made after the commit is acknowledged, not before. A transaction that was still running when the machine failed has no durability promise and is rolled back.
+**Failure:** Durability is a promise made after the commit is acknowledged, not before. A transaction that was still running when the machine failed is not covered by the durability promise, and recovery rolls it back.
 
 ## Topic: Consistency and isolation
 
@@ -54,9 +56,9 @@ COMMIT;   -- or ROLLBACK; to undo both updates
 
 **Why:** The states say what is true about the data at each point, and what the system has to do next.
 
-**Example:** The transfer is active during its six steps. After the last write it is partially committed; if the commit succeeds it moves to committed. If step 5 hits a constraint violation, it becomes failed, then aborted once A has been restored.
+**Example:** The transfer is active during its six steps. After the last write it is partially committed; if the commit succeeds it moves to committed. If step 6 hits a constraint violation, it becomes failed, then aborted once A has been restored.
 
-**Failure:** After an abort the database can restart the transaction, but only if the failure was not caused by an internal logical error in the transaction itself. Otherwise it must be killed.
+**Failure:** After an abort the transaction can be restarted (usually by the application), but only if the failure was not caused by an internal logical error in the transaction itself. Otherwise it must be killed.
 
 ## Topic: Schedules and conflict serializability
 
@@ -64,9 +66,9 @@ COMMIT;   -- or ROLLBACK; to undo both updates
 
 **Why:** Running transactions one by one is always correct but slow. Serializability lets the database interleave them and still give the same result as some serial order.
 
-**Example:** T1 and T2 each read and write A, then read and write B. The schedule R1(A) W1(A) R2(A) W2(A) R1(B) W1(B) R2(B) W2(B) has conflicts only from T1 to T2 (T1 touches each item first), so its precedence graph has one arrow T1 to T2 and no cycle: it is equivalent to T1 followed by T2. The schedule R1(A) R2(A) W1(A) W2(A) has R1(A) before W2(A), an arrow T1 to T2, and R2(A) before W1(A), an arrow T2 to T1. That is a cycle, so it is not conflict serializable; here T2 also overwrites the update that T1 never let it see.
+**Example:** T1 and T2 each read and write A, then read and write B. The schedule R1(A) W1(A) R2(A) W2(A) R1(B) W1(B) R2(B) W2(B) has conflicts only from T1 to T2 (T1 touches each item first), so its precedence graph has one arrow T1 to T2 and no cycle: it is equivalent to T1 followed by T2. The schedule R1(A) R2(A) W1(A) W2(A) has R1(A) before W2(A), an arrow T1 to T2, and R2(A) before W1(A), an arrow T2 to T1. That is a cycle, so it is not conflict serializable; T2 reads A before T1 writes it and then writes A, so one of the two updates is lost.
 
-**Failure:** The test is a precedence graph over the transactions: draw an arrow Ti to Tj when an operation of Ti conflicts with a later operation of Tj. A schedule is conflict serializable exactly when the graph has no cycle, and a topological order of the graph is an equivalent serial order. A wider notion, view serializability, accepts more schedules but is NP-complete to test, so databases use conflict serializability.
+**Failure:** The test is a precedence graph over the transactions: draw an arrow Ti to Tj when an operation of Ti conflicts with a later operation of Tj. A schedule is conflict serializable exactly when the graph has no cycle, and a topological order of the graph is an equivalent serial order. A wider notion, view serializability, accepts more schedules but is NP-complete to test; real systems enforce conflict serializability through protocols such as locking.
 
 ## Topic: Recoverable and cascadeless schedules
 
@@ -133,7 +135,7 @@ Explanation: R1(A) before W2(A) gives T1 to T2, and R2(A) before W1(A) gives T2 
 
 ### T8 writes A. T9 reads A and commits. T8 then aborts. What is wrong with this schedule?
 
-- [ ] It is not serial
+- [ ] It is not conflict serializable
 - [ ] It breaks durability
 - [x] It is not recoverable
 - [ ] Nothing: T9 read committed data

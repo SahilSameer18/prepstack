@@ -1,12 +1,14 @@
 ---
 id: dbms-introduction
 title: Introduction
+lastChecked: 2026-11-10
 next: dbms-er-model
 roadmapSteps: backend:database-design
 ---
 
-<!-- DRAFT written 10 Nov 2026 from docs/content/source-notes/dbms-batch-d.md (S1d slides ch1, S4d supplied notes for the definitions of database and DBMS).
-     Not reviewed: no lastChecked. To publish: outside reader + REVIEW_CHECKLIST.md, add lastChecked, move this file up one folder, delete the old section from dbms.legacy.js. -->
+<!-- Published 10 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date this section was checked against its sources by the author, not by a second person.
+     Written from docs/content/source-notes/dbms-batch-d.md (S1d slides ch1, S4d supplied notes for the definitions of database and DBMS).
+     Claims and sources: docs/content/SOURCES.md (rows for dbms-introduction). When an outside reader has gone through it, fill the "Checked by" cells of those rows. -->
 
 ## Overview
 
@@ -14,13 +16,13 @@ A database management system, or DBMS, is the software that stores data and lets
 
 ## Topic: Why a DBMS and not files
 
-**Definition:** Early applications kept data directly in files. That caused redundancy and inconsistency, difficulty accessing data, data isolation, integrity problems, lost atomicity, trouble with concurrent users, and security problems. A DBMS solves these.
+**Definition:** Early applications kept data directly in files. That caused redundancy and inconsistency, difficulty accessing data, data isolation, integrity problems, lost atomicity, trouble with concurrent users, and security problems. A DBMS offers solutions to all of these.
 
 **Why:** Each problem is something you would otherwise have to rebuild inside every program.
 
-**Example:** Redundancy: a customer's address is copied into the billing file and the shipping file, and one copy is updated. Difficult access: a new question needs a new program. Integrity: the rule "balance must be above zero" is buried in code and is easy to miss when you change it. Atomicity: a transfer fails halfway and the money has gone. Concurrency: two people read a balance of 100 and each withdraw 50 at the same moment, and the balance ends at 50 instead of 0. Security: it is hard to let someone see some data and not all.
+**Example:** Redundancy: a customer's address is copied into the billing file and the shipping file, and one copy is updated. Difficult access: a new question needs a new program. Integrity: the rule "balance must be above zero" is buried in code and is easy to miss when you change it. Atomicity: a transfer fails halfway and the money has gone. Concurrency: two people read a balance of 100 and each withdraw 50 at the same moment, and the balance can end at 50 instead of 0. Security: it is hard to let someone see some data and not all.
 
-**Failure:** A DBMS is the software and a database is the data. Saying "a database" when you mean the software, or the reverse, is a small slip interviewers notice.
+**Failure:** A DBMS is the software and a database is the data; keep the two words apart.
 
 ## Topic: Data models and the relational model
 
@@ -28,9 +30,9 @@ A database management system, or DBMS, is the software that stores data and lets
 
 **Why:** The model decides how you think about the data and which queries are easy.
 
-**Example:** A student table has columns roll_no, name and dept, and one row per student. Other models exist: the entity-relationship model (mainly for design), object-based models, semi-structured models such as XML, and the older network and hierarchical models. The relational model came from Ted Codd, who won the Turing Award for it in 1981.
+**Example:** A student table has columns roll_no, name and dept, and one row per student. Other models exist: the entity-relationship model (mainly for design), object-based models, semi-structured models such as XML, and the older network and hierarchical models. The relational model came from Ted Codd, who received the Turing Award in 1981.
 
-**Failure:** The entity-relationship model is mostly a design tool: you draw a design in it and then turn it into relational tables. "NoSQL" systems appeared in the 2000s for big-data storage, but they do not replace the idea of a data model.
+**Failure:** The entity-relationship model is mostly a design tool: you draw a design in it and then turn it into relational tables. NoSQL systems appeared in the 2000s for big-data storage.
 
 ## Topic: Schema, instance and data independence
 
@@ -46,7 +48,7 @@ A database management system, or DBMS, is the software that stores data and lets
 
 **Definition:** A data definition language (DDL) defines the schema. A data manipulation language (DML) reads and changes the data, and is also called the query language. SQL has both. A declarative language says what data you want; a procedural one also says how to get it.
 
-**Why:** Declarative queries let the DBMS choose the best way to run them.
+**Why:** Declarative queries are usually easier to use, and they leave the DBMS free to choose how to run them (see the optimizer).
 
 **Example:** CREATE TABLE instructor (...) is DDL; the DBMS stores the definition in the data dictionary, which holds metadata (data about data) such as the schema, integrity constraints and who may access what. SELECT name FROM instructor WHERE dept_name = 'Comp. Sci.' is DML, and says what, not how.
 ```sql
@@ -61,15 +63,15 @@ SELECT name FROM instructor WHERE dept_name = 'Comp. Sci.';
 
 **Why:** Naming the parts shows you understand a query does not just "run".
 
-**Example:** The storage manager talks to the operating system's files and holds the data files, the data dictionary and the indexes; it includes the buffer manager, which keeps copies of disk blocks in memory. The query processor has a DDL interpreter, a DML compiler that turns a query into a plan and picks the cheapest one, and an evaluation engine that executes the plan. The steps are parsing and translation, optimization, then evaluation. The transaction manager keeps the database consistent despite crashes and controls how concurrent transactions interact.
+**Example:** The storage manager talks to the operating system's files and holds the data files, the data dictionary and the indexes; it includes the buffer manager, which keeps copies of disk blocks in memory. The query processor has a DDL interpreter, a DML compiler that turns a query into a plan and picks the cheapest one, and an evaluation engine that executes the plan. The steps are parsing and translation, optimization, then evaluation. The transaction management component keeps the database consistent despite crashes, and its concurrency-control manager controls how concurrent transactions interact.
 
 **Failure:** The optimizer chooses among several plans using estimated costs. A query can therefore be fast or slow depending on the plan and on the indexes available, not only on how it is written.
 
 ## Topic: Tiers, users and the administrator
 
-**Definition:** In a two-tier design the application runs on the client and talks to the database server. In a three-tier design the client is only a front end that talks to an application server, which talks to the database. The database administrator (DBA) has central control of the system.
+**Definition:** In a two-tier design the application runs on the client and talks to the database server. In a three-tier design the client is only a front end that talks to an application server, which talks to the database. The database administrator (DBA) is the person responsible for the system's schema, storage, access and upkeep.
 
-**Why:** Web applications are three-tier, so the browser never talks to the database directly.
+**Why:** Web applications are typically built three-tier: the browser talks to an application server, not to the database.
 
 **Example:** The DBA defines the schema and storage structures, grants access, does routine maintenance and backups, keeps enough disk space, and watches for jobs that slow the system down. Users include naive users who use ready-made applications, application programmers, sophisticated users who write queries or use analysis tools, and specialized users with CAD or multimedia data.
 
@@ -79,7 +81,7 @@ SELECT name FROM instructor WHERE dept_name = 'Comp. Sci.';
 
 ### What are the advantages of a DBMS over a file system?
 
-It avoids redundancy and inconsistency, makes new queries easy, keeps integrity rules in one place, makes updates atomic, controls concurrent access and gives fine-grained security.
+It avoids redundancy and inconsistency, makes new queries easy, lets integrity rules be declared once in the database, makes updates atomic, controls concurrent access and lets access be granted to part of the data.
 
 ### What is the difference between a schema and an instance?
 
@@ -117,7 +119,7 @@ Explanation: Uncontrolled concurrent access can leave the balance wrong, because
 - [ ] The evaluation engine
 - [ ] The concurrency-control manager
 
-Explanation: The DDL interpreter interprets DDL statements and records the definitions in the data dictionary.
+Explanation: The DDL interpreter (the slides also call it the DDL compiler) interprets DDL statements and records the definitions in the data dictionary.
 
 ### The rows of the student table at 10 a.m. are best described as:
 

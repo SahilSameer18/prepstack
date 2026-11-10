@@ -1,13 +1,14 @@
 ---
 id: dbms-sql
 title: SQL
+lastChecked: 2026-11-10
 next: dbms-advanced-concepts
 roadmapSteps: backend:database-design
 ---
 
-<!-- DRAFT written 10 Nov 2026 from docs/content/source-notes/dbms-batch-c.md (S1c slides ch3 and ch4, S2c PostgreSQL docs, S8c MySQL manual, S6c supplied SQL notes for coverage and mistakes).
-     Not reviewed: no lastChecked. Every result table below was produced by running the query in SQLite on 10 Nov 2026 (claims table in SOURCES.md).
-     To publish: outside reader + REVIEW_CHECKLIST.md, add lastChecked, move this file up one folder, delete the old section from dbms.legacy.js. -->
+<!-- Published 10 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date this section was checked against its sources by the author, not by a second person.
+     Written from docs/content/source-notes/dbms-batch-c.md (S1c slides ch3 and ch4, S2c PostgreSQL docs, S8c MySQL manual, S6c supplied SQL notes for coverage and mistakes).
+     Claims and sources: docs/content/SOURCES.md (rows for dbms-sql). When an outside reader has gone through it, fill the "Checked by" cells of those rows. -->
 
 ## Overview
 
@@ -15,7 +16,7 @@ SQL is the language you use to ask a relational database for data, and interview
 
 ## Topic: What order a query runs in
 
-**Definition:** A query is not run in the order it is written. The database first takes the rows from FROM and its joins, then filters them with WHERE, then forms groups with GROUP BY, and then filters the groups with HAVING. ORDER BY and LIMIT apply to what is left.
+**Definition:** A query is evaluated logically in an order different from the one it is written in. The database first takes the rows from FROM and its joins, then filters them with WHERE, then forms groups with GROUP BY, and then filters the groups with HAVING. The SELECT list is then computed, and ORDER BY and LIMIT apply last.
 
 **Why:** It explains most "why does this query fail or give a strange answer" cases, such as why WHERE cannot use an aggregate.
 
@@ -25,7 +26,7 @@ SELECT city, count(*) FROM student
 WHERE marks >= 70 GROUP BY city HAVING count(*) >= 2 ORDER BY city;
 ```
 
-**Failure:** LIMIT without ORDER BY returns an unpredictable set of rows, so always pair them, with a unique order. A large OFFSET is slow, because the skipped rows are still computed.
+**Failure:** LIMIT without ORDER BY returns an unpredictable set of rows, so always pair them, with a unique order. A large OFFSET can be slow, because the skipped rows are still computed.
 
 ## Topic: NULL and three-valued logic
 
@@ -39,7 +40,7 @@ SELECT 1 WHERE NULL = NULL;     -- no rows
 SELECT 1 WHERE NULL IS NULL;    -- one row
 ```
 
-**Failure:** Never write expression = NULL. If you need NULL-safe equality, IS NOT DISTINCT FROM treats two NULLs as equal. Remember it also when filtering: WHERE x <> 5 does not return rows where x is NULL.
+**Failure:** Never write expression = NULL. If you need NULL-safe equality, In PostgreSQL, IS NOT DISTINCT FROM treats two NULLs as equal. Remember it also when filtering: WHERE x <> 5 does not return rows where x is NULL.
 
 ## Topic: Joins
 
@@ -73,7 +74,7 @@ GROUP BY city HAVING count(*) >= 2:        Delhi 2 | Mumbai 2
 GROUP BY city HAVING max(marks) >= 92:     Mumbai 2
 ```
 
-**Failure:** A column in the select list that is not in GROUP BY must be inside an aggregate, otherwise the query is wrong. The newer SQL rule also accepts a column that is functionally dependent on a grouped column, for example when the grouped column is the primary key. MySQL 8.4 enforces this by default (ONLY_FULL_GROUP_BY) and rejects such queries with an error; ANY_VALUE() is its workaround. HAVING is not "WHERE for groups written differently": it is the only place that can filter on an aggregate.
+**Failure:** A column in the select list that is not in GROUP BY must be inside an aggregate, otherwise the query is wrong. PostgreSQL and MySQL also accept a non-grouped column that is functionally dependent on the grouped columns, for example when the grouped column is the primary key. MySQL 8.4 (ONLY_FULL_GROUP_BY, on by default) rejects a query whose non-aggregated column is neither grouped nor dependent on grouped columns, with an error; ANY_VALUE() is its workaround. HAVING is how you filter groups on the aggregate values of the same query; WHERE cannot use that query's own aggregates.
 
 ## Topic: Subqueries
 
@@ -81,7 +82,7 @@ GROUP BY city HAVING max(marks) >= 92:     Mumbai 2
 
 **Why:** It lets one question depend on the answer to another: "students scoring above the class average".
 
-**Example:** The class average is 81.4, so students above it are the ones with 90, 95 and 92.
+**Example:** With marks 90, 70, 95, 92 and 60 for ids 1 to 5, the class average is 81.4, so the students above it are ids 1, 3 and 4 (marks 90, 95 and 92).
 ```sql
 SELECT id, marks FROM student
 WHERE marks > (SELECT avg(marks) FROM student);   -- ids 1, 3, 4
@@ -104,7 +105,7 @@ INTERSECT:  Bob
 EXCEPT:     Alice
 ```
 
-**Failure:** UNION ALL is cheaper than UNION because it skips removing duplicates, so use it when duplicates are impossible or wanted. In PostgreSQL, INTERSECT binds tighter than UNION and EXCEPT, so a UNION b INTERSECT c means a UNION (b INTERSECT c). A LIMIT written after the last query applies to the whole combined result, not to the last query.
+**Failure:** UNION ALL is usually cheaper than UNION because it skips removing duplicates, so use it when duplicates are impossible or wanted. In PostgreSQL, INTERSECT binds tighter than UNION and EXCEPT, so a UNION b INTERSECT c means a UNION (b INTERSECT c). In PostgreSQL, a LIMIT written after the last query applies to the whole combined result, not to the last query.
 
 ## Topic: Window functions
 
@@ -131,7 +132,7 @@ avg(salary) OVER (PARTITION BY dept) puts 5000 on every dev row and 3250 on ever
 
 **Example:** CREATE VIEW faculty AS SELECT id, name, dept_name FROM instructor hides the salary column. A query on faculty is the saved query substituted into it. WITH regional_sales AS (SELECT ...) SELECT ... FROM regional_sales names an intermediate result.
 
-**Failure:** A view stores the query, not the rows, so it always shows current data. In PostgreSQL a CTE can wrap SELECT, INSERT, UPDATE, DELETE or MERGE.
+**Failure:** An ordinary view stores the query, not the rows, so it always shows current data. In PostgreSQL a CTE can wrap SELECT, INSERT, UPDATE, DELETE or MERGE.
 
 ## Questions
 
@@ -149,7 +150,7 @@ A comparison with NULL is unknown, and WHERE treats unknown as false. Use IS NUL
 
 ### What is the difference between UNION and UNION ALL?
 
-UNION removes duplicate rows, UNION ALL keeps them and is cheaper.
+UNION removes duplicate rows, UNION ALL keeps them and is usually cheaper.
 
 ### What is a window function and how is it different from GROUP BY?
 
@@ -159,7 +160,7 @@ It computes a value per row over a window of related rows and keeps all rows. GR
 
 - Writing WHERE column = NULL. It never matches; use IS NULL.
 - Using NOT IN against a subquery that can return NULL. It returns no rows; use NOT EXISTS.
-- Putting a condition on the right table of a LEFT JOIN in WHERE, which turns it into an inner join. Put it in ON if you want to keep the unmatched left rows.
+- Putting a condition on the right table of a LEFT JOIN in WHERE, which usually turns it into an inner join because the NULL rows fail the test (an IS NULL test is the exception). Put it in ON if you want to keep the unmatched left rows.
 
 ## Quiz
 
@@ -211,5 +212,5 @@ Explanation: UNION ALL keeps every row: Alice, Bob, Bob, Bob, Dev. UNION would r
 ## Diagram
 
 ```json
-{ "kind": "flow", "caption": "The order in which the parts of a query are applied.", "steps": [{ "label": "FROM and joins" }, { "label": "WHERE filters rows" }, { "label": "GROUP BY makes groups" }, { "label": "HAVING filters groups" }, { "label": "ORDER BY, then LIMIT" }] }
+{ "kind": "flow", "caption": "The order in which the parts of a query are applied.", "steps": [{ "label": "FROM and joins" }, { "label": "WHERE filters rows" }, { "label": "GROUP BY makes groups" }, { "label": "HAVING filters groups" }, { "label": "SELECT list" }, { "label": "ORDER BY, then LIMIT" }] }
 ```

@@ -1,13 +1,14 @@
 ---
 id: dbms-normalization
 title: Normalization
+lastChecked: 2026-11-10
 next: dbms-transactions
 roadmapSteps: backend:database-design
 ---
 
-<!-- DRAFT written 10 Nov 2026 from docs/content/source-notes/dbms-batch-a.md (S1 slides ch7: 7.4 to 7.35, 7.55 to 7.73, 7.100 to 7.101; S7 for 2NF and the anomalies; S9 and S4 for the mistakes).
-     Not reviewed: no lastChecked. 2NF and the anomalies come from secondary sources (S4, S7) until the outside reader confirms them.
-     To publish: outside reader + REVIEW_CHECKLIST.md, add lastChecked, move this file up one folder, delete the old section from dbms.legacy.js. -->
+<!-- Published 10 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date this section was checked against its sources by the author, not by a second person.
+     Written from docs/content/source-notes/dbms-batch-a.md (S1 slides ch7: 7.4 to 7.35, 7.55 to 7.73, 7.100 to 7.101; S7 for 2NF and the anomalies; S9 and S4 for the mistakes).
+     Claims and sources: docs/content/SOURCES.md (rows for dbms-normalization). When an outside reader has gone through it, fill the "Checked by" cells of those rows. -->
 
 ## Overview
 
@@ -27,7 +28,7 @@ Normalization is splitting a table so that each fact is stored once. Interviewer
 
 **Definition:** A table is in 1NF when every column holds one indivisible value: no lists, sets or repeating groups in a cell.
 
-**Why:** Lists inside a cell cannot be searched, constrained or joined properly, and they encourage storing the same data twice.
+**Why:** Lists inside a cell are awkward to search, constrain and join, and they encourage storing the same data twice.
 
 **Example:** student(roll_no, phones) with the cell "98100, 98200" breaks 1NF. The fix is one row per phone: student_phone(roll_no, phone), with {roll_no, phone} as the key.
 
@@ -51,7 +52,7 @@ Normalization is splitting a table so that each fact is stored once. Interviewer
 
 **Example:** book(book_id, author_id, author_country) has the key book_id. author_id → author_country: author_id is not a super key and author_country is in no key, so it breaks 3NF. Fix: author(author_id, author_country) and book(book_id, author_id).
 
-**Failure:** Many sources shorten 3NF to "no transitive dependency" and leave out the second option, the case where the right side is part of a key. The three-part test above is the exact one, and the second option is what lets a table be in 3NF but not in BCNF.
+**Failure:** Some sources shorten 3NF to "no transitive dependency", which is only safe if it means a non-key column depending on another non-key column. Use the exact test above: its second option, where the right side is part of a key, is what lets a table be in 3NF but not in BCNF.
 
 ## Topic: Boyce-Codd normal form (BCNF)
 
@@ -65,7 +66,7 @@ Normalization is splitting a table so that each fact is stored once. Interviewer
 
 ## Topic: A split must be lossless
 
-**Definition:** A split of R into R1 and R2 is lossless when joining the pieces gives back exactly the original rows. A test: the columns the pieces share must determine all of R1 or all of R2.
+**Definition:** A split of R into R1 and R2 is lossless when joining the pieces gives back exactly the original rows. A test: the columns the pieces share determine all of R1 or all of R2. This is enough to prove it, and it is also required when the only rules are functional dependencies.
 
 **Why:** A lossy split loses information: after the join you cannot tell which rows were real.
 
@@ -75,13 +76,13 @@ Normalization is splitting a table so that each fact is stored once. Interviewer
 
 ## Topic: Dependency preservation and the BCNF trade-off
 
-**Definition:** A split preserves dependencies when every dependency can still be checked inside a single table, without joining. If not, enforcing the rule after an update needs a join.
+**Definition:** A split preserves dependencies when the dependencies that can be checked inside single tables together imply all the original ones, so no join is needed to enforce them. If not, enforcing a lost rule after an update needs a join.
 
 **Why:** Checking a rule inside one table is cheap; checking it across a join on every update is expensive.
 
 **Example:** Split advising into teacher_subject(teacher, subject) and student_teacher(student, teacher). It is in BCNF and lossless, but (student, subject) → teacher cannot be checked in one table any more, because student and subject are never in the same piece. The unsplit table keeps the rule, at the cost of repeating subject.
 
-**Failure:** A lossless, dependency-preserving split into 3NF always exists. A lossless split into BCNF always exists too, but it may not preserve dependencies. So when the two goals conflict, the usual answer is to accept 3NF with a little repetition, or to accept BCNF and give up checking one rule cheaply.
+**Failure:** A lossless, dependency-preserving split into 3NF always exists. A lossless split into BCNF always exists too, but it may not preserve dependencies. So when the two goals conflict, you have to accept either some 3NF repetition or losing the cheap check of one rule.
 
 ## Questions
 
@@ -91,15 +92,15 @@ Splitting a table so each fact is stored once. It avoids the insertion, update a
 
 ### What is the difference between 2NF and 3NF?
 
-2NF removes partial dependencies: a non-key column depending on part of a composite key. 3NF removes dependencies of a non-key column on another non-key column.
+2NF removes partial dependencies: a non-key column depending on part of a composite key. 3NF removes dependencies of a column that is in no key on another column that is not a key.
 
 ### What is the difference between 3NF and BCNF?
 
-3NF lets X → Y pass if X is a super key or Y is part of a candidate key. BCNF only accepts the super key case, so it is stricter, but it may not preserve dependencies.
+3NF lets X → Y pass if X is a super key or every column of Y that is not in X is part of a candidate key. BCNF only accepts the super key case, so it is stricter, but it may not preserve dependencies.
 
 ### What is a lossless decomposition?
 
-A split where joining the pieces gives back exactly the original table. It holds when the shared columns determine all of one piece.
+A split where joining the pieces gives back exactly the original table. It is guaranteed when the shared columns determine all of one piece.
 
 ## Mistakes
 
@@ -149,7 +150,7 @@ Explanation: If the shared columns determine a whole piece, each shared value ma
 
 - [ ] Atomic values
 - [x] Dependency preservation
-- [ ] Primary keys
+- [ ] The ability to join the pieces back into the original rows
 - [ ] Foreign keys
 
 Explanation: A decomposition into BCNF is always lossless but may split the columns of a dependency across tables, so that rule can no longer be checked inside one table.

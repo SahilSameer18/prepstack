@@ -1,12 +1,14 @@
 ---
 id: dbms-functional-dependency
 title: Functional Dependency
+lastChecked: 2026-11-10
 next: dbms-normalization
 roadmapSteps: backend:database-design
 ---
 
-<!-- DRAFT written 10 Nov 2026 from docs/content/source-notes/dbms-batch-a.md (S1 slides ch7: 7.11 to 7.17, 7.38 to 7.54; S9 for coverage).
-     Not reviewed: no lastChecked. To publish: outside reader + REVIEW_CHECKLIST.md, add lastChecked, move this file up one folder, delete the old section from dbms.legacy.js. -->
+<!-- Published 10 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date this section was checked against its sources by the author, not by a second person.
+     Written from docs/content/source-notes/dbms-batch-a.md (S1 slides ch7: 7.11 to 7.17, 7.38 to 7.54; S9 for coverage).
+     Claims and sources: docs/content/SOURCES.md (rows for dbms-functional-dependency). When an outside reader has gone through it, fill the "Checked by" cells of those rows. -->
 
 ## Overview
 
@@ -14,7 +16,7 @@ A functional dependency says that if two rows agree on some columns, they must a
 
 ## Topic: What a functional dependency is
 
-**Definition:** X → Y holds on a table when any two rows that have the same values in X also have the same values in Y. We say X determines Y.
+**Definition:** X → Y holds on a table design when, in every legal table, any two rows that have the same values in X also have the same values in Y. We say X determines Y.
 
 **Why:** It captures real-world rules, such as "a roll number has exactly one name", that column types cannot express.
 
@@ -66,7 +68,7 @@ A functional dependency says that if two rows agree on some columns, they must a
 
 **Definition:** The closure of a set of columns X, written X+, is every column that X determines. To compute it, start with X, then keep adding the right side of any dependency whose left side is already inside the result, until nothing new is added.
 
-**Why:** One method answers the two questions interviewers ask most: is X a key (X+ is every column), and does X → Y hold (Y is inside X+).
+**Why:** One method answers the two questions interviewers ask most: is X a super key (X+ is every column), and does X → Y hold (Y is inside X+).
 
 **Example:** R(A, B, C, D, E) with A → B, B → C and CD → E. Find (AD)+. Start with AD. A → B adds B, giving ABD. B → C adds C, giving ABCD. CD → E adds E, giving ABCDE. That is every column, so AD is a super key. A+ is ABC and D+ is D, so neither part alone is a key, and AD is a candidate key.
 
@@ -74,13 +76,13 @@ A functional dependency says that if two rows agree on some columns, they must a
 
 ## Topic: Canonical cover
 
-**Definition:** A canonical cover is a smaller set of dependencies with the same closure, with no extra column in any dependency and each left side appearing once.
+**Definition:** A canonical cover is a simpler set of dependencies with the same closure, with no extra column in any dependency and each left side appearing once.
 
 **Why:** Checking fewer, simpler dependencies after every update is cheaper.
 
 **Example:** From {A → B, B → C, A → C}, the dependency A → C is already implied by A → B and B → C, so it can go. The canonical cover is {A → B, B → C}.
 
-**Failure:** This is asked less often than closure; know the idea. Be careful about direction when removing a column from a dependency: removing one from the left side can make the rule stronger, and removing one from the right can make it weaker.
+**Failure:** Know the idea; it is a smaller topic than closure. Be careful about direction when removing a column from a dependency: removing one from the left side can make the rule stronger, and removing one from the right can make it weaker.
 
 ## Questions
 

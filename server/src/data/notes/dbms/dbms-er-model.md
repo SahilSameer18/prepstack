@@ -1,12 +1,14 @@
 ---
 id: dbms-er-model
 title: ER Model
+lastChecked: 2026-11-10
 next: dbms-keys-constraints
 roadmapSteps: backend:database-design
 ---
 
-<!-- DRAFT written 10 Nov 2026 from docs/content/source-notes/dbms-batch-d.md (S1d slides ch6, S4d supplied notes).
-     Not reviewed: no lastChecked. To publish: outside reader + REVIEW_CHECKLIST.md, add lastChecked, move this file up one folder, delete the old section from dbms.legacy.js. -->
+<!-- Published 10 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date this section was checked against its sources by the author, not by a second person.
+     Written from docs/content/source-notes/dbms-batch-d.md (S1d slides ch6, S4d supplied notes).
+     Claims and sources: docs/content/SOURCES.md (rows for dbms-er-model). When an outside reader has gone through it, fill the "Checked by" cells of those rows. -->
 
 ## Overview
 
@@ -20,7 +22,7 @@ The entity-relationship model is a way to design a database on paper before buil
 
 **Example:** For a college: Student(roll_no, name, date_of_birth) and Course(course_id, title, credits). roll_no identifies a student and course_id identifies a course, so they are the primary keys, underlined in the diagram. A rectangle in the diagram is an entity set.
 
-**Failure:** No two entities of a set may have exactly the same values for all attributes. If that could happen, add an attribute that tells them apart.
+**Failure:** The key attributes must tell the entities of a set apart: no two entities may have the same key values. If they could, add an attribute that tells them apart.
 
 ## Topic: Types of attributes
 
@@ -40,7 +42,7 @@ The entity-relationship model is a way to design a database on paper before buil
 
 **Example:** enrolls connects Student and Course and has its own attribute grade. A ternary relationship: students work on projects under an instructor, so proj_guide connects instructor, student and project. A role example: Course appears twice in prerequisite, once as the course and once as the prerequisite course. A diamond in the diagram is a relationship set.
 
-**Failure:** Most relationships are binary. A ternary relationship is worth using only when the three-way association cannot be broken into two-way ones without losing meaning.
+**Failure:** Most relationships are binary. Non-binary relationships are rare. Use one only when the three-way fact cannot be expressed as binary ones without losing meaning.
 
 ## Topic: Cardinality and participation
 
@@ -60,17 +62,17 @@ The entity-relationship model is a way to design a database on paper before buil
 
 **Example:** A section of a course: sec_id, semester and year do not identify a section alone, because many courses have a section "1" in "Fall 2026". Together with the owner's key course_id they do. The primary key of Section is (course_id, sec_id, semester, year). In a diagram the weak entity is a double rectangle, its discriminator has a dashed underline, and the identifying relationship is a double diamond.
 
-**Failure:** A weak entity depends on its owner's existence. An entity set that is not weak is a strong entity set. The relationship between a weak set and its owner needs no table of its own, because the weak entity's table already contains the owner's key.
+**Failure:** A weak entity is identified through its owner and depends on it. An entity set that is not weak is a strong entity set. The relationship between a weak set and its owner needs no table of its own, because the weak entity's table already contains the owner's key.
 
 ## Topic: Keys of relationship sets
 
-**Definition:** The primary key of a relationship set is made of the primary keys of the entity sets that take part, plus its own attributes if any. The choice of the minimal key depends on the cardinality.
+**Definition:** A relationship set has the primary keys of the entity sets that take part, plus its own attributes, as its columns. Its primary key is built from the participants' keys, and which ones are needed depends on the cardinality.
 
 **Why:** It tells you how many times the same pair can be related.
 
 **Example:** For many to many, such as enrolls, the key is both keys together: (roll_no, course_id). For one to many, the key of the "many" side is enough: each student has one department, so roll_no alone identifies the relationship. For one to one, either side's key works.
 
-**Failure:** If the same pair of entities may be related more than once (for example a student retaking a course in different semesters), the key needs an extra attribute such as semester.
+**Failure:** The key above allows each pair to be related only once. If the same pair can be related again later (a student retaking a course), the design needs something that tells the occurrences apart, such as a semester.
 
 ## Topic: From an ER diagram to tables
 
@@ -81,18 +83,22 @@ The entity-relationship model is a way to design a database on paper before buil
 **Example:** For the college design:
 ```sql
 CREATE TABLE department (dept_id INT PRIMARY KEY, name VARCHAR(50));
-CREATE TABLE student (roll_no INT PRIMARY KEY, name VARCHAR(50),
-                      dept_id INT NOT NULL REFERENCES department(dept_id));  -- one to many, total on student
-CREATE TABLE student_phone (roll_no INT REFERENCES student(roll_no), phone VARCHAR(15),
-                            PRIMARY KEY (roll_no, phone));                   -- multivalued attribute
+CREATE TABLE student (roll_no INT PRIMARY KEY, name VARCHAR(50), dept_id INT NOT NULL,
+                      FOREIGN KEY (dept_id) REFERENCES department (dept_id));   -- one to many, total on student
+CREATE TABLE student_phone (roll_no INT, phone VARCHAR(15),
+                            PRIMARY KEY (roll_no, phone),
+                            FOREIGN KEY (roll_no) REFERENCES student (roll_no));   -- multivalued attribute
 CREATE TABLE course (course_id INT PRIMARY KEY, title VARCHAR(80));
-CREATE TABLE enrollment (roll_no INT REFERENCES student(roll_no), course_id INT REFERENCES course(course_id),
-                         grade CHAR(1), PRIMARY KEY (roll_no, course_id));   -- many to many
-CREATE TABLE section (course_id INT REFERENCES course(course_id), sec_id INT, semester VARCHAR(10), year INT,
-                      PRIMARY KEY (course_id, sec_id, semester, year));      -- weak entity
+CREATE TABLE enrollment (roll_no INT, course_id INT, grade CHAR(1),
+                         PRIMARY KEY (roll_no, course_id),
+                         FOREIGN KEY (roll_no) REFERENCES student (roll_no),
+                         FOREIGN KEY (course_id) REFERENCES course (course_id));   -- many to many
+CREATE TABLE section (course_id INT, sec_id INT, semester VARCHAR(10), year INT,
+                      PRIMARY KEY (course_id, sec_id, semester, year),
+                      FOREIGN KEY (course_id) REFERENCES course (course_id));   -- weak entity
 ```
 
-**Failure:** If participation on the "many" side is partial, the foreign key column must allow NULL for entities with no partner, which is why some designers use a separate table for that relationship. A subgroup of an entity set, such as instructor as a kind of person, can be built either as one table for the general set plus one per subgroup holding the general key, or as one table per subgroup with all attributes; the first needs a join to read one entity, the second can repeat data.
+**Failure:** If participation on the "many" side is partial, the foreign key column must allow NULL for entities with no partner, which is why some designers use a separate table for that relationship. A subgroup of an entity set, such as instructor as a kind of person, can be built either as one table for the general set plus one per subgroup holding the general key, or as one table per entity set with all inherited attributes (a person who is in no subgroup then needs a table of their own, and a person in two subgroups is repeated); the first needs a join to read one entity, the second can repeat data.
 
 ## Questions
 
@@ -116,7 +122,7 @@ Put it in its own table with the entity's primary key and the attribute, one row
 
 - Treating a multivalued attribute as a column holding a list. It needs its own table.
 - Mixing up participation and cardinality. One is the minimum (must it take part), the other the maximum (how many).
-- Storing a derived attribute such as age, which goes out of date. Compute it from date_of_birth.
+- Storing a derived attribute such as age, which goes out of date, instead of computing it from date_of_birth.
 
 ## Quiz
 

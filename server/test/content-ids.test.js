@@ -165,7 +165,7 @@ describe('notes numbers worked out from the data', () => {
     assert.equal(subjectStats([{ id: 'os-a', title: 'A', topics: [] }]).lastChecked, null);
   });
   it('the real subjects give sensible numbers (the Notes page no longer types them by hand)', () => {
-    assert.deepEqual(SUBJECTS.map((slug) => subjectStats(realData(slug).sections).topicCount), [29, 17, 19, 19]);
+    assert.deepEqual(SUBJECTS.map((slug) => subjectStats(realData(slug).sections).topicCount), [29, 68, 19, 19]);
   });
 });
 

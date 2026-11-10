@@ -1,12 +1,14 @@
 ---
 id: dbms-advanced-concepts
 title: Advanced Concepts
+lastChecked: 2026-11-10
 next: none
 roadmapSteps: backend:database-design
 ---
 
-<!-- DRAFT written 10 Nov 2026 from docs/content/source-notes/dbms-batch-d.md (S1d slides ch15, ch16, ch21; S7d Wikipedia CAP, shard, replication; S2d PostgreSQL chapter 26) and dbms-batch-c.md (S2c EXPLAIN, S8c MySQL EXPLAIN).
-     Not reviewed: no lastChecked. To publish: outside reader + REVIEW_CHECKLIST.md, add lastChecked, move this file up one folder, delete the old section from dbms.legacy.js. -->
+<!-- Published 10 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date this section was checked against its sources by the author, not by a second person.
+     Written from docs/content/source-notes/dbms-batch-d.md (S1d slides ch15, ch16, ch21; S7d Wikipedia CAP, shard, replication; S2d PostgreSQL chapter 26) and dbms-batch-c.md (S2c EXPLAIN, S8c MySQL EXPLAIN).
+     Claims and sources: docs/content/SOURCES.md (rows for dbms-advanced-concepts). When an outside reader has gone through it, fill the "Checked by" cells of those rows. -->
 
 ## Overview
 
@@ -14,13 +16,13 @@ This section covers what a database does behind the scenes and what happens when
 
 ## Topic: How a query is optimized
 
-**Definition:** The query processor translates a query into relational algebra, then the optimizer picks the cheapest plan from many equivalent ones. A plan says which algorithm to use for each operation. The cost of each plan is estimated from statistics kept in the catalog, such as the number of rows and the number of distinct values of a column.
+**Definition:** The query processor translates a query, conceptually into relational algebra, then the optimizer picks the cheapest plan from many equivalent ones. A plan says which algorithm to use for each operation. The cost of each plan is estimated from statistics kept in the catalog, such as the number of rows and the number of distinct values of a column.
 
 **Why:** The difference between two plans for the same query can be enormous, in some cases seconds versus days.
 
-**Example:** Find the titles of courses taught by Music instructors, with 1,000 instructors (20 in Music) and 4,000 teaches rows. Joining instructor and teaches first creates an intermediate result of 4,000 rows, and then the Music filter cuts it to 80. Filtering instructors to Music first gives 20 rows, and joining those with teaches gives 80 rows at once. Doing the selection as early as possible is called pushing the selection down.
+**Example:** Find the titles of courses taught by Music instructors, with 1,000 instructors (20 in Music), 4,000 teaches rows and about 4 teaches rows per instructor (an invented illustration). Joining instructor and teaches first creates an intermediate result of 4,000 rows, and then the Music filter cuts it to 80. Filtering instructors to Music first gives 20 rows, and joining those with teaches gives 80 rows at once. Doing the selection as early as possible is called pushing the selection down.
 
-**Failure:** The optimizer chooses the lowest estimated cost, and estimates come from statistics that can be out of date. Join order matters too: the optimizer tries to compute the join that gives the smallest intermediate result first. Equivalence rules do not hold for every operation: for example, an outer join is not the same as an inner join with the same filter, and outer joins are not associative.
+**Failure:** The optimizer chooses the lowest estimated cost, and estimates come from statistics that can be inaccurate. Join order matters too: a good plan computes the join with the smallest intermediate result first, and the optimizer searches for such orders using estimated costs. Equivalence rules do not hold for every operation: for example, an outer join is not the same as an inner join with the same filter, and outer joins are not associative.
 
 ## Topic: Reading a query plan with EXPLAIN
 
@@ -43,7 +45,7 @@ EXPLAIN SELECT * FROM tenk1 WHERE unique1 = 42;
 
 **Example:** The textbook's example: 5,000 student rows in 100 blocks and 10,000 takes rows in 400 blocks. A worst-case nested-loop join with student as the outer table needs 5,000 x 400 + 100 = 2,000,100 block transfers. If the smaller table, student, fits in memory, it needs only 100 + 400 = 500.
 
-**Failure:** A plain nested loop works for any join condition but is expensive. Merge and hash joins need equality conditions on the join keys. Interview answer: the database picks the algorithm; you influence it with indexes and with queries that let the optimizer use them.
+**Failure:** A plain nested loop works for any join condition but is expensive. Merge and hash joins usually need equality conditions on the join keys. Interview answer: the database picks the algorithm; you influence it with indexes and with queries that let the optimizer use them.
 
 ## Topic: Replication
 
@@ -51,20 +53,20 @@ EXPLAIN SELECT * FROM tenk1 WHERE unique1 = 42;
 
 **Why:** It gives availability when a machine fails, lower latency when a copy is nearby, and more read capacity.
 
-**Example:** One primary and two replicas. A write goes to the primary and is copied to both. Replicas can answer reads. If the primary fails, one replica is promoted. Replication is usually two or three copies, in one data centre to survive machine failures or in several to survive a data-centre failure.
+**Example:** One primary and two replicas. A write goes to the primary and is copied to both. Replicas can answer reads. If the primary fails, a replica has to be promoted, which needs a failover procedure. Replication is usually two or three copies, in one data centre to survive machine failures or in several to survive a data-centre failure.
 
 **Failure:** Synchronous replication waits until the copies have the change before the commit finishes, so a failover loses nothing, but it is slower; PostgreSQL's manual says a fully synchronous setup over a slow network might cut performance by more than half. Asynchronous replication does not wait, so a replica can serve slightly stale reads (replication lag) and some committed transactions can be lost on a failover. Multi-leader setups accept writes on several nodes and need conflict handling such as last-write-wins.
 
 ## Topic: Partitioning and sharding
 
-**Definition:** Partitioning splits a table into pieces. Horizontal partitioning splits by rows, and when the pieces live on different servers each piece is called a shard. Vertical partitioning splits by columns.
+**Definition:** Partitioning splits a table into pieces. Horizontal partitioning splits by rows; a horizontal partition, often kept on its own server, is called a shard. Vertical partitioning splits by columns.
 
 **Why:** One machine eventually cannot hold all the data or take all the load. Shards also make tables and indexes smaller.
 
 **Example:** With 3 nodes and a hash of user_id mod 3, the user with id 7 goes to node 1, and the user with id 9 goes to node 0. A lookup of one user visits one node. A range query on user_id from 7 to 9 has to ask all three. With range partitioning and a partitioning vector [5, 11], value 2 goes to node 0, value 8 to node 1 and value 20 to node 2, so a range query touches only a few nodes.
 ```text
 hash: point query = 1 node, range query = all nodes
-range: point query = 1 node, range query = a few nodes, but a hot range can overload one node
+range: point query = 1 node, range query = a few nodes; a range query that fetches many blocks is served by few nodes, which wastes parallelism
 ```
 
 **Failure:** Sharding makes queries more complex: a query that joins across shards is harder, backups need coordination, and schema changes are harder. Replication copies the same data; sharding splits different data. They are often combined, with each shard replicated. A commonly given advice is to shard only after cheaper optimizations have been tried.
@@ -77,7 +79,7 @@ range: point query = 1 node, range query = a few nodes, but a hot range can over
 
 **Example:** Two data centres lose their connection. If a client writes to one, the system must choose: refuse requests that could not be consistent (keep consistency, lose availability), or answer from each side with possibly different data (keep availability, risk inconsistency). Without a partition, a system can have both.
 
-**Failure:** "Pick any two of three" is misleading. A real distributed system cannot avoid partitions, so the real choice is between consistency and availability while a partition lasts. CAP consistency (latest write) is not the same as ACID consistency (constraints hold), and CAP availability is not the same as high availability. A refinement, PACELC, adds that even without a partition there is a trade-off between latency and consistency.
+**Failure:** "Pick any two of three" is misleading. Partitions cannot be avoided in a real distributed system, so partition tolerance is generally required and the real choice is between consistency and availability while a partition lasts. CAP consistency (latest write) is not the same as ACID consistency (constraints hold), and CAP availability is not the same as high availability. A refinement, PACELC, adds that even without a partition there is a trade-off between latency and consistency.
 
 ## Questions
 
@@ -87,7 +89,7 @@ It takes the many equivalent ways to run a query and picks the one with the lowe
 
 ### What do the two numbers in an EXPLAIN cost, such as cost=0.00..445.00, mean?
 
-The estimated cost to return the first row and the estimated total cost to return all rows, in arbitrary units used to compare plans.
+The estimated start-up cost (before the first row can be returned) and the estimated total cost, in arbitrary units used to compare plans.
 
 ### What is the difference between synchronous and asynchronous replication?
 
@@ -103,13 +105,13 @@ A distributed data store can give at most two of consistency, availability and p
 
 ## Mistakes
 
-- Saying CAP means you can pick any two of the three. You cannot drop partition tolerance in a distributed system; the choice is consistency or availability during a partition.
+- Saying CAP means you can pick any two of the three. Partition tolerance is generally required in a distributed system; the choice is consistency or availability during a partition.
 - Treating replication and sharding as the same thing. One copies data, the other splits it.
-- Assuming the optimizer knows the true cost. It picks the lowest estimated cost, using statistics that can be wrong.
+- Assuming the optimizer knows the true cost. It picks the lowest estimated cost, using statistics that can be inaccurate.
 
 ## Quiz
 
-### Instructors: 1,000 rows, 20 in Music. Teaches: 4,000 rows. Which plan creates the smaller intermediate result?
+### Instructors: 1,000 rows, 20 in Music. Teaches: 4,000 rows, about 4 per instructor. Which plan creates the smaller intermediate result?
 
 - [ ] Join instructor and teaches first, then filter on Music
 - [x] Filter instructor to Music first, then join with teaches
@@ -152,7 +154,7 @@ Explanation: Asynchronous replication does not wait for the replica, so a failov
 - [x] Consistency and availability
 - [ ] Speed and cost
 
-Explanation: Partitions cannot be avoided, so tolerating them is not optional. While the partition lasts, the system either refuses some requests to stay consistent or answers them and risks inconsistent data.
+Explanation: Partitions cannot be avoided, so tolerating them is generally required. While the partition lasts, the system either refuses some requests to stay consistent or answers them and risks inconsistent data.
 
 ## Diagram
 
