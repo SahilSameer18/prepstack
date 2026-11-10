@@ -10,6 +10,11 @@ const skills = require('../src/services/skills.service');
 const { ROADMAP_SLUGS } = require('../src/services/analyzerContext.service');
 
 const { catalog } = skills;
+// ref -> readable title, built from the real notes data and the Blind 75 seed (the app builds the same map from the database)
+const titles = Object.fromEntries([
+  ...t.sheetSeedData()[0].topics.map((tp) => [`dsa:blind-75:${tp.id}`, tp.title.trim()]),
+  ...['os', 'dbms', 'cn', 'oops'].flatMap((subject) => require(`../src/data/notes/${subject}.js`).sections.map((sec) => [`notes:${subject}:${sec.id}`, sec.title])),
+]);
 const match = (text) => skills.matchSkillText(text);
 
 describe('matchSkillText: a skill named in free text', () => {
@@ -72,14 +77,14 @@ describe('the skills added after the first 94', () => {
     assert.equal(match('team spirit').how, 'none');
   });
   it('soft skills point at the Behavioral Prep page and give no external link', () => {
-    const a = skills.adviceFor('Communication');
+    const a = skills.adviceFor('Communication', titles);
     assert.deepEqual(a.resources, []);
     assert.deepEqual(a.actions.map((x) => [x.kind, x.path]), [['behavioral', '/behavioral']]);
   });
   it('concurrency points at the OS notes it really relates to, and web basics at the Frontend roadmap', () => {
-    assert.deepEqual(skills.adviceFor('Concurrency & Multithreading').actions[0].sections, ['Processes & Threads', 'Synchronization', 'Deadlocks']);
-    assert.equal(skills.adviceFor('HTML').actions.find((x) => x.kind === 'roadmap').path, '/roadmaps/frontend');
-    assert.equal(skills.adviceFor('Statistics').actions.find((x) => x.kind === 'roadmap').path, '/roadmaps/data-analytics');
+    assert.deepEqual(skills.adviceFor('Concurrency & Multithreading', titles).actions[0].sections, ['Processes & Threads', 'Synchronization', 'Deadlocks']);
+    assert.equal(skills.adviceFor('HTML', titles).actions.find((x) => x.kind === 'roadmap').path, '/roadmaps/frontend');
+    assert.equal(skills.adviceFor('Statistics', titles).actions.find((x) => x.kind === 'roadmap').path, '/roadmaps/data-analytics');
   });
   it('the added tools have an official documentation link and nothing invented (no videos)', () => {
     for (const name of ['HTML', 'CSS', 'Rust', 'C#', 'Tableau', 'Power BI', 'Jenkins', 'Nginx']) {
@@ -92,35 +97,56 @@ describe('the skills added after the first 94', () => {
 
 describe('adviceFor: what a student can do about a skill', () => {
   it('turns the catalog entry into resources and PrepStack actions with paths inside the app', () => {
-    const os = skills.adviceFor('Operating Systems');
+    const os = skills.adviceFor('Operating Systems', titles);
     assert.equal(os.category, 'cs-core');
     assert.ok(os.resources.some((r) => r.type === 'docs') && os.resources.some((r) => r.type === 'video'));
-    assert.deepEqual(os.actions.map((a) => [a.kind, a.path]), [['notes', '/notes/os']]);
+    assert.deepEqual(os.actions.map((a) => [a.kind, a.path]), [['notes', '/notes/os/os-processes-threads']]);
     assert.deepEqual(os.actions[0].sections, ['Processes & Threads', 'CPU Scheduling', 'Synchronization', 'Deadlocks', 'Memory Management']);
   });
   it('lists practice topics, notes, roadmap and project in a stable order', () => {
-    assert.deepEqual(skills.adviceFor('Data Structures').actions.map((a) => a.kind), ['dsa']);
-    assert.equal(skills.adviceFor('Data Structures').actions[0].path, '/dsa/blind-75');
-    assert.deepEqual(skills.adviceFor('REST APIs').actions.map((a) => a.kind), ['notes', 'roadmap', 'project']);
-    assert.equal(skills.adviceFor('Node.js').actions.find((a) => a.kind === 'roadmap').path, '/roadmaps/backend');
+    assert.deepEqual(skills.adviceFor('Data Structures', titles).actions.map((a) => a.kind), ['dsa']);
+    assert.equal(skills.adviceFor('Data Structures', titles).actions[0].path, '/dsa/blind-75');
+    assert.deepEqual(skills.adviceFor('REST APIs', titles).actions.map((a) => a.kind), ['notes', 'roadmap', 'project']);
+    assert.equal(skills.adviceFor('Node.js', titles).actions.find((a) => a.kind === 'roadmap').path, '/roadmaps/backend');
   });
   it('encodes the project stack in the link, and it is a stack the AI page accepts', () => {
-    const a = skills.adviceFor('PostgreSQL').actions.find((x) => x.kind === 'project');
+    const a = skills.adviceFor('PostgreSQL', titles).actions.find((x) => x.kind === 'project');
     assert.equal(a.path, '/ai-projects?stack=PERN%20Stack');
-    assert.equal(skills.adviceFor('Java').actions.find((x) => x.kind === 'project').path, '/ai-projects?stack=Java%20%2F%20Spring%20Boot');
+    assert.equal(skills.adviceFor('Java', titles).actions.find((x) => x.kind === 'project').path, '/ai-projects?stack=Java%20%2F%20Spring%20Boot');
   });
   it('says honestly when PrepStack has nothing for a skill (empty actions) but still gives the learning links', () => {
-    const k = skills.adviceFor('Kubernetes');
+    const k = skills.adviceFor('Kubernetes', titles);
     assert.deepEqual(k.actions, []);
     assert.ok(k.resources.length >= 1);
   });
-  it('returns null for an unknown skill', () => assert.equal(skills.adviceFor('Cobol'), null));
+  it('returns null for an unknown skill', () => assert.equal(skills.adviceFor('Cobol', titles), null));
   it('adviceForReport covers the gaps and the plan, skips met skills and "none", and ignores unknown names', () => {
     const advice = skills.adviceForReport({
       requirements: [{ status: 'met', skillKey: 'React' }, { status: 'missing', skillKey: 'Docker' }, { status: 'partial', skillKey: 'TypeScript' }, { status: 'missing', skillKey: 'none' }, { status: 'missing', skillKey: 'Cobol' }],
-      plan: [{ items: [{ ref: 'none', skillKey: 'Terraform' }, { ref: 'dsa:Graph', skillKey: 'none' }] }],
-    });
+      plan: [{ items: [{ ref: 'none', skillKey: 'Terraform' }, { ref: 'dsa:blind-75:graph', skillKey: 'none' }] }],
+    }, titles);
     assert.deepEqual(Object.keys(advice).sort(), ['Docker', 'Terraform', 'TypeScript']);
+  });
+});
+
+describe('permanent skill ids', () => {
+  it('every skill has a lower-case id made of words joined with "-", and no id is used twice', () => {
+    assert.ok(catalog.every((s) => /^[a-z0-9]+(-[a-z0-9]+)*$/.test(s.id)), 'a skill has a missing or badly written id');
+    assert.equal(new Set(catalog.map((s) => s.id)).size, catalog.length);
+  });
+  it('a skill can be found by its id, and its advice carries the id', () => {
+    for (const s of catalog) assert.equal(skills.skillById(s.id).name, s.name);
+    assert.equal(skills.skillById('no-such-skill'), null);
+    assert.equal(skills.adviceFor('Node.js', titles).id, 'nodejs');
+    assert.equal(skills.adviceFor('C++', titles).id, 'cpp');
+  });
+  it('the notes and DSA mappings use ids, and the advice labels show the readable titles', () => {
+    const os = skills.adviceFor('Operating Systems', titles).actions[0];
+    assert.deepEqual(os.sectionIds, ['os-processes-threads', 'os-cpu-scheduling', 'os-synchronization', 'os-deadlocks', 'os-memory-management']);
+    assert.equal(os.label, 'Read Operating Systems notes: Processes & Threads, CPU Scheduling, Synchronization, Deadlocks, Memory Management');
+    const dsa = skills.adviceFor('Data Structures', titles).actions[0];
+    assert.deepEqual(dsa.topicIds, ['arrays-hashing', 'stack', 'linked-list', 'trees', 'heap-priority-queue', 'trie', 'graph']);
+    assert.equal(dsa.topics[4], 'Heap/Priority Queue');
   });
 });
 
@@ -172,8 +198,8 @@ describe('the catalog itself', () => {
 });
 
 describe('every link into PrepStack still points at something real (the dangling-link test)', () => {
-  const readBlind75Topics = () => t.sheetSeedData()[0].topics.map((topic) => topic.title.trim());
-  const notesSections = (subject) => require(`../src/data/notes/${subject}.js`).sections.map((s) => s.title);
+  const readBlind75Topics = () => t.sheetSeedData()[0].topics.map((topic) => topic.id);
+  const notesSections = (subject) => require(`../src/data/notes/${subject}.js`).sections.map((s) => s.id);
 
   it('the DSA topics exist in the Blind 75 sheet', () => {
     const real = new Set(readBlind75Topics());
@@ -184,7 +210,7 @@ describe('every link into PrepStack still points at something real (the dangling
     const bad = [];
     for (const s of catalog) for (const n of s.prepstack.notes) {
       if (!skills.SUBJECTS[n.subject]) { bad.push(`${s.name}: subject ${n.subject}`); continue; }
-      if (!notesSections(n.subject).includes(n.section)) bad.push(`${s.name}: ${n.subject} / ${n.section}`);
+      if (!notesSections(n.subject).includes(n.sectionId)) bad.push(`${s.name}: ${n.subject} / ${n.sectionId}`);
     }
     assert.deepEqual(bad, []);
   });
@@ -222,7 +248,7 @@ describe('MERN and PERN stacks', () => {
     assert.equal(match('Experience with the MERN stack').name, 'MERN Stack');
   });
   it('they give a roadmap and a project action, and no external link', () => {
-    const a = skills.adviceFor('PERN Stack');
+    const a = skills.adviceFor('PERN Stack', titles);
     assert.deepEqual(a.resources, []);
     assert.deepEqual(a.actions.map((x) => x.kind), ['roadmap', 'project']);
     assert.equal(a.actions[1].path, '/ai-projects?stack=PERN%20Stack');

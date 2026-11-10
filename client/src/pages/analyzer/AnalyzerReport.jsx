@@ -65,7 +65,7 @@ const AnalyzerReport = () => {
   const hours = (report.priorities || []).reduce((n, p) => n + (p.hours || 0), 0);
   const first = report.priorities?.[0];
   // "Start here" links to the first plan item that points at real PrepStack content. No such item: it is shown without a link.
-  const startLink = report.plan?.flatMap((d) => d.items || []).map((i) => refLink(i.ref)).find(Boolean);
+  const startLink = report.plan?.flatMap((d) => d.items || []).map((i) => refLink(i.ref, report.refTitles)).find(Boolean);
   const questionCount = (report.technicalQuestions?.length || 0) + (report.behavioralQuestions?.length || 0);
 
   const tabs = [
@@ -147,7 +147,7 @@ const AnalyzerReport = () => {
                       <p className="text-sm text-fg font-semibold">{d.focus}</p>
                       <ul className="mt-2 space-y-2">
                         {(d.items || []).map((it, i) => {
-                          const l = refLink(it.ref);
+                          const l = refLink(it.ref, report.refTitles);
                           return (
                             <li key={i} className="text-sm text-fg-3 leading-relaxed">
                               {it.task}
@@ -165,7 +165,7 @@ const AnalyzerReport = () => {
                     <h2 className="font-display font-bold text-fg text-base mb-2">Coding topics to practise</h2>
                     <ul className="space-y-2">
                       {report.codingTopics.map((t, i) => {
-                        const l = refLink(t.ref);
+                        const l = refLink(t.ref, report.refTitles);
                         return (
                           <li key={i} className={`${card} text-sm text-fg-3 leading-relaxed`}>
                             {l ? <Link to={l.path} className="text-fg font-semibold hover:text-brand">{l.label}</Link> : <span className="text-fg font-semibold">{t.ref}</span>}

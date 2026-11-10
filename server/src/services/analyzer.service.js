@@ -3,7 +3,7 @@
 // touches a database: the caller passes in a context `ctx` built from the catalog and PrepStack's content:
 //   ctx = {
 //     skillNames: string[]                       the skill catalog (closed list the AI must choose from)
-//     refs:       string[]                       everything a plan item may point to, e.g. "dsa:Arrays & Hashing", "notes:os:Deadlocks", "roadmap:backend"
+//     refs:       string[]                       everything a plan item may point to, e.g. "dsa:blind-75:arrays-hashing", "notes:os:os-deadlocks", "roadmap:backend"
 //     dsaRefs:    string[]                       the "dsa:..." refs (for the likely-coding-topics list)
 //     behavioral: [{ id: number, question: string }]   PrepStack's behavioral question bank
 //   }

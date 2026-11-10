@@ -17,12 +17,15 @@ const generatingNow = new Set();
 // survives restarts. A report is a big AI call and the free AI quota is shared by everyone. The number is in config/limits.js.
 
 // What the browser gets back. The resume is not in here (it is never stored) and neither is the answering model.
-const present = (doc) => {
+const present = (doc, titles) => {
   const o = typeof doc.toObject === 'function' ? doc.toObject() : { ...doc };
   delete o.__v; delete o.aiProvider;
   // What to do about each gap in PrepStack, and the learning links. Worked out on every read from the catalog and never
   // stored, so an improved catalog improves old reports too.
-  o.skillAdvice = adviceForReport(o);
+  o.skillAdvice = adviceForReport(o, titles);
+  // Readable titles for the refs this report points at, worked out on every read (titles can change, the ids in the refs never do)
+  const refs = new Set([...(o.plan || []).flatMap((d) => (d.items || []).map((i) => i.ref)), ...(o.codingTopics || []).map((c) => c.ref)]);
+  o.refTitles = Object.fromEntries([...refs].filter((r) => titles[r]).map((r) => [r, titles[r]]));
   return o;
 };
 
@@ -74,7 +77,7 @@ const createReport = async (req, res, next) => {
       aiProvider: result.aiProvider,
     });
 
-    const report = present(saved);
+    const report = present(saved, ctx.titles);
     return sendSuccess(res, 201, 'Report created successfully', { report, resumeTruncated: resume.truncated }, { report });
   } catch (error) {
     return next(error);
@@ -107,7 +110,9 @@ const getReport = async (req, res, next) => {
     if (!mongoose.isValidObjectId(req.params.id)) return next(new AppError(400, 'Invalid report id'));
     const report = await Report.findOne({ _id: req.params.id, user: req.user._id });
     if (!report) return next(new AppError(404, 'Report not found'));
-    return sendSuccess(res, 200, 'Report fetched successfully', { report: present(report) }, { report: present(report) });
+    const { titles } = await buildContext();
+    const presented = present(report, titles);
+    return sendSuccess(res, 200, 'Report fetched successfully', { report: presented }, { report: presented });
   } catch (error) {
     return next(error);
   }

@@ -80,38 +80,45 @@ const SUBJECTS = { os: 'Operating Systems', dbms: 'DBMS', cn: 'Computer Networks
 const ROADMAP_TITLES = { frontend: 'Frontend', backend: 'Backend', fullstack: 'Full Stack', android: 'Android', 'data-analytics': 'Data Analytics', 'machine-learning': 'Machine Learning' };
 const DSA_SHEET = { slug: 'blind-75', name: 'Blind 75' };
 const bySkill = new Map(catalog.map((s) => [s.name, s]));
+const byId = new Map(catalog.map((s) => [s.id, s]));
+const skillById = (id) => byId.get(id) || null;
 
 /**
- * One skill -> { name, category, resources, actions }.
+ * One skill -> { id, name, category, resources, actions }. `titles` maps a ref ("notes:os:os-deadlocks", "dsa:blind-75:graph") to its readable
+ * title (the context builds it from the database), because the catalog stores permanent ids and the labels need the titles.
  *   resources  the docs link and the video link (external, so they may go out of date)
  *   actions    what PrepStack itself offers: practise DSA topics, read CS notes, follow a roadmap, build a project.
  *              Each action has a `path` inside the PrepStack app. An empty list means PrepStack has nothing for this skill yet.
  */
-const adviceFor = (skillName) => {
+const adviceFor = (skillName, titles) => {
   const s = bySkill.get(skillName);
   if (!s) return null;
   const actions = [];
   const p = s.prepstack;
-  if (p.dsaTopics.length) actions.push({ kind: 'dsa', label: `Practise ${p.dsaTopics.join(', ')}`, path: `/dsa/${DSA_SHEET.slug}`, topics: p.dsaTopics });
+  if (p.dsaTopics.length) {
+    const topics = p.dsaTopics.map((id) => titles[`dsa:${DSA_SHEET.slug}:${id}`] || id);
+    actions.push({ kind: 'dsa', label: `Practise ${topics.join(', ')}`, path: `/dsa/${DSA_SHEET.slug}`, topics, topicIds: p.dsaTopics });
+  }
   const subjects = [...new Set(p.notes.map((n) => n.subject))];
   for (const subject of subjects) {
-    const sections = p.notes.filter((n) => n.subject === subject).map((n) => n.section);
-    actions.push({ kind: 'notes', label: `Read ${SUBJECTS[subject]} notes: ${sections.join(', ')}`, path: `/notes/${subject}`, sections });
+    const sectionIds = p.notes.filter((n) => n.subject === subject).map((n) => n.sectionId);
+    const sections = sectionIds.map((id) => titles[`notes:${subject}:${id}`] || id);
+    actions.push({ kind: 'notes', label: `Read ${SUBJECTS[subject]} notes: ${sections.join(', ')}`, path: `/notes/${subject}/${sectionIds[0]}`, sections, sectionIds }); // opens the first of the sections
   }
   if (p.roadmap) actions.push({ kind: 'roadmap', label: `Follow the ${ROADMAP_TITLES[p.roadmap]} roadmap`, path: `/roadmaps/${p.roadmap}` });
   // soft skills (communication, teamwork, leadership, problem solving) are practised on the Behavioral Prep page
   if (p.behavioral) actions.push({ kind: 'behavioral', label: 'Practise behavioral questions', path: '/behavioral' });
   if (p.projectStack) actions.push({ kind: 'project', label: `Build a project with ${p.projectStack}`, path: `/ai-projects?stack=${encodeURIComponent(p.projectStack)}`, stack: p.projectStack });
-  return { name: s.name, category: s.category, resources: s.resources, actions };
+  return { id: s.id, name: s.name, category: s.category, resources: s.resources, actions };
 };
 
 /** Advice for every skill a report points at (the gaps and the plan), keyed by skill name. Computed on every read, so a better
  *  catalog improves old reports too and no link is ever stored. */
-const adviceForReport = (report) => {
+const adviceForReport = (report, titles) => {
   const names = new Set();
   for (const r of report.requirements || []) if (r.status !== 'met' && r.skillKey && r.skillKey !== 'none') names.add(r.skillKey);
   for (const d of report.plan || []) for (const i of d.items || []) if (i.skillKey && i.skillKey !== 'none') names.add(i.skillKey);
-  return Object.fromEntries([...names].map((n) => [n, adviceFor(n)]).filter(([, a]) => a));
+  return Object.fromEntries([...names].map((n) => [n, adviceFor(n, titles)]).filter(([, a]) => a));
 };
 
-module.exports = { matchSkillText, makeIndex, adviceFor, adviceForReport, editDistance, findBounded, catalog, DSA_SHEET, SUBJECTS, ROADMAP_TITLES };
+module.exports = { matchSkillText, makeIndex, adviceFor, adviceForReport, skillById, editDistance, findBounded, catalog, DSA_SHEET, SUBJECTS, ROADMAP_TITLES };

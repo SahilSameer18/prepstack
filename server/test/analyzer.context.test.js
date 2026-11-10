@@ -51,7 +51,8 @@ describe('buildContext: built from what PrepStack really contains', () => {
 
   it('lists the Blind 75 topics from the database, and the six roadmaps', async () => {
     const ctx = await ctxService.buildContext();
-    assert.deepEqual(ctx.dsaRefs, ['dsa:Arrays', 'dsa:Strings']);
+    assert.deepEqual(ctx.dsaRefs, ['dsa:blind-75:arrays', 'dsa:blind-75:strings']);
+    assert.deepEqual([ctx.titles['dsa:blind-75:arrays'], ctx.titles['dsa:blind-75:strings']], ['Arrays', 'Strings']);
     for (const slug of ctxService.ROADMAP_SLUGS) assert.ok(ctx.refs.includes(`roadmap:${slug}`));
     assert.equal(ctx.skillNames.length, catalog.length);
     assert.equal(ctx.behavioral.length, behavioral.length);
@@ -61,13 +62,15 @@ describe('buildContext: built from what PrepStack really contains', () => {
     assert.ok(!(await ctxService.buildContext()).refs.some((r) => r.startsWith('notes:')));
     await Notes.create({ subject: 'Operating Systems', subjectSlug: 'os', sections: [{ id: 'os-deadlocks', title: 'Deadlocks' }, { id: 'os-scheduling', title: 'Scheduling' }] });
     const ctx = await ctxService.buildContext();
-    assert.ok(ctx.refs.includes('notes:os:Deadlocks') && ctx.refs.includes('notes:os:Scheduling'));
+    assert.ok(ctx.refs.includes('notes:os:os-deadlocks') && ctx.refs.includes('notes:os:os-scheduling'));
+    assert.deepEqual([ctx.titles['notes:os:os-deadlocks'], ctx.titles['notes:os:os-scheduling']], ['Deadlocks', 'Scheduling']);
   });
-  it('a renamed topic is picked up on its own (nothing is hard-coded)', async () => {
+  it('a renamed topic keeps its ref (the id) and shows the new title', async () => {
     const { DSASheet } = t.getModels();
     await DSASheet.updateOne({ slug: 'blind-75' }, { $set: { 'topics.0.title': 'Hashing Basics' } });
     const ctx = await ctxService.buildContext();
-    assert.ok(ctx.refs.includes('dsa:Hashing Basics') && !ctx.refs.includes('dsa:Arrays'));
+    assert.ok(ctx.refs.includes('dsa:blind-75:arrays'));
+    assert.equal(ctx.titles['dsa:blind-75:arrays'], 'Hashing Basics');
   });
   it('has no duplicate links', async () => {
     const ctx = await ctxService.buildContext();

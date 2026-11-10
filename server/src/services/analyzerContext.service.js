@@ -2,8 +2,9 @@
 // anything else (see analyzer.service.js), so a report can never link to a page or a skill that does not exist.
 //
 //   skills       the catalog of skill names (src/data/skillCatalog.json)
-//   dsa:<topic>  topics of the Blind 75 sheet (read from the database, so a renamed topic is picked up on its own)
-//   notes:<subject>:<section>   sections of the CS notes (read from the database)
+//   dsa:<sheet>:<topicId>       topics of the Blind 75 sheet, by permanent topic id (read from the database)
+//   notes:<subject>:<sectionId> sections of the CS notes, by permanent section id (read from the database)
+//   titles       ref -> readable title, so a report can show "Deadlocks" for notes:os:os-deadlocks. Titles can change, ids never do.
 //   roadmap:<slug>              the six roadmaps. The roadmap content lives in the client, so the slugs are listed here;
 //                               test/analyzer.context.test.js fails if they drift from client/src/data/roadmaps.js
 //   behavioral   PrepStack's behavioral question bank (id and text), copied from the client for the same reason
@@ -20,16 +21,18 @@ const aliases = Object.fromEntries(catalog.map((s) => [s.name, s.aliases]));
 
 const buildContext = async () => {
   const [sheet, notes] = await Promise.all([
-    DSASheet.findOne({ slug: DSA_SHEET_SLUG }).select('topics.title').lean(),
-    Notes.find({}).select('subjectSlug sections.title').lean(),
+    DSASheet.findOne({ slug: DSA_SHEET_SLUG }).select('topics.id topics.title').lean(),
+    Notes.find({}).select('subjectSlug sections.id sections.title').lean(),
   ]);
-  const dsaRefs = [...new Set((sheet?.topics || []).map((t) => `dsa:${String(t.title).trim()}`))]; // one Blind 75 title has a stray leading space
-  const notesRefs = notes.flatMap((n) => (n.sections || []).map((s) => `notes:${n.subjectSlug}:${s.title}`));
+  const dsaItems = (sheet?.topics || []).map((t) => [`dsa:${DSA_SHEET_SLUG}:${t.id}`, String(t.title).trim()]); // one Blind 75 title has a stray leading space
+  const notesItems = notes.flatMap((n) => (n.sections || []).map((s) => [`notes:${n.subjectSlug}:${s.id}`, s.title]));
+  const dsaRefs = dsaItems.map(([ref]) => ref);
   return {
     skillNames,
     aliases, // used to recognise a skill under another name ("ts" for TypeScript) when checking resume tips
     dsaRefs,
-    refs: [...new Set([...dsaRefs, ...notesRefs, ...ROADMAP_SLUGS.map((slug) => `roadmap:${slug}`)])],
+    refs: [...new Set([...dsaRefs, ...notesItems.map(([ref]) => ref), ...ROADMAP_SLUGS.map((slug) => `roadmap:${slug}`)])],
+    titles: Object.fromEntries([...dsaItems, ...notesItems]),
     behavioral,
   };
 };

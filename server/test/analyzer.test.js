@@ -29,10 +29,10 @@ const goodReply = (over = {}) => ({
   technicalQuestions: Array.from({ length: 5 }, (_, i) => ({ question: `Question ${i}?`, why: 'Because the job needs it', resumeAngle: 'Use TaskFlow', followUps: ['Why?'] })),
   behavioralQuestions: [{ bankId: '1', resumeAngle: 'your internship' }, { bankId: '8', resumeAngle: 'TaskFlow' }, { bankId: '10', resumeAngle: 'learning Docker' }],
   plan: [
-    { day: 1, focus: 'Arrays', items: [{ ref: 'dsa:Arrays', skillKey: 'none', task: 'Do five array problems' }], extra: '' },
+    { day: 1, focus: 'Arrays', items: [{ ref: 'dsa:blind-75:arrays', skillKey: 'none', task: 'Do five array problems' }], extra: '' },
     { day: 2, focus: 'Docker', items: [{ ref: 'none', skillKey: 'Docker', task: 'Write a Dockerfile' }], extra: 'Containerize TaskFlow' },
   ],
-  codingTopics: [{ ref: 'dsa:Strings', why: 'Common in screening rounds' }],
+  codingTopics: [{ ref: 'dsa:blind-75:strings', why: 'Common in screening rounds' }],
   resumeTweaks: [],
   ...over,
 });
@@ -90,7 +90,7 @@ describe('POST /api/analyzer: a pasted resume', () => {
   });
   it('fills the plan with real PrepStack links, a skill for tasks PrepStack does not cover, and drops invented links', async () => {
     gemini.reply = goodReply({ plan: [
-      { day: 1, focus: 'x', items: [{ ref: 'dsa:Arrays', skillKey: 'none', task: 'real topic' }, { ref: 'dsa:Invented Topic', skillKey: 'none', task: 'bad' }], extra: '' },
+      { day: 1, focus: 'x', items: [{ ref: 'dsa:blind-75:arrays', skillKey: 'none', task: 'real topic' }, { ref: 'dsa:Invented Topic', skillKey: 'none', task: 'bad' }], extra: '' },
     ] });
     // an invented ref fails the AI schema, so the AI "answers badly" and the next provider is tried: all fake providers reply the same
     const acct = await t.register();
@@ -123,7 +123,7 @@ describe('POST /api/analyzer: a pasted resume', () => {
     await create(acct);
     const p = gemini.prompts[0];
     assert.match(p, /ALLOWED SKILLS: .*React.*Docker/);
-    assert.match(p, /dsa:Arrays\ndsa:Strings/);
+    assert.match(p, /dsa:blind-75:arrays\ndsa:blind-75:strings/);
     assert.match(p, /roadmap:fullstack/);
     assert.match(p, /\n1\. Tell me about yourself\./);
     assert.match(p, /for 7 day\(s\)/);
@@ -171,7 +171,7 @@ describe('POST /api/analyzer: skills, learning links and what to do in PrepStack
     assert.ok(docker.resources.some((x) => x.type === 'docs') && docker.resources.some((x) => x.type === 'video'));
     assert.deepEqual(docker.actions.filter((a) => a.kind === 'roadmap').map((a) => a.path), ['/roadmaps/backend']);
     const os = r.skillAdvice['Operating Systems'];
-    assert.deepEqual(os.actions.map((a) => [a.kind, a.path]), [['notes', '/notes/os']]);
+    assert.deepEqual(os.actions.map((a) => [a.kind, a.path]), [['notes', '/notes/os/os-processes-threads']]);
     assert.ok(!('React' in r.skillAdvice)); // a skill the resume already shows needs no advice
   });
   it('the code finds a skill the AI left as "none" from the requirement\'s own words', async () => {
@@ -205,11 +205,33 @@ describe('POST /api/analyzer: skills, learning links and what to do in PrepStack
     const opened = (await t.api.get(`/api/analyzer/${id}`, { cookies: acct.cookies })).body.data.report;
     assert.ok(opened.skillAdvice.Docker.resources.length >= 1);
   });
+  it('a report carries the readable title of every ref it points at, worked out on read and never stored', async () => {
+    const acct = await t.register();
+    const created = (await create(acct)).body.data.report;
+    assert.deepEqual(created.refTitles, { 'dsa:blind-75:arrays': 'Arrays', 'dsa:blind-75:strings': 'Strings' });
+    const stored = await Report.collection.findOne({ _id: new t.mongoose.Types.ObjectId(created._id) });
+    assert.ok(!('refTitles' in stored));
+    const opened = (await t.api.get(`/api/analyzer/${created._id}`, { cookies: acct.cookies })).body.data.report;
+    assert.deepEqual(opened.refTitles, created.refTitles);
+  });
+  it('after a topic is renamed an old report still points at the same ref and shows the new title', async () => {
+    const { DSASheet } = t.getModels();
+    const acct = await t.register();
+    const id = (await create(acct)).body.data.report._id;
+    await DSASheet.updateOne({ slug: 'blind-75' }, { $set: { 'topics.0.title': 'Renamed Arrays' } });
+    try {
+      const opened = (await t.api.get(`/api/analyzer/${id}`, { cookies: acct.cookies })).body.data.report;
+      assert.equal(opened.plan[0].items[0].ref, 'dsa:blind-75:arrays');
+      assert.equal(opened.refTitles['dsa:blind-75:arrays'], 'Renamed Arrays');
+    } finally {
+      await DSASheet.updateOne({ slug: 'blind-75' }, { $set: { 'topics.0.title': 'Arrays' } });
+    }
+  });
   it('the PrepStack links in the advice point only at real pages (notes subjects, roadmap slugs, the DSA sheet)', async () => {
     gemini.reply = reply();
     const acct = await t.register();
     const r = (await create(acct)).body.data.report;
-    const ok = /^\/(notes\/(os|dbms|cn|oops)|roadmaps\/(frontend|backend|fullstack|android|data-analytics|machine-learning)|dsa\/blind-75|ai-projects\?stack=[^\s]+)$/;
+    const ok = /^\/(notes\/(os|dbms|cn|oops)\/[a-z0-9-]+|roadmaps\/(frontend|backend|fullstack|android|data-analytics|machine-learning)|dsa\/blind-75|ai-projects\?stack=[^\s]+)$/;
     for (const a of Object.values(r.skillAdvice).flatMap((x) => x.actions)) assert.match(a.path, ok);
   });
 });

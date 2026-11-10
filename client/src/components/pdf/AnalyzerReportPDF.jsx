@@ -161,7 +161,7 @@ const AnalyzerReportPDF = ({ report, origin }) => {
                 <Text style={s.bold}>{d.focus}</Text>
                 <View>
                   {(d.items || []).map((it, i) => {
-                    const l = refLink(it.ref);
+                    const l = refLink(it.ref, report.refTitles);
                     return (
                       <View key={i} style={[s.row, { marginTop: 3 }]}>
                         <Text style={s.bullet}>•</Text>
@@ -180,7 +180,7 @@ const AnalyzerReportPDF = ({ report, origin }) => {
           <View>
             <Section title="Coding topics to practise" />
             {report.codingTopics.map((t, i) => {
-              const l = refLink(t.ref);
+              const l = refLink(t.ref, report.refTitles);
               return (
                 <View key={i} style={s.card} wrap={false}>
                   {l ? <Link src={url(l.path)} style={[s.link, s.bold]}>{l.label}</Link> : <Text style={s.bold}>{t.ref}</Text>}
