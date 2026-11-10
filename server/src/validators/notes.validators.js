@@ -28,11 +28,31 @@ const quizItemSchema = z.looseObject({
   explanation: text('quiz explanation'),
 });
 
+// A link to another place is "<sheetSlug>:<topicId>" or "<roadmapSlug>:<stepId>"; the internal-link test checks that it resolves.
+const targetId = (what) => z.string({ error: `${what} is required` }).regex(/^[a-z0-9]+(-[a-z0-9]+)*:[a-z0-9]+(-[a-z0-9]+)*$/, `${what} must look like "blind-75:graph"`);
 const linksSchema = z.looseObject({
-  sheetTopics: z.array(text('sheet topic id')),
-  roadmapSteps: z.array(text('roadmap step id')),
-  next: z.string().trim().min(1).nullable(),
+  sheetTopics: z.array(targetId('sheet topic link')),
+  roadmapSteps: z.array(targetId('roadmap step link')),
+  next: z.string().regex(ID_PATTERN, 'next must be a section id').nullable(),
 }).refine((l) => l.sheetTopics.length + l.roadmapSteps.length > 0, 'links must point to at least one sheet topic or roadmap step');
+
+// A diagram is plain data drawn by one SVG component in the client (kinds: flow, layers, graph), always with a text caption.
+const coordinate = z.number({ error: 'node x and y are required' }).min(0, 'node x and y must be 0 to 100').max(100, 'node x and y must be 0 to 100');
+const diagramSchema = z.discriminatedUnion('kind', [
+  z.looseObject({ kind: z.literal('flow'), caption: text('diagram caption'), steps: z.array(z.looseObject({ label: text('step label') })).min(2, 'a flow needs 2 to 8 steps').max(8, 'a flow needs 2 to 8 steps') }),
+  z.looseObject({ kind: z.literal('layers'), caption: text('diagram caption'), layers: z.array(z.looseObject({ label: text('layer label') })).min(2, 'layers need 2 to 8 entries').max(8, 'layers need 2 to 8 entries') }),
+  z.looseObject({
+    kind: z.literal('graph'),
+    caption: text('diagram caption'),
+    nodes: z.array(z.looseObject({ id: text('node id'), label: text('node label'), x: coordinate, y: coordinate })).min(2, 'a graph needs 2 to 10 nodes').max(10, 'a graph needs 2 to 10 nodes'),
+    edges: z.array(z.looseObject({ from: text('edge from'), to: text('edge to') })),
+  }).superRefine((g, ctx) => {
+    const ids = g.nodes.map((n) => n.id);
+    if (new Set(ids).size !== ids.length) ctx.addIssue({ code: 'custom', message: 'graph node ids must be different from each other' });
+    for (const e of g.edges) if (e.from === e.to) ctx.addIssue({ code: 'custom', message: `graph edge ${e.from} cannot point to itself` });
+    for (const e of g.edges) if (!ids.includes(e.from) || !ids.includes(e.to)) ctx.addIssue({ code: 'custom', message: `graph edge ${e.from} to ${e.to} uses a node that does not exist` });
+  }),
+]);
 
 const isRealDate = (s) => !Number.isNaN(Date.parse(s)) && new Date(s).toISOString().slice(0, 10) === s;
 
@@ -48,6 +68,7 @@ const templateSchema = z.looseObject({
   mistakes: z.array(text('mistake')).min(2, 'a section needs 2 to 3 common mistakes').max(3, 'a section needs 2 to 3 common mistakes'),
   quiz: z.array(quizItemSchema).length(5, 'a section needs exactly 5 quiz questions'),
   links: linksSchema,
+  diagrams: z.array(diagramSchema).max(3, 'at most 3 diagrams per section').optional(),
 });
 
 // Checks one subject (slug: os, dbms, cn, oops; data: { subject, sections }). Returns a list of problems (empty = fine).

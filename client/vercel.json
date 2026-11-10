@@ -3,6 +3,7 @@
   "rewrites": [
     { "source": "/dsa/:slug", "destination": "/app-shell.html" },
     { "source": "/notes/:subject", "destination": "/app-shell.html" },
+    { "source": "/notes/:subject/:sectionId", "destination": "/app-shell.html" },
     { "source": "/roadmaps/:slug", "destination": "/app-shell.html" },
     { "source": "/ai-projects/:id", "destination": "/app-shell.html" }
   ],

@@ -58,6 +58,13 @@ export const router = createBrowserRouter([
             <NotesDetail />
           </ProtectedRoute>
       },
+      {
+        path: "/notes/:subject/:sectionId",
+        element:
+          <ProtectedRoute>
+            <NotesDetail />
+          </ProtectedRoute>
+      },
 
       {
         path: "/roadmaps",

@@ -142,6 +142,9 @@ const byPath = new Map(allPages.map((p) => [p.path, p]));
 export const pageFor = (pathname) => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
   if (clean.startsWith('/analyzer/')) return { ...byPath.get('/analyzer'), path: clean, title: 'Your role report | PrepStack' }; // private report pages: noindex like /analyzer
+  // a notes section (/notes/os/os-deadlocks) is a private page of its subject: same title, noindex
+  const section = clean.match(new RegExp('^/notes/([^/]+)/[^/]+$'));
+  if (section && byPath.has(`/notes/${section[1]}`)) return { ...byPath.get(`/notes/${section[1]}`), path: clean };
   return byPath.get(clean) || { ...NOT_FOUND, path: clean };
 };
 

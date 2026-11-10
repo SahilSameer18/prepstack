@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useNotesSummary } from '../../hooks/useNotes';
+import { SkeletonStat } from '../../components/ui/Skeletons';
+import { formatDate } from '../../utils/formatDate';
 import { Link } from 'react-router-dom';
 import { FiBook, FiSearch, FiArrowRight, FiClock, FiLayers } from "react-icons/fi";
 import { FaCode, FaDatabase, FaNetworkWired, FaSitemap, FaProjectDiagram } from "react-icons/fa";
@@ -11,12 +14,8 @@ const subjects = [
     icon: <FaCode />,
     hoverColor: "var(--data-blue-soft)",   // blue-400
     bg: "bg-info-solid/10", border: "border-info-solid/20",
-    topics: 24,
     description: "Deep dive into process management, memory, and the internals that power every computer.",
-    topicList: ["Processes & Threads", "CPU Scheduling", "Deadlocks", "Memory Management", "Virtual Memory", "File Systems"],
-    lastUpdated: "2 days ago",
     difficulty: "Core",
-    readTime: "~4 hrs",
   },
   {
     title: "DBMS",
@@ -24,12 +23,8 @@ const subjects = [
     icon: <FaDatabase />,
     hoverColor: "var(--data-green-soft)",   // emerald-400
     bg: "bg-ok-solid/10", border: "border-ok-solid/20",
-    topics: 18,
     description: "Master relational databases, SQL, normalization, transactions and indexing concepts.",
-    topicList: ["ER Diagrams", "Normalization", "SQL Queries", "Transactions", "Indexing", "NoSQL Basics"],
-    lastUpdated: "5 days ago",
     difficulty: "Core",
-    readTime: "~3 hrs",
   },
   {
     title: "Computer Networks",
@@ -37,12 +32,8 @@ const subjects = [
     icon: <FaNetworkWired />,
     hoverColor: "var(--data-purple-soft)",   // purple-400
     bg: "bg-violet-solid/10", border: "border-violet-solid/20",
-    topics: 30,
     description: "Understand how the internet works, from OSI layers to TCP/IP, DNS, routing and sockets.",
-    topicList: ["OSI & TCP/IP Model", "HTTP/HTTPS", "DNS & DHCP", "TCP vs UDP", "Routing Protocols", "Socket Programming"],
-    lastUpdated: "1 week ago",
     difficulty: "Core",
-    readTime: "~5 hrs",
   },
   {
     title: "OOPs",
@@ -50,12 +41,8 @@ const subjects = [
     icon: <FaSitemap />,
     hoverColor: "var(--data-orange-soft)",   // orange-400
     bg: "bg-orange-solid/10", border: "border-orange-solid/20",
-    topics: 15,
     description: "Grasp the four pillars of OOP and how design patterns solve real-world software problems.",
-    topicList: ["Classes & Objects", "Inheritance", "Polymorphism", "Abstraction", "Encapsulation", "Design Patterns"],
-    lastUpdated: "3 weeks ago",
     difficulty: "Core",
-    readTime: "~2 hrs",
   },
   {
     title: "System Design",
@@ -63,18 +50,18 @@ const subjects = [
     icon: <FaProjectDiagram />,
     hoverColor: "var(--data-pink-soft)",   // pink-400
     bg: "bg-pink-solid/10", border: "border-pink-solid/20",
-    topics: 12,
     description: "Learn to architect scalable systems: load balancing, caching, microservices and API design.",
-    topicList: ["Scalability", "Load Balancing", "Caching", "Database Design", "Microservices", "API Design"],
-    lastUpdated: "In Progress",
     difficulty: "Advanced",
     comingSoon: true,
-    readTime: "~6 hrs",
   },
 ];
 
-// NoteCard uses pure CSS hover for 60fps GPU performance without React state overhead
-const NoteCard = ({ s }) => {
+// "17 min" under an hour, "3 hrs" above
+const readTimeLabel = (minutes) => (minutes < 60 ? `${minutes} min` : `${Math.round(minutes / 6) / 10} hrs`);
+
+// NoteCard uses pure CSS hover for 60fps GPU performance without React state overhead.
+// stats: this subject's numbers from the API (null while loading, undefined if they could not be loaded)
+const NoteCard = ({ s, stats }) => {
   return (
     <div className="group relative titanium-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 text-left">
       {/* Top colour accent bar on hover */}
@@ -119,27 +106,20 @@ const NoteCard = ({ s }) => {
           {s.description}
         </p>
 
-        {/* Telemetry metadata */}
-        <div className="flex items-center gap-3 text-xs font-ui text-muted mb-4 flex-wrap">
-          <span className="flex items-center gap-1.5"><FiLayers className="text-xs text-muted" />{s.topics} Topics</span>
-          <span className="text-muted">•</span>
-          <span className="flex items-center gap-1.5"><FiClock className="text-xs text-muted" />{s.readTime}</span>
-          <span className="text-muted">•</span>
-          <span className="text-muted">{s.lastUpdated}</span>
-        </div>
-
-        {/* Topic chips */}
-        <div className="flex flex-wrap gap-1.5 mb-6">
-          {s.topicList.slice(0, 4).map((t) => (
-            <span key={t} className="text-xs font-ui px-2 py-0.5 rounded-md bg-elevated/90 border border-ink/[0.08] text-fg-3">
-              {t}
-            </span>
-          ))}
-          {s.topicList.length > 4 && (
-            <span className="text-xs font-ui px-2 py-0.5 rounded-md bg-elevated/90 border border-ink/[0.08] text-muted">
-              +{s.topicList.length - 4} more
-            </span>
-          )}
+        {/* Numbers worked out from the notes themselves */}
+        <div className="flex items-center gap-3 text-xs font-ui text-muted mb-6 flex-wrap min-h-[20px]">
+          {s.comingSoon ? (
+            <span>In progress</span>
+          ) : stats === null ? (
+            <SkeletonStat width="w-40" height="h-4" />
+          ) : stats ? (
+            <>
+              <span className="flex items-center gap-1.5"><FiLayers className="text-xs text-muted" />{stats.sectionCount} sections, {stats.topicCount} topics</span>
+              <span className="text-muted">•</span>
+              <span className="flex items-center gap-1.5"><FiClock className="text-xs text-muted" />{readTimeLabel(stats.readMinutes)} read</span>
+              {stats.lastChecked && (<><span className="text-muted">•</span><span>Checked {formatDate(stats.lastChecked)}</span></>)}
+            </>
+          ) : null}
         </div>
 
         {/* CTA */}
@@ -167,11 +147,10 @@ const NoteCard = ({ s }) => {
 
 const Notes = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const summary = useNotesSummary();
 
-  const filtered = subjects.filter((s) =>
-    s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.topicList.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const term = searchTerm.toLowerCase();
+  const filtered = subjects.filter((s) => s.title.toLowerCase().includes(term) || s.description.toLowerCase().includes(term));
 
   return (
     <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto page-enter text-left">
@@ -179,7 +158,7 @@ const Notes = () => {
       {/* ── HEADER ── */}
       <div className="mb-10 pt-2">
         <div className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-cyan bg-cyan-solid/10 border border-cyan-solid/20 rounded-full px-3 py-1 mb-4">
-          <FiBook /> 5 Core Engineering Tracks
+          <FiBook /> {subjects.filter((s) => !s.comingSoon).length} core subjects
         </div>
         <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-fg tracking-tight mb-3">
           Computer Science <span className="text-brand">Internals</span>
@@ -194,7 +173,7 @@ const Notes = () => {
         <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
         <input
           type="text"
-          placeholder="Search subjects or topics..."
+          placeholder="Search subjects..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full bg-card border border-ink/[0.08] hover:border-ink/[0.15] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)] rounded-xl py-3 pl-12 pr-4 outline-none transition-colors text-sm text-fg placeholder-faint font-normal"
@@ -204,7 +183,7 @@ const Notes = () => {
       {/* ── CARDS GRID ── */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map((s) => (
-          <NoteCard key={s.slug} s={s} />
+          <NoteCard key={s.slug} s={s} stats={summary && summary[s.slug]} />
         ))}
 
         {filtered.length === 0 && (

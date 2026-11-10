@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { FiChevronLeft, FiMenu, FiX, FiInfo, FiAlertTriangle, FiCheckCircle, FiMessageSquare, FiChevronRight } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiMenu, FiX, FiInfo, FiAlertTriangle, FiCheckCircle, FiMessageSquare, FiClock, FiFlag, FiCheck } from 'react-icons/fi';
 import { useNotes } from '../../hooks/useNotes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SkeletonNotesDetail } from '../../components/ui/Skeletons';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
+import Accordion from '../../components/ui/Accordion';
+import Quiz from '../../components/notes/Quiz';
+import Diagram from '../../components/notes/Diagram';
+import { formatDate } from '../../utils/formatDate';
+import { CONTACT_EMAIL } from '../../data/contact';
 
+// ── Sections written before the new template (no lastChecked): their topics keep the old blocks ──────────────────────
 const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderClass }) => {
   if (!items || items.length === 0) return null;
-  
+
   return (
     <div className={`mb-6 p-5 sm:p-6 rounded-2xl border ${bgClass} ${borderClass} shadow-sm text-left`}>
       <h4 className={`flex items-center gap-2 text-xs font-ui font-bold mb-3 uppercase tracking-wider ${colorClass}`}>
@@ -27,32 +33,156 @@ const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderCla
   );
 };
 
+// [topic field, heading, icon, token classes]. Spelled out in full so Tailwind can see every class.
+const LEGACY_BLOCKS = [
+  ['concept', 'Concept', FiInfo, 'text-info', 'bg-info-solid/[0.04]', 'border-info-solid/[0.12]'],
+  ['deepInsight', 'Deep Insight', FiInfo, 'text-violet', 'bg-violet-solid/[0.04]', 'border-violet-solid/[0.12]'],
+  ['why', 'Why it matters', null, 'text-warn', 'bg-warn-solid/[0.04]', 'border-warn-solid/[0.12]'],
+  ['realWorld', 'Real World Examples', FiCheckCircle, 'text-ok', 'bg-ok-solid/[0.04]', 'border-ok-solid/[0.12]'],
+  ['traps', 'Common Traps / Gotchas', FiAlertTriangle, 'text-bad', 'bg-bad-solid/[0.04]', 'border-bad-solid/[0.12]'],
+  ['interviewAnswer', 'How to Answer in Interview', FiMessageSquare, 'text-brand', 'bg-brand/[0.04]', 'border-brand/[0.12]'],
+  ['flow', 'Flow Step-by-Step', null, 'text-cyan', 'bg-cyan-solid/[0.04]', 'border-cyan-solid/[0.12]'],
+  ['conditions', 'Conditions', null, 'text-yellow', 'bg-yellow-solid/[0.04]', 'border-yellow-solid/[0.12]'],
+  ['pcbContains', 'PCB Contains', null, 'text-cyan', 'bg-cyan-solid/[0.04]', 'border-cyan-solid/[0.12]'],
+  ['solution', 'Solution Concept', null, 'text-ok', 'bg-ok-solid/[0.04]', 'border-ok-solid/[0.12]'],
+  ['list', 'Key Takeaways', null, 'text-fg-3', 'bg-ink/[0.02]', 'border-ink/[0.08]'],
+];
+
+const LegacyTopic = ({ topic }) => (
+  <section className="mb-12">
+    <h2 className="text-xl md:text-2xl font-display font-bold text-fg mb-5 text-left">{topic.name}</h2>
+    {LEGACY_BLOCKS.map(([field, title, icon, colorClass, bgClass, borderClass]) => (
+      <SectionBlock key={field} title={title} items={topic[field]} icon={icon} colorClass={colorClass} bgClass={bgClass} borderClass={borderClass} />
+    ))}
+    {topic.followUps && (
+      <div className="mt-8 pt-6 border-t border-ink/[0.08] text-left">
+        <h4 className="text-xs font-ui font-bold text-muted mb-3.5">Interview Follow-up Questions</h4>
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {topic.followUps.map((q, idx) => (
+            <li key={idx} className="bg-card border border-ink/[0.08] p-4 rounded-xl text-fg-3 text-xs sm:text-sm leading-relaxed hover:border-ink/[0.15] transition-colors">{q}</li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </section>
+);
+
+const LegacySection = ({ section }) => (
+  <>
+    {section.overview?.length > 0 && (
+      <div className="mb-8 space-y-2 text-fg-3 text-sm md:text-base leading-relaxed text-left">
+        {section.overview.map((line, i) => <p key={i}>{line}</p>)}
+      </div>
+    )}
+    {section.topics.map((topic) => <LegacyTopic key={topic.name} topic={topic} />)}
+  </>
+);
+
+// ── Sections written to the template (they have lastChecked) ──────────────────────────────────────────────────────────
+const Heading = ({ children }) => <h2 className="text-xl md:text-2xl font-display font-bold text-fg mb-4 text-left">{children}</h2>;
+
+const TopicCard = ({ topic }) => (
+  <article className="rounded-2xl bg-card border border-ink/[0.08] p-5 sm:p-6 text-left space-y-3">
+    <h3 className="font-display text-lg font-bold text-fg">{topic.name}</h3>
+    <p className="text-fg-2 text-[15px] leading-[1.7]">{topic.definition}</p>
+    <div className="rounded-xl bg-warn-solid/[0.04] border border-warn-solid/[0.12] p-4">
+      <p className="text-xs font-ui font-bold uppercase tracking-wider text-warn mb-1.5">Why it matters</p>
+      <p className="text-fg-3 text-sm leading-relaxed">{topic.why}</p>
+    </div>
+    <div className="rounded-xl bg-ok-solid/[0.04] border border-ok-solid/[0.12] p-4">
+      <p className="text-xs font-ui font-bold uppercase tracking-wider text-ok mb-1.5">Example</p>
+      <p className="text-fg-3 text-sm leading-relaxed whitespace-pre-wrap">{topic.example}</p>
+    </div>
+    <div className="rounded-xl bg-bad-solid/[0.04] border border-bad-solid/[0.12] p-4">
+      <p className="text-xs font-ui font-bold uppercase tracking-wider text-bad mb-1.5">How it fails</p>
+      <p className="text-fg-3 text-sm leading-relaxed">{topic.failure}</p>
+    </div>
+  </article>
+);
+
+// "blind-75:graph" -> the sheet page; "backend:learn-sql" -> that step on the roadmap page
+const relatedLinks = (links) => [
+  ...links.sheetTopics.map((target) => ({ key: target, path: `/dsa/${target.split(':')[0]}`, label: `Practise on the ${target.split(':')[0].replace(/-/g, ' ')} sheet` })),
+  ...links.roadmapSteps.map((target) => { const [slug, step] = target.split(':'); return { key: target, path: `/roadmaps/${slug}#${step}`, label: `Roadmap: ${slug.replace(/-/g, ' ')}` }; }),
+];
+
+const ReviewedSection = ({ section }) => (
+  <div className="space-y-12">
+    <div className="space-y-2 text-fg-2 text-[15px] md:text-base leading-[1.75] text-left">
+      {section.overview.map((line, i) => <p key={i}>{line}</p>)}
+    </div>
+
+    <div>
+      <Heading>Topics</Heading>
+      <div className="space-y-5">{section.topics.map((topic) => <TopicCard key={topic.name} topic={topic} />)}</div>
+    </div>
+
+    {section.diagrams?.length > 0 && (
+      <div>
+        <Heading>Diagrams</Heading>
+        <div className="space-y-5">{section.diagrams.map((d) => <Diagram key={d.caption} diagram={d} />)}</div>
+      </div>
+    )}
+
+    <div>
+      <Heading>Common mistakes</Heading>
+      <ul className="space-y-2.5 text-left">
+        {section.mistakes.map((m) => (
+          <li key={m} className="flex items-start gap-3 text-fg-3 text-sm md:text-[15px] leading-relaxed">
+            <FiAlertTriangle className="text-bad mt-1 shrink-0" />
+            <span>{m}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <Heading>Interview questions</Heading>
+      <div className="space-y-3 text-left">
+        {section.questions.map((q) => (
+          <Accordion key={q.question} title={q.question}>
+            <p className="text-fg-3 text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap">{q.answer}</p>
+          </Accordion>
+        ))}
+      </div>
+    </div>
+
+    <div>
+      <Heading>Check yourself</Heading>
+      <Quiz quiz={section.quiz} />
+    </div>
+
+    <div>
+      <Heading>Keep going</Heading>
+      <ul className="grid sm:grid-cols-2 gap-3">
+        {relatedLinks(section.links).map((l) => (
+          <li key={l.key}>
+            <Link to={l.path} className="flex items-center justify-between gap-3 rounded-xl bg-card border border-ink/[0.08] hover:border-ink/[0.2] px-4 py-3 min-h-[44px] text-sm text-fg-2 hover:text-fg transition-colors">
+              <span className="capitalize">{l.label}</span>
+              <FiChevronRight className="text-muted shrink-0" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+);
+
 export default function NotesDetail() {
-  const { subject } = useParams();
+  const { subject, sectionId } = useParams();
   const { data: noteConfig, loading, error } = useNotes(subject);
-  
-  const [selectedTopic, setSelectedTopic] = useState(null);
-  const [prevSubject, setPrevSubject] = useState(subject);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // Reset selected topic when subject param changes
-  if (prevSubject !== subject) {
-    setPrevSubject(subject);
-    setSelectedTopic(null);
-  }
-
-  // Derive activeTopic: selected topic or default to first topic of first section
-  const activeTopic = selectedTopic || (noteConfig?.sections?.[0]?.topics?.[0] ?? null);
 
   // Lock body scroll when mobile sidebar is open
   useEffect(() => {
-    if (isSidebarOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [isSidebarOpen]);
+
+  // A new section starts at the top of the reading area
+  useEffect(() => {
+    document.getElementById('notes-content-container')?.scrollTo({ top: 0 });
+  }, [subject, sectionId]);
 
   if (loading) {
     return <SkeletonNotesDetail />;
@@ -63,13 +193,20 @@ export default function NotesDetail() {
   }
 
   const { sections, subject: subjectTitle } = noteConfig;
-
-  // Count total topics
-  const totalTopics = sections.reduce((acc, s) => acc + s.topics.length, 0);
+  // /notes/os opens the first section; /notes/os/<id> opens that one
+  const index = sectionId ? sections.findIndex((s) => s.id === sectionId) : 0;
+  if (index === -1) {
+    return <PageErrorState title="Section not found" message="This section is not in these notes." backTo={`/notes/${subject}`} backLabel="Back to the notes" />;
+  }
+  const section = sections[index];
+  const prevSection = sections[index - 1] || null;
+  const nextSection = section.links?.next ? sections.find((s) => s.id === section.links.next) || null : sections[index + 1] || null;
+  const reviewed = Boolean(section.lastChecked);
+  const reportHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Mistake in notes: ${section.title} (${section.id})`)}`;
 
   return (
     <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)] -mt-6">
-      
+
       {/* ── Mobile Top Bar ── */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-ink/[0.08] bg-card sticky top-0 z-40">
         <div className="flex items-center gap-3 min-w-0">
@@ -78,7 +215,7 @@ export default function NotesDetail() {
           </Link>
           <div className="min-w-0 text-left">
             <p className="text-xs text-muted font-ui font-semibold">{subjectTitle}</p>
-            <p className="text-sm font-semibold text-fg truncate">{activeTopic?.name || 'Select topic'}</p>
+            <p className="text-sm font-semibold text-fg truncate">{section.title}</p>
           </div>
         </div>
         <button
@@ -86,14 +223,14 @@ export default function NotesDetail() {
           className="flex-shrink-0 flex items-center gap-1.5 px-3.5 min-h-[44px] rounded-lg bg-ink/[0.06] border border-ink/[0.08] text-fg-2 hover:text-fg text-xs font-medium transition-colors"
         >
           <FiMenu className="text-sm" />
-          Topics
+          Sections
         </button>
       </div>
 
       {/* ── Mobile Sidebar Backdrop ── */}
       <AnimatePresence>
         {isSidebarOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => setIsSidebarOpen(false)}
@@ -102,7 +239,7 @@ export default function NotesDetail() {
         )}
       </AnimatePresence>
 
-      {/* ── Sidebar ── */}
+      {/* ── Sidebar: the sections of this subject ── */}
       <div
         className={`
           fixed left-0 md:left-auto md:sticky top-0 md:top-[80px]
@@ -116,12 +253,8 @@ export default function NotesDetail() {
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
       >
-        {/* Sidebar Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-ink/[0.08] flex-shrink-0">
-          <Link
-            to="/notes"
-            className="flex items-center gap-2 min-h-[44px] text-muted hover:text-fg transition-colors text-sm group"
-          >
+          <Link to="/notes" className="flex items-center gap-2 min-h-[44px] text-muted hover:text-fg transition-colors text-sm group">
             <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-ink/5 group-hover:bg-ink/10 transition-colors">
               <FiChevronLeft className="text-sm" />
             </div>
@@ -129,231 +262,82 @@ export default function NotesDetail() {
           </Link>
           <button
             onClick={() => setIsSidebarOpen(false)}
+            aria-label="Close the section list"
             className="md:hidden flex items-center justify-center w-11 h-11 rounded-lg text-muted hover:text-fg hover:bg-ink/10 transition-colors"
           >
             <FiX className="text-sm" />
           </button>
         </div>
 
-        {/* Subject Title */}
         <div className="px-4 pt-4 pb-3 border-b border-ink/[0.06] flex-shrink-0">
           <h2 className="font-display text-base font-bold text-fg mb-0.5">{subjectTitle}</h2>
-          <p className="font-ui text-xs text-muted">{totalTopics} topics</p>
+          <p className="font-ui text-xs text-muted">{sections.length} sections</p>
         </div>
 
-        {/* Topic List */}
-        <div className="flex-1 overflow-y-auto py-3 scrollbar-thin">
-          <div className="px-3 space-y-5">
-            {sections.map((section, sIdx) => (
-              <div key={sIdx}>
-                <p className="text-xs font-ui font-semibold text-muted mb-1.5 px-2">
-                  {section.title}
-                </p>
-                <ul className="space-y-0.5">
-                  {section.topics.map((topic, tIdx) => {
-                    const isActive = activeTopic?.name === topic.name;
-                    return (
-                      <li key={tIdx}>
-                        <button
-                          onClick={() => {
-                            setSelectedTopic(topic);
-                            setIsSidebarOpen(false);
-                          }}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150 flex items-center justify-between group cursor-pointer ${
-                            isActive 
-                              ? 'bg-brand/10 text-brand border border-brand/25 font-semibold' 
-                              : 'text-muted hover:bg-ink/[0.04] hover:text-fg-2 border border-transparent'
-                          }`}
-                        >
-                          <span className="truncate">{topic.name}</span>
-                          {isActive && <span className="w-1.5 h-1.5 rounded-full bg-brand flex-shrink-0 ml-2" />}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
+        <nav aria-label="Sections" className="flex-1 overflow-y-auto py-3 scrollbar-thin">
+          <ul className="px-3 space-y-0.5">
+            {sections.map((s) => {
+              const isActive = s.id === section.id;
+              return (
+                <li key={s.id}>
+                  <Link
+                    to={`/notes/${subject}/${s.id}`}
+                    onClick={() => setIsSidebarOpen(false)}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`w-full text-left px-3 py-2.5 min-h-[44px] rounded-lg text-[13px] font-medium transition-colors duration-150 flex items-center justify-between gap-2 ${
+                      isActive
+                        ? 'bg-brand/10 text-brand border border-brand/25 font-semibold'
+                        : 'text-muted hover:bg-ink/[0.04] hover:text-fg-2 border border-transparent'
+                    }`}
+                  >
+                    <span className="truncate">{s.title}</span>
+                    <span className="flex items-center gap-1.5 shrink-0 text-xs text-muted">
+                      {s.lastChecked && <FiCheck className="text-ok" aria-label="Checked" />}
+                      {s.readMinutes} min
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </div>
 
-      {/* ── Main Content ── */}
+      {/* ── Main Content: one section ── */}
       <div id="notes-content-container" className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-4 py-6 md:px-8 md:py-10">
-          {activeTopic ? (
-            <motion.div
-              key={activeTopic.name}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.15 }}
-            >
-              {/* Breadcrumb */}
-              <div className="flex items-center gap-1.5 text-xs text-muted mb-5 font-ui">
-                <Link to="/notes" className="hover:text-fg-2 transition-colors">{subjectTitle}</Link>
-                <FiChevronRight className="text-xs text-muted" />
-                <span className="text-fg-2 truncate">{activeTopic.name}</span>
-              </div>
-
-              <h1 className="text-2xl md:text-3xl font-display font-bold text-fg mb-6 pb-4 border-b border-ink/[0.08] leading-tight text-left">
-                {activeTopic.name}
-              </h1>
-
-              <SectionBlock 
-                title="Concept" 
-                items={activeTopic.concept} 
-                icon={FiInfo}
-                colorClass="text-info" bgClass="bg-info-solid/[0.04]" borderClass="border-info-solid/[0.12]" 
-              />
-
-              <SectionBlock 
-                title="Deep Insight" 
-                items={activeTopic.deepInsight} 
-                icon={FiInfo}
-                colorClass="text-violet" bgClass="bg-violet-solid/[0.04]" borderClass="border-violet-solid/[0.12]" 
-              />
-
-              <SectionBlock 
-                title="Why it matters" 
-                items={activeTopic.why} 
-                colorClass="text-warn" bgClass="bg-warn-solid/[0.04]" borderClass="border-warn-solid/[0.12]" 
-              />
-
-              <SectionBlock 
-                title="Real World Examples" 
-                items={activeTopic.realWorld} 
-                icon={FiCheckCircle}
-                colorClass="text-ok" bgClass="bg-ok-solid/[0.04]" borderClass="border-ok-solid/[0.12]" 
-              />
-
-              <SectionBlock 
-                title="Common Traps / Gotchas" 
-                items={activeTopic.traps} 
-                icon={FiAlertTriangle}
-                colorClass="text-bad" bgClass="bg-bad-solid/[0.04]" borderClass="border-bad-solid/[0.12]" 
-              />
-
-              <SectionBlock 
-                title="How to Answer in Interview" 
-                items={activeTopic.interviewAnswer} 
-                icon={FiMessageSquare}
-                colorClass="text-brand" bgClass="bg-brand/[0.04]" borderClass="border-brand/[0.12]" 
-              />
-
-              {activeTopic.flow && (
-                <SectionBlock 
-                  title="Flow Step-by-Step" 
-                  items={activeTopic.flow} 
-                  colorClass="text-cyan" bgClass="bg-cyan-solid/[0.04]" borderClass="border-cyan-solid/[0.12]" 
-                />
-              )}
-
-              {activeTopic.conditions && (
-                <SectionBlock 
-                  title="Conditions" 
-                  items={activeTopic.conditions} 
-                  colorClass="text-yellow" bgClass="bg-yellow-solid/[0.04]" borderClass="border-yellow-solid/[0.12]" 
-                />
-              )}
-
-              {activeTopic.pcbContains && (
-                <SectionBlock 
-                  title="PCB Contains" 
-                  items={activeTopic.pcbContains} 
-                  colorClass="text-cyan" bgClass="bg-cyan-solid/[0.04]" borderClass="border-cyan-solid/[0.12]" 
-                />
-              )}
-
-              {activeTopic.solution && (
-                <SectionBlock 
-                  title="Solution Concept" 
-                  items={activeTopic.solution} 
-                  colorClass="text-ok" bgClass="bg-ok-solid/[0.04]" borderClass="border-ok-solid/[0.12]" 
-                />
-              )}
-
-              {activeTopic.list && (
-                <SectionBlock 
-                  title="Key Takeaways" 
-                  items={activeTopic.list} 
-                  colorClass="text-fg-3" bgClass="bg-ink/[0.02]" borderClass="border-ink/[0.08]" 
-                />
-              )}
-
-              {activeTopic.followUps && (
-                <div className="mt-8 pt-6 border-t border-ink/[0.08] text-left">
-                  <h4 className="text-xs font-ui font-bold text-muted mb-3.5">
-                    Interview Follow-up Questions
-                  </h4>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {activeTopic.followUps.map((q, idx) => (
-                      <li key={idx} className="bg-card border border-ink/[0.08] p-4 rounded-xl text-fg-3 text-xs sm:text-sm leading-relaxed hover:border-ink/[0.15] transition-colors">
-                        {q}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Next / Previous Topic Footer */}
-              {(() => {
-                const allTopics = sections.flatMap(s => s.topics);
-                const currentIndex = allTopics.findIndex(t => t.name === activeTopic.name);
-                const prevTopic = currentIndex > 0 ? allTopics[currentIndex - 1] : null;
-                const nextTopic = currentIndex >= 0 && currentIndex < allTopics.length - 1 ? allTopics[currentIndex + 1] : null;
-
-                const scrollToReadingTop = () => {
-                  const el = document.getElementById('notes-content-container');
-                  if (el) el.scrollTo({ top: 0, behavior: 'smooth' });
-                };
-
-                return (
-                  <div className="mt-12 pt-8 border-t border-ink/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {prevTopic ? (
-                      <button
-                        onClick={() => {
-                          setSelectedTopic(prevTopic);
-                          scrollToReadingTop();
-                        }}
-                        className="group flex flex-col items-start p-4 rounded-xl border border-ink/[0.08] bg-card hover:border-ink/[0.2] hover:bg-ink/[0.02] transition-colors text-left"
-                      >
-                        <span className="flex items-center gap-1.5 text-xs text-muted font-ui mb-1">
-                          <FiChevronLeft className="group-hover:-translate-x-0.5 transition-transform" />
-                          Previous Topic
-                        </span>
-                        <span className="text-sm font-semibold text-fg-2 group-hover:text-fg truncate w-full">
-                          {prevTopic.name}
-                        </span>
-                      </button>
-                    ) : <div />}
-
-                    {nextTopic ? (
-                      <button
-                        onClick={() => {
-                          setSelectedTopic(nextTopic);
-                          scrollToReadingTop();
-                        }}
-                        className="group flex flex-col items-end p-4 rounded-xl border border-ink/[0.08] bg-card hover:border-brand/30 hover:bg-brand/[0.02] transition-colors text-right sm:col-start-2"
-                      >
-                        <span className="flex items-center gap-1.5 text-xs text-muted font-ui mb-1">
-                          Next Topic
-                          <FiChevronRight className="group-hover:translate-x-0.5 transition-transform text-brand" />
-                        </span>
-                        <span className="text-sm font-semibold text-fg-2 group-hover:text-fg truncate w-full">
-                          {nextTopic.name}
-                        </span>
-                      </button>
-                    ) : <div />}
-                  </div>
-                );
-              })()}
-
-            </motion.div>
-          ) : (
-            <div className="flex items-center justify-center h-64 text-muted text-sm font-ui">
-              Select a topic from the sidebar to start reading.
+          <motion.div key={section.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}>
+            <div className="flex items-center gap-1.5 text-xs text-muted mb-5 font-ui">
+              <Link to="/notes" className="hover:text-fg-2 transition-colors">{subjectTitle}</Link>
+              <FiChevronRight className="text-xs text-muted" />
+              <span className="text-fg-2 truncate">{section.title}</span>
             </div>
-          )}
+
+            <h1 className="text-2xl md:text-3xl font-display font-bold text-fg mb-4 leading-tight text-left">{section.title}</h1>
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-ui text-muted mb-8 pb-4 border-b border-ink/[0.08]">
+              <span className="flex items-center gap-1.5"><FiClock /> {section.readMinutes} min read</span>
+              {reviewed && <span className="flex items-center gap-1.5"><FiCheck className="text-ok" /> Last checked {formatDate(section.lastChecked)}</span>}
+              <a href={reportHref} className="flex items-center gap-1.5 min-h-[44px] text-fg-3 hover:text-brand transition-colors"><FiFlag /> Report a mistake</a>
+            </div>
+
+            {reviewed ? <ReviewedSection section={section} /> : <LegacySection section={section} />}
+
+            <div className="mt-12 pt-8 border-t border-ink/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {prevSection ? (
+                <Link to={`/notes/${subject}/${prevSection.id}`} className="group flex flex-col items-start p-4 rounded-xl border border-ink/[0.08] bg-card hover:border-ink/[0.2] transition-colors text-left">
+                  <span className="flex items-center gap-1.5 text-xs text-muted font-ui mb-1"><FiChevronLeft className="group-hover:-translate-x-0.5 transition-transform" /> Previous section</span>
+                  <span className="text-sm font-semibold text-fg-2 group-hover:text-fg truncate w-full">{prevSection.title}</span>
+                </Link>
+              ) : <div />}
+              {nextSection ? (
+                <Link to={`/notes/${subject}/${nextSection.id}`} className="group flex flex-col items-end p-4 rounded-xl border border-ink/[0.08] bg-card hover:border-brand/30 transition-colors text-right sm:col-start-2">
+                  <span className="flex items-center gap-1.5 text-xs text-muted font-ui mb-1">Next section <FiChevronRight className="group-hover:translate-x-0.5 transition-transform text-brand" /></span>
+                  <span className="text-sm font-semibold text-fg-2 group-hover:text-fg truncate w-full">{nextSection.title}</span>
+                </Link>
+              ) : <div />}
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>

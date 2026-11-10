@@ -9,7 +9,7 @@ import RouteSeo from "../seo/Seo";
 
 const MainLayout = () => {
   return (
-    <div className="relative min-h-screen flex flex-col bg-canvas text-body selection:bg-brand/25 selection:text-fg overflow-x-hidden">
+    <div className="relative min-h-screen flex flex-col bg-canvas text-body selection:bg-brand/25 selection:text-fg overflow-x-clip">
       {/* ── LUXURY ATMOSPHERIC CANVAS (Subtle architectural grid + radial light) ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         {/* Subtle dot matrix grid with top radial mask */}
@@ -31,7 +31,7 @@ const MainLayout = () => {
       <RouteSeo />
       <ScrollToTop />
       <Navbar />
-      <main className="flex-grow pt-20 sm:pt-24 px-4 pb-12 overflow-x-hidden relative z-10">
+      <main className="flex-grow pt-20 sm:pt-24 px-4 pb-12 overflow-x-clip relative z-10">
         <div className="max-w-7xl mx-auto">
           <Suspense fallback={<PageLoader />}>
             <Outlet /> {/* Render the child route pages here */}

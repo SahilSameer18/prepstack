@@ -29,3 +29,15 @@ export const useNotes = (subject) => {
   return { data, loading, error };
 };
 
+
+// The numbers shown on the Notes list page, by subject slug: { os: { sectionCount, topicCount, readMinutes, lastChecked }, ... }.
+// They are only for display, so a failed load shows nothing instead of an error.
+export const useNotesSummary = () => {
+  const [stats, setStats] = useState(null);
+  useEffect(() => {
+    notesService.getNotesSummary()
+      .then((res) => setStats(Object.fromEntries((res.data || []).map((n) => [n.subjectSlug, n]))))
+      .catch(() => setStats({}));
+  }, []);
+  return stats;
+};

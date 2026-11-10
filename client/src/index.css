@@ -13,8 +13,9 @@ html {
   max-width: 100vw;
 }
 
-html, body, #root {
-  overflow-x: hidden;
+/* clip, not hidden: hidden turns a box into a scroll area, and a position: sticky element inside it (the notes sidebar) then never sticks to the window */
+body, #root {
+  overflow-x: clip;
   max-width: 100vw;
 }
 

@@ -106,6 +106,39 @@ describe('notes validator: the full template, only for a section with lastChecke
   rejects('no links at all', { links: undefined }, /links/);
 });
 
+describe('notes validator: link formats and diagrams', () => {
+  const rejects = (name, over, pattern) => it(`rejects: ${name}`, () => assert.match(check(goodSection(over)).join('\n'), pattern));
+  const links = (over) => ({ sheetTopics: ['blind-75:graph'], roadmapSteps: [], next: null, ...over });
+  const flow = { kind: 'flow', caption: 'Process states', steps: [{ label: 'New' }, { label: 'Ready' }, { label: 'Running' }] };
+  const layers = { kind: 'layers', caption: 'The OSI layers', layers: [{ label: 'Application' }, { label: 'Transport' }] };
+  const graph = { kind: 'graph', caption: 'A cycle', nodes: [{ id: 'a', label: 'P1', x: 10, y: 20 }, { id: 'b', label: 'P2', x: 80, y: 20 }], edges: [{ from: 'a', to: 'b' }, { from: 'b', to: 'a', label: 'waits' }] };
+
+  it('accepts links to a roadmap step, to a sheet topic, and to the next section', () => {
+    assert.deepEqual(check(goodSection({ links: links({ sheetTopics: [], roadmapSteps: ['backend:learn-sql'], next: 'os-memory-management' }) })), []);
+  });
+  rejects('a sheet topic link that is not "<sheet>:<topic>"', { links: links({ sheetTopics: ['graph'] }) }, /must look like "blind-75:graph"/);
+  rejects('a roadmap step link with capitals', { links: links({ roadmapSteps: ['Backend:Step'] }) }, /must look like/);
+  rejects('a next that is not a section id', { links: links({ next: 'Memory Management' }) }, /next must be a section id/);
+
+  it('accepts a section with a flow, a layers and a graph diagram', () => {
+    assert.deepEqual(check(goodSection({ diagrams: [flow, layers, graph] })), []);
+  });
+  it('a section without diagrams is fine (not every topic needs one)', () => {
+    assert.deepEqual(check(goodSection()), []);
+  });
+  rejects('a diagram with no caption', { diagrams: [{ ...flow, caption: '' }] }, /diagram caption/);
+  rejects('a diagram of an unknown kind', { diagrams: [{ kind: 'pie', caption: 'x' }] }, /diagrams/);
+  rejects('a flow with 1 step', { diagrams: [{ ...flow, steps: [{ label: 'Only' }] }] }, /2 to 8 steps/);
+  rejects('a flow with 9 steps', { diagrams: [{ ...flow, steps: Array.from({ length: 9 }, (_, i) => ({ label: `S${i}` })) }] }, /2 to 8 steps/);
+  rejects('layers with 1 entry', { diagrams: [{ ...layers, layers: [{ label: 'Only' }] }] }, /2 to 8 entries/);
+  rejects('a step with no label', { diagrams: [{ ...flow, steps: [{ label: 'a' }, { label: '' }] }] }, /step label/);
+  rejects('a graph node outside the 0 to 100 box', { diagrams: [{ ...graph, nodes: [{ ...graph.nodes[0], x: 120 }, graph.nodes[1]] }] }, /0 to 100/);
+  rejects('a graph with two nodes of the same id', { diagrams: [{ ...graph, nodes: [graph.nodes[0], { ...graph.nodes[1], id: 'a' }] }] }, /node ids must be different/);
+  rejects('a graph edge to a node that does not exist', { diagrams: [{ ...graph, edges: [{ from: 'a', to: 'zzz' }] }] }, /uses a node that does not exist/);
+  rejects('a graph edge from a node to itself', { diagrams: [{ ...graph, edges: [{ from: 'a', to: 'a' }] }] }, /cannot point to itself/);
+  rejects('4 diagrams in one section', { diagrams: [flow, layers, graph, flow] }, /at most 3 diagrams/);
+});
+
 describe('notes numbers worked out from the data', () => {
   it('counts the words a reader sees and skips ids, dates and links', () => {
     const section = { id: 'os-a-b-c', title: 'Two words', lastChecked: '2026-11-09', links: { sheetTopics: ['a:b'] }, topics: [{ name: 'three small words', tips: ['one', 'two three'] }] };
