@@ -491,8 +491,8 @@ erDiagram
 
 | Method | Endpoint    | Auth | Description                               |
 | ------ | ----------- | ---- | ----------------------------------------- |
-| `GET`  | `/`         | None | Returns CS note categories                |
-| `GET`  | `/:subject` | None | Returns core sections/content for subject |
+| `GET`  | `/`         | None | Returns each subject with its section count, topic count, reading time and last checked date (no sections) |
+| `GET`  | `/:subject` | None | Returns the subject with its sections; each section has a permanent `id` and its reading time |
 
 ---
 
@@ -599,7 +599,8 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 | -------------------- | ------------------------------------------ |
 | `npm run dev`        | Boots dev environment using nodemon        |
 | `npm start`          | Launches server                            |
-| `npm run seed:notes` | Seeds CS Note items                        |
+| `npm run seed:notes` | Checks the notes data, then wipes and re-inserts the CS notes (run it after changing `src/data/notes`) |
+| `npm run check:links` | Checks that the outside links (roadmaps, skill catalog, resume guide tools) still answer; run by hand before a release, needs the network |
 | `npm run seed:all`   | Idempotently seeds DSA Sheets and CS notes |
 | `node scripts/migrate-solved-at.js` | One-time: converts old solved-problem links to the dated format (`--dry-run` only prints counts). Run it on the live database before deploying the dated-progress code |
 | `npm test`           | Runs the API test suite (in-memory database, no real keys needed) |
@@ -619,14 +620,14 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **542 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **628 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
 
 ```bash
 cd server
 npm test
 ```
 
-They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **21 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, and 2 for the resume checklist PDF (it must draw as one page). The screens themselves have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
+They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **51 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, 2 for the resume checklist PDF (it must draw as one page), and the rest for the notes quiz scoring and diagram layout, the roadmap data rules and links, the Analyzer link builder and the page titles. The screens themselves have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
 
 The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota).
 

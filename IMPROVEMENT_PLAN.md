@@ -37,7 +37,7 @@ It comes from the study of TUF and CodeHelp in `docs/research/COMPETITOR_STUDY.m
 | AI project ideas | Cascade of Gemini then Groq, capped per user. The form shows how many are left today (`GET /api/usage`) | Not linked to roadmaps |
 | Dashboard | Tabs: DSA, Projects, Reports. The DSA tab has a streak tile (IST days) and per-sheet cards with the last solved date | No "today" card yet (B4) |
 | Quiz and Aptitude | Removed in stage 0 (B10, 9 Nov 2026): pages, routes and SEO entries are gone | The Quiz comes back later from the notes quizzes (B7) |
-| Tests | 542 server tests and 21 client tests (token refresh, raw-color guard, resume PDF), 9 Nov 2026 | No CI |
+| Tests | 628 server tests and 51 client tests (token refresh, raw-color guard, resume PDF, notes components, roadmap data), 10 Nov 2026 | No CI |
 | Accounts | Password reset by email, a per-account login lock, up to 10 device sessions (built and tested) | Login cookies use SameSite=None; changing that needs the website and the API on one domain |
 
 ---
@@ -333,6 +333,19 @@ This replaces the earlier six-phase table. It orders the work by what depends on
 **Stage 0 status (9 Nov 2026):** done: B10, B9 (client test setup, token-refresh tests, raw-color guard test), and the notes template, review checklist and sources file in `docs/content/`. Yours to do: deploy and check the pending fixes on Render and Vercel; fill in the outside readers table and the students table in `docs/content/SOURCES.md` (start asking now, people take weeks).
 
 **Stage 1 status (9 Nov 2026):** built: B6, B1, B3 and A3. Not done by me: the forms (AI ideas, Analyzer) and the new Resume guide page and its PDF have not been looked at in a browser at phone and desktop width, because those pages need login. Yours to do: run the progress migration on the live database, then deploy the server (in that order); get an outside reader for the Resume guide; keep asking readers and students (`docs/content/SOURCES.md`).
+
+**Stage 2 status (10 Nov 2026):** built, all with tests:
+- **2.1:** permanent ids for the 38 notes sections and the 134 DSA sheet topics; a notes validator (the full template is checked only for a section that has `lastChecked`); counts, reading time and last checked date computed by the API instead of typed on the page.
+- **2.2:** permanent ids for the 120 catalog skills; Analyzer references by id (`notes:os:os-deadlocks`); a report carries readable `refTitles`, worked out on every read. Old saved reports keep working.
+- **2.3:** the Notes list uses real numbers; notes open as whole sections (`/notes/os/os-deadlocks`) with quiz, diagrams, mistakes, questions and a report-a-mistake email link; old sections show in the new frame; the sidebar now stays in view (`overflow-x` changed from `hidden` to `clip` in the shared layout).
+- **2.4:** roadmap `steps` and `details` merged into one list of 52 steps with ids; steps are linkable (`/roadmaps/frontend#react-basics`); the page shows the new step parts when a step has them (they are written in stage 4); sync tests for the four copies of the roadmap list.
+- **2.5:** an internal-link test (every link between notes, roadmaps and sheets must resolve) and an outside-link check (`npm run check:links`, status codes only).
+
+Not changed: the real notes and roadmap content (stage 3 and 4). No real section has `lastChecked` yet, so every notes page still shows the old topic blocks in the new frame.
+
+**Deploy order for stage 1 and 2 (the new server needs the ids in the database):** (1) `node scripts/migrate-solved-at.js` on the live database, (2) `npm run seed:notes` and `npm run seed:all` on the live database, (3) deploy the server, (4) deploy the client.
+
+**Outside links found broken by `npm run check:links` on 10 Nov 2026 (to replace in stage 4, with the roadmap content):** react-hooks article by Kent C. Dodds and `reactrouter.com/en/main` (frontend, react-advanced); the Node.js debugging guide (backend, testing-debugging); Retrofit and OkHttp (android, networking-api-calls); the Wharton business analytics course (data-analytics, business-analytics); a Weights and Biases tuning article (machine-learning, model-evaluation); the Red Hat message queue article (skill Message Queues); the GNU Bash manual did not answer from this computer (skill Linux/Bash; check again). Five more refuse scripts (Udemy, DataCamp, Towards Data Science); one Towards Data Science address looks mistyped. Open these in a browser to be sure.
 
 **Coverage:** A1 (stages 2, 3, 5, 6), A2 (2, 4), A3 (1), A4 (4), A5 (3, 4), B1 (1), B2 (3), B3 (1), B4 (3), B5 (5), B6 (1), B7 (6), B8 (6), B9 (0; CI in 6), B10 (0), B11 (with Redis: step R4 of the Redis plan), B12 (6).
 

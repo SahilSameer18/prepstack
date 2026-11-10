@@ -8,6 +8,7 @@
     "start": "node server.js",
     "seed:notes": "node src/seed/notesSeed.js",
     "seed:all": "node src/seed/masterSeed.js",
+    "check:links": "node scripts/check-links.js",
     "test": "node --test --test-force-exit \"test/**/*.test.js\"",
     "test:coverage": "node --test --test-force-exit --experimental-test-coverage \"test/**/*.test.js\""
   },
