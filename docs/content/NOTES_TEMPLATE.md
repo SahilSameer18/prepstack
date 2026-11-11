@@ -97,11 +97,13 @@ Roadmaps are in `client/src/data/roadmaps.js`. A step is `{ id, title, desc, res
 | Field | Rule |
 |---|---|
 | `goal` | One sentence that starts "After this step you can " |
-| `time` | An honest range, for example "20 to 30 hours" |
+| `time` | An honest range written as "N to M hours" (or days, weeks, months), for example "20 to 30 hours" |
 | `topics` | 4 to 8 concrete topics |
 | `practice` | At least one `{ kind: "notes" \| "sheet", target, label }`; target `"os:os-deadlocks"` or `"blind-75:graph"` |
 | `checkpoint` | 2 to 3 things you should be able to do or explain |
 | `project` | `{ brief, stack }`; the page links to the AI project generator with the stack filled in |
+
+A step that has started the template also may not repeat a topic, checkpoint item or resource link, may not use a resource on Udemy, DataCamp, Towards Data Science or Coursera, and its project brief is at most 300 characters. Before writing a roadmap, copy `docs/content/source-notes/_roadmap-template.md` to `roadmap-<slug>.md` and fill it in.
 
 A step is linkable as `/roadmaps/<slug>#<stepId>`.
 
