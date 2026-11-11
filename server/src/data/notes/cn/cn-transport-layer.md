@@ -16,37 +16,37 @@ After this section you can compare TCP and UDP, trace the handshake with real se
 
 ## Topic: Ports and sockets
 
-**Definition:** A port is a 16-bit number that names a program on a machine. Ports 0 to 1023 are system (well-known) ports, 1024 to 49151 are registered (user) ports, and 49152 to 65535 are dynamic ports that clients use for short-lived connections. Common ports: FTP 21, SSH 22, Telnet 23, SMTP 25, DNS 53, DHCP 67 and 68, HTTP 80, POP3 110, IMAP 143, HTTPS 443.
+**Definition:** A port is a 16-bit number that names a program on a machine. A socket is one end of a connection (an address plus a port). Ports 0 to 1023 are system (well-known) ports, 1024 to 49151 are registered (user) ports, and 49152 to 65535 are dynamic ports that clients use for short-lived connections. Common ports: FTP 21 (file transfer), SSH 22 (secure remote login), Telnet 23 (old remote login), SMTP 25 (sending email), DNS 53 (looking up names), DHCP 67 and 68 (handing out addresses), HTTP 80 (web pages), POP3 110 and IMAP 143 (reading email), HTTPS 443 (secure web pages).
 
-**Why:** One machine runs many network programs at once. The port tells the operating system which program gets the data.
+**Why:** One machine runs many network programs at once. The port tells the operating system (the main software of the computer) which program gets the data.
 
-**Example:** A browser connects from a dynamic port such as 50000 to the server's port 443. A TCP connection is named by four values together: source address, source port, destination address and destination port. The dynamic range has 16,384 ports (49152 to 65535).
+**Example:** A browser connects from a dynamic port such as 50000 to the server's port 443. A TCP connection (TCP is explained in the next topic) is named by four values together: source address, source port, destination address and destination port. The dynamic range has 16,384 ports (49152 to 65535).
 
 **Failure:** Saying "one port can only serve one client". A server port serves thousands of clients, because each connection has a different four-value name.
 
 ## Topic: TCP against UDP
 
-**Definition:** TCP sets up a connection first, then gives a reliable, in-order stream of bytes. It retransmits lost data, controls flow and congestion, and works both ways at once (full duplex). UDP has no connection. Its header is only four fields of 16 bits (source port, destination port, length, checksum), which is 8 bytes. It does not retransmit, reorder or guarantee delivery.
+**Definition:** TCP (Transmission Control Protocol) sets up a connection first, then gives a reliable, in-order stream of bytes. It retransmits (sends again) lost data, controls flow and congestion (these two are explained below), and works both ways at once (full duplex). UDP (User Datagram Protocol) has no connection. Its header (the control information at the front) is only four fields of 16 bits (source port, destination port, length, checksum), which is 8 bytes. A checksum is a small number used to detect damaged data. It does not retransmit, reorder (put pieces back in order) or guarantee delivery.
 
-**Why:** Reliability costs time. Web pages, files and email need every byte, so they use TCP. Live video, voice calls and games prefer a fast answer over a perfect one, so they use UDP. DNS queries normally use UDP too.
+**Why:** Reliability costs time. Web pages, files and email need every byte, so they use TCP. Live video, voice calls and games prefer a fast answer over a perfect one, so they use UDP. DNS queries (requests to turn a name into an address) normally use UDP too.
 
 **Example:** A DNS query is one small UDP message and one answer. If it is lost, the program just asks again. A file download over UDP would arrive with holes unless the program added its own checks.
 
-**Failure:** Saying "UDP is unreliable so nobody uses it". It is used a lot, and HTTP/3 even builds its own reliability on top of UDP (through QUIC).
+**Failure:** Saying "UDP is unreliable so nobody uses it". It is used a lot, and HTTP/3 (the third version of HTTP) even builds its own reliability on top of UDP (through QUIC, a newer protocol built on UDP).
 
 ## Topic: Three-way handshake
 
-**Definition:** TCP opens a connection with three segments. 1) Client sends SYN with its starting sequence number x. 2) Server answers SYN-ACK with its own starting number y and acknowledgement x + 1. 3) Client sends ACK with acknowledgement y + 1; this third segment may already carry data.
+**Definition:** The handshake is the short exchange of messages that sets up a connection. TCP opens a connection with three segments (a segment is one TCP message). 1) Client sends SYN (a "synchronise" message) with its starting sequence number x (a number that counts bytes, so data can be put in order). 2) Server answers SYN-ACK (a SYN together with an ACK, which is a confirmation) with its own starting number y and acknowledgement x + 1. 3) Client sends ACK with acknowledgement y + 1. This third segment may already carry data.
 
 **Why:** Both sides agree on starting sequence numbers and confirm each can send and receive.
 
-**Example:** Client starts at 1000, server at 5000. SYN seq=1000. SYN-ACK seq=5000 ack=1001. ACK seq=1001 ack=5001. Now the client sends 300 bytes starting at seq=1001; the server replies ack=1301. A SYN and a FIN each use up one sequence number, a plain ACK uses none.
+**Example:** Client starts at 1000, server at 5000. SYN seq=1000. SYN-ACK seq=5000 ack=1001. ACK seq=1001 ack=5001. Now the client sends 300 bytes starting at seq=1001. The server replies ack=1301. A SYN and a FIN (the "finish" message that closes a connection) each use up one sequence number. A plain ACK uses none.
 
-**Failure:** A SYN flood sends many SYNs and never completes the handshake, so the server's table of half-open connections fills. SYN cookies are a common defence: the server packs the connection details into its own sequence number and stores nothing until the final ACK comes back.
+**Failure:** A SYN flood is an attack that sends many SYNs and never completes the handshake, so the server's table of half-open connections (connections started but not finished) fills. SYN cookies are a common defence: the server packs the connection details into its own sequence number and stores nothing until the final ACK comes back.
 
 ## Topic: Closing a connection
 
-**Definition:** Each side closes its own direction with a FIN, and the other side acknowledges it. That makes four segments (or three if the second side's FIN is sent together with its ACK). The side that closes first waits in TIME-WAIT for 2 × MSL before it is fully done; the RFC value for MSL is 2 minutes, so 4 minutes. Real systems often use a shorter time.
+**Definition:** Each side closes its own direction with a FIN, and the other side acknowledges it. That makes four segments (or three if the second side's FIN is sent together with its ACK). The side that closes first waits in TIME-WAIT for 2 × MSL before it is fully done. MSL is the maximum segment lifetime, the longest time a segment is assumed to survive in the network. The RFC value (RFC stands for request for comments, a numbered internet specification document) for MSL is 2 minutes, so the wait is 4 minutes. Real systems often use a shorter time.
 
 **Why:** TIME-WAIT makes sure the last ACK arrives and old duplicate segments from this connection die out before the same four-value name is reused.
 
@@ -56,7 +56,7 @@ After this section you can compare TCP and UDP, trace the handshake with real se
 
 ## Topic: Reliability, timeout and fast retransmit
 
-**Definition:** The receiver sends a cumulative acknowledgement: the number of the next byte it expects. The sender times out when no ACK arrives. The timeout is EstimatedRTT + 4 × DevRTT, so in the textbook formula an estimate of 100 ms and a deviation of 10 ms give 140 ms. Real systems round the timeout up (RFC 6298 says at least 1 second). If the sender receives three duplicate ACKs for the same number, it resends that segment at once without waiting (fast retransmit).
+**Definition:** The receiver sends a cumulative acknowledgement: the number of the next byte it expects. The sender times out when no ACK arrives. The timeout is EstimatedRTT (the estimated round-trip time, the time for a message to go and the reply to come back) + 4 × DevRTT (how much that time varies), so in the textbook formula an estimate of 100 ms and a deviation of 10 ms give 140 ms. Real systems round the timeout up (RFC 6298 says at least 1 second). If the sender receives three duplicate ACKs (the same acknowledgement number three more times) for the same number, it resends that segment at once without waiting. This is called fast retransmit.
 
 **Why:** Waiting for the timer is slow. Three duplicate ACKs is a strong hint that one segment was lost while later ones arrived.
 
@@ -66,7 +66,7 @@ After this section you can compare TCP and UDP, trace the handshake with real se
 
 ## Topic: Flow control and congestion control
 
-**Definition:** Flow control protects the receiver: it advertises a window (how many bytes it can still accept). Congestion control protects the network: the sender keeps its own window, cwnd, and changes it. This follows the usual textbook (Reno) model. Slow start begins at a small window (the textbook value is 1 MSS; real systems start at 1, 2, 4 or 10) and doubles each round trip until it reaches ssthresh; then congestion avoidance adds 1 MSS per round trip. On three duplicate ACKs the window is halved. On a timeout cwnd drops back to 1 MSS and ssthresh becomes half the old window.
+**Definition:** Flow control protects the receiver: it advertises a window (tells the sender how many bytes it can still accept). Congestion control protects the network from overload: the sender keeps its own window, cwnd (the congestion window), and changes it. This follows the usual textbook (Reno) model. Slow start begins at a small window (the textbook value is 1 MSS, the maximum segment size, the biggest piece of data in one segment; real systems start at 1, 2, 4 or 10) and doubles each round trip until it reaches ssthresh (the slow-start threshold, the size at which growth becomes slower). Then congestion avoidance adds 1 MSS per round trip. On three duplicate ACKs the window is halved. On a timeout cwnd drops back to 1 MSS and ssthresh becomes half the old window.
 
 **Why:** Without congestion control, every sender would push as hard as possible and the network would collapse.
 
@@ -78,11 +78,11 @@ After this section you can compare TCP and UDP, trace the handshake with real se
 
 ### What is the difference between TCP and UDP?
 
-TCP is connection-oriented, reliable and ordered, and it controls flow and congestion. UDP has no connection and no guarantees, and its header is only 8 bytes. TCP suits web pages and files. UDP suits live media, games and DNS.
+TCP is connection-oriented (it sets up a connection first), reliable and ordered, and it controls flow and congestion. UDP has no connection and no guarantees, and its header is only 8 bytes. TCP suits web pages and files. UDP suits live media, games and DNS.
 
 ### Explain the three-way handshake.
 
-The client sends SYN with its sequence number. The server replies SYN-ACK with its own number and acknowledges the client's number plus one. The client sends ACK for the server's number plus one. After that, data can flow in both directions.
+The client sends SYN with its sequence number. The server replies SYN-ACK with its own number and acknowledges the client's number plus one. The client then sends ACK for the server's number plus one. After that, data can flow in both directions.
 
 ### What is the difference between flow control and congestion control?
 
@@ -94,7 +94,7 @@ To make sure the final ACK reaches the other side and old duplicate segments dis
 
 ### How can UDP be reliable?
 
-It cannot by itself. An application can add its own acknowledgements, numbering and retransmission on top, as QUIC does.
+It cannot by itself. An application (the program using the network) can add its own acknowledgements, numbering and retransmission on top, as QUIC does.
 
 ## Mistakes
 
@@ -129,7 +129,7 @@ Explanation: The SYN uses one sequence number, so the server acknowledges 1000 +
 - [ ] 1302
 - [ ] 300
 
-Explanation: The ack is the next byte expected: 1001 + 300 = 1301.
+Explanation: The ack (acknowledgement) is the next byte expected: 1001 + 300 = 1301.
 
 ### Which event makes TCP cut its congestion window to 1 MSS in the textbook model?
 

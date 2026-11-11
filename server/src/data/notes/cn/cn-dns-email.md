@@ -10,23 +10,23 @@ roadmapSteps: backend:os-networking-basics, frontend:internet-web-fundamentals
 
 ## Overview
 
-Computers find each other by number, but people use names. DNS is the system that turns a name like example.com into an IP address, and it is marked "important" in most interview lists. Email protocols (SMTP, POP3, IMAP) and file transfer (FTP, SSH) come right after it, because they are the classic application protocols and interviewers use them to check ports and the difference between sending and reading mail.
+Computers find each other by number, but people use names. DNS (Domain Name System) is the system that turns a name like example.com into an IP address (the number a computer is found by), and it is marked "important" in most interview lists. Email protocols (SMTP, POP3, IMAP) and file transfer (FTP, SSH) come right after it. They are the classic application protocols (the rules programs use to talk), and interviewers use them to check ports and the difference between sending and reading mail.
 
 After this section you can walk through a DNS lookup, name the common record types, explain caching and TTL, and say which email protocol sends mail and which one reads it.
 
 ## Topic: What DNS is
 
-**Definition:** DNS is a distributed, hierarchical naming system. The names form a tree. A name is written as labels from the leaf up to the root, such as www.example.com. Each label can be up to 63 bytes and a whole name up to 255 bytes. The data is split into zones, and a name server is the authority for the zones it holds.
+**Definition:** DNS is a distributed (spread over many machines), hierarchical (layered like a tree) naming system. The names form a tree. A name is written as labels (the parts between dots) from the leaf up to the root, such as www.example.com. Each label can be up to 63 bytes and a whole name up to 255 bytes. The data is split into zones (parts of the tree that one party manages), and a name server is the authority for the zones it holds.
 
 **Why:** Nobody remembers IP addresses, and the address of a site can change without the name changing.
 
-**Example:** The name www.example.com is read from the right: the root, then com, then example, then www. Name servers hold the records, and resolvers ask them for programs.
+**Example:** The name www.example.com is read from the right: the root, then com, then example, then www. Name servers hold the records, and resolvers (helper servers that look names up on behalf of programs) ask them for programs.
 
 **Failure:** Thinking DNS is one big server. It is spread over a huge number of servers, and a failure of one does not stop it.
 
 ## Topic: How a lookup works
 
-**Definition:** Your program asks a resolver (usually your ISP's or a public one). If the resolver has the answer cached, it replies at once. If not, it asks a root server, which points to the servers for the top-level domain (.com), which point to the authoritative server for example.com, which gives the final answer. The resolver caches it and replies. When a server does the chasing for you, the query is recursive. When it only answers "ask this other server", it is iterative.
+**Definition:** Your program asks a resolver (usually your ISP's or a public one; the ISP is your internet provider). If the resolver has the answer cached (stored from an earlier lookup), it replies at once. If not, it asks a root server (one of the top-level servers of the DNS tree). The root server points to the servers for the top-level domain (.com, the last part of the name). Those point to the authoritative server for example.com (the server that holds the official answer), which gives the final answer. The resolver caches it and replies. When a server does the chasing for you, the query is recursive. When it only answers "ask this other server", it is iterative.
 
 **Why:** No server needs to know everything, and the tree spreads the load.
 
@@ -36,19 +36,19 @@ After this section you can walk through a DNS lookup, name the common record typ
 
 ## Topic: Record types
 
-**Definition:** A (type 1): name to IPv4 address. NS (2): which servers are authoritative for a zone. CNAME (5): this name is an alias for another name. PTR (12): address back to name (reverse lookup). MX (15): the mail servers for a domain, each with a preference number (the lowest number is tried first). TXT (16): free text, used for things like domain checks. (AAAA, for IPv6, is the same idea as A.)
+**Definition:** A record is one entry in DNS. A (type 1): name to IPv4 address (the older, shorter kind of IP address). NS (2): which servers are authoritative for a zone. CNAME (5): this name is an alias (another name for the same thing) for another name. PTR (12): address back to name (reverse lookup). MX (15, mail exchange): the mail servers for a domain, each with a preference number (the lowest number is tried first). TXT (16): free text, used for things like domain checks. (AAAA, for IPv6, the newer and longer kind of IP address, is the same idea as A.)
 
 **Why:** One name can serve the website, the mail and other services, each by its own record.
 
 **Example:** A CNAME www → example.com means a lookup of www is restarted at example.com. MX records: `10 mail1.example.com` is tried before `20 mail2.example.com`.
 
-**Failure:** A name that has a CNAME cannot have other records, and an MX record should name a host that has an A record, not a CNAME.
+**Failure:** A name that has a CNAME cannot have other records, and an MX record should name a host (a machine's name) that has an A record, not a CNAME.
 
 ## Topic: Caching and TTL
 
-**Definition:** Every record carries a TTL: the number of seconds it may be cached. 0 means do not cache. After the TTL, the cache must ask again.
+**Definition:** Every record carries a TTL (time to live): the number of seconds it may be cached. 0 means do not cache. After the TTL, the cache must ask again.
 
-**Why:** Caching removes most lookups. The trade-off is that a change takes up to the TTL to spread.
+**Why:** Caching removes most lookups. The trade-off (what you give up) is that a change takes up to the TTL to spread.
 
 **Example:** Before moving a site to a new server, lower its TTL a day earlier, so the change spreads fast.
 
@@ -56,31 +56,31 @@ After this section you can walk through a DNS lookup, name the common record typ
 
 ## Topic: DNS transport
 
-**Definition:** DNS normally uses UDP port 53 because queries and answers are small; messages over UDP are limited to 512 bytes in the original standard. Larger answers and zone transfers between servers use TCP.
+**Definition:** DNS normally uses UDP (a light, fast way to send small messages) port 53 because queries and answers are small. Messages over UDP are limited to 512 bytes in the original standard. Larger answers and zone transfers (copying a whole zone from one server to another) use TCP (the slower but reliable way).
 
-**Why:** UDP avoids the handshake, so a lookup costs one round trip.
+**Why:** UDP avoids the handshake (the setup exchange TCP needs), so a lookup costs one round trip (one message out and one back).
 
-**Example:** If an answer is too large, the server marks it truncated and the client repeats the query over TCP.
+**Example:** If an answer is too large, the server marks it truncated (cut short) and the client repeats the query over TCP.
 
 **Failure:** Saying DNS "only uses UDP". The first design used UDP only, but TCP is used for large answers and zone transfers.
 
 ## Topic: Email: SMTP, POP3 and IMAP
 
-**Definition:** SMTP sends mail. Servers hand mail to each other over SMTP on port 25 (relay); a user's mail program submits mail on port 587 and normally must log in. POP3 (port 110) lets a client fetch mail from the server, usually downloading and then deleting it. IMAP (port 143, or 993 with TLS from the start) keeps the mail and folders on the server so many devices see the same mailbox.
+**Definition:** SMTP (Simple Mail Transfer Protocol) sends mail. Servers hand mail to each other over SMTP on port 25 (a port is a numbered door a program listens on; relay, meaning passing mail onward); a user's mail program submits mail on port 587 and normally must log in. POP3 (Post Office Protocol, port 110) lets a client fetch mail from the server, usually downloading and then deleting it. IMAP (Internet Message Access Protocol; port 143, or 993 with TLS, the encryption layer, from the start) keeps the mail and folders on the server so many devices see the same mailbox.
 
 **Why:** Sending and reading are different jobs and use different protocols.
 
-**Example:** You send from your phone by submission to the server (587). That server uses the MX record of the recipient's domain to find the next server and relays it over SMTP (25). The recipient reads it with IMAP.
+**Example:** You send from your phone by submission to the server (587). That server uses the MX record (the mail-server entry in DNS) of the recipient's domain to find the next server and relays it over SMTP (25). The recipient reads it with IMAP.
 
 **Failure:** Saying POP3 or IMAP sends mail. They only read it; SMTP sends.
 
 ## Topic: FTP and SSH
 
-**Definition:** FTP moves files using two connections: a control connection (port 21) for commands and a separate data connection (port 20 in active mode; passive mode uses another port) for the files. SSH (port 22) gives secure remote login and can carry other traffic over an encrypted channel.
+**Definition:** FTP (File Transfer Protocol) moves files using two connections: a control connection (port 21) for commands and a separate data connection (port 20 in active mode; passive mode uses another port) for the files. SSH (Secure Shell, port 22) gives secure remote login (using another computer from a distance) and can carry other traffic over an encrypted channel.
 
-**Why:** FTP sends passwords in plain text. SSH encrypts everything, so it replaced Telnet and plain FTP for admin work.
+**Why:** FTP sends passwords in plain text. SSH encrypts everything, so it replaced Telnet (an old, unencrypted remote login tool) and plain FTP for admin work.
 
-**Example:** `ssh user@server` opens a shell; file copy over SSH is the safe replacement for FTP.
+**Example:** `ssh user@server` opens a shell (a text window to type commands on the remote machine); file copy over SSH is the safe replacement for FTP.
 
 **Failure:** Saying FTP uses port 27 (a printed mistake in some notes). The control port is 21.
 
@@ -88,11 +88,11 @@ After this section you can walk through a DNS lookup, name the common record typ
 
 ### What happens when you type a domain name? Explain DNS resolution.
 
-The browser and operating system check their caches. If nothing is cached, the resolver asks a root server, then the top-level domain server, then the domain's authoritative server, gets the IP address, caches it for the TTL and returns it.
+The browser and operating system check their caches (stored earlier answers). If nothing is cached, the resolver asks a root server, then the top-level domain server, then the domain's authoritative server, gets the IP address, caches it for the TTL (the number of seconds the record may be kept) and returns it.
 
 ### What is the difference between recursive and iterative queries?
 
-In a recursive query the server finds the final answer for the client. In an iterative query the server returns the best answer it has, often a referral to another server, and the client continues.
+In a recursive query the server finds the final answer for the client. In an iterative query the server returns the best answer it has, often a referral (a pointer) to another server, and the client continues.
 
 ### What is a CNAME record and how is it different from an A record?
 
@@ -100,7 +100,7 @@ An A record maps a name to an IP address. A CNAME maps a name to another name, s
 
 ### SMTP vs POP3 vs IMAP?
 
-SMTP sends mail between servers and from users to servers. POP3 downloads mail from the server, usually removing it there. IMAP keeps the mail on the server and syncs it across devices.
+SMTP sends mail between servers and from users to servers. POP3 downloads mail from the server, usually removing it there. IMAP keeps the mail on the server and syncs (keeps the same) it across devices.
 
 ## Mistakes
 
@@ -117,7 +117,7 @@ SMTP sends mail between servers and from users to servers. POP3 downloads mail f
 - [x] MX
 - [ ] PTR
 
-Explanation: MX records name the mail servers, each with a preference number. The lowest number is tried first.
+Explanation: MX records (mail exchange records) name the mail servers, each with a preference number. The lowest number is tried first.
 
 ### Which port does DNS use for ordinary queries?
 
@@ -126,7 +126,7 @@ Explanation: MX records name the mail servers, each with a preference number. Th
 - [ ] 80
 - [ ] 443
 
-Explanation: DNS queries go to port 53, normally over UDP.
+Explanation: DNS queries go to port 53 (the numbered door DNS listens on), normally over UDP.
 
 ### What does TTL mean in a DNS record?
 
@@ -135,7 +135,7 @@ Explanation: DNS queries go to port 53, normally over UDP.
 - [ ] The number of servers that hold the record
 - [ ] The number of hops to the server
 
-Explanation: TTL limits cache time. A TTL of 0 means the record must not be cached.
+Explanation: TTL (time to live) limits cache time. A TTL of 0 means the record must not be cached.
 
 ### Which protocol keeps mail on the server so several devices see the same mailbox?
 
@@ -153,7 +153,7 @@ Explanation: IMAP leaves messages and folders on the server. POP3 usually downlo
 - [ ] TXT
 - [ ] MX
 
-Explanation: A CNAME says the name is an alias for another name, and the lookup restarts there.
+Explanation: A CNAME (canonical name) record says the name is an alias for another name, and the lookup restarts there.
 
 ## Diagram
 

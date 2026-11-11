@@ -12,39 +12,39 @@ roadmapSteps: backend:database-design
 
 ## Overview
 
-SQL is the language you use to ask a relational database for data, and interviewers use it to see whether you think in sets rather than loops. The questions that come up again and again are joins, GROUP BY with HAVING, subqueries, NULL, and window functions. After this section you can say in what order a query is evaluated, choose the right join and predict its output, explain why WHERE x = NULL finds nothing, avoid the NOT IN trap, and use a window function to rank rows without collapsing them.
+SQL is the language you use to ask a relational database (data kept in tables) for data, and interviewers use it to see whether you think in sets rather than loops. The questions that come up again and again are joins (combining tables), GROUP BY with HAVING (grouping rows and filtering the groups), subqueries (a query inside a query), NULL (a missing value), and window functions (calculations across related rows). After this section you can say in what order a query is evaluated, choose the right join and predict its output, explain why WHERE x = NULL finds nothing, avoid the NOT IN trap, and use a window function to rank rows without collapsing them.
 
 ## Topic: What order a query runs in
 
-**Definition:** A query is evaluated logically in an order different from the one it is written in. The database first takes the rows from FROM and its joins, then filters them with WHERE, then forms groups with GROUP BY, and then filters the groups with HAVING. The SELECT list is then computed, and ORDER BY and LIMIT apply last.
+**Definition:** A query is evaluated logically in an order different from the one it is written in. The database first takes the rows from FROM and its joins. It then filters them with WHERE, forms groups with GROUP BY, and filters the groups with HAVING. The SELECT list is then computed, and ORDER BY and LIMIT apply last.
 
-**Why:** It explains most "why does this query fail or give a strange answer" cases, such as why WHERE cannot use an aggregate.
+**Why:** It explains most "why does this query fail or give a strange answer" cases, such as why WHERE cannot use an aggregate (a value worked out from many rows, like a count or an average).
 
-**Example:** For SELECT city, count(*) FROM student WHERE marks >= 70 GROUP BY city HAVING count(*) >= 2, the rows with marks below 70 are removed first, then the rest are grouped by city, then groups with fewer than two rows are dropped.
+**Example:** For SELECT city, count(*) FROM student WHERE marks >= 70 GROUP BY city HAVING count(*) >= 2, the rows with marks below 70 are removed first. Then the rest are grouped by city, and then groups with fewer than two rows are dropped.
 ```sql
 SELECT city, count(*) FROM student
 WHERE marks >= 70 GROUP BY city HAVING count(*) >= 2 ORDER BY city;
 ```
 
-**Failure:** LIMIT without ORDER BY returns an unpredictable set of rows, so always pair them, with a unique order. A large OFFSET can be slow, because the skipped rows are still computed.
+**Failure:** LIMIT without ORDER BY returns an unpredictable set of rows, so always pair them, with a unique order. A large OFFSET (the number of rows to skip) can be slow, because the skipped rows are still computed.
 
 ## Topic: NULL and three-valued logic
 
-**Definition:** NULL means an unknown value or no value. Any ordinary comparison with NULL gives unknown, not true or false, and a WHERE condition that comes out unknown is treated as false.
+**Definition:** NULL means an unknown value or no value. This is called three-valued logic, because a condition can be true, false or unknown. Any ordinary comparison with NULL gives unknown, not true or false, and a WHERE condition that comes out unknown is treated as false.
 
 **Why:** It is the cause of many silent wrong answers: rows that vanish from a result, or conditions that never match.
 
-**Example:** WHERE salary = NULL returns no rows, even when salary is NULL, because NULL = NULL is unknown. The test is WHERE salary IS NULL. Arithmetic with NULL gives NULL: 5 + NULL is NULL. The logic tables: true AND unknown is unknown; false AND unknown is false; true OR unknown is true; false OR unknown is unknown.
+**Example:** WHERE salary = NULL returns no rows, even when salary is NULL, because NULL = NULL is unknown. The test is WHERE salary IS NULL. Arithmetic with NULL gives NULL, so 5 + NULL is NULL. The logic tables: true AND unknown is unknown; false AND unknown is false; true OR unknown is true; false OR unknown is unknown.
 ```sql
 SELECT 1 WHERE NULL = NULL;     -- no rows
 SELECT 1 WHERE NULL IS NULL;    -- one row
 ```
 
-**Failure:** Never write expression = NULL. If you need NULL-safe equality, In PostgreSQL, IS NOT DISTINCT FROM treats two NULLs as equal. Remember it also when filtering: WHERE x <> 5 does not return rows where x is NULL.
+**Failure:** Never write expression = NULL. If you need NULL-safe equality, in PostgreSQL IS NOT DISTINCT FROM treats two NULLs as equal. Remember this also when filtering: WHERE x <> 5 does not return rows where x is NULL.
 
 ## Topic: Joins
 
-**Definition:** A join combines rows of two tables using a condition. INNER JOIN keeps only matching pairs. LEFT JOIN also keeps every left row, with NULLs for the right columns when nothing matches. RIGHT JOIN is the mirror image. FULL JOIN keeps unmatched rows from both sides. CROSS JOIN pairs every row with every row. A self join joins a table to itself using two aliases.
+**Definition:** A join combines rows of two tables using a condition. INNER JOIN keeps only matching pairs. LEFT JOIN also keeps every left row, with NULLs for the right columns when nothing matches. RIGHT JOIN is the mirror image. FULL JOIN keeps unmatched rows from both sides. CROSS JOIN pairs every row with every row. A self join joins a table to itself using two aliases (two different names for the same table).
 
 **Why:** Related data lives in different tables, and joins put it back together.
 
@@ -58,11 +58,11 @@ CROSS JOIN:  3 customers x 4 orders = 12 rows
 ```
 The customers who have no orders: LEFT JOIN orders o ON c.id = o.customer_id WHERE o.order_id IS NULL gives Carol.
 
-**Failure:** With an outer join, where you put a condition matters. A condition in ON is applied before the unmatched rows are added back; a condition in WHERE is applied after. LEFT JOIN orders o ON c.id = o.customer_id AND o.product = 'Phone' still lists Bob and Carol with NULL, but putting o.product = 'Phone' in WHERE leaves only Alice, because Bob's and Carol's NULL fails the test. Also, MySQL's JOIN syntax lists inner, cross, left, right and natural joins and no FULL JOIN; a workaround is a LEFT JOIN UNION a RIGHT JOIN, and UNION also removes duplicate rows. NATURAL JOIN matches on every column with the same name, so an unrelated column with the same name (like dept_name in two tables) silently changes the result; use ON or USING.
+**Failure:** With an outer join (a join that keeps unmatched rows), where you put a condition matters. A condition in ON is applied before the unmatched rows are added back. A condition in WHERE is applied after. LEFT JOIN orders o ON c.id = o.customer_id AND o.product = 'Phone' still lists Bob and Carol with NULL, but putting o.product = 'Phone' in WHERE leaves only Alice, because Bob's and Carol's NULL fails the test. Also, MySQL's JOIN syntax lists inner, cross, left, right and natural joins and no FULL JOIN. A workaround is a LEFT JOIN UNION a RIGHT JOIN, and UNION also removes duplicate rows. NATURAL JOIN matches on every column with the same name, so an unrelated column with the same name (like dept_name in two tables) silently changes the result. Use ON or USING instead.
 
 ## Topic: GROUP BY and HAVING
 
-**Definition:** GROUP BY puts rows with the same values in the listed columns into one group, so an aggregate such as count, sum, avg, min or max is computed per group. WHERE filters rows before grouping. HAVING filters the groups after grouping.
+**Definition:** GROUP BY puts rows with the same values in the listed columns into one group, so an aggregate such as count, sum, avg, min or max is computed per group (an aggregate is one value worked out from many rows). WHERE filters rows before grouping. HAVING filters the groups after grouping.
 
 **Why:** It answers "per" questions: students per city, average salary per department.
 
@@ -74,11 +74,11 @@ GROUP BY city HAVING count(*) >= 2:        Delhi 2 | Mumbai 2
 GROUP BY city HAVING max(marks) >= 92:     Mumbai 2
 ```
 
-**Failure:** A column in the select list that is not in GROUP BY must be inside an aggregate, otherwise the query is wrong. PostgreSQL and MySQL also accept a non-grouped column that is functionally dependent on the grouped columns, for example when the grouped column is the primary key. MySQL 8.4 (ONLY_FULL_GROUP_BY, on by default) rejects a query whose non-aggregated column is neither grouped nor dependent on grouped columns, with an error; ANY_VALUE() is its workaround. HAVING is how you filter groups on the aggregate values of the same query; WHERE cannot use that query's own aggregates.
+**Failure:** A column in the select list that is not in GROUP BY must be inside an aggregate, otherwise the query is wrong. PostgreSQL and MySQL also accept a non-grouped column that is functionally dependent on the grouped columns (its value is fixed by them), for example when the grouped column is the primary key. MySQL 8.4 (ONLY_FULL_GROUP_BY, on by default) rejects a query whose non-aggregated column is neither grouped nor dependent on grouped columns, with an error. ANY_VALUE() is its workaround. HAVING is how you filter groups on the aggregate values of the same query; WHERE cannot use that query's own aggregates.
 
 ## Topic: Subqueries
 
-**Definition:** A subquery is a query inside another query. It can return one value (a scalar subquery), a list of values (for IN), or just whether any row exists (EXISTS). A correlated subquery refers to the outer row.
+**Definition:** A subquery is a query inside another query. It can return one value (a scalar subquery), a list of values (for IN), or just whether any row exists (EXISTS). A correlated subquery refers to the outer row (logically, it is evaluated once for each outer row).
 
 **Why:** It lets one question depend on the answer to another: "students scoring above the class average".
 
@@ -93,7 +93,7 @@ EXISTS is true when the subquery returns at least one row, whatever the columns 
 
 ## Topic: UNION, INTERSECT and EXCEPT
 
-**Definition:** Set operations combine the results of two queries that have the same number of columns with compatible types. UNION gives rows in either, INTERSECT rows in both, EXCEPT rows in the first but not the second. They remove duplicates unless you add ALL.
+**Definition:** Set operations (treating results as mathematical sets) combine the results of two queries that have the same number of columns with compatible types. UNION gives rows in either, INTERSECT rows in both, EXCEPT rows in the first but not the second. They remove duplicates unless you add ALL.
 
 **Why:** Some questions are about sets of results, such as "customers who are also suppliers".
 
@@ -105,11 +105,11 @@ INTERSECT:  Bob
 EXCEPT:     Alice
 ```
 
-**Failure:** UNION ALL is usually cheaper than UNION because it skips removing duplicates, so use it when duplicates are impossible or wanted. In PostgreSQL, INTERSECT binds tighter than UNION and EXCEPT, so a UNION b INTERSECT c means a UNION (b INTERSECT c). In PostgreSQL, a LIMIT written after the last query applies to the whole combined result, not to the last query.
+**Failure:** UNION ALL is usually cheaper than UNION because it skips removing duplicates, so use it when duplicates are impossible or wanted. In PostgreSQL, INTERSECT (worked out first) binds tighter than UNION and EXCEPT, so a UNION b INTERSECT c means a UNION (b INTERSECT c). Also in PostgreSQL, a LIMIT written after the last query applies to the whole combined result, not to the last query.
 
 ## Topic: Window functions
 
-**Definition:** A window function computes a value for each row from a set of related rows (its window) but keeps every row in the result. It is written as a function followed by OVER (PARTITION BY ... ORDER BY ...). An ordinary aggregate with GROUP BY would collapse the rows into one per group.
+**Definition:** A window function computes a value for each row from a set of related rows (its window) but keeps every row in the result. It is written as a function followed by OVER (PARTITION BY ... ORDER BY ...), where PARTITION BY splits the rows into groups. An ordinary aggregate with GROUP BY would collapse the rows into one per group.
 
 **Why:** It answers "rank within a group", "running total" and "compare each row with its group average", which are common interview problems.
 
@@ -120,13 +120,13 @@ SELECT name, dept, salary,
 FROM emps;
 -- Meena dev 1, Asha dev 2, Ravi dev 3, Zoya ops 1, Kiran ops 2
 ```
-avg(salary) OVER (PARTITION BY dept) puts 5000 on every dev row and 3250 on every ops row. sum(salary) OVER (ORDER BY salary) gives a running total: 3000, 6500, 10500, 15500, 21500.
+avg(salary) OVER (PARTITION BY dept) puts 5000 on every dev row and 3250 on every ops row. sum(salary) OVER (ORDER BY salary) gives a running total (a sum that grows row by row): 3000, 6500, 10500, 15500, 21500.
 
-**Failure:** Window functions are allowed only in SELECT and ORDER BY, not in WHERE, GROUP BY or HAVING. To keep only the top 2 per department, wrap the query as a subquery and filter on pos < 3. With ORDER BY inside OVER, the default window runs from the first row of the partition to the current row and its ties; without it, it is the whole partition. Rows that tie on the ORDER BY value get row_number values in no guaranteed order.
+**Failure:** Window functions are allowed only in SELECT and ORDER BY, not in WHERE, GROUP BY or HAVING. To keep only the top 2 per department, wrap the query as a subquery and filter on pos < 3. With ORDER BY inside OVER, the default window runs from the first row of the partition to the current row and its ties. Without it, the window is the whole partition. Rows that tie on the ORDER BY value (have the same value) get row_number values in no guaranteed order.
 
 ## Topic: Views and CTEs
 
-**Definition:** A view is a saved query that you use like a table. A CTE (common table expression, WITH) is a named temporary result that exists only for one statement.
+**Definition:** A view is a saved query that you use like a table. A CTE (common table expression, written with WITH) is a named temporary result that exists only for one statement.
 
 **Why:** Views hide columns from some users and name a complicated query once. CTEs break a long query into readable steps.
 
@@ -180,7 +180,7 @@ Explanation: Rows are filtered first (WHERE), then grouped (GROUP BY), then the 
 - [ ] An error
 - [ ] Carol repeated for every order
 
-Explanation: A LEFT JOIN keeps every left row; when nothing matches, the right columns are NULL.
+Explanation: A LEFT JOIN keeps every left row. When nothing matches, the right columns are NULL.
 
 ### Table a has 1, 2, 3 and table b has 2 and NULL. What does SELECT v FROM a WHERE v NOT IN (SELECT v FROM b) return?
 

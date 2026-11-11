@@ -33,7 +33,7 @@
       {"type":"docs","title":"Java Documentation - Oracle","url":"https://docs.oracle.com/en/java/"},
       {"type":"video","title":"Java Full Course - freeCodeCamp","url":"https://youtube.com/playlist?list=PLQEaRBV9gAFsR15tNo2QLF9d2qc-c018p"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Java / Spring Boot"}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"java-spring","projectStack":"Java / Spring Boot"}
   },
   {
     "id": "cpp", "name": "C++", "category": "stack",
@@ -185,7 +185,7 @@
       {"type":"docs","title":"Spring Boot Docs","url":"https://spring.io/projects/spring-boot"},
       {"type":"video","title":"Spring Boot Full Course","url":"https://youtube.com/playlist?list=PLEYgx5hMdopw"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Java / Spring Boot"}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"java-spring","projectStack":"Java / Spring Boot"}
   },
   {
     "id": "hibernate-jpa", "name": "Hibernate / JPA", "category": "stack",
@@ -194,7 +194,7 @@
       {"type":"docs","title":"Hibernate ORM Documentation","url":"https://hibernate.org/orm/documentation/"},
       {"type":"video","title":"Hibernate & JPA Full Course","url":"https://youtu.be/VRpH91Gsmk4"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":"Java / Spring Boot"}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"java-spring","projectStack":"Java / Spring Boot"}
   },
   {
     "id": "build-tools-maven-gradle", "name": "Build Tools (Maven/Gradle)", "category": "stack",
@@ -203,7 +203,7 @@
       {"type":"docs","title":"Apache Maven Documentation","url":"https://maven.apache.org/guides/"},
       {"type":"video","title":"Maven & Gradle Crash Course","url":"https://youtu.be/0b59bY4qfio"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"java-spring","projectStack":null}
   },
   {
     "id": "rest-apis", "name": "REST APIs", "category": "stack",
@@ -372,7 +372,7 @@
       {"type":"docs","title":"Docker Docs","url":"https://docs.docker.com/"},
       {"type":"video","title":"Docker Full Course","url":"https://youtu.be/OhnTMWmfTBE"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "kubernetes", "name": "Kubernetes", "category": "stack",
@@ -381,7 +381,7 @@
       {"type":"docs","title":"Kubernetes Docs","url":"https://kubernetes.io/docs/"},
       {"type":"video","title":"Kubernetes Full Course","url":"https://youtu.be/_4uQI4ihGVU"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "aws", "name": "AWS", "category": "stack",
@@ -390,7 +390,7 @@
       {"type":"docs","title":"AWS Documentation","url":"https://docs.aws.amazon.com/"},
       {"type":"video","title":"AWS Full Course","url":"https://youtu.be/N4sJj-SxX00"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "azure", "name": "Azure", "category": "stack",
@@ -417,7 +417,7 @@
       {"type":"docs","title":"CI/CD Concepts Guide","url":"https://about.gitlab.com/topics/ci-cd/"},
       {"type":"video","title":"CI/CD Crash Course","url":"https://youtube.com/playlist?list=PLzpJO-82rjC6ZD0uAhP8HR9RV9xGaPbIJ"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "terraform", "name": "Terraform", "category": "stack",
@@ -426,7 +426,7 @@
       {"type":"docs","title":"Terraform Documentation","url":"https://developer.hashicorp.com/terraform/docs"},
       {"type":"video","title":"Terraform Full Course - freeCodeCamp","url":"https://youtu.be/7xngnjfIlK4"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "git", "name": "Git", "category": "stack",
@@ -435,7 +435,7 @@
       {"type":"docs","title":"Git Documentation","url":"https://git-scm.com/doc"},
       {"type":"video","title":"Git & GitHub Full Course","url":"https://youtu.be/zTjRZNkhiEU"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "linux-bash", "name": "Linux/Bash", "category": "stack",
@@ -444,7 +444,7 @@
       {"type":"docs","title":"Bash Reference Manual","url":"https://www.gnu.org/software/bash/manual/"},
       {"type":"video","title":"Linux Command Line Full Course","url":"https://youtube.com/playlist?list=PL5Qp2b7x1b6d899d3E1-78Qd1C1oW3W9p"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","sectionId":"os-system-concepts"}],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","sectionId":"os-system-concepts"}],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "github-actions", "name": "GitHub Actions", "category": "stack",
@@ -453,7 +453,7 @@
       {"type":"docs","title":"GitHub Actions Documentation","url":"https://docs.github.com/actions"},
       {"type":"video","title":"GitHub Actions Tutorial","url":"https://youtu.be/Xwpi0ITkL3U"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "apache-kafka", "name": "Apache Kafka", "category": "stack",
@@ -569,7 +569,7 @@
       {"type":"docs","title":"Data Structures Guide","url":"https://www.geeksforgeeks.org/data-structures/"},
       {"type":"video","title":"Data Structures Full Course","url":"https://youtube.com/playlist?list=PLgUwDviBIf0oF6QL8m22w1hIDC1vJ_BHz"}
     ],
-    "prepstack": {"dsaTopics":["arrays-hashing","stack","linked-list","trees","heap-priority-queue","trie","graph"],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":["arrays-hashing","stack","linked-list","trees","heap-priority-queue","trie","graph"],"notes":[],"roadmap":"dsa","projectStack":null}
   },
   {
     "id": "algorithms", "name": "Algorithms", "category": "dsa",
@@ -577,7 +577,7 @@
     "resources": [
       {"type":"docs","title":"Algorithms Guide","url":"https://www.geeksforgeeks.org/fundamentals-of-algorithms/"}
     ],
-    "prepstack": {"dsaTopics":["two-pointers","sliding-window","binary-search","backtracking","dynamic-programming","greedy"],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":["two-pointers","sliding-window","binary-search","backtracking","dynamic-programming","greedy"],"notes":[],"roadmap":"dsa","projectStack":null}
   },
   {
     "id": "system-design", "name": "System Design", "category": "cs-core",
@@ -613,7 +613,7 @@
       {"type":"docs","title":"Big O Notation Guide","url":"https://www.bigocheatsheet.com/"},
       {"type":"video","title":"Big O Crash Course","url":"https://youtu.be/5T0SiJocPCI"}
     ],
-    "prepstack": {"dsaTopics":["binary-search","sliding-window"],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":["binary-search","sliding-window"],"notes":[],"roadmap":"dsa","projectStack":null}
   },
   {
     "id": "microservices", "name": "Microservices", "category": "cs-core",
@@ -997,7 +997,7 @@
     "resources": [
       {"type":"docs","title":"Jenkins User Documentation","url":"https://www.jenkins.io/doc/"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "communication", "name": "Communication", "category": "soft",

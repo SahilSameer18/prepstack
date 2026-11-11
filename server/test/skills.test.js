@@ -104,7 +104,7 @@ describe('adviceFor: what a student can do about a skill', () => {
     assert.deepEqual(os.actions[0].sections, ['Processes & Threads', 'CPU Scheduling', 'Synchronization', 'Deadlocks', 'Memory Management']);
   });
   it('lists practice topics, notes, roadmap and project in a stable order', () => {
-    assert.deepEqual(skills.adviceFor('Data Structures', titles).actions.map((a) => a.kind), ['dsa']);
+    assert.deepEqual(skills.adviceFor('Data Structures', titles).actions.map((a) => a.kind), ['dsa', 'roadmap']);
     assert.equal(skills.adviceFor('Data Structures', titles).actions[0].path, '/dsa/blind-75');
     assert.deepEqual(skills.adviceFor('REST APIs', titles).actions.map((a) => a.kind), ['notes', 'roadmap', 'project']);
     assert.equal(skills.adviceFor('Node.js', titles).actions.find((a) => a.kind === 'roadmap').path, '/roadmaps/backend');
@@ -115,9 +115,15 @@ describe('adviceFor: what a student can do about a skill', () => {
     assert.equal(skills.adviceFor('Java', titles).actions.find((x) => x.kind === 'project').path, '/ai-projects?stack=Java%20%2F%20Spring%20Boot');
   });
   it('says honestly when PrepStack has nothing for a skill (empty actions) but still gives the learning links', () => {
-    const k = skills.adviceFor('Kubernetes', titles);
+    const k = skills.adviceFor('Azure', titles);
     assert.deepEqual(k.actions, []);
     assert.ok(k.resources.length >= 1);
+  });
+  it('the three newer roadmaps are the advice for their skills (Java and Spring, DSA, DevOps and cloud)', () => {
+    const path = (name) => skills.adviceFor(name, titles).actions.find((a) => a.kind === 'roadmap').path;
+    for (const n of ['Java', 'Spring Boot', 'Hibernate / JPA', 'Build Tools (Maven/Gradle)']) assert.equal(path(n), '/roadmaps/java-spring', n);
+    for (const n of ['Data Structures', 'Algorithms', 'Big O / Time Complexity']) assert.equal(path(n), '/roadmaps/dsa', n);
+    for (const n of ['Docker', 'Kubernetes', 'Terraform', 'Linux/Bash', 'Jenkins', 'CI/CD', 'GitHub Actions', 'Git', 'AWS']) assert.equal(path(n), '/roadmaps/devops-cloud', n);
   });
   it('returns null for an unknown skill', () => assert.equal(skills.adviceFor('Cobol', titles), null));
   it('adviceForReport covers the gaps and the plan, skips met skills and "none", and ignores unknown names', () => {

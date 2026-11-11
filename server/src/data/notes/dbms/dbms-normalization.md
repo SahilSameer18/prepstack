@@ -12,21 +12,21 @@ roadmapSteps: backend:database-design
 
 ## Overview
 
-Normalization is splitting a table so that each fact is stored once. Interviewers ask about it because it shows whether you understand why a bad design causes insert, update and delete problems, and whether you can name the rule a table breaks. After this section you can spot the anomalies in a table, state 1NF, 2NF, 3NF and BCNF with the dependency each one forbids, split a table without losing information, and explain why BCNF and dependency preservation sometimes conflict.
+Normalization is splitting a table so that each fact is stored once. Interviewers ask about it because it shows whether you understand why a bad design causes insert, update and delete problems, and whether you can name the rule a table breaks. After this section you can spot the anomalies (these problems) in a table, state 1NF, 2NF, 3NF and BCNF (the levels of good design) with the dependency each one forbids, split a table without losing information, and explain why BCNF and dependency preservation sometimes conflict.
 
 ## Topic: Why normalize: the three anomalies
 
-**Definition:** A table that mixes facts about several things repeats information, and the repetition causes insertion, update and deletion anomalies.
+**Definition:** A table that mixes facts about several things repeats information. The repetition causes insertion, update and deletion anomalies (problems when adding, changing or removing rows).
 
 **Why:** Repeated facts can disagree with each other, and facts that live in the same row cannot be added or removed separately.
 
 **Example:** Take staff(emp_id, name, dept_name, dept_building), where emp_id is the key. Insertion: a new department with no employees cannot be stored, because emp_id cannot be NULL. Update: when a department moves buildings, every one of its rows must change, and missing one leaves two different buildings for one department. Deletion: deleting the last employee of a department also deletes the department's building.
 
-**Failure:** Normalization removes repetition but can add joins, so it is not automatically faster. It also does not by itself guarantee data integrity: constraints such as keys and foreign keys do that.
+**Failure:** Normalization removes repetition but can add joins (combining rows of two tables), so it is not automatically faster. It also does not by itself guarantee data integrity: constraints such as keys and foreign keys do that.
 
 ## Topic: First normal form (1NF)
 
-**Definition:** A table is in 1NF when every column holds one indivisible value: no lists, sets or repeating groups in a cell.
+**Definition:** A table is in 1NF when every column holds one indivisible (atomic) value: no lists, sets or repeating groups in a cell.
 
 **Why:** Lists inside a cell are awkward to search, constrain and join, and they encourage storing the same data twice.
 
@@ -36,7 +36,7 @@ Normalization is splitting a table so that each fact is stored once. Interviewer
 
 ## Topic: Second normal form (2NF)
 
-**Definition:** A table is in 2NF when it is in 1NF and has no partial dependency. A partial dependency is a column that is in no candidate key but depends on only part of a candidate key.
+**Definition:** A table is in 2NF when it is in 1NF and has no partial dependency. A partial dependency is a column that is in no candidate key (a smallest set of columns that identifies a row) but depends on only part of a candidate key.
 
 **Why:** A partial dependency repeats the same fact on every row that shares that part of the key.
 
@@ -46,13 +46,13 @@ Normalization is splitting a table so that each fact is stored once. Interviewer
 
 ## Topic: Third normal form (3NF)
 
-**Definition:** A table is in 3NF when, for every non-trivial dependency X → Y, one of these holds: X is a super key, or every column of Y that is not in X is part of some candidate key.
+**Definition:** A table is in 3NF when, for every non-trivial dependency X → Y (a rule that columns X determine columns Y, where Y is not already inside X), one of these holds: X is a super key (a set of columns that tells every row apart), or every column of Y that is not in X is part of some candidate key.
 
 **Why:** It stops a column that is not part of any key from depending on another column that is not a key, which repeats facts.
 
 **Example:** book(book_id, author_id, author_country) has the key book_id. author_id → author_country: author_id is not a super key and author_country is in no key, so it breaks 3NF. Fix: author(author_id, author_country) and book(book_id, author_id).
 
-**Failure:** Some sources shorten 3NF to "no transitive dependency", which is only safe if it means a non-key column depending on another non-key column. Use the exact test above: its second option, where the right side is part of a key, is what lets a table be in 3NF but not in BCNF.
+**Failure:** Some sources shorten 3NF to "no transitive dependency" (a chain where A determines B and B determines C). This is only safe if it means a non-key column depending on another non-key column. Use the exact test above. Its second option, where the right side is part of a key, is what lets a table be in 3NF but not in BCNF.
 
 ## Topic: Boyce-Codd normal form (BCNF)
 
@@ -62,13 +62,13 @@ Normalization is splitting a table so that each fact is stored once. Interviewer
 
 **Example:** advising(student, teacher, subject) where each teacher teaches one subject (teacher → subject) and a student has one teacher per subject ((student, subject) → teacher). The candidate keys are {student, subject} and {student, teacher}. The table is in 3NF, because subject is part of a candidate key, but not in BCNF, because teacher is not a super key. The subject is repeated for every student of a teacher.
 
-**Failure:** BCNF is stricter than 3NF, but it can still leave repetition when a row holds two unrelated lists, such as an instructor's phones and children in one table with no dependencies at all. That needs 4NF. And it can lose a dependency, as the next topics show.
+**Failure:** BCNF (Boyce-Codd normal form) is stricter than 3NF, but it can still leave repetition when a row holds two unrelated lists, such as an instructor's phones and children in one table with no dependencies at all. That needs 4NF (the next level, which handles such lists). And it can lose a dependency, as the next topics show.
 
 ## Topic: A split must be lossless
 
-**Definition:** A split of R into R1 and R2 is lossless when joining the pieces gives back exactly the original rows. A test: the columns the pieces share determine all of R1 or all of R2. This is enough to prove it, and it is also required when the only rules are functional dependencies.
+**Definition:** A split of R into R1 and R2 is lossless when joining the pieces gives back exactly the original rows. A test: the columns the pieces share determine all of R1 or all of R2. This is enough to prove it. It is also required when the only rules are functional dependencies (rules where some columns decide the value of others).
 
-**Why:** A lossy split loses information: after the join you cannot tell which rows were real.
+**Why:** A lossy split (the opposite of lossless) loses information: after the join you cannot tell which rows were real.
 
 **Example:** emp(emp_id, name, city) with rows (1, Asha, Pune) and (2, Asha, Delhi). Split into (emp_id, name) and (name, city), sharing name. Joining on name gives four rows, two of them invented. Split instead into (emp_id, name) and (emp_id, city): the shared column emp_id determines both pieces, so the join gives back the two original rows.
 
@@ -76,13 +76,13 @@ Normalization is splitting a table so that each fact is stored once. Interviewer
 
 ## Topic: Dependency preservation and the BCNF trade-off
 
-**Definition:** A split preserves dependencies when the dependencies that can be checked inside single tables together imply all the original ones, so no join is needed to enforce them. If not, enforcing a lost rule after an update needs a join.
+**Definition:** A split preserves dependencies when the dependencies that can be checked inside single tables together imply all the original ones. Then no join is needed to enforce them. If not, enforcing a lost rule after an update needs a join.
 
 **Why:** Checking a rule inside one table is cheap; checking it across a join on every update is expensive.
 
 **Example:** Split advising into teacher_subject(teacher, subject) and student_teacher(student, teacher). It is in BCNF and lossless, but (student, subject) → teacher cannot be checked in one table any more, because student and subject are never in the same piece. The unsplit table keeps the rule, at the cost of repeating subject.
 
-**Failure:** A lossless, dependency-preserving split into 3NF always exists. A lossless split into BCNF always exists too, but it may not preserve dependencies. So when the two goals conflict, you have to accept either some 3NF repetition or losing the cheap check of one rule.
+**Failure:** A lossless, dependency-preserving split into 3NF always exists. A lossless split into BCNF always exists too, but it may not preserve dependencies. So when the two goals conflict (a trade-off), you have to accept either some 3NF repetition or losing the cheap check of one rule.
 
 ## Questions
 
@@ -153,7 +153,7 @@ Explanation: If the shared columns determine a whole piece, each shared value ma
 - [ ] The ability to join the pieces back into the original rows
 - [ ] Foreign keys
 
-Explanation: A decomposition into BCNF is always lossless but may split the columns of a dependency across tables, so that rule can no longer be checked inside one table.
+Explanation: A decomposition (split) into BCNF is always lossless but may split the columns of a dependency across tables, so that rule can no longer be checked inside one table.
 
 ## Diagram
 

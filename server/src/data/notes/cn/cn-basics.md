@@ -26,19 +26,19 @@ After this section you can draw the common topologies and say what happens when 
 
 ## Topic: Topologies
 
-**Definition:** A topology is the layout of how devices and links are joined. Star: every node connects to one central device. Bus: every node shares one cable. Ring: each node connects to two neighbours in a closed loop. Mesh: nodes connect to many other nodes (full mesh means every pair). Tree: several stars joined together by a bus or a parent device. Hybrid: a mix of the above.
+**Definition:** A topology is the layout, or shape, of how devices and links are joined. Star: every node connects to one central device. Bus: every node shares one cable. Ring: each node connects to two neighbours in a closed loop. Mesh: nodes connect to many other nodes (full mesh means every pair). Tree: several stars joined together by a bus (one shared cable) or a parent device. Hybrid: a mix of the above.
 
 **Why:** The layout decides the cost, how easy it is to add a device, and what breaks when one part fails.
 
-**Example:** In a star, one broken cable cuts off only one computer, but if the central device dies everyone is cut off. In a bus or a simple ring, one break can stop the whole network. A full mesh of n nodes needs n × (n − 1) / 2 links: 5 nodes need 10 links and 10 nodes need 45.
+**Example:** In a star, one broken cable cuts off only one computer, but if the central device dies everyone is cut off. In a bus or a simple ring, one break can stop the whole network. A full mesh of n nodes (n devices) needs n × (n − 1) / 2 links: 5 nodes need 10 links and 10 nodes need 45.
 
 **Failure:** Saying "star is the best" without the cost. A star needs more cable than a bus, and its centre is a single point of failure. Homes and offices still use it because it is easy to manage.
 
 ## Topic: Types of networks by size
 
-**Definition:** PAN (personal area network) covers a few metres around one person. LAN (local area network) covers a room, a building or a campus. MAN (metropolitan area network) covers a city. WAN (wide area network) covers cities and countries; the internet is the biggest example.
+**Definition:** PAN (personal area network) covers a few metres around one person. LAN (local area network) covers a room, a building or a campus. MAN (metropolitan area network) covers a city. WAN (wide area network) covers cities and countries. The internet is the biggest example.
 
-**Why:** The size changes the technology and the speed. A LAN is fast and cheap. A WAN depends on leased lines and service providers.
+**Why:** The size changes the technology and the speed. A LAN is fast and cheap. A WAN depends on leased lines (cables rented from a telecom company) and service providers (the companies that sell you internet access).
 
 **Example:** Your phone and earbuds are a PAN. The Wi-Fi in your college is a LAN. The company that connects all its city offices over leased lines runs a WAN.
 
@@ -46,11 +46,11 @@ After this section you can draw the common topologies and say what happens when 
 
 ## Topic: Intranet, extranet and VPN
 
-**Definition:** An intranet is a private network of one organisation. An extranet lets chosen outsiders (partners, suppliers) reach part of it. A VPN (virtual private network) sends private traffic across the public internet inside an encrypted tunnel, so it behaves like a private link.
+**Definition:** An intranet is a private network of one organisation. An extranet lets chosen outsiders (partners, suppliers) reach part of it. A VPN (virtual private network) sends private traffic across the public internet inside an encrypted (scrambled so outsiders cannot read it) tunnel, so it behaves like a private link.
 
 **Why:** A company would pay a lot to run its own cables between cities. A VPN gives a secure link over the existing internet at a lower cost.
 
-**Example:** A person working from home connects through a VPN client. The company network sees them as if they were inside the office. A site-to-site VPN does the same for a whole branch office through its router.
+**Example:** A person working from home connects through a VPN client (a program on their computer). The company network sees them as if they were inside the office. A site-to-site VPN does the same for a whole branch office through its router (the device that passes traffic between networks).
 
 **Failure:** Thinking a VPN makes you anonymous or safe from everything. It protects the path between you and the VPN end, not what the website does with your data.
 
@@ -58,21 +58,21 @@ After this section you can draw the common topologies and say what happens when 
 
 **Definition:** Unicast sends to one receiver. Broadcast sends to every device on the local network. Multicast sends to a chosen group. Anycast sends to the nearest one of several machines that share the same address.
 
-**Why:** The right choice saves bandwidth. Sending a video stream once to a group is cheaper than sending a separate copy to each viewer.
+**Why:** The right choice saves bandwidth (the amount of data a link can carry). Sending a video stream once to a group is cheaper than sending a separate copy to each viewer.
 
-**Example:** Opening a web page is unicast. When a laptop joins Wi-Fi, its first DHCP request is broadcast because it does not know the server yet. IPv4 multicast uses addresses 224.0.0.0/4, and the "limited broadcast" address is 255.255.255.255. Content delivery networks often use anycast so a user reaches the closest server.
+**Example:** Opening a web page is unicast. When a laptop joins Wi-Fi, its first DHCP (Dynamic Host Configuration Protocol, the service that hands out addresses) request is broadcast because it does not know the server yet. IPv4 multicast uses addresses 224.0.0.0/4, and the "limited broadcast" address is 255.255.255.255. Content delivery networks (CDNs, groups of servers placed around the world) often use anycast so a user reaches the closest server.
 
-**Failure:** Mixing up multicast and broadcast. Broadcast reaches everyone on the segment, multicast reaches only those who joined the group.
+**Failure:** Mixing up multicast and broadcast. Broadcast reaches everyone on the segment (the local part of the network), multicast reaches only those who joined the group.
 
 ## Questions
 
 ### What is the difference between a LAN and a WAN?
 
-A LAN covers a small place such as a home, office or campus and is usually owned by one organisation. A WAN covers a large area such as cities or countries and usually uses links rented from providers. The internet is a huge network of many networks.
+A LAN covers a small place such as a home, office or campus and is usually owned by one organisation. A WAN covers a large area such as cities or countries. It usually uses links rented from providers. The internet is a huge network of many networks.
 
 ### What is a topology and which one is common in offices?
 
-A topology is the layout of nodes and links. Most offices use a star: every computer connects to a switch. It is easy to add or remove a machine, and one bad cable only cuts off one machine. The weak point is the central switch.
+A topology is the layout of nodes and links. Most offices use a star: every computer connects to a switch (a box that passes data between the devices plugged into it). It is easy to add or remove a machine, and one bad cable only cuts off one machine. The weak point is the central switch.
 
 ### What is a VPN and why would a company use one?
 
@@ -86,7 +86,7 @@ Syntax is the format of the data, semantics is the meaning of each part, and tim
 
 - Saying a star topology has no weak point. If the central device fails, the whole network fails.
 - Calling every network a "LAN" or "WAN" by speed alone. The names come from the area covered, not the speed.
-- Saying a VPN encrypts everything you do online. It encrypts the tunnel only.
+- Saying a VPN encrypts everything you do online. It encrypts the tunnel only (the path between you and the VPN end).
 
 ## Quiz
 
@@ -124,7 +124,7 @@ Explanation: A metropolitan area network covers a city. A PAN is personal, a LAN
 - [x] Broadcast
 - [ ] Anycast
 
-Explanation: The laptop does not know the DHCP server, so it sends the request to everyone on the local network.
+Explanation: The laptop does not know the DHCP server (the machine that hands out addresses), so it sends the request to everyone on the local network.
 
 ### What does a VPN do?
 

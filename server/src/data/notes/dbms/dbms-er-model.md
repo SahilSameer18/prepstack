@@ -12,11 +12,11 @@ roadmapSteps: backend:database-design
 
 ## Overview
 
-The entity-relationship model is a way to design a database on paper before building it: you draw the things you store, their properties and how they relate. Interviewers ask about it because a good answer needs the vocabulary (entity, relationship, cardinality, weak entity) and the rules for turning a diagram into tables. After this section you can read an ER diagram, state each cardinality and participation, explain a weak entity set with an example, and convert a design into relational tables with the right keys.
+The entity-relationship model is a way to design a database on paper before building it: you draw the things you store, their properties and how they relate. Interviewers ask about it because a good answer needs the vocabulary (entity, relationship, cardinality, weak entity) and the rules for turning a diagram into tables. After this section you can read an ER diagram, state each cardinality (how many on each side) and participation (must every entity take part), explain a weak entity set with an example, and convert a design into relational tables with the right keys.
 
 ## Topic: Entities and attributes
 
-**Definition:** An entity is an object that exists and can be told apart from other objects. An entity set is a group of entities of the same type with the same properties. Attributes are the descriptive properties, and some of them together form the primary key that identifies each entity.
+**Definition:** An entity is an object that exists and can be told apart from other objects. An entity set is a group of entities of the same type with the same properties. Attributes are the descriptive properties. Some of them together form the primary key, the column or columns that identify each entity.
 
 **Why:** Deciding what the entities are is the first step of a design, and every later step builds on it.
 
@@ -26,17 +26,17 @@ The entity-relationship model is a way to design a database on paper before buil
 
 ## Topic: Types of attributes
 
-**Definition:** A simple attribute cannot be split further. A composite attribute is made of parts. A single-valued attribute has one value per entity and a multivalued attribute can have several. A derived attribute can be computed from others.
+**Definition:** A simple attribute cannot be split further. A composite attribute is made of parts. A single-valued attribute has one value per entity and a multivalued attribute can have several. A derived attribute can be computed from others (so it need not be stored).
 
 **Why:** Each type is stored differently when you build the tables.
 
 **Example:** age is derived from date_of_birth, so it need not be stored. name can be composite (first_name, middle_initial, last_name). phone_numbers is multivalued, because a student can have several. roll_no is simple and single-valued.
 
-**Failure:** A multivalued attribute cannot sit in a single column without breaking first normal form, so it needs its own table in the relational design.
+**Failure:** A multivalued attribute cannot sit in a single column without breaking first normal form (the rule that every column holds one single value), so it needs its own table in the relational design.
 
 ## Topic: Relationships, degree and roles
 
-**Definition:** A relationship is an association among entities, and a relationship set is a group of such associations. Its degree is the number of entity sets that take part: binary for two, ternary for three. A relationship set can have its own attributes. When one entity set appears twice, each appearance plays a role.
+**Definition:** A relationship is an association (a link) among entities, and a relationship set is a group of such associations. Its degree is the number of entity sets that take part: binary for two, ternary for three. A relationship set can have its own attributes. When one entity set appears twice, each appearance plays a role (a name for the part it plays).
 
 **Why:** Relationships are where the questions are: which students take which courses, and with what grade.
 
@@ -46,9 +46,9 @@ The entity-relationship model is a way to design a database on paper before buil
 
 ## Topic: Cardinality and participation
 
-**Definition:** Mapping cardinality says how many entities on one side can be associated with an entity on the other side: one to one, one to many, many to one or many to many. Participation says whether every entity must take part: total participation means every entity does, partial means some may not.
+**Definition:** Mapping cardinality says how many entities on one side can be associated with an entity on the other side: one to one, one to many, many to one or many to many. Participation says whether every entity must take part. Total participation means every entity does, and partial means some may not.
 
-**Why:** These two constraints decide where the keys go when the design becomes tables.
+**Why:** These two constraints (rules on the design) decide where the keys go when the design becomes tables.
 
 **Example:** One department has many students, and each student belongs to exactly one department: one to many from department to student, with total participation of student. A student can take many courses and a course can have many students: many to many. In a diagram a directed arrow means "one" and a plain line means "many", and a double line means total participation. A line can also carry a range l..h: 1..1 means exactly one, 0..* means any number including none.
 
@@ -56,7 +56,7 @@ The entity-relationship model is a way to design a database on paper before buil
 
 ## Topic: Weak entity sets
 
-**Definition:** A weak entity set is an entity set whose entities cannot be identified by their own attributes alone. They depend on an identifying (owner) entity set through an identifying relationship. They are identified by the owner's primary key plus extra attributes called the discriminator.
+**Definition:** A weak entity set is an entity set whose entities cannot be identified by their own attributes alone. They depend on an identifying (owner) entity set through an identifying relationship. They are identified by the owner's primary key plus extra attributes called the discriminator (the part that tells apart the weak entities of one owner).
 
 **Why:** Some things only make sense inside another thing, and without this idea their key would be ambiguous.
 
@@ -66,7 +66,7 @@ The entity-relationship model is a way to design a database on paper before buil
 
 ## Topic: Keys of relationship sets
 
-**Definition:** A relationship set has the primary keys of the entity sets that take part, plus its own attributes, as its columns. Its primary key is built from the participants' keys, and which ones are needed depends on the cardinality.
+**Definition:** A relationship set has the primary keys of the entity sets that take part, plus its own attributes, as its columns. Its primary key is built from the participants' keys. Which ones are needed depends on the cardinality.
 
 **Why:** It tells you how many times the same pair can be related.
 
@@ -76,7 +76,7 @@ The entity-relationship model is a way to design a database on paper before buil
 
 ## Topic: From an ER diagram to tables
 
-**Definition:** Every entity set and relationship set can be written as a table. Strong entity sets become tables with the same attributes. A weak entity set becomes a table that also holds the owner's key. A composite attribute becomes one column per part. A multivalued attribute becomes a separate table. A many-to-many relationship becomes a table of the two keys plus its own attributes. A one-to-many relationship becomes a foreign key column on the "many" side.
+**Definition:** Every entity set and relationship set can be written as a table. Strong entity sets become tables with the same attributes. A weak entity set becomes a table that also holds the owner's key. A composite attribute becomes one column per part. A multivalued attribute becomes a separate table. A many-to-many relationship becomes a table of the two keys plus its own attributes. A one-to-many relationship becomes a foreign key column (a column that points to a row in another table) on the "many" side.
 
 **Why:** The result is the schema you will actually create.
 
@@ -98,7 +98,7 @@ CREATE TABLE section (course_id INT, sec_id INT, semester VARCHAR(10), year INT,
                       FOREIGN KEY (course_id) REFERENCES course (course_id));   -- weak entity
 ```
 
-**Failure:** If participation on the "many" side is partial, the foreign key column must allow NULL for entities with no partner, which is why some designers use a separate table for that relationship. A subgroup of an entity set, such as instructor as a kind of person, can be built either as one table for the general set plus one per subgroup holding the general key, or as one table per entity set with all inherited attributes (a person who is in no subgroup then needs a table of their own, and a person in two subgroups is repeated); the first needs a join to read one entity, the second can repeat data.
+**Failure:** If participation on the "many" side is partial, the foreign key column must allow NULL for entities with no partner, which is why some designers use a separate table for that relationship. A subgroup of an entity set, such as instructor as a kind of person, can be built in two ways. One way is a table for the general set plus one table per subgroup holding the general key. The other way is one table per entity set with all inherited attributes. In this second way, a person who is in no subgroup then needs a table of their own, and a person in two subgroups is repeated. The first way needs a join (combining rows of two tables) to read one entity. The second can repeat data.
 
 ## Questions
 

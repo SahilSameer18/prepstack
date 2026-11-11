@@ -12,25 +12,25 @@ roadmapSteps: backend:database-design
 
 ## Overview
 
-This section covers what a database does behind the scenes and what happens when one machine is not enough. Interviewers ask about query optimization to see whether you can read a plan, and about replication, sharding and the CAP theorem to see whether you can reason about trade-offs in a distributed system. After this section you can explain how a query is optimized, read the cost numbers of an EXPLAIN plan, name the join algorithms, contrast replication with sharding, and state the CAP theorem correctly, without the "pick any two" shortcut.
+This section covers what a database does behind the scenes and what happens when one machine is not enough. Interviewers ask about query optimization to see whether you can read a plan, and about replication (keeping copies), sharding (splitting data) and the CAP theorem to see whether you can reason about trade-offs in a distributed system (one spread over several machines). After this section you can explain how a query is optimized, read the cost numbers of an EXPLAIN plan, name the join algorithms, contrast replication with sharding, and state the CAP theorem correctly, without the "pick any two" shortcut.
 
 ## Topic: How a query is optimized
 
-**Definition:** The query processor translates a query, conceptually into relational algebra, then the optimizer picks the cheapest plan from many equivalent ones. A plan says which algorithm to use for each operation. The cost of each plan is estimated from statistics kept in the catalog, such as the number of rows and the number of distinct values of a column.
+**Definition:** The query processor translates a query, conceptually into relational algebra (the mathematical form of a query). Then the optimizer picks the cheapest plan from many equivalent ones. A plan says which algorithm to use for each operation. The cost of each plan is estimated from statistics kept in the catalog (the database's own records about its tables), such as the number of rows and the number of distinct values of a column.
 
 **Why:** The difference between two plans for the same query can be enormous, in some cases seconds versus days.
 
-**Example:** Find the titles of courses taught by Music instructors, with 1,000 instructors (20 in Music), 4,000 teaches rows and about 4 teaches rows per instructor (an invented illustration). Joining instructor and teaches first creates an intermediate result of 4,000 rows, and then the Music filter cuts it to 80. Filtering instructors to Music first gives 20 rows, and joining those with teaches gives 80 rows at once. Doing the selection as early as possible is called pushing the selection down.
+**Example:** Find the titles of courses taught by Music instructors, with 1,000 instructors (20 in Music), 4,000 teaches rows and about 4 teaches rows per instructor (an invented illustration). Joining instructor and teaches first creates an intermediate result (a temporary table between steps) of 4,000 rows, and then the Music filter cuts it to 80. Filtering instructors to Music first gives 20 rows, and joining those with teaches gives 80 rows at once. Doing the selection (the filter) as early as possible is called pushing the selection down.
 
-**Failure:** The optimizer chooses the lowest estimated cost, and estimates come from statistics that can be inaccurate. Join order matters too: a good plan computes the join with the smallest intermediate result first, and the optimizer searches for such orders using estimated costs. Equivalence rules do not hold for every operation: for example, an outer join is not the same as an inner join with the same filter, and outer joins are not associative.
+**Failure:** The optimizer chooses the lowest estimated cost, and estimates come from statistics that can be inaccurate. Join order matters too. A good plan computes the join with the smallest intermediate result first, and the optimizer searches for such orders using estimated costs. Equivalence rules (rules for rewriting a query without changing its answer) do not hold for every operation. For example, an outer join is not the same as an inner join with the same filter, and outer joins are not associative (changing the grouping of joins can change the result).
 
 ## Topic: Reading a query plan with EXPLAIN
 
 **Definition:** EXPLAIN shows the plan the optimizer chose, as a tree of operations with cost estimates. PostgreSQL's EXPLAIN ANALYZE also runs the query and adds the real timings.
 
-**Why:** It is how you find out whether an index is used.
+**Why:** It is how you find out whether an index (a lookup structure that speeds up searches) is used.
 
-**Example:** In PostgreSQL, EXPLAIN SELECT * FROM tenk1 on a 10,000-row table prints Seq Scan on tenk1 (cost=0.00..445.00 rows=10000 width=244). The two cost numbers are the estimated start-up cost and total cost. The 445 is 345 pages at 1.0 each plus 10,000 rows at 0.01 each. Adding WHERE unique1 = 42 gives Index Scan using tenk1_unique1 with cost 0.29..8.30 and one row, far cheaper than reading the whole table.
+**Example:** In PostgreSQL, EXPLAIN SELECT * FROM tenk1 on a 10,000-row table prints Seq Scan on tenk1 (cost=0.00..445.00 rows=10000 width=244). Seq Scan means reading the whole table row by row. The two cost numbers are the estimated start-up cost and total cost. The 445 is 345 pages at 1.0 each plus 10,000 rows at 0.01 each. Adding WHERE unique1 = 42 gives Index Scan (a search through an index) using tenk1_unique1 with cost 0.29..8.30 and one row, far cheaper than reading the whole table.
 ```sql
 EXPLAIN SELECT * FROM tenk1 WHERE unique1 = 42;
 ```
@@ -39,47 +39,47 @@ EXPLAIN SELECT * FROM tenk1 WHERE unique1 = 42;
 
 ## Topic: Join algorithms
 
-**Definition:** The same join can be run in different ways. A nested-loop join compares every row of one table with every row of the other and needs no index. A block nested-loop join does the same one block at a time. An indexed nested-loop join uses an index on the inner table. A merge join needs both inputs sorted on the join key. A hash join builds a hash table on one input.
+**Definition:** The same join can be run in different ways. A nested-loop join compares every row of one table with every row of the other and needs no index. A block nested-loop join does the same one block (a chunk of rows read from disk together) at a time. An indexed nested-loop join uses an index on the inner table. A merge join needs both inputs sorted on the join key. A hash join builds a hash table (a lookup table keyed by a hash of the value) on one input.
 
 **Why:** The right algorithm depends on table sizes, indexes and the join condition, and it is the optimizer's choice.
 
-**Example:** The textbook's example: 5,000 student rows in 100 blocks and 10,000 takes rows in 400 blocks. A worst-case nested-loop join with student as the outer table needs 5,000 x 400 + 100 = 2,000,100 block transfers. If the smaller table, student, fits in memory, it needs only 100 + 400 = 500.
+**Example:** The textbook's example: 5,000 student rows in 100 blocks and 10,000 takes rows in 400 blocks. A worst-case nested-loop join with student as the outer table needs 5,000 x 400 + 100 = 2,000,100 block transfers (disk reads). If the smaller table, student, fits in memory, it needs only 100 + 400 = 500.
 
-**Failure:** A plain nested loop works for any join condition but is expensive. Merge and hash joins usually need equality conditions on the join keys. Interview answer: the database picks the algorithm; you influence it with indexes and with queries that let the optimizer use them.
+**Failure:** A plain nested loop works for any join condition but is expensive. Merge and hash joins usually need equality conditions on the join keys. Interview answer: the database picks the algorithm, and you influence it with indexes and with queries that let the optimizer use them.
 
 ## Topic: Replication
 
 **Definition:** Replication keeps copies of the same data on several servers. In a single-leader (primary-replica) setup, the leader takes the writes and sends the changes to the replicas, which mostly serve reads.
 
-**Why:** It gives availability when a machine fails, lower latency when a copy is nearby, and more read capacity.
+**Why:** It gives availability (the service keeps working) when a machine fails, lower latency (shorter waiting time) when a copy is nearby, and more read capacity.
 
-**Example:** One primary and two replicas. A write goes to the primary and is copied to both. Replicas can answer reads. If the primary fails, a replica has to be promoted, which needs a failover procedure. Replication is usually two or three copies, in one data centre to survive machine failures or in several to survive a data-centre failure.
+**Example:** One primary and two replicas. A write goes to the primary and is copied to both. Replicas can answer reads. If the primary fails, a replica has to be promoted, which needs a failover procedure (switching over to a backup). Replication is usually two or three copies, in one data centre to survive machine failures or in several to survive a data-centre failure.
 
-**Failure:** Synchronous replication waits until the copies have the change before the commit finishes, so a failover loses nothing, but it is slower; PostgreSQL's manual says a fully synchronous setup over a slow network might cut performance by more than half. Asynchronous replication does not wait, so a replica can serve slightly stale reads (replication lag) and some committed transactions can be lost on a failover. Multi-leader setups accept writes on several nodes and need conflict handling such as last-write-wins.
+**Failure:** Synchronous replication waits until the copies have the change before the commit finishes, so a failover loses nothing, but it is slower. PostgreSQL's manual says a fully synchronous setup over a slow network might cut performance by more than half. Asynchronous replication does not wait, so a replica can serve slightly stale (out of date) reads (replication lag) and some committed transactions can be lost on a failover. Multi-leader setups accept writes on several nodes and need conflict handling such as last-write-wins (the newest write is kept).
 
 ## Topic: Partitioning and sharding
 
-**Definition:** Partitioning splits a table into pieces. Horizontal partitioning splits by rows; a horizontal partition, often kept on its own server, is called a shard. Vertical partitioning splits by columns.
+**Definition:** Partitioning splits a table into pieces. Horizontal partitioning splits by rows. A horizontal partition, often kept on its own server, is called a shard. Vertical partitioning splits by columns.
 
 **Why:** One machine eventually cannot hold all the data or take all the load. Shards also make tables and indexes smaller.
 
-**Example:** With 3 nodes and a hash of user_id mod 3, the user with id 7 goes to node 1, and the user with id 9 goes to node 0. A lookup of one user visits one node. A range query on user_id from 7 to 9 has to ask all three. With range partitioning and a partitioning vector [5, 11], value 2 goes to node 0, value 8 to node 1 and value 20 to node 2, so a range query touches only a few nodes.
+**Example:** With 3 nodes and a hash of user_id mod 3 (the remainder after dividing by 3), the user with id 7 goes to node 1, and the user with id 9 goes to node 0. A lookup of one user visits one node. A range query on user_id from 7 to 9 has to ask all three. With range partitioning (each node holds a range of values) and a partitioning vector [5, 11], value 2 goes to node 0, value 8 to node 1 and value 20 to node 2, so a range query touches only a few nodes.
 ```text
 hash: point query = 1 node, range query = all nodes
 range: point query = 1 node, range query = a few nodes; a range query that fetches many blocks is served by few nodes, which wastes parallelism
 ```
 
-**Failure:** Sharding makes queries more complex: a query that joins across shards is harder, backups need coordination, and schema changes are harder. Replication copies the same data; sharding splits different data. They are often combined, with each shard replicated. A commonly given advice is to shard only after cheaper optimizations have been tried.
+**Failure:** Sharding makes queries more complex. A query that joins across shards is harder, backups need coordination, and schema changes (changes to the table layout) are harder. Replication copies the same data, and sharding splits different data. They are often combined, with each shard replicated. A commonly given advice is to shard only after cheaper optimizations have been tried.
 
 ## Topic: The CAP theorem
 
-**Definition:** The CAP theorem says a distributed data store can provide at most two of three guarantees: consistency (every read gets the latest write or an error), availability (every request to a working node gets a response, not necessarily with the latest data) and partition tolerance (it keeps working when messages are lost or delayed).
+**Definition:** The CAP theorem says a distributed data store (a database spread over several machines) can provide at most two of three guarantees: consistency (every read gets the latest write or an error), availability (every request to a working node gets a response, not necessarily with the latest data) and partition tolerance (it keeps working when messages are lost or delayed).
 
-**Why:** It forces a design decision for when the network splits.
+**Why:** It forces a design decision for when the network splits (a network partition).
 
-**Example:** Two data centres lose their connection. If a client writes to one, the system must choose: refuse requests that could not be consistent (keep consistency, lose availability), or answer from each side with possibly different data (keep availability, risk inconsistency). Without a partition, a system can have both.
+**Example:** Two data centres lose their connection. If a client writes to one, the system must choose. It can refuse requests that could not be consistent (keep consistency, lose availability), or answer from each side with possibly different data (keep availability, risk inconsistency). Without a partition, a system can have both.
 
-**Failure:** "Pick any two of three" is misleading. Partitions cannot be avoided in a real distributed system, so partition tolerance is generally required and the real choice is between consistency and availability while a partition lasts. CAP consistency (latest write) is not the same as ACID consistency (constraints hold), and CAP availability is not the same as high availability. A refinement, PACELC, adds that even without a partition there is a trade-off between latency and consistency.
+**Failure:** "Pick any two of three" is misleading. Partitions cannot be avoided in a real distributed system, so partition tolerance is generally required and the real choice is between consistency and availability while a partition lasts. CAP consistency (latest write) is not the same as ACID consistency (constraints hold), and CAP availability is not the same as high availability. A refinement, PACELC, adds that even without a partition there is a trade-off between latency (waiting time) and consistency.
 
 ## Questions
 
@@ -118,7 +118,7 @@ A distributed data store can give at most two of consistency, availability and p
 - [ ] Both create the same intermediate result
 - [ ] Neither: the optimizer ignores the filter
 
-Explanation: Joining first creates 4,000 rows before filtering; filtering first leaves 20 rows to join and gives 80 rows directly. Pushing selections down shrinks the work.
+Explanation: Joining first creates 4,000 rows before filtering. Filtering first leaves 20 rows to join and gives 80 rows directly. Pushing selections down shrinks the work.
 
 ### An EXPLAIN line reads Seq Scan on t (cost=0.00..445.00 rows=10000). What is 445.00?
 

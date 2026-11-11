@@ -12,21 +12,21 @@ roadmapSteps: backend:database-design
 
 ## Overview
 
-Concurrency control is how a database lets many transactions run at once without them corrupting each other's data. Interviewers ask about it because locks, deadlocks, isolation levels and versions are where real systems differ most, and a safe-sounding answer is often wrong for a particular database. After this section you can explain two-phase locking, handle a deadlock, name the three read problems and which isolation level stops each, say what the default is in PostgreSQL and MySQL, and describe snapshot isolation and its write skew.
+Concurrency control is how a database lets many transactions run at once without them corrupting each other's data. Interviewers ask about it because locks, deadlocks (transactions stuck waiting for each other), isolation levels (how much transactions are kept apart) and versions are where real systems differ most, and a safe-sounding answer is often wrong for a particular database. After this section you can explain two-phase locking, handle a deadlock, name the three read problems and which isolation level stops each, say what the default is in PostgreSQL and MySQL, and describe snapshot isolation and its write skew.
 
 ## Topic: The problem: lost updates
 
-**Definition:** When transactions run at the same time, one can overwrite or read another's half-done work. Concurrency control is the set of rules that stops this while keeping the benefits of running together.
+**Definition:** When transactions run at the same time (concurrently), one can overwrite or read another's half-done work. Concurrency control is the set of rules that stops this while keeping the benefits of running together.
 
 **Why:** Running transactions together gives better use of the processor and disk and shorter response times, because short transactions do not wait behind long ones.
 
-**Example:** Two transactions each add 50 to a balance of 100. Both read 100, T1 writes 150, then T2 writes 150. The final balance is 150 instead of 200: T1's update is lost.
+**Example:** Two transactions each add 50 to a balance of 100. Both read 100, T1 writes 150, then T2 writes 150. The final balance is 150 instead of 200, because T1's update is lost (this is called a lost update).
 
-**Failure:** The fix cannot be "run one at a time", which is correct but slow. The goal is schedules that are serializable and recoverable, with as much concurrency as possible.
+**Failure:** The fix cannot be "run one at a time", which is correct but slow. The goal is schedules (the order in which operations run) that are serializable (equal to some one-at-a-time order) and recoverable, with as much concurrency as possible.
 
 ## Topic: Locks: shared and exclusive
 
-**Definition:** A lock controls access to a data item. A shared lock (S) allows reading. An exclusive lock (X) allows reading and writing. Any number of transactions can hold S on an item; if one holds X, no other transaction can hold any lock on it.
+**Definition:** A lock controls access to a data item. A shared lock (S) allows reading. An exclusive lock (X) allows reading and writing. Any number of transactions can hold S on an item. If one holds X, no other transaction can hold any lock on it.
 
 **Why:** Locks make conflicting operations wait for each other, which forces a safe order.
 
@@ -37,37 +37,37 @@ S              yes    wait
 X              wait   wait
 ```
 
-**Failure:** At their default levels, plain reads in PostgreSQL and MySQL InnoDB take no row read locks; they read a version of the row instead (see the MVCC topic; InnoDB at SERIALIZABLE with autocommit off turns plain SELECTs into shared-lock reads). Locks in those systems matter mainly for writes and for statements like SELECT ... FOR UPDATE.
+**Failure:** At their default levels, plain reads in PostgreSQL and MySQL InnoDB take no row read locks; they read a version of the row instead (see the MVCC topic; InnoDB at SERIALIZABLE with autocommit off turns plain SELECTs into shared-lock reads). Locks in those systems matter mainly for writes and for statements like SELECT ... FOR UPDATE (which reads rows and locks them for a later change).
 
 ## Topic: Two-phase locking (2PL)
 
-**Definition:** A transaction following 2PL has a growing phase, where it may take locks but not release any, and then a shrinking phase, where it may release locks but not take new ones. This guarantees conflict-serializable schedules.
+**Definition:** A transaction following 2PL has a growing phase, where it may take locks but not release any, and then a shrinking phase, where it may release locks but not take new ones. This guarantees conflict-serializable schedules (schedules whose result equals some one-at-a-time order, judged by which operations conflict).
 
-**Why:** The rule is simple and the guarantee is strong: transactions can be ordered by the moment each took its last lock.
+**Why:** The rule is simple and the guarantee is strong. Transactions can be ordered by the moment each took its last lock.
 
 **Example:** T1 locks A, locks B, then unlocks A, then unlocks B: legal. T1 locks A, unlocks A, then locks B: not 2PL, because it took a lock after releasing one.
 
-**Failure:** 2PL does not prevent deadlock. Strict 2PL holds exclusive locks until commit or abort, which prevents cascading rollbacks. Rigorous 2PL holds all locks until the end, so transactions are ordered by commit time; most lock-based databases implement this and simply call it two-phase locking (systems with MVCC serve plain reads from row versions instead, see below). 2PL is sufficient for serializability, not necessary: some serializable schedules cannot be produced under it.
+**Failure:** 2PL does not prevent deadlock. Strict 2PL holds exclusive locks until commit or abort, which prevents cascading rollbacks (one abort forcing other transactions to abort). Rigorous 2PL holds all locks until the end, so transactions are ordered by commit time. Most lock-based databases implement this and simply call it two-phase locking (systems with MVCC serve plain reads from row versions instead, see below). 2PL is sufficient for serializability, not necessary: some serializable schedules cannot be produced under it.
 
 ## Topic: Deadlock
 
-**Definition:** A deadlock is a set of transactions each waiting for a lock that another in the set holds, so none can move.
+**Definition:** A deadlock is a set of transactions each waiting for a lock that another in the set holds, so none can move (they would wait forever unless the database steps in).
 
 **Why:** Locking protocols make deadlock possible, so every database needs a way to break it.
 
-**Example:** T1 updates row 1 and then wants row 2. T2 has updated row 2 and then wants row 1. Each waits for the other. The database detects the cycle in its wait-for graph, where an arrow T1 to T2 means T1 waits for T2, picks one transaction as the victim and rolls it back. The application receives an error and must retry the transaction.
+**Example:** T1 updates row 1 and then wants row 2. T2 has updated row 2 and then wants row 1. Each waits for the other. The database detects the cycle in its wait-for graph, where an arrow T1 to T2 means T1 waits for T2. It picks one transaction as the victim and rolls it back. The application receives an error and must retry the transaction.
 ```text
 T1: UPDATE row1 ... then UPDATE row2
 T2: UPDATE row2 ... then UPDATE row1   -- T1 waits for T2, T2 waits for T1
 ```
 
-**Failure:** Prevention means locking everything before starting, locking in a fixed order, or using timestamps. Wait-die: an older transaction may wait for a younger one, but a younger one that wants a lock held by an older one is rolled back. Wound-wait: an older transaction forces the younger holder to roll back, and a younger one may wait for an older one. To cut deadlocks in practice, keep transactions short, touch rows in the same order every time, and, in MySQL InnoDB, index the columns used in SELECT ... FOR UPDATE and UPDATE ... WHERE. Which transaction becomes the victim is hard to predict, so never rely on it.
+**Failure:** Prevention means locking everything before starting, locking in a fixed order, or using timestamps (each transaction gets an age). Wait-die: an older transaction may wait for a younger one, but a younger one that wants a lock held by an older one is rolled back. Wound-wait: an older transaction forces the younger holder to roll back, and a younger one may wait for an older one. To cut deadlocks in practice, keep transactions short and touch rows in the same order every time. In MySQL InnoDB, also index the columns used in SELECT ... FOR UPDATE and UPDATE ... WHERE. Which transaction becomes the victim is hard to predict, so never rely on it.
 
 ## Topic: Isolation levels and read problems
 
-**Definition:** The SQL standard describes three read problems. A dirty read sees another transaction's uncommitted change. A non-repeatable read gets a different value when it reads the same row twice because another transaction committed a change. A phantom read gets a different set of rows when it repeats a query because another transaction committed inserts or deletes. Four isolation levels allow progressively fewer of them.
+**Definition:** The SQL standard describes three read problems. A dirty read sees another transaction's uncommitted change (a change not yet made permanent). A non-repeatable read gets a different value when it reads the same row twice, because another transaction committed a change in between. A phantom read gets a different set of rows when it repeats a query, because another transaction committed inserts or deletes. Four isolation levels (settings for how much transactions are kept apart) allow progressively fewer of these problems.
 
-**Why:** A weaker level gives more concurrency; a stronger level gives more protection. The application picks per transaction.
+**Why:** A weaker level gives more concurrency. A stronger level gives more protection. The application picks per transaction.
 
 **Example:** Under the standard, the levels allow these problems:
 ```text
@@ -79,27 +79,27 @@ serializable       no           no                    no
 ```
 A phantom: T1 runs SELECT count(*) FROM instructor WHERE dept = 'Physics' and gets 3. T2 inserts a Physics instructor and commits. T1 runs the same query again and gets 4.
 
-**Failure:** Products do not follow the table exactly, so always say which database you mean. PostgreSQL's default is Read Committed, and its Read Uncommitted behaves like Read Committed, so it never shows dirty reads; its Repeatable Read does not allow phantoms. MySQL InnoDB's default is REPEATABLE READ and it does allow dirty reads at READ UNCOMMITTED. The textbook lists serializable as the standard's default, which is not what these databases do.
+**Failure:** Products do not follow the table exactly, so always say which database you mean. PostgreSQL's default is Read Committed, and its Read Uncommitted behaves like Read Committed, so it never shows dirty reads. Its Repeatable Read does not allow phantoms. MySQL InnoDB's default is REPEATABLE READ, and it does allow dirty reads at READ UNCOMMITTED. The textbook lists serializable as the standard's default, which is not what these databases do.
 
 ## Topic: Multiversion concurrency (MVCC) and snapshot isolation
 
-**Definition:** Multiversion concurrency keeps old versions of a row so that a reader can use the version that matches its snapshot and does not wait for writers. Snapshot isolation gives each transaction a snapshot of the committed data taken when it starts (in PostgreSQL, at its first query); its own writes are visible to it, others' are not.
+**Definition:** Multiversion concurrency (MVCC) keeps old versions of a row so that a reader can use the version that matches its snapshot (a frozen view of the data) and does not wait for writers. Snapshot isolation gives each transaction a snapshot of the committed data taken when it starts (in PostgreSQL, at its first query). Its own writes are visible to it, and others' are not.
 
 **Why:** Reads never block writes and writes never block reads, and the speed is similar to read committed.
 
-**Example:** T1 starts, then T2 updates a row and commits. T1 still reads the old value, because it works from its snapshot. If T1 then tries to update the same row, it fails, because another transaction already wrote that row. This is the first-committer-wins rule; the textbook applies it at commit, while PostgreSQL's Repeatable Read raises the error as soon as T1 tries to change that row. The PostgreSQL error is "could not serialize access due to concurrent update" and the application retries.
+**Example:** T1 starts, then T2 updates a row and commits. T1 still reads the old value, because it works from its snapshot. If T1 then tries to update the same row, it fails, because another transaction already wrote that row. This is the first-committer-wins rule. The textbook applies it at commit, while PostgreSQL's Repeatable Read raises the error as soon as T1 tries to change that row. The PostgreSQL error is "could not serialize access due to concurrent update" and the application retries.
 
-**Failure:** Snapshot isolation is not the same as serializable. Write skew: two accounts X and Y each hold 50 and a rule says X + Y must stay at least 0. T1 reads both (100) and takes 80 from X. T2 reads both (100) and takes 80 from Y. They write different rows, so both commit, and the total is -60. PostgreSQL's Serializable level adds checks that stop this and makes one of the two transactions fail with an error to retry.
+**Failure:** Snapshot isolation is not the same as serializable. Write skew is the example: two accounts X and Y each hold 50 and a rule says X + Y must stay at least 0. T1 reads both (100) and takes 80 from X. T2 reads both (100) and takes 80 from Y. They write different rows, so both commit, and the total is -60. PostgreSQL's Serializable level adds checks that stop this and makes one of the two transactions fail with an error to retry.
 
 ## Topic: Phantoms, gap locks and locking granularity
 
-**Definition:** A phantom is a conflict between a query on a range and an insert into that range, even though they touch no common row. Locking only the rows found cannot see it. Index locking, or InnoDB's next-key lock (a lock on an index record plus the gap before it), blocks inserts into the range.
+**Definition:** A phantom is a conflict between a query on a range and an insert into that range, even though they touch no common row. Locking only the rows found cannot see it. Index locking (locking part of an index, a lookup structure that keeps values in order), or InnoDB's next-key lock (a lock on an index record plus the gap before it), blocks inserts into the range.
 
 **Why:** Without it, a transaction that counts rows or finds a maximum can be made wrong by an insert it never saw.
 
-**Example:** Two transactions both read the largest order number, 40, and each creates order 41. Both get the same number, which no serial order would allow. If both read the maximum with a locking read (SELECT ... FOR UPDATE) under InnoDB's default REPEATABLE READ, the next-key lock on the last index record and the gap after it makes the second transaction wait. A plain SELECT takes no such lock.
+**Example:** Two transactions both read the largest order number, 40, and each creates order 41. Both get the same number, which no one-at-a-time (serial) order would allow. If both read the maximum with a locking read (SELECT ... FOR UPDATE) under InnoDB's default REPEATABLE READ, the next-key lock on the last index record and the gap after it makes the second transaction wait. A plain SELECT takes no such lock.
 
-**Failure:** Locks can be taken at different sizes (database, table, row). Fine locks give more concurrency but cost more to manage; coarse locks the opposite. Intention locks (IS, IX, SIX) let a transaction lock a table without checking every row lock below it. InnoDB turns gap locking off at READ COMMITTED, which is why phantoms can occur there.
+**Failure:** Locks can be taken at different sizes (database, table, row), called locking granularity. Fine locks give more concurrency but cost more to manage. Coarse locks are the opposite. Intention locks (IS, IX, SIX; markers placed on a table to say which row locks exist below it) let a transaction lock a table without checking every row lock below it. InnoDB turns gap locking off at READ COMMITTED, which is why phantoms can occur there.
 
 ## Questions
 
@@ -161,7 +161,7 @@ Explanation: After the first unlock the transaction is in its shrinking phase an
 - [ ] By counting how many locks a transaction holds
 - [ ] By waiting for the transaction to commit
 
-Explanation: An arrow from Ti to Tj means Ti waits for a lock Tj holds. The system is deadlocked exactly when this graph has a cycle.
+Explanation: An arrow from Ti to Tj means Ti waits for a lock Tj holds. The system is deadlocked exactly when this graph has a cycle (a chain of waits that loops back to its start).
 
 ### Two accounts hold 50 each, and X + Y must stay at least 0. Under snapshot isolation, T1 reads both and withdraws 80 from X while T2 reads both and withdraws 80 from Y. What happens?
 

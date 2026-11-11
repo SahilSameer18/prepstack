@@ -12,13 +12,13 @@ roadmapSteps: backend:database-design
 
 ## Overview
 
-A transaction is a group of operations that the database treats as one unit: all of it happens or none of it does. Interviewers ask about transactions because ACID, schedules and serializability test whether you understand what can go wrong when programs fail or run at the same time. After this section you can explain ACID with a bank transfer, draw the states a transaction passes through, check whether a schedule is conflict serializable using a precedence graph, and say what recoverable and cascadeless mean.
+A transaction is a group of operations that the database treats as one unit: all of it happens or none of it does. Interviewers ask about transactions because ACID (four safety guarantees), schedules (the order in which operations run) and serializability (the result matches running them one by one) test whether you understand what can go wrong when programs fail or run at the same time. After this section you can explain ACID with a bank transfer, draw the states a transaction passes through, check whether a schedule is conflict serializable using a precedence graph, and say what recoverable and cascadeless mean.
 
 ## Topic: What a transaction is
 
-**Definition:** A transaction is a unit of program execution that reads and possibly updates data. It either completes and is committed, or it fails and is rolled back.
+**Definition:** A transaction is a unit of program execution that reads and possibly updates data. It either completes and is committed (made permanent), or it fails and is rolled back (undone).
 
-**Why:** Two things go wrong in real systems: programs and machines fail halfway, and many programs run at the same time. Transactions give the database a unit it can undo or protect.
+**Why:** Two things go wrong in real systems. Programs and machines fail halfway, and many programs run at the same time. Transactions give the database a unit it can undo or protect.
 
 **Example:** Transfer 50 from account A to account B: read A, subtract 50, write A, read B, add 50, write B. If the system stops after the third step and before the sixth, 50 has vanished.
 ```sql
@@ -28,11 +28,11 @@ UPDATE account SET balance = balance + 50 WHERE id = 'B';
 COMMIT;   -- or ROLLBACK; to undo both updates
 ```
 
-**Failure:** In most databases each successful statement commits by itself unless you start a transaction or turn autocommit off. Two separate UPDATE statements outside BEGIN are two transactions, and a crash between them leaves the first one committed.
+**Failure:** In most databases each successful statement commits by itself (this is called autocommit) unless you start a transaction or turn autocommit off. Two separate UPDATE statements outside BEGIN are two transactions, and a crash between them leaves the first one committed.
 
 ## Topic: Atomicity and durability
 
-**Definition:** Atomicity means all operations of a transaction are reflected in the database or none are. Durability means that once the user is told the transaction completed, its changes survive software and hardware failures.
+**Definition:** Atomicity (all or nothing) means all operations of a transaction are reflected in the database or none are. Durability (changes survive a crash) means that once the user is told the transaction completed, its changes survive software and hardware failures.
 
 **Why:** Atomicity protects against half-finished work, such as the lost 50 above. Durability protects against losing a confirmed payment because the server restarted.
 
@@ -42,43 +42,43 @@ COMMIT;   -- or ROLLBACK; to undo both updates
 
 ## Topic: Consistency and isolation
 
-**Definition:** Consistency means that a transaction run alone takes the database from one valid state to another, where valid means the rules (keys, foreign keys, and rules about the data) hold. Isolation means that each transaction behaves as if the others were not running.
+**Definition:** Consistency means that a transaction run alone takes the database from one valid state to another. Valid means the rules (keys, foreign keys, and rules about the data) hold. Isolation means that each transaction behaves as if the others were not running.
 
 **Why:** Without isolation, a reader can see a half-finished transfer. Without consistency, valid data turns into invalid data.
 
-**Example:** For the transfer, consistency means A + B stays the same. Isolation matters if T2 reads A and B between the third and sixth step of the transfer: it sees a total that is 50 too low, even though the database is correct before and after.
+**Example:** For the transfer, consistency means A + B stays the same. Isolation matters if T2 (a second transaction) reads A and B between the third and sixth step of the transfer. It sees a total that is 50 too low, even though the database is correct before and after.
 
-**Failure:** The database can only enforce rules that were declared. If the transaction's own logic is wrong, such as adding 50 to B twice, the database does not notice, and the result is inconsistent. Also, consistency in ACID is not the same word as consistency in the CAP theorem, which is about every read seeing the latest write.
+**Failure:** The database can only enforce rules that were declared. If the transaction's own logic is wrong, such as adding 50 to B twice, the database does not notice, and the result is inconsistent. Also, consistency in ACID is not the same idea as consistency in the CAP theorem (a rule about distributed databases), which is about every read seeing the latest write.
 
 ## Topic: Transaction states
 
-**Definition:** A transaction is active while it runs, partially committed after its last statement, committed once it has finished successfully, failed when it cannot continue, and aborted after it has been rolled back.
+**Definition:** A transaction is active while it runs. It is partially committed after its last statement, committed once it has finished successfully, failed when it cannot continue, and aborted after it has been rolled back.
 
 **Why:** The states say what is true about the data at each point, and what the system has to do next.
 
 **Example:** The transfer is active during its six steps. After the last write it is partially committed; if the commit succeeds it moves to committed. If step 6 hits a constraint violation, it becomes failed, then aborted once A has been restored.
 
-**Failure:** After an abort the transaction can be restarted (usually by the application), but only if the failure was not caused by an internal logical error in the transaction itself. Otherwise it must be killed.
+**Failure:** After an abort the transaction can be restarted (usually by the application), but only if the failure was not caused by an internal logical error in the transaction itself. Otherwise it must be killed (given up for good).
 
 ## Topic: Schedules and conflict serializability
 
 **Definition:** A schedule is the time order in which the operations of several transactions run, with each transaction's own order kept. A schedule is serializable if it is equivalent to a serial one, where transactions run one after another. Two operations conflict when they come from different transactions, touch the same item, and at least one of them writes it.
 
-**Why:** Running transactions one by one is always correct but slow. Serializability lets the database interleave them and still give the same result as some serial order.
+**Why:** Running transactions one by one is always correct but slow. Serializability lets the database interleave them (mix their steps together) and still give the same result as some serial order.
 
-**Example:** T1 and T2 each read and write A, then read and write B. The schedule R1(A) W1(A) R2(A) W2(A) R1(B) W1(B) R2(B) W2(B) has conflicts only from T1 to T2 (T1 touches each item first), so its precedence graph has one arrow T1 to T2 and no cycle: it is equivalent to T1 followed by T2. The schedule R1(A) R2(A) W1(A) W2(A) has R1(A) before W2(A), an arrow T1 to T2, and R2(A) before W1(A), an arrow T2 to T1. That is a cycle, so it is not conflict serializable; T2 reads A before T1 writes it and then writes A, so one of the two updates is lost.
+**Example:** T1 and T2 each read and write A, then read and write B. (R1(A) means T1 reads A; W1(A) means T1 writes A.) The schedule R1(A) W1(A) R2(A) W2(A) R1(B) W1(B) R2(B) W2(B) has conflicts only from T1 to T2 (T1 touches each item first). So its precedence graph has one arrow T1 to T2 and no cycle, and it is equivalent to T1 followed by T2. The schedule R1(A) R2(A) W1(A) W2(A) has R1(A) before W2(A), an arrow T1 to T2, and R2(A) before W1(A), an arrow T2 to T1. That is a cycle, so it is not conflict serializable. T2 reads A before T1 writes it and then writes A, so one of the two updates is lost.
 
-**Failure:** The test is a precedence graph over the transactions: draw an arrow Ti to Tj when an operation of Ti conflicts with a later operation of Tj. A schedule is conflict serializable exactly when the graph has no cycle, and a topological order of the graph is an equivalent serial order. A wider notion, view serializability, accepts more schedules but is NP-complete to test; real systems enforce conflict serializability through protocols such as locking.
+**Failure:** The test is a precedence graph over the transactions: draw an arrow Ti to Tj when an operation of Ti conflicts with a later operation of Tj. A schedule is conflict serializable exactly when the graph has no cycle, and a topological order of the graph (a way to line up the nodes so every arrow points forward) is an equivalent serial order. A wider notion, view serializability, accepts more schedules but is NP-complete to test (no fast method is known). Real systems enforce conflict serializability through protocols such as locking.
 
 ## Topic: Recoverable and cascadeless schedules
 
-**Definition:** A schedule is recoverable if, whenever a transaction reads a value written by another transaction, the writer commits first. It is cascadeless if a transaction only reads an item after the transaction that last wrote it has committed.
+**Definition:** A schedule is recoverable if, whenever a transaction reads a value written by another transaction, the writer commits first. It is cascadeless (avoids cascading rollbacks) if a transaction only reads an item after the transaction that last wrote it has committed.
 
 **Why:** If a reader commits on the strength of data that is later rolled back, the commit cannot be undone, and the database is left inconsistent.
 
-**Example:** T8 writes A. T9 reads A and commits. Then T8 aborts. T9 has committed using a value that never officially existed, so the schedule is not recoverable. If T9 had not committed yet, the schedule would be recoverable, but T9 would still have to be rolled back with T8: a cascading rollback.
+**Example:** T8 writes A. T9 reads A and commits. Then T8 aborts. T9 has committed using a value that never officially existed, so the schedule is not recoverable. If T9 had not committed yet, the schedule would be recoverable. But T9 would still have to be rolled back with T8, which is called a cascading rollback (one abort forces other transactions to abort).
 
-**Failure:** Every cascadeless schedule is recoverable, but not every recoverable schedule is cascadeless. Cascading rollbacks can undo a lot of work, which is why systems prefer cascadeless schedules.
+**Failure:** Every cascadeless schedule is recoverable, but not every recoverable schedule is cascadeless. Cascading rollbacks can undo a lot of work, so systems prefer cascadeless schedules.
 
 ## Questions
 
@@ -149,7 +149,7 @@ Explanation: In a recoverable schedule the writer must commit before a reader th
 - [ ] Every serializable schedule is serial
 - [ ] A cascadeless schedule can contain a dirty read
 
-Explanation: Cascadeless schedules forbid reading uncommitted data, which makes them recoverable. A recoverable schedule can still read uncommitted data and cause a cascading rollback.
+Explanation: Cascadeless schedules forbid reading uncommitted data (a dirty read), which makes them recoverable. A recoverable schedule can still read uncommitted data and cause a cascading rollback.
 
 ## Diagram
 

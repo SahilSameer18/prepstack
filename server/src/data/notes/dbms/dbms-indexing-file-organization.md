@@ -12,38 +12,38 @@ roadmapSteps: backend:database-design
 
 ## Overview
 
-An index is a separate structure, usually sorted, that lets the database find rows without reading the whole table. Interviewers ask about it because the B+ tree, clustered versus secondary indexes, and the order of columns in a multi-column index decide whether a query takes milliseconds or minutes. After this section you can explain how a B+ tree lookup works and why it stays shallow, say what an index costs, choose the column order of a composite index, and compare B+ tree and hash indexes.
+An index is a separate structure, usually sorted, that lets the database find rows without reading the whole table. Interviewers ask about it because the B+ tree (a balanced, many-branched search tree), clustered versus secondary indexes, and the order of columns in a multi-column index decide whether a query takes milliseconds or minutes. After this section you can explain how a B+ tree lookup works and why it stays shallow, say what an index costs, choose the column order of a composite index, and compare B+ tree and hash indexes.
 
 ## Topic: What an index is and what it costs
 
-**Definition:** An index is a structure that stores search-key values in a form that is fast to search, each with a pointer to the row. It is a redundant copy of part of the data, kept separate from the table.
+**Definition:** An index is a structure that stores search-key values in a form that is fast to search, each with a pointer to the row. It is a redundant (extra) copy of part of the data, kept separate from the table.
 
 **Why:** Without an index, finding one row may mean reading every row. With one, the database goes straight to the row's location.
 
-**Example:** A table of 1,000,000 students with an index on roll_no: the query WHERE roll_no = 42 reads a few index blocks and then one table block. Without the index it reads the whole table.
+**Example:** A table of 1,000,000 students with an index on roll_no: the query WHERE roll_no = 42 reads a few index blocks and then one table block. Without the index it reads the whole table (a full scan).
 ```sql
 CREATE INDEX idx_student_roll ON student (roll_no);
 ```
 
-**Failure:** An index is not free. It takes space, and every insert, update or delete that touches an indexed column must update the index as well, keeping it in order. Too many indexes slow down writes. And when a query needs a large part of the table anyway, a full scan can be the cheapest plan.
+**Failure:** An index is not free. It takes space, and every insert, update or delete that touches an indexed column must update the index as well, keeping it in order. Too many indexes slow down writes. Also, when a query needs a large part of the table anyway, a full scan (reading every row) can be the cheapest plan.
 
 ## Topic: B+ tree
 
-**Definition:** A B+ tree is a balanced tree where all leaves are at the same depth. Internal nodes only route the search by key ranges. The leaves hold the keys with pointers to the rows (in a B+ tree file organization they hold the rows themselves), and each leaf points to the next leaf in key order.
+**Definition:** A B+ tree is a balanced tree where all leaves (the bottom nodes) are at the same depth. Internal nodes (the nodes above the leaves) only route the search by key ranges. The leaves hold the keys with pointers to the rows (in a B+ tree file organization they hold the rows themselves), and each leaf points to the next leaf in key order.
 
 **Why:** It is shallow even for millions of keys, because each node is about one disk block and holds around a hundred entries.
 
-**Example:** To find 45 in a tree whose root has keys 30 and 60: 45 is at least 30 and below 60, so go to the middle child, a leaf holding 30, 40, 50. Look inside the leaf for 45: not there, so no such row. With 1,000,000 keys and about 100 entries per node, a lookup touches at most about 4 nodes. A balanced binary tree over the same keys needs about 20.
+**Example:** To find 45 in a tree whose root has keys 30 and 60: 45 is at least 30 and below 60, so go to the middle child, a leaf holding 30, 40, 50. Look inside the leaf for 45. It is not there, so there is no such row. With 1,000,000 keys and about 100 entries per node, a lookup touches at most about 4 nodes. A balanced binary tree over the same keys needs about 20.
 
-**Failure:** Each node access can be a disk read, which is why 4 versus 20 matters. Inserting into a full leaf splits it and pushes a key up to the parent; splits can reach the root and make the tree one level taller. Deleting from a node that gets too empty merges it with a neighbour or borrows entries from it. A B+ tree is not a binary tree, and it differs from a plain B-tree, where keys can also sit in internal nodes and the leaves are not linked.
+**Failure:** Each node access can be a disk read, which is why 4 versus 20 matters. Inserting into a full leaf splits it and pushes a key up to the parent. Splits can reach the root and make the tree one level taller. Deleting from a node that gets too empty merges it with a neighbour or borrows entries from it. A B+ tree is not a binary tree, and it differs from a plain B-tree, where keys can also sit in internal nodes and the leaves are not linked.
 
 ## Topic: Range queries and which searches an index helps
 
-**Definition:** A B+ tree on a column supports equality, range and sorted-order searches on that column, because the leaves are sorted and linked.
+**Definition:** A B+ tree on a column supports equality (exact match), range (between two values) and sorted-order searches on that column, because the leaves are sorted and linked.
 
 **Why:** After finding the first matching leaf entry, the database follows the leaf links until the range ends. It does not go back to the root.
 
-**Example:** WHERE marks BETWEEN 80 AND 90 finds the leaf entry for 80 and reads along the leaves until it passes 90. PostgreSQL's B-tree supports =, <, <=, >=, > and also BETWEEN, IN, IS NULL and IS NOT NULL.
+**Example:** WHERE marks BETWEEN 80 AND 90 finds the leaf entry for 80 and reads along the leaves until it passes 90. PostgreSQL's B-tree (its name for this kind of index) supports =, <, <=, >=, > and also BETWEEN, IN, IS NULL and IS NOT NULL.
 ```sql
 SELECT * FROM student WHERE marks BETWEEN 80 AND 90;
 ```
@@ -52,7 +52,7 @@ SELECT * FROM student WHERE marks BETWEEN 80 AND 90;
 
 ## Topic: Clustered and secondary indexes
 
-**Definition:** In a clustering index, the order of the index decides the order in which the rows are stored; a secondary (non-clustering) index has an order different from the stored order. MySQL's InnoDB stores the table as a clustered index, normally on the primary key.
+**Definition:** In a clustering index, the order of the index decides the order in which the rows are stored. A secondary (non-clustering) index has an order different from the stored order. MySQL's InnoDB stores the table as a clustered index, normally on the primary key.
 
 **Why:** In InnoDB, a clustered lookup goes straight to the row, and a secondary index lookup needs an extra step to reach the row.
 
@@ -66,32 +66,32 @@ SELECT * FROM student WHERE marks BETWEEN 80 AND 90;
 
 **Why:** One index can serve several queries, but only the ones that use its leading columns.
 
-**Example:** An index on person(last_name, first_name). WHERE last_name = 'Rao' can use it, and so can WHERE last_name = 'Rao' AND first_name = 'Asha'. WHERE first_name = 'Asha' alone cannot: the names with first_name 'Asha' are scattered across all last names, so the database scans the table. A filter on first_name alone cannot use the index order, so the database usually scans the table (some systems have skip-scan tricks).
+**Example:** An index on person(last_name, first_name). WHERE last_name = 'Rao' can use it, and so can WHERE last_name = 'Rao' AND first_name = 'Asha'. WHERE first_name = 'Asha' alone cannot, because the rows with first_name 'Asha' are scattered across all last names, so the database scans the table. A filter on first_name alone cannot use the index order, so the database usually scans the table (some systems have skip-scan tricks, a way to jump over the first column's values).
 ```sql
 CREATE INDEX idx_name ON person (last_name, first_name);
 ```
 
-**Failure:** Think of a phone book sorted by surname, then first name: it does not help you find everyone called Asha. When you create a composite index, put first the column your queries filter on most often, because only leading columns can be used. Check the order against your real queries: queries that filter on the second column alone need an index of their own.
+**Failure:** Think of a phone book sorted by surname, then first name. It does not help you find everyone called Asha. When you create a composite index, put first the column your queries filter on most often, because only leading columns can be used. Check the order against your real queries, since queries that filter on the second column alone need an index of their own.
 
 ## Topic: Hash index and hashing
 
-**Definition:** A hash index applies a hash function to the search key to pick a bucket, a block that holds the matching entries. Different keys can land in the same bucket, so the bucket is searched.
+**Definition:** A hash index applies a hash function (a rule that turns a key into a number) to the search key to pick a bucket, a block that holds the matching entries. Different keys can land in the same bucket, so the bucket is searched.
 
 **Why:** For a lookup of one exact value it goes almost straight to the bucket without descending a tree.
 
 **Example:** WHERE roll_no = 42 hashes 42 to a bucket and reads it. WHERE roll_no BETWEEN 40 AND 50 cannot use the hash index, because hashing destroys the order of the keys. PostgreSQL's hash index stores a 32-bit hash and supports equality only.
 
-**Failure:** Static hashing has a fixed number of buckets: too few and buckets overflow into chains, too many and space is wasted. Dynamic schemes (linear and extendable hashing) change the number of buckets as the table grows. If range queries are common, use an ordered index. The current PostgreSQL manual lists Hash as an equality-only index type.
+**Failure:** Static hashing has a fixed number of buckets. With too few, buckets overflow into chains, and with too many, space is wasted. Dynamic schemes (linear and extendable hashing) change the number of buckets as the table grows. If range queries are common, use an ordered index. The current PostgreSQL manual lists Hash as an equality-only index type.
 
 ## Topic: How rows are stored: file organization
 
-**Definition:** A file organization is the way records are placed in a file. In a heap file a record goes anywhere there is room. In a sequential file records are ordered by a key. A hash file puts a record in the block chosen by hashing its key. In a B+ tree file organization the leaves hold the records themselves.
+**Definition:** A file organization is the way records are placed in a file. In a heap file (an unordered pile) a record goes anywhere there is room. In a sequential file records are ordered by a key. A hash file puts a record in the block chosen by hashing its key. In a B+ tree file organization the leaves hold the records themselves.
 
-**Why:** The layout decides which accesses are cheap: a heap is cheap to insert into but needs an index to search; a sorted file is cheap to scan in order.
+**Why:** The layout decides which accesses are cheap. A heap is cheap to insert into but needs an index to search. A sorted file is cheap to scan in order.
 
-**Example:** A heap table with 1,000 blocks and no index may have to read up to all 1,000 blocks for a single lookup. Table partitioning is a related idea: a transactions table split into one table per year lets a query with year = 2019 read only that year's partition.
+**Example:** A heap table with 1,000 blocks and no index may have to read up to all 1,000 blocks for a single lookup. Table partitioning (splitting a big table into smaller parts) is a related idea: a transactions table split into one table per year lets a query with year = 2019 read only that year's partition.
 
-**Failure:** Inserts into a sequential file that do not fit in the right block go to an overflow block, and the file is reorganized from time to time. The system catalog (data dictionary) stores metadata about all of this: relation and column definitions, views, constraints, statistics such as row counts, and which indexes exist.
+**Failure:** Inserts into a sequential file that do not fit in the right block go to an overflow block, and the file is reorganized from time to time. The system catalog (data dictionary) stores metadata (data about the data) about all of this: relation and column definitions, views, constraints, statistics such as row counts, and which indexes exist.
 
 ## Questions
 

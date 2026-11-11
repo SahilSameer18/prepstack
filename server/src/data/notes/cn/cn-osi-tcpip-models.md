@@ -16,9 +16,9 @@ After this section you can list both models in order, say what each layer does, 
 
 ## Topic: Why layers
 
-**Definition:** A layered model divides the job of sending data into steps. Each layer has one task, uses the services of the layer below, and offers a service to the layer above. The same layer on two machines (its peer) follows the same protocol.
+**Definition:** A layered model divides the job of sending data into steps. Each layer has one task, uses the services of the layer below, and offers a service to the layer above. The same layer on two machines (its peer) follows the same protocol (the same set of rules).
 
-**Why:** You can change one layer without touching the others. Wi-Fi can replace Ethernet below, and your browser does not need to change.
+**Why:** You can change one layer without touching the others. Wi-Fi can replace Ethernet (wired local networking) below, and your browser does not need to change.
 
 **Example:** A web browser (top layer) only asks "send this request to that server". It does not care if the data travels over cable or wireless.
 
@@ -26,41 +26,41 @@ After this section you can list both models in order, say what each layer does, 
 
 ## Topic: The seven OSI layers
 
-**Definition:** The OSI model was published in 1984 as ISO 7498. From the bottom: 1 Physical (raw bits on cable, light or radio), 2 Data link (frames between neighbouring devices, with MAC addresses and error checking), 3 Network (packets between networks, with IP addresses and routing), 4 Transport (end-to-end delivery between programs, with ports: TCP and UDP), 5 Session (starting, keeping and ending a conversation), 6 Presentation (data format, compression, encryption), 7 Application (what the user's program uses: HTTP, DNS, SMTP).
+**Definition:** The OSI model (Open Systems Interconnection) was published in 1984 as ISO 7498. From the bottom: 1 Physical (raw bits, the 0s and 1s, on cable, light or radio), 2 Data link (frames, which are small packaged pieces of data, between neighbouring devices, with MAC addresses, the hardware address of a network card, and error checking), 3 Network (packets between networks, with IP addresses and routing, which means choosing a path), 4 Transport (end-to-end delivery between programs, with ports, which are numbers that name a program on a machine: TCP and UDP), 5 Session (starting, keeping and ending a conversation), 6 Presentation (data format, compression, encryption), 7 Application (what the user's program uses: HTTP for web pages, DNS for looking up names, SMTP for sending email).
 
 **Why:** Knowing the layer tells you which tool and which kind of fault to look at. A dead cable is layer 1. A wrong IP is layer 3. A closed port is layer 4.
 
-**Example:** A switch reads the MAC address in a frame, so it works at layer 2. A router reads the IP address in a packet, so it works at layer 3. A hub just repeats bits, so it works at layer 1. A common memory trick for layers 7 down to 1: "All People Seem To Need Data Processing".
+**Example:** A switch (a box that passes data between the devices plugged into it) reads the MAC address in a frame, so it works at layer 2. A router (a device that passes traffic between networks) reads the IP address in a packet, so it works at layer 3. A hub (a simple box that copies incoming signals to all its ports) just repeats bits, so it works at layer 1. A common memory trick for layers 7 down to 1: "All People Seem To Need Data Processing".
 
-**Failure:** Sessions and presentation are rarely separate layers in real internet software; browsers and libraries do that work inside the application. Do not invent separate "session protocols" for the internet in an interview.
+**Failure:** Session and presentation are rarely separate layers in real internet software. Browsers and libraries do that work inside the application. Do not invent separate "session protocols" for the internet in an interview.
 
 ## Topic: The four TCP/IP layers
 
-**Definition:** Link (the local network: Ethernet, Wi-Fi), Internet (IP, ICMP: addressing and routing), Transport (TCP, UDP), Application (HTTP, DNS, SMTP and the rest). The TCP/IP application layer covers OSI layers 5, 6 and 7 together.
+**Definition:** Link (the local network: Ethernet, Wi-Fi), Internet (IP, ICMP: addressing and routing; ICMP is the protocol for error and test messages such as ping), Transport (TCP, UDP), Application (HTTP, DNS, SMTP and the rest). The TCP/IP application layer covers OSI layers 5, 6 and 7 together.
 
 **Why:** This is the stack that real computers implement. Operating systems provide the transport and internet layers; applications sit on top.
 
 **Example:** Your browser (application) hands data to TCP (transport), which hands it to IP (internet), which hands it to the Wi-Fi card (link).
 
-**Failure:** Saying "the network layer converts a logical address into a physical address". That job belongs to ARP. The network layer's job is routing: choosing the path for a packet across networks.
+**Failure:** Saying "the network layer converts a logical address into a physical address". That job belongs to ARP (Address Resolution Protocol, which finds the MAC address for an IP address). The network layer's job is routing: choosing the path for a packet across networks.
 
 ## Topic: Encapsulation
 
-**Definition:** As data moves down the layers, each layer adds its own header around the data it received (and the link layer also adds a trailer). On the receiving side each layer removes its header on the way up. The data unit has a name at each level: application data, then a TCP segment (or UDP datagram), then an IP packet, then a link-layer frame, then bits on the wire.
+**Definition:** Encapsulation means wrapping data in layers. As data moves down the layers, each layer adds its own header (extra control information at the front) around the data it received, and the link layer also adds a trailer (extra information at the end). On the receiving side each layer removes its header on the way up. The data unit has a name at each level: application data, then a TCP segment (or UDP datagram), then an IP packet, then a link-layer frame, then bits on the wire.
 
 **Why:** The headers carry the information each layer needs: ports for the transport layer, IP addresses for the network layer, MAC addresses for the link layer.
 
-**Example:** A request goes browser → HTTP message → TCP segment (adds ports) → IP packet (adds source and destination IP) → Ethernet frame (adds source and destination MAC). At every router the frame is thrown away and rebuilt for the next link, but the IP packet inside stays the same (apart from its time-to-live).
+**Example:** A request goes browser → HTTP message → TCP segment (adds ports) → IP packet (adds source and destination IP) → Ethernet frame (adds source and destination MAC). At every router the frame is thrown away and rebuilt for the next link. The IP packet inside stays the same, apart from its time-to-live (a counter that goes down by one at each router).
 
-**Failure:** Saying the MAC address stays the same all the way to the server. MAC addresses only matter on one link; they change at every router. The IP addresses stay the same end to end (unless NAT rewrites them).
+**Failure:** Saying the MAC address stays the same all the way to the server. MAC addresses only matter on one link; they change at every router. The IP addresses stay the same end to end (unless NAT (network address translation) rewrites them).
 
 ## Topic: Where devices and protocols sit
 
-**Definition:** Hub: layer 1. Switch and bridge: layer 2. Router: layer 3. Load balancers and firewalls can work at layer 4 or layer 7, depending on the type. ARP sits between layers 2 and 3. TCP and UDP are layer 4. HTTP, DNS, SMTP, FTP are layer 7.
+**Definition:** Hub: layer 1. Switch and bridge: layer 2. Router: layer 3. Load balancers (which spread requests over several servers) and firewalls (which block or allow traffic by rules) can work at layer 4 or layer 7, depending on the type. ARP sits between layers 2 and 3. TCP and UDP are layer 4. HTTP, DNS, SMTP and FTP (file transfer) are layer 7.
 
 **Why:** Interviewers use "at which layer does X work" as a quick test of whether you understand what X reads in a packet.
 
-**Example:** A layer 4 load balancer chooses a server using IP address and port. A layer 7 load balancer can read the URL or a cookie to choose.
+**Example:** A layer 4 load balancer chooses a server using IP address and port. A layer 7 load balancer can read the URL or a cookie (a small piece of data a website stores in your browser) to choose.
 
 **Failure:** Calling ARP "layer 3" or "layer 2" without explanation. It is usually described as sitting between them: it uses IP addresses to find MAC addresses.
 
@@ -72,7 +72,7 @@ From the top: Application, Presentation, Session, Transport, Network, Data link,
 
 ### What is the difference between OSI and TCP/IP?
 
-OSI is a seven-layer reference model made as an international standard. TCP/IP has four layers and is what the internet really uses. TCP/IP merges OSI's session, presentation and application layers into one application layer, and its link layer covers OSI's physical and data link layers.
+OSI is a seven-layer reference model made as an international standard. TCP/IP has four layers. It is what the internet really uses. TCP/IP merges OSI's session, presentation and application layers into one application layer, and its link layer covers OSI's physical and data link layers.
 
 ### What is encapsulation?
 
@@ -80,12 +80,12 @@ Each layer wraps the data from the layer above with its own header on the sendin
 
 ### Which address changes at each router, MAC or IP?
 
-The MAC address changes at every hop because it only identifies a device on one link. The IP addresses stay the same from source to destination unless NAT changes them.
+The MAC address changes at every hop (each step from one device to the next) because it only identifies a device on one link. The IP addresses stay the same from source to destination unless NAT changes them.
 
 ## Mistakes
 
-- Saying a router works at layer 2 or a switch at layer 3. A plain switch uses MAC addresses (layer 2); a router uses IP addresses (layer 3). Layer 3 switches exist, but they are a separate device.
-- Believing the TCP/IP model is just the OSI model with fewer layers. It was designed first for the real internet protocols, and the layers do not map one to one.
+- Saying a router works at layer 2 or a switch at layer 3. A plain switch uses MAC addresses (layer 2). A router uses IP addresses (layer 3). Layer 3 switches exist, but they are a separate device.
+- Believing the TCP/IP model is just the OSI model with fewer layers. It was designed first for the real internet protocols (the rules the internet uses), and the layers do not map one to one.
 - Using "packet", "frame" and "segment" as the same word. Each belongs to a different layer.
 
 ## Quiz
@@ -97,7 +97,7 @@ The MAC address changes at every hop because it only identifies a device on one 
 - [ ] Layer 3, network
 - [ ] Layer 4, transport
 
-Explanation: A switch learns MAC addresses and forwards frames, which is layer 2 work. A hub is layer 1 and a router is layer 3.
+Explanation: A switch (a box that connects devices on one network) learns MAC addresses and forwards frames, which is layer 2 work. A hub is layer 1 and a router is layer 3.
 
 ### Which address changes at every router along the path?
 

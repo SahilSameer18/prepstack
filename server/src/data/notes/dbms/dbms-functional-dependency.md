@@ -12,13 +12,13 @@ roadmapSteps: backend:database-design
 
 ## Overview
 
-A functional dependency says that if two rows agree on some columns, they must agree on certain others. It is the tool behind keys and normalization, so interviewers use it to check that you can reason about a schema without looking at any data. After this section you can read a dependency, tell a trivial one from a non-trivial one, use Armstrong's rules, compute the closure of a set of columns step by step, and use that closure to prove that a set of columns is a key.
+A functional dependency says that if two rows agree on some columns, they must agree on certain others. It is the tool behind keys and normalization, so interviewers use it to check that you can reason about a schema without looking at any data. After this section you can read a dependency, tell a trivial one from a non-trivial one, use Armstrong's rules (the basic inference rules), compute the closure of a set of columns (all columns they determine) step by step, and use that closure to prove that a set of columns is a key.
 
 ## Topic: What a functional dependency is
 
-**Definition:** X → Y holds on a table design when, in every legal table, any two rows that have the same values in X also have the same values in Y. We say X determines Y.
+**Definition:** X → Y holds on a table design when, in every legal table, any two rows that have the same values in X also have the same values in Y. Here X and Y are sets of columns. We say X determines Y.
 
-**Why:** It captures real-world rules, such as "a roll number has exactly one name", that column types cannot express.
+**Why:** It captures real-world rules, such as "a roll number has exactly one name", that column types (such as INT or text) cannot express.
 
 **Example:** In student(roll_no, name, dept, hod), roll_no → name holds. dept → hod holds if every department has one head. name → roll_no does not hold, because two students can have the same name.
 
@@ -28,7 +28,7 @@ A functional dependency says that if two rows agree on some columns, they must a
 
 **Definition:** X → Y is trivial when Y is already inside X. Every table satisfies a trivial dependency. Otherwise it is non-trivial.
 
-**Why:** Normal-form rules only look at non-trivial dependencies; the trivial ones tell you nothing about the design.
+**Why:** Normal-form rules (the levels of good table design) only look at non-trivial dependencies; the trivial ones tell you nothing about the design.
 
 **Example:** {roll_no, name} → roll_no is trivial. roll_no → name is non-trivial.
 
@@ -42,11 +42,11 @@ A functional dependency says that if two rows agree on some columns, they must a
 
 **Example:** If every name in today's instructor table happens to be different, the table satisfies name → ID. That is a coincidence, not a rule, because two instructors can later share a name.
 
-**Failure:** To find the dependencies, ask what the data means ("can two students have the same name?"), not what the rows look like. A table can show you that a dependency does not hold, one counter-example is enough, but it can never prove one.
+**Failure:** To find the dependencies, ask what the data means ("can two students have the same name?"), not what the rows look like. A table can show you that a dependency does not hold, because one counter-example (a case that breaks the rule) is enough. But it can never prove one.
 
 ## Topic: Keys written as dependencies
 
-**Definition:** K is a super key exactly when K → every column of the table. K is a candidate key when it is a super key and no smaller part of K is one.
+**Definition:** K is a super key (a set of columns that tells every row apart) exactly when K → every column of the table. K is a candidate key (a super key with nothing to spare) when it is a super key and no smaller part of K is one.
 
 **Why:** It turns "is this a key?" into a calculation you can do on paper.
 
@@ -56,7 +56,7 @@ A functional dependency says that if two rows agree on some columns, they must a
 
 ## Topic: Armstrong's axioms
 
-**Definition:** Three rules produce every dependency that follows from a given set. Reflexivity: if Y is inside X then X → Y. Augmentation: if X → Y then XZ → YZ. Transitivity: if X → Y and Y → Z then X → Z. They are sound (they only produce true dependencies) and complete (they produce all of them).
+**Definition:** Armstrong's axioms are three rules that produce every dependency that follows from a given set. Reflexivity: if Y is inside X then X → Y. Augmentation: if X → Y then XZ → YZ. Transitivity: if X → Y and Y → Z then X → Z. They are sound (they only produce true dependencies) and complete (they produce all of them).
 
 **Why:** They let you prove that a dependency follows from the ones you were given, instead of guessing.
 
@@ -66,7 +66,7 @@ A functional dependency says that if two rows agree on some columns, they must a
 
 ## Topic: Attribute closure
 
-**Definition:** The closure of a set of columns X, written X+, is every column that X determines. To compute it, start with X, then keep adding the right side of any dependency whose left side is already inside the result, until nothing new is added.
+**Definition:** The closure of a set of columns X, written X+, is every column that X determines. To compute it, start with X. Then keep adding the right side of any dependency whose left side is already inside the result, until nothing new is added.
 
 **Why:** One method answers the two questions interviewers ask most: is X a super key (X+ is every column), and does X → Y hold (Y is inside X+).
 
@@ -76,13 +76,13 @@ A functional dependency says that if two rows agree on some columns, they must a
 
 ## Topic: Canonical cover
 
-**Definition:** A canonical cover is a simpler set of dependencies with the same closure, with no extra column in any dependency and each left side appearing once.
+**Definition:** A canonical cover is a simpler set of dependencies with the same closure. It has no extra column in any dependency, and each left side appears once.
 
-**Why:** Checking fewer, simpler dependencies after every update is cheaper.
+**Why:** Checking fewer, simpler dependencies after every update (each time data changes) is cheaper.
 
 **Example:** From {A → B, B → C, A → C}, the dependency A → C is already implied by A → B and B → C, so it can go. The canonical cover is {A → B, B → C}.
 
-**Failure:** Know the idea; it is a smaller topic than closure. Be careful about direction when removing a column from a dependency: removing one from the left side can make the rule stronger, and removing one from the right can make it weaker.
+**Failure:** Know the idea; it is a smaller topic than closure. Be careful about direction when removing a column from a dependency. Removing one from the left side can make the rule stronger, and removing one from the right can make it weaker.
 
 ## Questions
 
@@ -153,7 +153,7 @@ Explanation: A dependency is trivial when its right side is inside its left side
 - [x] No, not from AB → C alone
 - [ ] Yes, by augmentation
 
-Explanation: A → C is a stronger rule than AB → C. The decomposition rule splits a right side, not a left side. You could only conclude it if the other dependencies imply A → C.
+Explanation: A → C is a stronger rule than AB → C (it asks less of the left side). The decomposition rule splits a right side, not a left side. You could only conclude it if the other dependencies imply A → C.
 
 ## Diagram
 
