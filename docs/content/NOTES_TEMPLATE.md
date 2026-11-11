@@ -90,6 +90,10 @@ Only where a picture explains faster than text, not on every topic. A diagram is
 - Code samples are run before they are published.
 - Do not copy text from books or sites. Explain it in your own words; the source is a reference, not a script.
 
+## Plain wording (owner rule, 11 Nov 2026)
+
+Everything a learner reads (notes, roadmap steps, guides) is written in easy, simple words that a person with no technical background can follow. When a technical word is needed, say what it means next to it, for example "idempotent (doing it twice has the same result as once)". Reviewers flag any sentence a non-technical person could not follow.
+
 ## Roadmap steps
 
 Roadmaps are in `client/src/data/roadmaps.js`. A step is `{ id, title, desc, resources }` (2 to 3 https resources, free, prefer official documentation), with permanent ids unique inside the roadmap. A step that has started the full template must finish it (`client/src/data/roadmaps.test.js`):

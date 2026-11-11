@@ -1,7 +1,7 @@
 # Roadmap source notes: <roadmap name> (<date>)
 
 Copy this file to `roadmap-<slug>.md` (for example `roadmap-backend.md`) and fill it in before writing any step. Files that start with `_` are templates.
-Rule: facts are restated in our own words, never copied. A step's time range, topics and checkpoints come from what the sources say, not from memory.
+Rule: write for a non-technical reader (easy words, each technical word explained next to it). Facts are restated in our own words, never copied. A step's time range, topics and checkpoints come from what the sources say, not from memory.
 
 ## Steps covered
 List the step ids from `client/src/data/roadmaps.js` this file covers.

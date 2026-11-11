@@ -6,7 +6,8 @@ import { allPages } from "../seo/pages";
 
 const ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const TARGET = /^[a-z0-9]+(-[a-z0-9]+)*:[a-z0-9]+(-[a-z0-9]+)*$/;
-const TEMPLATE_FIELDS = ["goal", "time", "topics", "practice", "checkpoint", "project"];
+// practice is optional: a step links to a notes section or sheet topic only when one really fits; the project always links to the AI project generator.
+const TEMPLATE_FIELDS = ["goal", "time", "topics", "checkpoint", "project"];
 const TIME_RANGE = /^\d+ to \d+ (hours|days|weeks|months)$/;
 // Sites that refuse scripts or sit behind a login or paywall; a templated step uses official docs or open material instead (decided 11 Nov 2026).
 const BLOCKED_HOSTS = ["udemy.com", "datacamp.com", "towardsdatascience.com", "coursera.org"];
@@ -22,7 +23,7 @@ export const checkStep = (step) => {
     if (!r.label) problems.push("a resource has no label");
     if (!/^https:\/\//.test(r.url || "")) problems.push(`resource "${r.label}" must be an https link`);
   }
-  if (!TEMPLATE_FIELDS.some((f) => step[f] !== undefined)) return problems;
+  if (![...TEMPLATE_FIELDS, "practice"].some((f) => step[f] !== undefined)) return problems;
   for (const f of TEMPLATE_FIELDS) if (step[f] === undefined) problems.push(`has started the template but "${f}" is missing`);
   if (step.goal !== undefined && !/^After this step you can /.test(step.goal)) problems.push('goal must start with "After this step you can "');
   if (step.time !== undefined && !TIME_RANGE.test(String(step.time))) problems.push('time must be a range like "20 to 30 hours"');
