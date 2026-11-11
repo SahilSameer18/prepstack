@@ -334,6 +334,76 @@ Fill this in while writing each section, before it is reviewed. The DBMS rows ar
 | roadmap-machine-learning / monitoring-optimization | Time 15 to 25 hours | Our estimate | n/a (estimate) |  |
 | roadmap-machine-learning / capstone-project | Topics, goal and checkpoints follow the headings of: Kaggle Competitions; Spaces Overview – Hugging Face docs (docs/content/source-notes/roadmap-machine-learning.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
 | roadmap-machine-learning / capstone-project | Time 40 to 60 hours | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / big-o-arrays-hashing | Big O orders, array append amortized O(1) and front O(n), hash table average O(1) and worst O(n), collisions, Python list/dict costs | Wikipedia Big O notation, Array, Hash table; Python docs time complexity (roadmap-dsa.md) | not yet (draft) |  |
+| roadmap-dsa / two-pointers-sliding-window | Two pointers and sliding window descriptions; one-pass O(n); window minimum with a deque | Our own reasoning plus cp-algorithms Minimum stack/queue (window minimum in O(n)); numbers by script. Note: Wikipedia Sliding window protocol is a different thing | not yet (draft) |  |
+| roadmap-dsa / sorting-binary-search | Sort complexities, stability and memory table; binary search worst case floor(log2 n)+1 (20 for 1,000,000); duplicates; bisect | Wikipedia Sorting algorithm, Binary search; Python bisect docs; number by script | not yet (draft) |  |
+| roadmap-dsa / linked-lists-stacks-queues | Linked list costs; stack LIFO and underflow; queue FIFO O(1); deque O(1) at both ends and list pop(0) O(n); min-stack O(1) | Wikipedia Linked list, Stack, Queue; Python collections docs; cp-algorithms. Linked-list cycle remark is summary only | not yet (draft) |  |
+| roadmap-dsa / trees-bst | Four traversals; DFS and BFS memory; BST average log n worst n; degenerate on sorted insert; balanced keeps O(log n); recursion limits | Wikipedia Tree traversal, Binary search tree; algs4 booksite (chapters listed) | not yet (draft) |  |
+| roadmap-dsa / heaps-tries | Heap: find-min O(1), insert O(log n) worst, delete-min O(log n), build O(n) vs O(n log n); priority queue vs heap; heapq and PriorityQueue; trie find O(m) and memory | Wikipedia Binary heap, Priority queue, Trie; Python heapq docs; Java 21 PriorityQueue docs | not yet (draft) |  |
+| roadmap-dsa / recursion-backtracking | Backtracking definition, pruning, cost model, brute force case, 8 subsets of [1,2,3] | Wikipedia Backtracking; the 8 subsets is 2^3 maths | not yet (draft) |  |
+| roadmap-dsa / graphs-traversal | BFS and DFS O(V+E), fewest edges, visited record, topological sort only for DAGs in O(V+E); BFS distance example | Wikipedia BFS, DFS, Topological sorting; example by script | not yet (draft) |  |
+| roadmap-dsa / graphs-shortest-paths-mst | Dijkstra with non-negative weights and O((E+V) log V) with a binary heap; union-find amortized alpha(n); Kruskal O(E log E) | Wikipedia Dijkstra (heap bound summary only), Disjoint-set, Kruskal | not yet (draft) |  |
+| roadmap-dsa / greedy-intervals | Greedy definition and limits; fractional vs 0/1 knapsack; earliest-finish-first O(n log n) and wrong rules; 4-meeting example | Wikipedia Greedy algorithm, Interval scheduling; example by script | not yet (draft) |  |
+| roadmap-dsa / dynamic-programming | DP conditions; merge sort is not DP; memoization for pure functions; Fibonacci O(n)/O(1); knapsack O(nW); LIS O(n log n); 2,692,537 vs 59 calls; 1,000,000 cells | Wikipedia Dynamic programming, Memoization, Knapsack problem, LIS; numbers by script | not yet (draft) |  |
+| roadmap-dsa / bit-manipulation-math | Bit operations, power-of-two test, single-cycle remark; 13 AND 12 = 12 | Wikipedia Bit manipulation; examples by script. Why x & (x-1) clears the lowest one bit is standard maths, checked on small numbers | not yet (draft) |  |
+| roadmap-dsa / interview-practice | Practice routine (example first, match method, state Big O, test, notes) | Our own advice; opinion | not yet (draft) |  |
+| roadmap-dsa / big-o-arrays-hashing | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / two-pointers-sliding-window | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / sorting-binary-search | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / linked-lists-stacks-queues | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / trees-bst | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / heaps-tries | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / recursion-backtracking | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / graphs-traversal | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / graphs-shortest-paths-mst | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / greedy-intervals | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / dynamic-programming | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / bit-manipulation-math | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / interview-practice | Time range | Our estimate | n/a (estimate) |  |
+| roadmap-dsa / linked-lists-stacks-queues | Fast and slow pointers meet when a list has a cycle | General knowledge (not on a page we read) | not yet (needs the outside reader) |  |
+| roadmap-dsa / big-o-arrays-hashing | Sets as hash tables that keep only keys | General knowledge (Python time-complexity page lists set operations as average O(1)) | not yet (draft) |  |
+| roadmap-dsa / graphs-shortest-paths-mst | Bellman-Ford handles negative edge costs in O(V times E) | Wikipedia Dijkstra (summary part only) | not yet (needs the outside reader) |  |
+| roadmap-dsa / bit-manipulation-math | Test needs x greater than zero in Java and C (most negative number); Python NOT gives -x-1 | Reviewer check against standard two-complement behaviour; not on the Wikipedia page | not yet (needs the outside reader) |  |
+| roadmap-dsa / all steps | Conditions on every complexity (amortized vs average, sorted input, adjacency list, DAG, undirected graph, etc.) | CLRS-level standard knowledge checked by an AI reviewer against the notes; not an outside reader | not yet (needs the outside reader) |  |
+| roadmap-java-spring / java-language-basics | Topics, goal and checkpoints follow the headings of: Dev.java – learn Java; Learning the Java Language – The Java Tutorials (written for JDK 8) (docs/content/source-notes/roadmap-java-spring.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-java-spring / java-language-basics | Time 40 to 60 hours | Our estimate | n/a (estimate) |  |
+| roadmap-java-spring / java-collections-generics-exceptions | Topics, goal and checkpoints follow the headings of: Collections – The Java Tutorials (written for JDK 8); HashMap – Java SE 21 API; Exceptions – The Java Tutorials (written for JDK 8) (docs/content/source-notes/roadmap-java-spring.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-java-spring / java-collections-generics-exceptions | Time 30 to 45 hours | Our estimate | n/a (estimate) |  |
+| roadmap-java-spring / java-concurrency-basics | Topics, goal and checkpoints follow the headings of: Concurrency – The Java Tutorials (written for JDK 8); Dev.java – learn Java (includes virtual threads) (docs/content/source-notes/roadmap-java-spring.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-java-spring / java-concurrency-basics | Time 20 to 30 hours | Our estimate | n/a (estimate) |  |
+| roadmap-java-spring / build-tools-junit | Topics, goal and checkpoints follow the headings of: Maven Getting Started Guide – Apache Maven; JUnit User Guide (docs/content/source-notes/roadmap-java-spring.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-java-spring / build-tools-junit | Time 15 to 25 hours | Our estimate | n/a (estimate) |  |
+| roadmap-java-spring / spring-core-boot | Topics, goal and checkpoints follow the headings of: Spring Boot – Spring project page; The IoC container and beans – Spring Framework reference; Spring Boot documentation (docs/content/source-notes/roadmap-java-spring.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-java-spring / spring-core-boot | Time 25 to 40 hours | Our estimate | n/a (estimate) |  |
+| roadmap-java-spring / spring-rest-api | Topics, goal and checkpoints follow the headings of: Building a RESTful Web Service – Spring guide (about 15 minutes); Servlet web applications – Spring Boot reference (docs/content/source-notes/roadmap-java-spring.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-java-spring / spring-rest-api | Time 25 to 40 hours | Our estimate | n/a (estimate) |  |
+| roadmap-java-spring / spring-data-jpa | Topics, goal and checkpoints follow the headings of: Accessing Data with JPA – Spring guide (about 15 minutes); Spring Data JPA reference; SQL databases – Spring Boot reference (docs/content/source-notes/roadmap-java-spring.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-java-spring / spring-data-jpa | Time 30 to 45 hours | Our estimate | n/a (estimate) |  |
+| roadmap-java-spring / spring-security | Topics, goal and checkpoints follow the headings of: Securing a Web Application – Spring guide; Spring Security reference (docs/content/source-notes/roadmap-java-spring.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-java-spring / spring-security | Time 25 to 40 hours | Our estimate | n/a (estimate) |  |
+| roadmap-java-spring / spring-testing-docker | Topics, goal and checkpoints follow the headings of: Testing – Spring Boot reference; Spring Boot with Docker – Spring guide (docs/content/source-notes/roadmap-java-spring.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-java-spring / spring-testing-docker | Time 20 to 30 hours | Our estimate | n/a (estimate) |  |
+| roadmap-devops-cloud / git-github | Topics, goal and checkpoints follow the headings of: Pro Git – free book; What is Git? – Pro Git; What is GitHub? – GitHub docs (docs/content/source-notes/roadmap-devops-cloud.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-devops-cloud / git-github | Time 15 to 25 hours | Our estimate | n/a (estimate) |  |
+| roadmap-devops-cloud / linux-command-line | Topics, goal and checkpoints follow the headings of: Linux Journey – free lessons; Linux man pages online (docs/content/source-notes/roadmap-devops-cloud.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-devops-cloud / linux-command-line | Time 25 to 40 hours | Our estimate | n/a (estimate) |  |
+| roadmap-devops-cloud / networking-for-devops | Topics, goal and checkpoints follow the headings of: Linux Journey – Networking Nomad; What is Amazon VPC? – AWS docs (docs/content/source-notes/roadmap-devops-cloud.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-devops-cloud / networking-for-devops | Time 20 to 30 hours | Our estimate | n/a (estimate) |  |
+| roadmap-devops-cloud / docker-containers | Topics, goal and checkpoints follow the headings of: What is Docker? – Docker docs; docker run – Docker docs; Docker Compose – Docker docs (docs/content/source-notes/roadmap-devops-cloud.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-devops-cloud / docker-containers | Time 25 to 40 hours | Our estimate | n/a (estimate) |  |
+| roadmap-devops-cloud / ci-cd-github-actions | Topics, goal and checkpoints follow the headings of: Understanding GitHub Actions – GitHub docs; Quickstart for GitHub Actions – GitHub docs; Building and testing your code – GitHub docs (docs/content/source-notes/roadmap-devops-cloud.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-devops-cloud / ci-cd-github-actions | Time 20 to 30 hours | Our estimate | n/a (estimate) |  |
+| roadmap-devops-cloud / cloud-aws-basics | Topics, goal and checkpoints follow the headings of: What is IAM? – AWS docs; What is Amazon EC2? – AWS docs; What is Amazon S3? – AWS docs (docs/content/source-notes/roadmap-devops-cloud.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-devops-cloud / cloud-aws-basics | Time 30 to 45 hours | Our estimate | n/a (estimate) |  |
+| roadmap-devops-cloud / kubernetes-terraform | Topics, goal and checkpoints follow the headings of: Overview – Kubernetes docs; Learn Kubernetes Basics – Kubernetes docs; What is Terraform? – HashiCorp docs (docs/content/source-notes/roadmap-devops-cloud.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-devops-cloud / kubernetes-terraform | Time 40 to 60 hours | Our estimate | n/a (estimate) |  |
+| roadmap-devops-cloud / monitoring-reliability | Topics, goal and checkpoints follow the headings of: Overview – Prometheus docs; Get started with Grafana – Grafana docs; Site Reliability Engineering book – table of contents (docs/content/source-notes/roadmap-devops-cloud.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-devops-cloud / monitoring-reliability | Time 25 to 40 hours | Our estimate | n/a (estimate) |  |
+| roadmap-devops-cloud / devops-capstone | Topics, goal and checkpoints follow the headings of: The Twelve-Factor App; Site Reliability Engineering book – table of contents (docs/content/source-notes/roadmap-devops-cloud.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
+| roadmap-devops-cloud / devops-capstone | Time 30 to 50 hours | Our estimate | n/a (estimate) |  |
+| roadmap-java-spring / several | @PostMapping, @PutMapping, @PathVariable, @RequestBody; default embedded database is in memory; equals and hashCode for HashMap; lambdas; BCrypt one-way hash; HTTP Basic for an API; MockMvc-style tests | General knowledge, not on a page we read (the Spring pages name the annotations @RestController, @GetMapping, @RequestMapping and @DeleteMapping) | not yet (needs the outside reader) |  |
+| roadmap-devops-cloud / several | Basic Git commands, .gitignore, pull requests; shell scripts; WSL; ping, curl, dig; docker ps/logs/exec; Docker Hub; Actions secrets and free minutes; budget alerts; Pod, Deployment, Service; terraform destroy; Prometheus client library | General knowledge, not on a page we read | not yet (needs the outside reader) |  |
+| roadmap-devops-cloud / cloud-aws-basics | AWS free offer for new accounts changes; read the current pricing page | AWS EC2/S3 pages (a free tier exists); terms change often | not yet (draft) |  |
 | behavioral | STAR = Situation, Task, Action, Result; most of the answer on the Action (about 60%); use I not we; keep to about 1 to 2 minutes | MIT CAPD STAR page; Indeed (1 to 2 minutes); Wikipedia STAR (docs/content/source-notes/behavioral.md) | not yet (draft) |  |
 | behavioral | Interviewers look at what you actually did, your own role, and how it links to the job; past behaviour predicts future behaviour | MIT CAPD; Harvard Mignone Center; Wikipedia Job interview (partly by summary) | not yet (draft) |  |
 | behavioral | Common mistakes: vague answers, rambling, memorised scripts, blaming others, bending the truth, we-answers that hide your role | MIT CAPD; Harvard Mignone Center; InterviewBit | not yet (draft) |  |

@@ -1,0 +1,50 @@
+# Roadmap source notes: DSA & Problem Solving (11 Nov 2026)
+
+Accuracy rule for this roadmap (owner, 11 Nov 2026: "all the roadmaps should be accurate, especially DSA"): every complexity, definition or rule in a step must be stated by a page we read, and the page and section are listed here. Tags: **[V]** read verbatim by the fetch agent; **[S]** from the fetch tool's summary of a part it did not see verbatim (a claim marked [S] only is flagged in `SOURCES.md` and in the step text is limited to what the verbatim text also supports). Numbers in the checkpoints were computed by script (`dsa-check.js` in the session scratchpad, output kept below). Wikipedia text is CC BY-SA 4.0 (nothing is copied).
+Status: read by us; one AI reviewer set the complexity claims against this file (not an outside reader).
+
+## Computed by script (11 Nov 2026)
+- Binary search worst case ⌊log2 n⌋ + 1 comparisons: n = 1,024 → 11; n = 1,000,000 → 20; measured worst case on 1,000,000 sorted numbers with absent targets: 20.
+- Fibonacci(30) = 832,040. Naive recursion makes 2,692,537 calls; a simple memoized version makes 59 calls (counting every call including those answered from the memory).
+- 0/1 knapsack table, n = 100, W = 10,000: 1,000,000 cells.
+- Power-of-two test (x != 0 and x & (x - 1) == 0): 0 no, 1 yes, 2 yes, 3 no, 6 no, 8 yes, 12 no, 16 yes, 1024 yes. 13 & 12 = 12.
+- Two pointers on [1,3,4,6,8,11], target 14: pair 3 and 11, found in 2 steps; target 100: not found, 5 steps.
+- Best window sum of size 3 in [2,1,5,1,3,2]: 9.
+- BFS distances on A-B, A-C, B-D, C-D, D-E from A: B 1, C 1, D 2, E 3.
+- Earliest-finish interval scheduling on (1,4) (3,5) (0,6) (5,7) (3,9) (5,9) (6,10) (8,11) (8,12) (2,14) (12,16): 4 meetings: (1,4), (5,7), (8,11), (12,16).
+- Stack LIFO: push 1,2,3 pops 3,2,1; queue FIFO: 1,2,3.
+
+## Facts by topic (page, section, tag)
+- **Big O** (Wikipedia Big O notation): upper bound on growth; orders O(1), O(log n) (binary search), O(n), O(n log n) (heapsort, merge sort), O(n²) (insertion, bubble, selection; quicksort worst case) [V]. The "=" in f = O(g) is not equality [V].
+- **Array** (Wikipedia): store and select constant time [V]; appends to a dynamic array amortized constant [V]; insert/delete at front or middle Θ(n) [S]; contiguous layout has better cache locality than linked lists [V].
+- **Hash table** (Wikipedia): average Θ(1) search/insert/delete, worst case O(n) [V infobox]; collisions handled by chaining or open addressing [V].
+- **Python built-in types** (docs.python.org time-complexity page) [V]: list append O(1) amortised, pop(k)/insert(k) O(n−k), x in list O(n), sort O(n log n); dict and set average O(1); worst case O(n) if all keys hash alike.
+- **Binary search** (Wikipedia): worst O(log n), best O(1), space O(1); worst ⌊log2 n⌋+1 comparisons; sorted array required; with duplicates it may return any matching index [V]. Midpoint overflow note [S]. Python bisect (docs): search O(log n), insort O(n) [V].
+- **Sorting** (Wikipedia Sorting algorithm, comparison table) [V]: heapsort O(n log n) all cases, memory 1, not stable, in place; merge sort O(n log n) all cases, memory n, stable, not in place; quicksort O(n log n) best and average, O(n²) worst, memory O(log n), not stable, in place; insertion sort O(n) best, O(n²) average and worst, memory 1, stable, in place; comparison sorts cannot beat O(n log n) on average [V]. Stable = equal keys keep input order [V].
+- **Linked list** (Wikipedia, table vs dynamic arrays) [V]: index access Θ(n); insert/delete at front Θ(1); at end Θ(1) if tail known; middle Θ(n); no random access. Cycles cause endless loops [S].
+- **Stack** (Wikipedia): push/pop at one end, LIFO; underflow when popping empty [V]; push/pop at the end of a dynamic array amortized O(1) [V]. **Queue** (Wikipedia): FIFO; insert O(1), delete O(1), search O(n); underflow when empty [V infobox].
+- **Python deque** (collections docs) [V]: appends and pops at either end O(1); indexing O(1) at the ends and O(n) in the middle; list pop(0)/insert(0) O(n). **Minimum stack and queue** (cp-algorithms) [V]: min-stack push/pop/get-min O(1); min-queue operations amortized O(1); minimum of every length-M window in O(n).
+- **Tree traversal** (Wikipedia) [V]: pre-, in-, post-order are depth-first, level order is breadth-first; DFS stack space proportional to tree height, BFS queue space up to about half the nodes; recursion depth limits.
+- **Binary search tree** (Wikipedia) [V]: average Θ(log n), worst O(n) for search, insert, delete; search is O(h); insertion in sorted order can degenerate to a linked list; self-balancing variants keep height O(log n).
+- **Binary heap** (Wikipedia) [V]: complete binary tree with the heap property; insert average O(1), worst O(log n); find-min O(1); delete-min O(log n); arbitrary search O(n); Floyd's build O(n), repeated insertion O(n log n). **Priority queue** (Wikipedia) [V]: heap implementation insert/remove O(log n), build O(n); a priority queue is conceptually distinct from a heap. **heapq** (Python docs) [V]: min-heap, heapify linear, removal logarithmic. **PriorityQueue** (Java 21 docs) [V]: offer/poll/add O(log n); remove(Object)/contains linear; peek constant.
+- **Trie** (Wikipedia) [V]: find is O(m) for key length m; each node has a link per alphabet symbol, most null, which uses a lot of space.
+- **Backtracking** (Wikipedia) [V]: builds candidates step by step and abandons one when it cannot be completed; cost = nodes in the search tree × cost per node; brute force if reject is always false; not useful for finding a value in an unordered table.
+- **BFS** (Wikipedia) [V]: O(|V|+|E|) time worst case, O(|V|) space; shortest path by edge count; FIFO queue. **DFS** (Wikipedia) [V]: O(|V|+|E|); needs a visited record or a cycle makes it loop forever; does not generally find shortest paths; stack or recursion. **Topological sorting** (Wikipedia) [V]: exists iff a DAG; Kahn's and DFS-based are O(|V|+|E|); not unique.
+- **Dijkstra** (Wikipedia): non-negative weights; simple queue Θ(|V|²); Fibonacci heap Θ(|E|+|V| log|V|) [V]; binary heap Θ((|E|+|V|) log|V|) [S]; incorrect with negative edges [S, and the correctness proof assumes non-negative weights, V].
+- **Disjoint set** (Wikipedia) [V]: Find amortized O(α(n)) with path compression and union by rank/size; without rank or size, trees can have height O(n). **Kruskal** (Wikipedia) [V]: O(E log E) = O(E log V); sorting dominates; a forest for a disconnected graph.
+- **Greedy** (Wikipedia) [V]: locally optimal choice, never reconsidered; not always optimal; fractional knapsack has a polynomial greedy, 0/1 knapsack is NP-hard; activity selection greedy O(n log n). **Interval scheduling** (Wikipedia) [V]: earliest-finish-first is optimal and O(n log n); earliest start, shortest interval and fewest conflicts are not optimal.
+- **Dynamic programming** (Wikipedia) [V]: optimal substructure and overlapping subproblems; merge sort and quicksort are not DP; Fibonacci naive exponential, memoized O(n) time and space, bottom-up O(n) time and O(1) space. **Memoization** (Wikipedia) [V]: only for referentially transparent (pure) functions; space-time tradeoff. **Knapsack** (Wikipedia) [V]: 0/1 DP O(nW) time and space, O(W) space for only the value; pseudo-polynomial; weakly NP-complete. **LIS** (Wikipedia) [V]: O(n log n).
+- **Bit manipulation** (Wikipedia) [V]: AND, OR, XOR, NOT, shifts; most bitwise operations take a single cycle on most processors; power-of-two test (x != 0) && ((x & (x − 1)) == 0).
+- **Sliding window protocol** (Wikipedia) is a network transmission protocol, not the list technique; the roadmap's "sliding window" is the algorithm technique and its description comes from our own reasoning plus the cp-algorithms window-minimum page.
+
+## Our own words, not from a page (flagged in SOURCES.md)
+Two-pointer and sliding-window descriptions (the one-pass O(n) reasoning), the step order, the time ranges, the checkpoints, the project briefs, and the "Interview practice" routine (read the problem, example first, state Big O, keep notes). The reason "x & (x − 1) clears the lowest one bit" is standard maths (checked by script on small numbers), not stated on the page.
+
+## Added after the accuracy review (11 Nov 2026)
+The reviewer set the steps against these notes and general computer-science knowledge. Fixes: conditions added (amortized vs average; a good hash function; sorted input and random access for binary search; only comparing sorts have the n log n limit; insertion sort best case needs sorted input; adjacency list vs matrix for O(V + E); directed graph with no cycle for topological sort; undirected graph for a minimum spanning tree and that it is not the shortest routes; no parent larger than its children; BST ordering holds for the whole subtree and the average needs random order; trie O(m) needs constant-time child lookup; pruning does not change the worst case; both path compression and union by rank for alpha(n); LIS O(n squared) simple vs O(n log n) binary search; binary search counted in rounds not comparisons; power-of-two test needs x greater than zero in Java and C; 30 stairs not 40 in the project). New topics from general knowledge, not from a page we read: fast and slow pointers for cycles, sets as key-only hash tables, space cost in the practice step, Bellman-Ford O(V times E) (the Dijkstra page mentions it, summary only).
+
+## Learning resources checked (loaded, free, no login)
+MIT OpenCourseWare 6.006 Spring 2020 (course home only; the lecture list was not read; CC BY-NC-SA 4.0); Algorithms 4th Edition booksite, Princeton (chapters listed: fundamentals, sorting, searching, graphs, strings; free; copyright Sedgewick and Wayne); VisuAlgo (free, no licence line); cp-algorithms (CC BY-SA 4.0); Python docs (PSF licence). Not used: NeetCode roadmap (script-rendered, unreadable), LeetCode study plans (403), USACO Guide (not linked: licence text unclear).
+
+## Not read or unverified
+Lecture titles of MIT 6.006; the full tails of several Wikipedia pages; Dijkstra's binary-heap bound is [S]; linked-list cycle remark is [S]; no outside reader.

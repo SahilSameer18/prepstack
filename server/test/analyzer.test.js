@@ -231,7 +231,7 @@ describe('POST /api/analyzer: skills, learning links and what to do in PrepStack
     gemini.reply = reply();
     const acct = await t.register();
     const r = (await create(acct)).body.data.report;
-    const ok = /^\/(notes\/(os|dbms|cn|oops)\/[a-z0-9-]+|roadmaps\/(frontend|backend|fullstack|android|data-analytics|machine-learning)|dsa\/blind-75|ai-projects\?stack=[^\s]+)$/;
+    const ok = /^\/(notes\/(os|dbms|cn|oops)\/[a-z0-9-]+|roadmaps\/(frontend|backend|fullstack|android|data-analytics|machine-learning|dsa|java-spring|devops-cloud)|dsa\/blind-75|ai-projects\?stack=[^\s]+)$/;
     for (const a of Object.values(r.skillAdvice).flatMap((x) => x.actions)) assert.match(a.path, ok);
   });
 });

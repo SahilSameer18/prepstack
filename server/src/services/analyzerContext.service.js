@@ -5,7 +5,7 @@
 //   dsa:<sheet>:<topicId>       topics of the Blind 75 sheet, by permanent topic id (read from the database)
 //   notes:<subject>:<sectionId> sections of the CS notes, by permanent section id (read from the database)
 //   titles       ref -> readable title, so a report can show "Deadlocks" for notes:os:os-deadlocks. Titles can change, ids never do.
-//   roadmap:<slug>              the six roadmaps. The roadmap content lives in the client, so the slugs are listed here;
+//   roadmap:<slug>              the roadmaps. The roadmap content lives in the client, so the slugs are listed here;
 //                               test/analyzer.context.test.js fails if they drift from client/src/data/roadmaps.js
 //   behavioral   PrepStack's behavioral question bank (id and text), copied from the client for the same reason
 const DSASheet = require('../models/sheets.model');
@@ -13,7 +13,7 @@ const Notes = require('../models/notes.model');
 const catalog = require('../data/skillCatalog.json');
 const behavioral = require('../data/behavioralQuestions.json');
 
-const ROADMAP_SLUGS = ['frontend', 'backend', 'fullstack', 'android', 'data-analytics', 'machine-learning'];
+const ROADMAP_SLUGS = ['frontend', 'backend', 'fullstack', 'android', 'data-analytics', 'machine-learning', 'dsa', 'java-spring', 'devops-cloud'];
 const DSA_SHEET_SLUG = 'blind-75'; // the sheet whose topics the plan may point to (the others have 28 to 56 topics each)
 
 const skillNames = catalog.map((s) => s.name);

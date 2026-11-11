@@ -36,6 +36,9 @@ const ROADMAPS = [
   { slug: 'android', name: 'Android Development', description: 'An Android developer roadmap: Kotlin, Jetpack Compose, the Android SDK and Firebase, through to publishing your app on the Google Play Store.', intro: 'Kotlin, Jetpack Compose, the Android SDK and Firebase: publish apps to Google Play.' },
   { slug: 'data-analytics', name: 'Data Analytics', description: 'A data analytics roadmap from zero: data collection, cleaning, analysis and visualization, through to insights and decisions. A complete learning path.', intro: 'Data collection, cleaning, analysis, visualization and insights: a complete path from zero to job-ready.' },
   { slug: 'machine-learning', name: 'Machine Learning', description: 'A machine learning roadmap: Python, NumPy, Pandas, Scikit-Learn and deep learning, then build and deploy your own ML models. Free learning path.', intro: 'Python, NumPy, Pandas, Scikit-Learn and deep learning: build and deploy ML models.' },
+  { slug: 'devops-cloud', name: 'DevOps & Cloud', description: 'A free DevOps and cloud roadmap: Git, Linux, networking, Docker, GitHub Actions, AWS basics, Kubernetes, Terraform and monitoring.', intro: 'Git, Linux, Docker, automatic checks, AWS, Kubernetes and monitoring, step by step.' },
+  { slug: 'java-spring', name: 'Java & Spring Boot', description: 'A free Java and Spring Boot roadmap: Java basics, collections, concurrency, Maven, Spring Boot, REST APIs, databases, security and Docker.', intro: 'Java, Spring Boot, REST APIs, databases, security and Docker, step by step.' },
+  { slug: 'dsa', name: 'DSA & Problem Solving', description: 'A free DSA roadmap: Big O, arrays, hash tables, trees, graphs, greedy methods and dynamic programming in order, with practice from curated DSA sheets.', intro: 'Big O, arrays, trees, graphs and dynamic programming in a sensible order, with practice from your DSA sheets.' },
 ];
 
 // ───────────────────────── page table ─────────────────────────
@@ -80,7 +83,7 @@ const pages = [
   {
     path: '/roadmaps', kind: 'index', priority: 0.9, changefreq: 'monthly', parent: HOME,
     title: 'Developer Roadmaps: Frontend, Backend, MERN & More',
-    description: 'Step-by-step developer roadmaps for frontend, backend, full stack MERN, Android, data analytics and machine learning, with a clear path from zero to job-ready.',
+    description: 'Step-by-step developer roadmaps: frontend, backend, full stack, Android, data, machine learning, DSA, Java and Spring Boot, DevOps and cloud.',
     h1: 'Developer Roadmaps',
     intro: ['Choose a role and follow a clear, ordered learning path with the topics and resources to learn at each step.'],
     links: ROADMAPS.map((r) => link(`/roadmaps/${r.slug}`, r.name)),

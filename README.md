@@ -267,16 +267,16 @@ Paste a job description and add your resume (PDF or pasted text). You get a repo
 
 ### 📚 CS Fundamentals Library
 
-- **Pre-Seeded Notes:** High-performance revision cards covering OS, DBMS, Computer Networks, and OOP.
+- **Notes written from sources:** DBMS and Computer Networks are rewritten as 10 Markdown sections each (overview, topics with an example and a failure case, interview questions, mistakes, a 5-question quiz and diagrams), in easy words, with a source list and a claims table in `docs/content/`. OS and OOP are still the older text. A section shows its last-checked date; none has been read by an outside reviewer yet.
 
 ### 📝 STAR Resume & Behavioral Hub
 
 - **STAR Prompts:** Complete, interactive STAR templates for mapping experiences.
-- **Behavioral Bank:** Category-sorted bank of questions with expert strategies and answer blueprints.
+- **Behavioral Bank:** 50 questions in 10 groups (personal, teamwork, conflict, failure, leadership, responsibility, deadlines, unclear situations, feedback, motivation). Each has what the interviewer is looking for, a four-part STAR plan, a made-up example answer and two mistakes to avoid, in easy words.
 
 ### 🗺️ Curated Developer Roadmaps
 
-- **6 End-to-End Learning Tracks:** Structured roadmaps for **Frontend**, **Backend**, **Full Stack MERN**, **Android Development**, **Data Analytics**, and **Machine Learning**.
+- **9 Learning Tracks:** **Frontend**, **Backend**, **Full Stack MERN**, **Android Development**, **Data Analytics**, **Machine Learning**, **DSA & Problem Solving**, **Java & Spring Boot** and **DevOps & Cloud**. Every step has a goal, topics, a time range, practice links into PrepStack, a checkpoint, a mini-project and 2 to 3 free official resources, all in plain words.
 - **Actionable Steps & Milestones:** Breaks down complex subjects into step-by-step milestones with estimated completion times, difficulty tiers, and curated free resources.
 
 ### 👤 Unified Profile & Security Hub
