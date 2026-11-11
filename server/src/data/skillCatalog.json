@@ -212,7 +212,7 @@
       {"type":"docs","title":"REST API Tutorial","url":"https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"},
       {"type":"video","title":"REST API Crash Course","url":"https://youtu.be/XvFmUE-36Kc"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-application-layer"}],"roadmap":"backend","projectStack":"MERN Stack"}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-http-https-tls"}],"roadmap":"backend","projectStack":"MERN Stack"}
   },
   {
     "id": "graphql", "name": "GraphQL", "category": "stack",
@@ -792,7 +792,7 @@
       {"type":"docs","title":"MDN Web Docs - How the Web Works","url":"https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Web_mechanics/How_does_the_Internet_work"},
       {"type":"video","title":"Computer Networking Course - NetworkChuck","url":"https://youtu.be/IPvYjXCsTg8"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-osi-model"},{"subject":"cn","sectionId":"cn-tcp-ip-model"},{"subject":"cn","sectionId":"cn-transport-layer"},{"subject":"cn","sectionId":"cn-application-layer"}],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-osi-tcpip-models"},{"subject":"cn","sectionId":"cn-ip-addressing"},{"subject":"cn","sectionId":"cn-transport-layer"},{"subject":"cn","sectionId":"cn-http-https-tls"},{"subject":"cn","sectionId":"cn-dns-email"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "database-indexing-and-optimization", "name": "Database Indexing & Optimization", "category": "cs-core",

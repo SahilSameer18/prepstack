@@ -18,6 +18,8 @@ Fill this in while writing each section, before it is reviewed. The DBMS rows ar
 
 **Second pass (10 Nov 2026).** Two independent AI reviewers, with no write access, read the ten DBMS sections against the source notes. They recomputed every worked example and every quiz (all correct, one answer option per question) and listed about 80 wording problems: phrases that were stronger than the source, a database-specific behaviour stated as universal, or claims no source note states. All were fixed in the sections (for example "usually" for "always", "in PostgreSQL" or "in InnoDB" where the source covers one product, and three sentences about interviewers' habits removed). **This is not an outside reader**: both reviewers are AI models, and they only had the source notes (slides, manuals, web pages), not the book. The "Checked by" cells below stay "not yet" for that reason.
 
+**Second pass for Computer Networks (11 Nov 2026).** Two AI reviewers (read-only, no outside reader) checked the ten CN drafts against the source notes. They recomputed every number and quiz (all correct) and found about 25 wording and accuracy problems, all fixed in the drafts: the block-size rule in subnetting, HTTP/3 having no TCP handshake in the URL story, FTP active versus passive data port, OSPF/BGP wording (autonomous system, not organisation), RFC 8446 vs 9846 wording, DNS CNAME rule, a made-up example address instead of a real one, and several overclaims. **Gap-fill (11 Nov 2026):** the load balancer, CDN, anycast, PATCH, 429, status-code, 443, traceroute, SYN cookie and TCP slow-start claims were then checked against public pages (see "Gap-fill read" in cn-batch-b.md). **Still resting on general knowledge:** port forwarding, the 169.254 self-assignment, longest-prefix match, TIME-WAIT purpose, the four-value connection name, "layer 4/7" as names (our reading of AWS docs), and parts of the DNS walk-through that came from a fetch summary. All CN rows below stay "not yet" except script-checked numbers.
+
 **Claims in the DBMS sections that rest on general knowledge, not on a read source** (found by the second pass; each is standard database teaching and believed true, but no page we read states it): the exact forms of the union, decomposition and pseudotransitivity rules (the slides only name them); "one counter-example disproves a dependency but no number of rows proves one"; the 2NF condition "a table whose candidate keys are all single columns cannot break it" (follows from the definition); that a running transaction is rolled back after a crash; the CAP definition of consistency (Wikipedia's CAP page); that the descriptions of block nested-loop, indexed nested-loop and hash join go beyond their names in the slides; that a parent node's cost includes its children in a PostgreSQL plan; that replication gives more read capacity; that a SELECT without FROM works in PostgreSQL and SQLite (Oracle needs FROM DUAL); that ROW_NUMBER differs from RANK for ties; the advice to put the most-filtered column first in a composite index; the retake-a-course note in the ER section. A reader should confirm or remove these.
 
 | Section id | Claim | Source (book + chapter, doc + section, or RFC number) | Checked by | Date |
@@ -131,6 +133,90 @@ Fill this in while writing each section, before it is reviewed. The DBMS rows ar
 | dbms-advanced-concepts | The hash and range partitioning examples (ids 7 and 9 mod 3; 2, 8 and 20 with vector [5, 11]) | Own and textbook numbers, computed by a script | Claude, by running a script | 2026-11-10 |
 | dbms-advanced-concepts | Sharding is a horizontal partition on separate servers; its advantages and disadvantages; replication copies and sharding splits | Wikipedia Shard (database architecture) (verbatim part); slides ch21 | not yet (needs the outside reader) |  |
 | dbms-advanced-concepts | CAP theorem statement, the consistency versus availability choice during a partition, partition tolerance cannot be dropped, "pick two" misleads, CAP terms differ from ACID and high availability, PACELC | Wikipedia CAP theorem (edited 26 Oct 2026, CC BY-SA 4.0) | not yet (needs the outside reader and a primary source) |  |
+| cn-basics | Topologies (star, bus, ring, mesh, tree, hybrid) and what a failure does in each | Owner's CN PDF pp. 1-3; Wikipedia Network topology (see docs/content/source-notes/cn-batch-a.md section A) | not yet (draft) |  |
+| cn-basics | Full mesh of n nodes needs n(n-1)/2 links: 10 for 5 nodes, 45 for 10 | Computed by script cn-check.js, 11 Nov 2026 | Claude, by running a script | 2026-11-11 |
+| cn-basics | PAN, LAN, MAN, WAN are sorted by area; the "10 metres" for PAN is only a rule of thumb | Owner's CN PDF p. 4; Wikipedia Computer network | not yet (draft) |  |
+| cn-basics | A VPN is an encrypted tunnel over the public internet; Access and site-to-site types | Owner's CN PDF pp. 4-5; Wikipedia | not yet (draft) |  |
+| cn-basics | Protocol = syntax, semantics, timing | Owner's CN PDF p. 11 | not yet (draft) |  |
+| cn-basics | Multicast 224.0.0.0/4 and limited broadcast 255.255.255.255; anycast to the nearest server (CDN use) | RFC 3330 (multicast, broadcast); owner's CN PDF p. 16 (anycast). CDN use of anycast is general knowledge | not yet (draft) |  |
+| cn-osi-tcpip-models | OSI has seven layers, published 1984 as ISO 7498; layer jobs and protocol examples | Wikipedia OSI model; owner's CN PDF pp. 6-8 | not yet (draft) |  |
+| cn-osi-tcpip-models | TCP/IP model has four layers (link, internet, transport, application) | Wikipedia Internet protocol suite; owner's CN PDF p. 9 | not yet (draft) |  |
+| cn-osi-tcpip-models | Encapsulation and unit names (segment, packet, frame); MAC changes per hop, IP stays end to end | Wikipedia Internet protocol suite (encapsulation); MAC/IP end-to-end is general knowledge | not yet (draft) |  |
+| cn-osi-tcpip-models | The mnemonic "All People Seem To Need Data Processing" and "application layer covers OSI 5-7" | General knowledge (teaching mnemonic) | not yet (needs the outside reader) |  |
+| cn-osi-tcpip-models | Hub layer 1, switch/bridge layer 2, router layer 3 | Wikipedia Ethernet hub, Network switch, Network bridge, Router (computing) | not yet (draft) |  |
+| cn-ip-addressing | IPv4 is 32 bits, 4,294,967,296 addresses; IPv6 is 128 bits | RFC 791; RFC 8200; Kurose ch4 slides 44, 70; count by script | Claude, by running a script | 2026-11-11 |
+| cn-ip-addressing | IPv6: fixed 40-byte header, no checksum, no router fragmentation; tunnelling for transition | Kurose ch4 slides 70-71; RFC 8200 | not yet (draft) |  |
+| cn-ip-addressing | Private ranges 10/8, 172.16/12, 192.168/16; 172.20.5.9 private, 172.32.0.1 public | RFC 1918; range computed by script | Claude, by running a script | 2026-11-11 |
+| cn-ip-addressing | 127/8 loopback, 169.254/16 link-local, 255.255.255.255 limited broadcast | RFC 3330 | not yet (draft) |  |
+| cn-ip-addressing | NAT swaps (address, port) and keeps a table; the Kurose example 10.0.0.1:3345 <-> 138.76.29.7:5001 | Kurose ch4 slides 66-67; RFC 3022 | not yet (draft) |  |
+| cn-ip-addressing | NAT criticism and that outside hosts cannot start connections behind NAT (port forwarding) | Kurose ch4 slide 68; port forwarding is general knowledge | not yet (draft) |  |
+| cn-ip-addressing | DHCP: Discover, Offer, Request, Ack; also gives gateway, DNS, mask; lease; relay agent | RFC 2131 (verbatim parts); Kurose ch4 slides 52, 55 | not yet (draft) |  |
+| cn-ip-addressing | DHCP ports 67 (server) and 68 (client) | IANA port registry (bootps, bootpc), batch A notes | not yet (draft) |  |
+| cn-ip-addressing | 169.254 address when no DHCP server answers | RFC 3330 gives the range; the "when DHCP fails" use is general knowledge | not yet (needs the outside reader) |  |
+| cn-ip-addressing | ARP: broadcast request, unicast reply, cache; ARP spoofing | RFC 826; Wikipedia ARP spoofing | not yet (draft) |  |
+| cn-ip-addressing | ICMP types 8, 0, 3, 11; ICMP has no ports; traceroute uses TTL and time exceeded | RFC 792 (types); Wikipedia Traceroute (TTL probes and ICMP Time Exceeded replies) | not yet (draft) |  |
+| cn-ip-addressing | IPv4 header fields; TTL; protocol 17 = UDP | Kurose ch4 slide 43; RFC 791; RFC 768 (17). Protocol 6 = TCP is general knowledge | not yet (draft) |  |
+| cn-ip-addressing | IP is not reliable (no delivery, order, duplicate protection) | RFC 791 | not yet (draft) |  |
+| cn-subnetting | Prefix /x means x network bits; 200.23.16.0/23 is 512 addresses 16.0-17.255 | Kurose ch4 slide 50; RFC 4632; script | Claude, by running a script | 2026-11-11 |
+| cn-subnetting | Host counts: /24 254, /25 126, /26 62, /27 30, /28 14, /30 2; masks for /26, /23, /12 | Computed by script cn-check.js | Claude, by running a script | 2026-11-11 |
+| cn-subnetting | 192.168.10.77/26: network .64, broadcast .127, hosts .65-.126; .70 and .100 share a subnet | Computed by script | Claude, by running a script | 2026-11-11 |
+| cn-subnetting | 192.168.1.0/24 split into four /26 with the listed ranges; 248 usable hosts | Computed by script | Claude, by running a script | 2026-11-11 |
+| cn-subnetting | Route aggregation: 200.23.16.0/20 = 4,096 addresses = eight /23 | Kurose ch4 slide 59; script | Claude, by running a script | 2026-11-11 |
+| cn-subnetting | Longest-prefix match picks the most specific route | General knowledge (not in the sources we read) | not yet (needs the outside reader) |  |
+| cn-subnetting | Why subnet: smaller broadcast domains, security rules between groups | Owner's CN PDF p. 13 (efficiency and security); Kurose slide 47 | not yet (draft) |  |
+| cn-transport-layer | Ports ranges and common numbers (21, 22, 23, 25, 53, 67, 68, 80, 110, 143) | IANA service name and port registry (batch A) | not yet (draft) |  |
+| cn-transport-layer | HTTPS port 443 | IANA service names and port numbers registry, https 443 tcp/udp (read 11 Nov 2026) | not yet (draft) |  |
+| cn-transport-layer | Dynamic range has 16,384 ports | Computed by script | Claude, by running a script | 2026-11-11 |
+| cn-transport-layer | Connection named by the four values (source/destination address and port) | General knowledge (Kurose demultiplexing slides not re-read) | not yet (needs the outside reader) |  |
+| cn-transport-layer | TCP: connection-oriented, reliable, in order, full duplex, flow controlled | Kurose ch3 TCP overview; RFC 9293 | not yet (draft) |  |
+| cn-transport-layer | UDP header is four 16-bit fields (8 bytes), no delivery guarantee | RFC 768 | not yet (draft) |  |
+| cn-transport-layer | Handshake with ISNs 1000/5000 and data seq 1001 len 300 -> ack 1301; SYN/FIN use one number, ACK none | Kurose ch3 handshake slides; RFC 9293; arithmetic by script | Claude, by running a script | 2026-11-11 |
+| cn-transport-layer | Close: FIN/ACK each way, TIME-WAIT 2 x MSL, MSL 2 minutes in the RFC; real systems differ | RFC 9293 | not yet (draft) |  |
+| cn-transport-layer | Timeout = EstimatedRTT + 4 x DevRTT (100 + 40 = 140 ms) | Kurose ch3; RFC 6298; script | Claude, by running a script | 2026-11-11 |
+| cn-transport-layer | Cumulative ACK; three duplicate ACKs cause fast retransmit | Kurose ch3; RFC 5681 | not yet (draft) |  |
+| cn-transport-layer | Slow start, ssthresh 8 sequence 1,2,4,8,9,10,11,12,13; halve on 3 dup ACKs; timeout cwnd 1 and ssthresh half | Kurose ch3 AIMD/slow-start slides; RFC 5681 (ssthresh = max(FlightSize/2, 2 SMSS)); sequence by script | Claude, by running a script | 2026-11-11 |
+| cn-transport-layer | Flow control (receiver window) vs congestion control (network); sender uses the smaller window | Kurose ch3; RFC 9293. "Smaller of the two" is general knowledge | not yet (draft) |  |
+| cn-transport-layer | SYN flood and SYN cookies | Wikipedia SYN flood (cites RFC 4987) | not yet (draft) |  |
+| cn-http-https-tls | Safe methods GET, HEAD, OPTIONS, TRACE; idempotent PUT, DELETE plus safe; POST neither | RFC 9110 9.2.1, 9.2.2 (verbatim) | not yet (draft) |  |
+| cn-http-https-tls | PATCH is not idempotent by default; defined elsewhere | RFC 5789 s2 (neither safe nor idempotent by definition; can be made idempotent) | not yet (draft) |  |
+| cn-http-https-tls | Status classes; 200, 201, 204 meanings | RFC 9110 s15, 15.3 (verbatim) | not yet (draft) |  |
+| cn-http-https-tls | 301, 302, 304, 307, 308, 400, 401, 403, 404, 500, 502, 503, 504 meanings | MDN HTTP status pages 301 to 504 (14 pages read, 11 Nov 2026); RFC 9110 15.4 to 15.6 | not yet (draft) |  |
+| cn-http-https-tls | 429 Too Many Requests | RFC 6585 s4; MDN status 429 | not yet (draft) |  |
+| cn-http-https-tls | Cookie flags Secure, HttpOnly, SameSite, session cookie; example header | MDN Using HTTP cookies | not yet (draft) |  |
+| cn-http-https-tls | Cache-Control max-age/no-cache/no-store, ETag and 304, Last-Modified | MDN HTTP caching; RFC 9110 8.8.3, 13.2.2 | not yet (draft) |  |
+| cn-http-https-tls | HTTP is stateless and runs over TCP | MDN HTTP overview | not yet (draft) |  |
+| cn-http-https-tls | TLS gives encryption, integrity, authentication; 1.0/1.1 not to be used; 1.3 about one round trip | MDN TLS page; RFC 8446 (one-round-trip is the agent's inference from Figure 1) | not yet (draft) |  |
+| cn-http-https-tls | RFC 8446 is obsolete, replaced by RFC 9846 | rfc-editor.org info page for RFC 8446 (RFC 9846 not opened) | not yet (draft) |  |
+| cn-http-https-tls | Ports 80 and 443 for HTTP and HTTPS | Owner's CN PDF p. 9; RFC 6455 for 80/443 use | not yet (draft) |  |
+| cn-http-https-tls | HTTP/2 streams, header compression, TCP head-of-line blocking not solved | RFC 9113 s1, s2 (verbatim) | not yet (draft) |  |
+| cn-http-https-tls | HTTP/3 over QUIC over UDP, per-stream loss handling, TLS 1.3, fallback to TCP | RFC 9114 1.1, 1.2, 3.1 (verbatim); RFC 9110 1.2 | not yet (draft) |  |
+| cn-http-https-tls | "80 files on HTTP/1.1 need several connections" | General knowledge (illustration) | not yet (needs the outside reader) |  |
+| cn-http-https-tls | WebSocket starts with an HTTP Upgrade, 101 reply, ws 80 / wss 443 | RFC 6455 1.3, 1.7 (verbatim) | not yet (draft) |  |
+| cn-dns-email | DNS tree, labels up to 63 bytes, names up to 255, zones, name servers, resolvers | RFC 1034 2.4, 3.1 (verbatim) | not yet (draft) |  |
+| cn-dns-email | Lookup path: cache, resolver, root, TLD, authoritative; recursive vs iterative | RFC 1034 2.3 (recursive/iterative); Wikipedia Domain Name System, address resolution (fetch summary of that part) | not yet (draft) |  |
+| cn-dns-email | Record types A 1, NS 2, CNAME 5, PTR 12, MX 15, TXT 16; MX preference lowest first; CNAME alias | RFC 1035 3.2.2, 3.3.9 (verbatim); RFC 1034 3.6.2. AAAA is general knowledge | not yet (draft) |  |
+| cn-dns-email | TTL in seconds, 0 = no caching; lowering TTL before a move | RFC 1034 3.6 (TTL); the advice is general knowledge | not yet (draft) |  |
+| cn-dns-email | DNS over UDP port 53, 512-byte limit, TCP for large answers and zone transfers, truncation bit | RFC 1035 2.3.4, 2.2; Wikipedia Domain Name System (infobox 53 UDP and TCP; TCP for large replies and zone transfers); IANA domain 53 | not yet (draft) |  |
+| cn-dns-email | SMTP relay port 25, submission port 587 with authentication, MX picks the next hop | RFC 6409 abstract, 3.1, 4.3; RFC 5321 1.1 (verbatim) | not yet (draft) |  |
+| cn-dns-email | POP3 port 110 downloads (usually deletes); IMAP 143 / 993, mail stays on server | RFC 1939 s1, s3; RFC 9051 2.1 (verbatim) | not yet (draft) |  |
+| cn-dns-email | FTP two connections (control 21, data 20), SSH port 22, FTP sends passwords in plain text | RFC 959 2.2-3.2; RFC 4253 4.1. Ports 20/21 from the L-1 rule plus IANA 21. "Plain text" is general knowledge | not yet (needs the outside reader) |  |
+| cn-devices-routing-security | Hub: layer 1, one collision domain; switch: layer 2, MAC table, port collision domains, one broadcast domain; bridge; router: layer 3 | Wikipedia Ethernet hub (verbatim), Network switch, Network bridge, Router | not yet (draft) |  |
+| cn-devices-routing-security | "Router joins similar networks, gateway dissimilar" is loose; default gateway meaning | Owner's CN PDF p. 14 (the loose line); default gateway use is general knowledge | not yet (needs the outside reader) |  |
+| cn-devices-routing-security | RIP: hop count, 15 max, 16 unreachable, 30 s updates, 180 s timeout | RFC 2453 3.2, 3.4.1 (verbatim) | not yet (draft) |  |
+| cn-devices-routing-security | OSPF: link-state, one AS, same database, shortest-path tree, areas, flooding | RFC 2328 abstract, 1.1 (verbatim) | not yet (draft) |  |
+| cn-devices-routing-security | BGP: between autonomous systems, AS list, TCP port 179; policy as well as path length | RFC 4271 abstract, 1, 3. "Policy" from abstract text ("policy decisions"); not a full read | not yet (draft) |  |
+| cn-devices-routing-security | Firewall types: packet filter, connection tracking, application layer | Wikipedia Firewall (2.1-2.3) | not yet (draft) |  |
+| cn-devices-routing-security | Forward vs reverse proxy; reverse proxy uses and risks | Wikipedia Proxy server, Reverse proxy (verbatim) | not yet (draft) |  |
+| cn-devices-routing-security | DoS/DDoS, SYN flood and SYN cookies, ARP spoofing, MITM and TLS | Wikipedia Denial-of-service attack, SYN flood, ARP spoofing, Man-in-the-middle attack | not yet (draft) |  |
+| cn-devices-routing-security | "A VPN or HTTPS does not stop DDoS" | General knowledge | not yet (needs the outside reader) |  |
+| cn-key-flows | The order of steps (cache, DNS, TCP, TLS, HTTP, render) | Owner's CN PDF p. 13 (steps); the other CN claims above | not yet (draft) |  |
+| cn-key-flows | Browser uses ARP for the default gateway MAC before the first packet; HTTP/3 combines transport and TLS setup | RFC 826 (ARP); RFC 9114 1.2 (TLS 1.3 inside QUIC). The ordering of ARP in the story is general knowledge | not yet (draft) |  |
+| cn-key-flows | Sample address 93.184.216.34 | An example value only, not a claim about any real site | n/a |  |
+| cn-system-design-concepts | Round robin, least connections, IP hash, health checks | Wikipedia Load balancing (computing) (verbatim for algorithms; health checks from summary); nginx load_balancing docs; AWS ELB docs | not yet (draft) |  |
+| cn-system-design-concepts | Layer 4 vs layer 7 load balancing; sticky sessions and their cost | AWS ELB docs (Network LB hashes per flow and keeps a connection on one target; Application LB uses HTTP rules); the names layer 4/7 are our reading, the pages do not use them; sticky sessions: Wikipedia Load balancing (summary), nginx ip_hash | not yet (draft) |  |
+| cn-system-design-concepts | Reverse proxy: balance, cache, compress, TLS termination, hides servers; risks | Wikipedia Reverse proxy (verbatim) | not yet (draft) |  |
+| cn-system-design-concepts | CDN stores copies of static files at edge servers; cache expiry; versioned file names; DNS/anycast routing | Wikipedia Content delivery network (edge, origin, pull/push, DNS and anycast routing); MDN Glossary CDN; Wikipedia Anycast | not yet (draft) |  |
+| cn-system-design-concepts | Cache layers and Cache-Control private for personal pages | MDN HTTP caching (private cache, private directive) | not yet (draft) |  |
 
 ## Outside readers (people who know the subject)
 

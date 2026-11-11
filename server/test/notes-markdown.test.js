@@ -273,6 +273,48 @@ describe('the real DBMS notes (all Markdown)', () => {
   });
 });
 
+describe('the real Computer Networks notes (all Markdown)', () => {
+  const dir = path.join(__dirname, '..', 'src', 'data', 'notes', 'cn');
+  const cn = require('../src/data/notes/cn');
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md') && !f.startsWith('_'));
+
+  it('has the ten sections, one file each, in reading order', () => {
+    assert.equal(files.length, 10);
+    assert.deepEqual(cn.sections.map((s) => s.id), [
+      'cn-basics', 'cn-osi-tcpip-models', 'cn-ip-addressing', 'cn-subnetting', 'cn-transport-layer',
+      'cn-http-https-tls', 'cn-dns-email', 'cn-devices-routing-security', 'cn-key-flows', 'cn-system-design-concepts',
+    ]);
+  });
+  it('every section passes the full template and has a lastChecked date', () => {
+    assert.deepEqual(checkNotesSubject('cn', cn), []);
+    for (const s of cn.sections) assert.match(s.lastChecked, /^\d{4}-\d{2}-\d{2}$/, s.id);
+  });
+  it('the last section has no next, and no quiz question or title repeats', () => {
+    assert.equal(cn.sections.at(-1).links.next, null);
+    const questions = cn.sections.flatMap((s) => s.quiz.map((q) => q.question));
+    assert.equal(new Set(questions).size, questions.length);
+    const titles = cn.sections.map((s) => s.title);
+    assert.equal(new Set(titles).size, titles.length);
+  });
+  it('every quiz has its answer inside the options, and no option text repeats inside a question', () => {
+    for (const s of cn.sections) for (const q of s.quiz) {
+      assert.ok(q.answer >= 0 && q.answer < q.options.length, s.id + ': ' + q.question);
+      assert.equal(new Set(q.options).size, q.options.length);
+    }
+  });
+  it('the subnet examples in the text are right (192.168.10.77/26 and the /24 split)', () => {
+    const text = cn.sections.find((s) => s.id === 'cn-subnetting').topics.map((t) => t.example).join('\n');
+    const toInt = (ip) => ip.split('.').reduce((a, o) => a * 256 + Number(o), 0);
+    const block = (ip, p) => { const size = 2 ** (32 - p); const base = Math.floor(toInt(ip) / size) * size; return [base, base + size - 1]; };
+    const [net, bc] = block('192.168.10.77', 26);
+    assert.equal(net, toInt('192.168.10.64'));
+    assert.equal(bc, toInt('192.168.10.127'));
+    assert.match(text, /192\.168\.10\.64/);
+    assert.match(text, /192\.168\.10\.127/);
+    assert.equal(2 ** (32 - 26) - 2, 62);
+  });
+});
+
 describe('orderByNext', () => {
   const sec = (id, next) => ({ id, links: { next } });
   it('puts the sections in the order of their next links, whatever order they come in', () => {

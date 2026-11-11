@@ -39,7 +39,7 @@ describe('the real notes data', () => {
   });
   it('the sections the Analyzer catalog points at still exist under the same ids', () => {
     const ids = new Set(SUBJECTS.flatMap((slug) => realData(slug).sections.map((s) => s.id)));
-    for (const id of ['os-deadlocks', 'os-cpu-scheduling', 'dbms-sql', 'dbms-keys-constraints', 'cn-osi-model', 'oops-solid-principles']) assert.ok(ids.has(id), id);
+    for (const id of ['os-deadlocks', 'os-cpu-scheduling', 'dbms-sql', 'dbms-keys-constraints', 'cn-osi-tcpip-models', 'oops-solid-principles']) assert.ok(ids.has(id), id);
   });
 });
 
@@ -165,7 +165,7 @@ describe('notes numbers worked out from the data', () => {
     assert.equal(subjectStats([{ id: 'os-a', title: 'A', topics: [] }]).lastChecked, null);
   });
   it('the real subjects give sensible numbers (the Notes page no longer types them by hand)', () => {
-    assert.deepEqual(SUBJECTS.map((slug) => subjectStats(realData(slug).sections).topicCount), [29, 68, 19, 19]);
+    assert.deepEqual(SUBJECTS.map((slug) => subjectStats(realData(slug).sections).topicCount), [29, 68, 61, 19]);
   });
 });
 
