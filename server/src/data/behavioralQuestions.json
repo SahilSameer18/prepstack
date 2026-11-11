@@ -12,79 +12,191 @@
     "question": "What is your greatest weakness?"
   },
   {
-    "id": 4,
-    "question": "Describe a time you dealt with a conflict in a team."
-  },
-  {
-    "id": 5,
-    "question": "Tell me about a time you failed."
-  },
-  {
     "id": 6,
     "question": "Why should we hire you?"
-  },
-  {
-    "id": 7,
-    "question": "Where do you see yourself in five years?"
-  },
-  {
-    "id": 8,
-    "question": "Tell me about a technical challenge you faced."
-  },
-  {
-    "id": 9,
-    "question": "How do you handle high-pressure situations?"
-  },
-  {
-    "id": 10,
-    "question": "Tell me about a time you had to learn a new technology quickly."
-  },
-  {
-    "id": 11,
-    "question": "What motivates you to work?"
-  },
-  {
-    "id": 12,
-    "question": "How do you prioritize your tasks with multiple deadlines?"
-  },
-  {
-    "id": 13,
-    "question": "Describe a time you went above and beyond for a project."
-  },
-  {
-    "id": 14,
-    "question": "What would you do if you disagreed with your manager's decision?"
-  },
-  {
-    "id": 15,
-    "question": "Tell me about a time you showed leadership."
-  },
-  {
-    "id": 16,
-    "question": "How do you handle feedback or criticism?"
   },
   {
     "id": 17,
     "question": "Describe your ideal work environment."
   },
   {
-    "id": 18,
-    "question": "What do you do when you're stuck on a technical problem?"
+    "id": 13,
+    "question": "Describe a time you went above and beyond for a project."
   },
   {
     "id": 19,
     "question": "Tell me about a time you explained something complex to a non-technical person."
   },
   {
-    "id": 20,
-    "question": "Where do you think the future of software engineering is headed?"
+    "id": 23,
+    "question": "Tell me about a time you worked with someone very different from you."
+  },
+  {
+    "id": 24,
+    "question": "Tell me about a time you helped a teammate who was struggling."
+  },
+  {
+    "id": 25,
+    "question": "Do you prefer working alone or in a team? Give an example of each."
+  },
+  {
+    "id": 4,
+    "question": "Describe a time you dealt with a conflict in a team."
+  },
+  {
+    "id": 14,
+    "question": "What would you do if you disagreed with your manager's decision?"
+  },
+  {
+    "id": 26,
+    "question": "Tell me about a time a teammate did not do their part."
+  },
+  {
+    "id": 27,
+    "question": "Tell me about a time someone disagreed with your idea."
+  },
+  {
+    "id": 28,
+    "question": "Tell me about a decision you disagreed with but still had to follow."
+  },
+  {
+    "id": 5,
+    "question": "Tell me about a time you failed."
+  },
+  {
+    "id": 29,
+    "question": "Tell me about a mistake in your work that other people noticed."
+  },
+  {
+    "id": 30,
+    "question": "What is something you would do differently on a past project?"
+  },
+  {
+    "id": 31,
+    "question": "Tell me about a time you set a goal and did not reach it."
+  },
+  {
+    "id": 32,
+    "question": "Tell me about a time you were wrong and admitted it."
+  },
+  {
+    "id": 15,
+    "question": "Tell me about a time you showed leadership."
+  },
+  {
+    "id": 33,
+    "question": "Tell me about a time you motivated other people."
+  },
+  {
+    "id": 34,
+    "question": "Tell me about a time you started something on your own without being asked."
+  },
+  {
+    "id": 35,
+    "question": "Tell me about a time you led a group project or a coding contest team."
+  },
+  {
+    "id": 36,
+    "question": "Tell me about a time you helped a group agree on a plan."
   },
   {
     "id": 21,
     "question": "What's the most interesting project you've ever worked on?"
   },
   {
+    "id": 8,
+    "question": "Tell me about a technical challenge you faced."
+  },
+  {
+    "id": 18,
+    "question": "What do you do when you're stuck on a technical problem?"
+  },
+  {
+    "id": 37,
+    "question": "Tell me about a time you took responsibility for something nobody owned."
+  },
+  {
+    "id": 38,
+    "question": "Tell me about a time you followed a problem all the way to its real cause."
+  },
+  {
+    "id": 9,
+    "question": "How do you handle high-pressure situations?"
+  },
+  {
+    "id": 12,
+    "question": "How do you decide what to do first when you have several deadlines?"
+  },
+  {
+    "id": 39,
+    "question": "Tell me about a deadline you almost missed."
+  },
+  {
+    "id": 40,
+    "question": "Tell me about a time you had too much work at once."
+  },
+  {
+    "id": 41,
+    "question": "Tell me about a time you had to choose between quality and time."
+  },
+  {
+    "id": 10,
+    "question": "Tell me about a time you had to learn a new technology quickly."
+  },
+  {
     "id": 22,
     "question": "How do you stay updated with the latest trends in technology?"
+  },
+  {
+    "id": 42,
+    "question": "Tell me about a time you got unclear instructions."
+  },
+  {
+    "id": 43,
+    "question": "Tell me about a time the plan changed in the middle of a project."
+  },
+  {
+    "id": 44,
+    "question": "Tell me about a time you had to solve a problem you had never seen before."
+  },
+  {
+    "id": 16,
+    "question": "How do you handle feedback or criticism?"
+  },
+  {
+    "id": 45,
+    "question": "Tell me about a time you received tough feedback on your code or your work."
+  },
+  {
+    "id": 46,
+    "question": "Tell me about a time you gave feedback to someone."
+  },
+  {
+    "id": 47,
+    "question": "Tell me about a time you asked for help."
+  },
+  {
+    "id": 48,
+    "question": "Tell me about a time you acted on feedback and improved."
+  },
+  {
+    "id": 11,
+    "question": "What motivates you to work?"
+  },
+  {
+    "id": 7,
+    "question": "Where do you see yourself in five years?"
+  },
+  {
+    "id": 20,
+    "question": "Where do you think the future of software engineering is headed?"
+  },
+  {
+    "id": 49,
+    "question": "Why do you want to work at this company and in this role?"
+  },
+  {
+    "id": 50,
+    "question": "Tell me about a goal you set for yourself and achieved."
   }
 ]

@@ -334,6 +334,12 @@ Fill this in while writing each section, before it is reviewed. The DBMS rows ar
 | roadmap-machine-learning / monitoring-optimization | Time 15 to 25 hours | Our estimate | n/a (estimate) |  |
 | roadmap-machine-learning / capstone-project | Topics, goal and checkpoints follow the headings of: Kaggle Competitions; Spaces Overview – Hugging Face docs (docs/content/source-notes/roadmap-machine-learning.md) | those pages, read 11 Nov 2026 | not yet (draft) |  |
 | roadmap-machine-learning / capstone-project | Time 40 to 60 hours | Our estimate | n/a (estimate) |  |
+| behavioral | STAR = Situation, Task, Action, Result; most of the answer on the Action (about 60%); use I not we; keep to about 1 to 2 minutes | MIT CAPD STAR page; Indeed (1 to 2 minutes); Wikipedia STAR (docs/content/source-notes/behavioral.md) | not yet (draft) |  |
+| behavioral | Interviewers look at what you actually did, your own role, and how it links to the job; past behaviour predicts future behaviour | MIT CAPD; Harvard Mignone Center; Wikipedia Job interview (partly by summary) | not yet (draft) |  |
+| behavioral | Common mistakes: vague answers, rambling, memorised scripts, blaming others, bending the truth, we-answers that hide your role | MIT CAPD; Harvard Mignone Center; InterviewBit | not yet (draft) |  |
+| behavioral | The 10 groups and their question themes (teamwork, conflict, failure, leadership, deadlines, ambiguity, feedback, ownership, motivation) | Indeed, Harvard Mignone Center, GeeksforGeeks, InterviewBit lists of themes; Amazon Leadership Principles names | not yet (draft) |  |
+| behavioral | The 50 STAR outlines and "what the interviewer is looking for" lines | Our own writing from the pages above; opinion | n/a (our writing) |  |
+| behavioral | The 50 example answers are made-up examples for students, not claims about any real person or company | Our own writing; labelled on the page as a guide, not a script | n/a (examples) |  |
 
 ## Outside readers (people who know the subject)
 
