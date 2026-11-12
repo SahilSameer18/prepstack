@@ -139,6 +139,60 @@ describe('notes validator: link formats and diagrams', () => {
   rejects('4 diagrams in one section', { diagrams: [flow, layers, graph, flow] }, /at most 3 diagrams/);
 });
 
+describe('notes validator: architecture and sequence diagrams (system design)', () => {
+  const rejects = (name, over, pattern) => it(`rejects: ${name}`, () => assert.match(check(goodSection(over)).join('\n'), pattern));
+  const arch = {
+    kind: 'graph',
+    caption: 'A request path',
+    groups: [{ id: 'dc', label: 'Data centre' }],
+    nodes: [
+      { id: 'u', label: 'User', x: 10, y: 50, shape: 'client' },
+      { id: 's', label: 'Service', x: 50, y: 50, group: 'dc' },
+      { id: 'd', label: 'Database', x: 85, y: 50, shape: 'database', group: 'dc' },
+    ],
+    edges: [{ from: 'u', to: 's', step: 1 }, { from: 's', to: 'd', step: 2, dashed: true, label: 'read' }],
+  };
+  const seq = {
+    kind: 'sequence',
+    caption: 'A request',
+    actors: [{ id: 'c', label: 'Client' }, { id: 's', label: 'Server' }],
+    messages: [{ from: 'c', to: 's', label: 'Request' }, { from: 's', to: 'c', label: 'Response', dashed: true }],
+  };
+  const flow = { kind: 'flow', caption: 'f', steps: [{ label: 'a' }, { label: 'b' }] };
+  const hld = (section) => checkNotesSubject('hld', { subject: 'System Design', sections: [{ ...goodSection(section), id: 'hld-caching' }] });
+
+  it('accepts a graph with shapes, a zone, numbered and dashed arrows, and a sequence diagram', () => {
+    assert.deepEqual(check(goodSection({ diagrams: [arch, seq] })), []);
+  });
+  it('accepts a graph of 14 nodes', () => {
+    const nodes = Array.from({ length: 14 }, (_, i) => ({ id: `n${i}`, label: `N${i}`, x: (i * 7) % 100, y: (i * 11) % 100 }));
+    assert.deepEqual(check(goodSection({ diagrams: [{ kind: 'graph', caption: 'big', nodes, edges: [] }] })), []);
+  });
+  rejects('a graph of 15 nodes', { diagrams: [{ kind: 'graph', caption: 'big', nodes: Array.from({ length: 15 }, (_, i) => ({ id: `n${i}`, label: 'N', x: 1, y: 1 })), edges: [] }] }, /2 to 14 nodes/);
+  rejects('an unknown node shape', { diagrams: [{ ...arch, nodes: [{ ...arch.nodes[0], shape: 'star' }, ...arch.nodes.slice(1)] }] }, /node shape must be one of/);
+  rejects('a node in a zone that does not exist', { diagrams: [{ ...arch, nodes: [{ ...arch.nodes[0], group: 'nope' }, ...arch.nodes.slice(1)] }] }, /uses a group that does not exist/);
+  rejects('a zone with no nodes', { diagrams: [{ ...arch, groups: [...arch.groups, { id: 'empty', label: 'Empty' }] }] }, /group empty has no nodes/);
+  rejects('two zones with the same id', { diagrams: [{ ...arch, groups: [...arch.groups, { id: 'dc', label: 'Again' }] }] }, /group ids must be different/);
+  rejects('4 zones', { diagrams: [{ ...arch, groups: ['a', 'b', 'c', 'd'].map((id) => ({ id, label: id })) }] }, /at most 3 groups/);
+  rejects('an arrow step of 0', { diagrams: [{ ...arch, edges: [{ from: 'u', to: 's', step: 0 }] }] }, /edge step must be 1 to 20/);
+  rejects('an arrow dashed value that is not true or false', { diagrams: [{ ...arch, edges: [{ from: 'u', to: 's', dashed: 'yes' }] }] }, /edge dashed must be true or false/);
+  rejects('a sequence with 1 actor', { diagrams: [{ ...seq, actors: [seq.actors[0]] }] }, /2 to 5 actors/);
+  rejects('a sequence with 6 actors', { diagrams: [{ ...seq, actors: Array.from({ length: 6 }, (_, i) => ({ id: `a${i}`, label: `A${i}` })) }] }, /2 to 5 actors/);
+  rejects('a sequence with no messages', { diagrams: [{ ...seq, messages: [] }] }, /1 to 12 messages/);
+  rejects('a sequence with 13 messages', { diagrams: [{ ...seq, messages: Array.from({ length: 13 }, () => seq.messages[0]) }] }, /1 to 12 messages/);
+  rejects('a message from an actor that does not exist', { diagrams: [{ ...seq, messages: [{ from: 'zzz', to: 's', label: 'x' }] }] }, /uses an actor that does not exist/);
+  rejects('a message from an actor to itself', { diagrams: [{ ...seq, messages: [{ from: 'c', to: 'c', label: 'x' }] }] }, /cannot go to itself/);
+  rejects('a message label over 40 characters', { diagrams: [{ ...seq, messages: [{ from: 'c', to: 's', label: 'x'.repeat(41) }] }] }, /40 characters or fewer/);
+  rejects('two actors with the same id', { diagrams: [{ ...seq, actors: [seq.actors[0], { id: 'c', label: 'Other' }] }] }, /actor ids must be different/);
+
+  it('only system design sections may have more than 3 diagrams, up to 6', () => {
+    assert.match(check(goodSection({ diagrams: [flow, flow, flow, flow] })).join('\n'), /at most 3 diagrams/);
+    assert.deepEqual(hld({ diagrams: [flow, flow, flow, flow, flow, flow] }), []);
+    assert.match(hld({ diagrams: [flow, flow, flow, flow, flow, flow, flow] }).join('\n'), /at most 6 diagrams/);
+  });
+});
+
+
 describe('notes numbers worked out from the data', () => {
   it('counts the words a reader sees and skips ids, dates and links', () => {
     const section = { id: 'os-a-b-c', title: 'Two words', lastChecked: '2026-11-09', links: { sheetTopics: ['a:b'] }, topics: [{ name: 'three small words', tips: ['one', 'two three'] }] };

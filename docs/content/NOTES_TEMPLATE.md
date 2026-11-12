@@ -44,7 +44,7 @@ A mistake in the format (an unknown heading, two right answers, broken diagram J
   mistakes: [ "..." ],                                                // 2 to 3
   quiz: [ { question, options: [a, b, c, d], answer: 1, explanation } ],   // exactly 5; answer is the index 0 to 3
   links: { sheetTopics: ["blind-75:graph"], roadmapSteps: ["backend:database-design"], next: "os-memory-management" },
-  diagrams: [ ... ],             // optional, at most 3
+  diagrams: [ ... ],             // optional, at most 3 (6 for hld)
 }
 ```
 
@@ -76,7 +76,10 @@ Only where a picture explains faster than text, not on every topic. A diagram is
 |---|---|---|
 | `flow` | `{ kind: "flow", caption, steps: [{ label }] }` | 2 to 8 steps, drawn in a row (or stacked if too wide) with arrows |
 | `layers` | `{ kind: "layers", caption, layers: [{ label }] }` | 2 to 8 layers, stacked top to bottom |
-| `graph` | `{ kind: "graph", caption, nodes: [{ id, label, x, y }], edges: [{ from, to, label? }] }` | 2 to 10 nodes; `x` and `y` are 0 to 100 (percent of the drawing area); node ids unique; every edge between existing, different nodes |
+| `graph` | `{ kind: "graph", caption, nodes: [{ id, label, x, y, shape?, group? }], edges: [{ from, to, label?, step?, dashed? }], groups?: [{ id, label }] }` | 2 to 14 nodes (a graph with more than 8 nodes is drawn taller); `x` and `y` are 0 to 100 (percent of the drawing area); node ids unique; every edge between existing, different nodes. `shape` is `box` (default), `database` (cylinder), `queue`, `cache`, `client` (rounded) or `external` (dashed outline). `group` names a zone box (up to 3 `groups`, each with at least one node) drawn around its nodes, for example "Data centre". `step` (1 to 20) puts a number on an arrow to show the order of a request path; `dashed: true` marks an asynchronous or optional path |
+| `sequence` | `{ kind: "sequence", caption, actors: [{ id, label }], messages: [{ from, to, label, dashed? }] }` | 2 to 5 actors; 1 to 12 messages drawn top to bottom in the order given and numbered automatically; a message goes between two different actors; label 40 characters or fewer; `dashed: true` for a reply or an asynchronous message. Use it for things that happen over time (an election, a retry, a cache read) |
+
+How many diagrams: **at most 3 per section, except the System Design (`hld`) notes, which may have up to 6** (a design needs the main picture, the read path, the write path and a failure case). Place nodes so no arrow crosses another box; the layout draws straight arrows and does not route around boxes.
 
 ## Writing rules
 

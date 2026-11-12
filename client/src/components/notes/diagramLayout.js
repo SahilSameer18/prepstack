@@ -1,12 +1,19 @@
 // Works out where everything goes in a diagram, kept apart from the screen so it can be tested.
-// A diagram is plain data: { kind: 'flow' | 'layers' | 'graph', caption, ... } (the rules are in server/src/validators/notes.validators.js).
-// Every layout returns { width, height, boxes: [{ key, label, x, y, w, h }], arrows: [{ x1, y1, x2, y2, label }] } in SVG units.
+// A diagram is plain data: { kind: 'flow' | 'layers' | 'graph' | 'sequence', caption, ... } (the rules are in server/src/validators/notes.validators.js).
+// Every layout returns { width, height, boxes: [{ key, label, x, y, w, h, shape? }], arrows: [{ x1, y1, x2, y2, label, step?, dashed? }] } in SVG units;
+// a graph also returns groups (zone boxes) and a sequence also returns lifelines.
 const BOX_H = 44;
 const GAP = 36;
 const PAD = 16;
 const MAX_ROW = 640;
 const GRAPH_W = 600;
 const GRAPH_H = 280;
+const GRAPH_H_BIG = 400; // a graph with more than 8 nodes gets a taller canvas
+const QUEUE_EXTRA = 24; // a queue box keeps its right edge for the tick marks, so its label stays clear of them
+const GROUP_PAD = 14;
+const GROUP_LABEL_H = 16;
+const SEQ_ACTOR_H = 36;
+const SEQ_ROW = 40;
 const GRAPH_BOX_H = 36;
 
 const boxWidth = (label) => Math.max(96, Math.round(label.length * 7.5 + 28));
@@ -49,9 +56,10 @@ const leaveBox = (box, tx, ty) => {
 };
 
 const layoutGraph = (graph) => {
+  const canvasH = graph.nodes.length > 8 ? GRAPH_H_BIG : GRAPH_H;
   const boxes = graph.nodes.map((n) => {
-    const w = boxWidth(n.label);
-    return { key: n.id, label: n.label, x: PAD + (n.x / 100) * (GRAPH_W - PAD * 2) - w / 2, y: PAD + (n.y / 100) * (GRAPH_H - PAD * 2) - GRAPH_BOX_H / 2, w, h: GRAPH_BOX_H };
+    const w = boxWidth(n.label) + (n.shape === 'queue' ? QUEUE_EXTRA : 0);
+    return { key: n.id, label: n.label, shape: n.shape || 'box', x: PAD + (n.x / 100) * (GRAPH_W - PAD * 2) - w / 2, y: PAD + (n.y / 100) * (canvasH - PAD * 2) - GRAPH_BOX_H / 2, w, h: GRAPH_BOX_H };
   });
   const byId = Object.fromEntries(boxes.map((b) => [b.key, b]));
   const arrows = graph.edges.map((e) => {
@@ -67,23 +75,54 @@ const layoutGraph = (graph) => {
     const oy = ((cb.x - ca.x) / len) * shift;
     const from = leaveBox(a, cb.x + ox, cb.y + oy);
     const to = leaveBox(b, ca.x + ox, ca.y + oy);
-    return { x1: from.x + ox, y1: from.y + oy, x2: to.x + ox, y2: to.y + oy, label: e.label };
+    return { x1: from.x + ox, y1: from.y + oy, x2: to.x + ox, y2: to.y + oy, label: e.label, step: e.step, dashed: e.dashed };
+  });
+  // a zone box wraps the nodes that name it, with room on top for its label
+  const groups = (graph.groups || []).map((g) => {
+    const members = graph.nodes.map((n, i) => (n.group === g.id ? boxes[i] : null)).filter(Boolean);
+    const x = Math.min(...members.map((b) => b.x)) - GROUP_PAD;
+    const y = Math.min(...members.map((b) => b.y)) - GROUP_PAD - GROUP_LABEL_H;
+    return { key: g.id, label: g.label, x, y, w: Math.max(...members.map((b) => b.x + b.w)) + GROUP_PAD - x, h: Math.max(...members.map((b) => b.y + b.h)) + GROUP_PAD - y };
   });
   // crop to what is drawn, so a graph of two nodes is not a mostly empty box
-  const left = Math.min(...boxes.map((b) => b.x)) - PAD;
-  const top = Math.min(...boxes.map((b) => b.y)) - PAD;
-  const width = Math.max(...boxes.map((b) => b.x + b.w)) + PAD - left;
-  const height = Math.max(...boxes.map((b) => b.y + b.h)) + PAD - top;
+  const parts = [...boxes, ...groups];
+  const left = Math.min(...parts.map((b) => b.x)) - PAD;
+  const top = Math.min(...parts.map((b) => b.y)) - PAD;
+  const width = Math.max(...parts.map((b) => b.x + b.w)) + PAD - left;
+  const height = Math.max(...parts.map((b) => b.y + b.h)) + PAD - top;
   return {
     width,
     height,
+    groups: groups.map((g) => ({ ...g, x: g.x - left, y: g.y - top })),
     boxes: boxes.map((b) => ({ ...b, x: b.x - left, y: b.y - top })),
     arrows: arrows.map((r) => ({ ...r, x1: r.x1 - left, y1: r.y1 - top, x2: r.x2 - left, y2: r.y2 - top })),
   };
 };
 
+// Actors across the top, one lifeline each, messages top to bottom in the order given (numbered "1. label").
+// The columns are as wide as the longest message needs, so a label never runs into the next lifeline.
+const layoutSequence = (seq) => {
+  const index = Object.fromEntries(seq.actors.map((a, i) => [a.id, i]));
+  let colW = Math.max(140, ...seq.actors.map((a) => boxWidth(a.label) + 16));
+  seq.messages.forEach((m, i) => {
+    const span = Math.abs(index[m.to] - index[m.from]);
+    colW = Math.max(colW, Math.ceil((`${i + 1}. ${m.label}`.length * 6.6 + 24) / span));
+  });
+  const cx = (i) => PAD + colW * (i + 0.5);
+  const boxes = seq.actors.map((a, i) => ({ key: a.id, label: a.label, x: cx(i) - (colW - 16) / 2, y: PAD, w: colW - 16, h: SEQ_ACTOR_H }));
+  const firstY = PAD + SEQ_ACTOR_H + 28;
+  const arrows = seq.messages.map((m, i) => {
+    const y = firstY + i * SEQ_ROW;
+    return { x1: cx(index[m.from]), y1: y, x2: cx(index[m.to]), y2: y, label: `${i + 1}. ${m.label}`, dashed: m.dashed };
+  });
+  const endY = firstY + (seq.messages.length - 1) * SEQ_ROW + 24;
+  const lifelines = seq.actors.map((a, i) => ({ key: a.id, x: cx(i), y1: PAD + SEQ_ACTOR_H, y2: endY }));
+  return { width: colW * seq.actors.length + PAD * 2, height: endY + PAD, boxes, arrows, lifelines };
+};
+
 export const layoutDiagram = (diagram) => {
   if (diagram.kind === 'flow') return layoutFlow(diagram.steps);
   if (diagram.kind === 'layers') return layoutLayers(diagram.layers);
+  if (diagram.kind === 'sequence') return layoutSequence(diagram);
   return layoutGraph(diagram);
 };
