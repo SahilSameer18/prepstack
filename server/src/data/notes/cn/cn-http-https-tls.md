@@ -100,7 +100,7 @@ HTTP/1.1 (the older version) sends one request at a time per connection, so brow
 
 ### What is the difference between GET and POST?
 
-GET reads data, is safe and idempotent (repeating it gives the same result), and its parameters are in the URL. POST sends data in the body to create or process something; it is not idempotent, so repeating it can repeat the effect.
+GET reads data, is safe and idempotent (repeating it gives the same result), and its parameters are in the URL (the web address). POST sends data in the body to create or process something; it is not idempotent, so repeating it can repeat the effect.
 
 ### What is the difference between 401 and 403?
 

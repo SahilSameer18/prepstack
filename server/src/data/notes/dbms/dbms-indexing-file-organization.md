@@ -16,7 +16,7 @@ An index is a separate structure, usually sorted, that lets the database find ro
 
 ## Topic: What an index is and what it costs
 
-**Definition:** An index is a structure that stores search-key values in a form that is fast to search, each with a pointer to the row. It is a redundant (extra) copy of part of the data, kept separate from the table.
+**Definition:** An index is a structure that stores search-key values in a form that is fast to search, each with a pointer (a stored reference that says where the row is) to the row. It is a redundant (extra) copy of part of the data, kept separate from the table.
 
 **Why:** Without an index, finding one row may mean reading every row. With one, the database goes straight to the row's location.
 
@@ -33,7 +33,7 @@ CREATE INDEX idx_student_roll ON student (roll_no);
 
 **Why:** It is shallow even for millions of keys, because each node is about one disk block and holds around a hundred entries.
 
-**Example:** To find 45 in a tree whose root has keys 30 and 60: 45 is at least 30 and below 60, so go to the middle child, a leaf holding 30, 40, 50. Look inside the leaf for 45. It is not there, so there is no such row. With 1,000,000 keys and about 100 entries per node, a lookup touches at most about 4 nodes. A balanced binary tree over the same keys needs about 20.
+**Example:** To find 45 in a tree whose root (the top node) has keys 30 and 60: 45 is at least 30 and below 60, so go to the middle child, a leaf holding 30, 40, 50. Look inside the leaf for 45. It is not there, so there is no such row. With 1,000,000 keys and about 100 entries per node, a lookup touches at most about 4 nodes. A balanced binary tree over the same keys needs about 20.
 
 **Failure:** Each node access can be a disk read, which is why 4 versus 20 matters. Inserting into a full leaf splits it and pushes a key up to the parent. Splits can reach the root and make the tree one level taller. Deleting from a node that gets too empty merges it with a neighbour or borrows entries from it. A B+ tree is not a binary tree, and it differs from a plain B-tree, where keys can also sit in internal nodes and the leaves are not linked.
 
@@ -52,7 +52,7 @@ SELECT * FROM student WHERE marks BETWEEN 80 AND 90;
 
 ## Topic: Clustered and secondary indexes
 
-**Definition:** In a clustering index, the order of the index decides the order in which the rows are stored. A secondary (non-clustering) index has an order different from the stored order. MySQL's InnoDB stores the table as a clustered index, normally on the primary key.
+**Definition:** In a clustering index, the order of the index decides the order in which the rows are stored. A secondary (non-clustering) index has an order different from the stored order. MySQL's InnoDB stores the table as a clustered index, normally on the primary key (the column or columns that identify each row).
 
 **Why:** In InnoDB, a clustered lookup goes straight to the row, and a secondary index lookup needs an extra step to reach the row.
 

@@ -20,6 +20,10 @@ describe('copies of client data stay in sync', { skip: !hasClient && 'client fol
     const { roadmaps } = await fromClient('roadmaps.js');
     assert.deepEqual([...ctxService.ROADMAP_SLUGS].sort(), roadmaps.map((r) => r.slug).sort());
   });
+  it('every roadmap has a one-line description of what it teaches, for the AI',  () => {
+    assert.deepEqual(Object.keys(ctxService.ROADMAP_ABOUT).sort(), [...ctxService.ROADMAP_SLUGS].sort());
+    assert.ok(Object.values(ctxService.ROADMAP_ABOUT).every((d) => d.length > 20));
+  });
   it('the roadmap names used in the advice labels cover exactly the same roadmaps', async () => {
     const { roadmaps } = await fromClient('roadmaps.js');
     assert.deepEqual(Object.keys(require('../src/services/skills.service').ROADMAP_TITLES).sort(), roadmaps.map((r) => r.slug).sort());

@@ -637,7 +637,7 @@
     "id": "message-queues", "name": "Message Queues", "category": "cs-core",
     "aliases": ["message queues","message queue","queue systems"],
     "resources": [
-      {"type":"docs","title":"Message Queues Guide","url":"https://www.redhat.com/en/topics/integration/what-is-a-message-queue"},
+      {"type":"docs","title":"What is a Message Queue? - AWS","url":"https://aws.amazon.com/message-queue/"},
       {"type":"video","title":"Message Queues Crash Course","url":"https://youtu.be/IJkYipYNEtI"}
     ],
     "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}

@@ -39,7 +39,7 @@ EXPLAIN SELECT * FROM tenk1 WHERE unique1 = 42;
 
 ## Topic: Join algorithms
 
-**Definition:** The same join can be run in different ways. A nested-loop join compares every row of one table with every row of the other and needs no index. A block nested-loop join does the same one block (a chunk of rows read from disk together) at a time. An indexed nested-loop join uses an index on the inner table. A merge join needs both inputs sorted on the join key. A hash join builds a hash table (a lookup table keyed by a hash of the value) on one input.
+**Definition:** The same join can be run in different ways. A nested-loop join compares every row of one table with every row of the other and needs no index. A block nested-loop join does the same one block (a chunk of rows read from disk together) at a time. An indexed nested-loop join uses an index on the inner table. A merge join needs both inputs sorted on the join key (the column the two tables are matched on). A hash join builds a hash table (a lookup table keyed by a hash of the value) on one input.
 
 **Why:** The right algorithm depends on table sizes, indexes and the join condition, and it is the optimizer's choice.
 
@@ -49,11 +49,11 @@ EXPLAIN SELECT * FROM tenk1 WHERE unique1 = 42;
 
 ## Topic: Replication
 
-**Definition:** Replication keeps copies of the same data on several servers. In a single-leader (primary-replica) setup, the leader takes the writes and sends the changes to the replicas, which mostly serve reads.
+**Definition:** Replication keeps copies of the same data on several servers. In a single-leader (primary-replica) setup, the leader (also called the primary) takes the writes and sends the changes to the replicas (the copies), which mostly serve reads.
 
 **Why:** It gives availability (the service keeps working) when a machine fails, lower latency (shorter waiting time) when a copy is nearby, and more read capacity.
 
-**Example:** One primary and two replicas. A write goes to the primary and is copied to both. Replicas can answer reads. If the primary fails, a replica has to be promoted, which needs a failover procedure (switching over to a backup). Replication is usually two or three copies, in one data centre to survive machine failures or in several to survive a data-centre failure.
+**Example:** One primary and two replicas. A write goes to the primary and is copied to both. Replicas can answer reads. If the primary fails, a replica has to be promoted, which needs a failover procedure (switching over to a backup). Replication is usually two or three copies, in one data centre (a building full of servers) to survive machine failures or in several to survive a data-centre failure.
 
 **Failure:** Synchronous replication waits until the copies have the change before the commit finishes, so a failover loses nothing, but it is slower. PostgreSQL's manual says a fully synchronous setup over a slow network might cut performance by more than half. Asynchronous replication does not wait, so a replica can serve slightly stale (out of date) reads (replication lag) and some committed transactions can be lost on a failover. Multi-leader setups accept writes on several nodes and need conflict handling such as last-write-wins (the newest write is kept).
 

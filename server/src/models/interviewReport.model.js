@@ -38,7 +38,7 @@ const reportSchema = new mongoose.Schema({
   }],
   codingTopics: [{ _id: false, ref: String, why: String }],
   resumeTweaks: [{ _id: false, keyword: String, suggestion: String }],
-  checks: { _id: false, requirementsTotal: Number, withEvidence: Number, downgraded: Number, droppedRefs: Number, droppedTweaks: Number },
+  checks: { _id: false, requirementsTotal: Number, withEvidence: Number, downgraded: Number, droppedRefs: Number, droppedClaims: Number, droppedTweaks: Number },
   // which AI model answered: for debugging only, hidden from queries and from every API response
   aiProvider: { type: String, select: false },
 }, { timestamps: true });

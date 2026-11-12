@@ -82,7 +82,7 @@ It spreads requests over several servers. Common methods are round robin (take t
 
 ### What is the difference between layer 4 and layer 7 load balancing?
 
-Layer 4 decides from IP address and port only. Layer 7 reads the HTTP request, such as the URL or a cookie (a small piece of data the browser stores), so it can route by content.
+Layer 4 decides from IP address and port only. Layer 7 reads the HTTP request, such as the URL (the web address) or a cookie (a small piece of data the browser stores), so it can route by content.
 
 ### What is a CDN and why use one?
 

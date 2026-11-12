@@ -507,3 +507,44 @@ describe('privacy: deleting the account deletes the reports', () => {
     assert.equal(await User.exists({ _id: gone.id }), null);
   });
 });
+
+describe('what the AI is told, and the claims the code will not keep (11 Nov 2026)', () => {
+  const svc = require('../src/services/analyzer.service');
+
+  it('the prompt asks for a soft-skill question when the job names one, and lists what each roadmap teaches', async () => {
+    const acct = await t.register();
+    assert.equal((await create(acct)).status, 201);
+    const p = gemini.prompts[0];
+    assert.match(p, /If the job description names a soft skill .* at least one of the 4 must test that skill/);
+    assert.match(p, /ROADMAPS \(what each one teaches\):/);
+    assert.match(p, /roadmap:android = Kotlin and Jetpack Compose for native Android apps.*not React Native or Flutter/);
+    assert.match(p, /roadmap:java-spring = /);
+    assert.match(p, /use "none"/);
+    assert.match(p, /NO INVENTED FACTS ABOUT INTERVIEWS/);
+  });
+
+  it('a sentence about how often something is asked is removed from the saved report, and a plain reason stays', async () => {
+    gemini.reply = goodReply({
+      codingTopics: [{ ref: 'dsa:blind-75:strings', why: 'Commonly asked in fresher interviews for Full Stack roles in Delhi.' }],
+      priorities: [{ title: 'Learn Docker basics', why: 'The job lists Docker as required. Most interviews test it.', hours: 6 }],
+      technicalQuestions: Array.from({ length: 5 }, (_, i) => ({ question: `Question ${i}?`, why: 'Frequently asked at big companies.', resumeAngle: 'Use TaskFlow', followUps: ['Why?'] })),
+    });
+    const acct = await t.register();
+    const r = (await create(acct)).body.data.report;
+    assert.ok(!/commonly asked|most interviews|frequently asked/i.test(JSON.stringify(r)));
+    assert.equal(r.priorities[0].why, 'The job lists Docker as required.');
+    assert.match(r.codingTopics[0].why, /fits what the job asks/);
+    assert.ok(r.technicalQuestions.every((q) => q.why.length > 5));
+    assert.equal(r.checks.droppedClaims, 7);
+  });
+
+  it('stripFrequencyClaims catches the claims and leaves ordinary reasons alone', () => {
+    const f = (x) => svc.stripFrequencyClaims(x, 'FALLBACK').text;
+    assert.equal(f('Commonly asked in fresher interviews in Delhi.'), 'FALLBACK');
+    assert.equal(f('Tested at most companies.'), 'FALLBACK');
+    assert.equal(f('Typically tested in screening rounds. Know your indexes.'), 'Know your indexes.');
+    assert.equal(f('Directly applicable to the rate limiter on your resume.'), 'Directly applicable to the rate limiter on your resume.');
+    assert.equal(f('Redis is often used for rate limiting.'), 'Redis is often used for rate limiting.');
+    assert.equal(f('The job asks for MySQL, so know indexes.'), 'The job asks for MySQL, so know indexes.');
+  });
+});

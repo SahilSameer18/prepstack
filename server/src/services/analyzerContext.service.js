@@ -14,6 +14,19 @@ const catalog = require('../data/skillCatalog.json');
 const behavioral = require('../data/behavioralQuestions.json');
 
 const ROADMAP_SLUGS = ['frontend', 'backend', 'fullstack', 'android', 'data-analytics', 'machine-learning', 'dsa', 'java-spring', 'devops-cloud'];
+// What each roadmap really teaches, in one line, so the AI links a plan task to a roadmap only when it fits (11 Nov 2026: it once
+// sent "React Native" to the Android roadmap, which teaches Kotlin). test/analyzer.context.test.js fails if a roadmap has no line here.
+const ROADMAP_ABOUT = {
+  frontend: 'HTML, CSS, JavaScript, React, Tailwind CSS and Next.js for web pages (web only, not mobile apps)',
+  backend: 'Node.js, Express, MongoDB, REST APIs, authentication, testing, Docker and deployment',
+  fullstack: 'React with Node.js, Express and MongoDB together (MERN), authentication, file uploads, testing and deployment',
+  android: 'Kotlin and Jetpack Compose for native Android apps, Room, Firebase and publishing (not React Native or Flutter)',
+  'data-analytics': 'spreadsheets, Python with pandas, statistics, SQL, charts and dashboards',
+  'machine-learning': 'Python, scikit-learn, PyTorch, model evaluation and deploying models',
+  dsa: 'data structures and algorithms in a sensible order, with practice on the DSA sheets',
+  'java-spring': 'Java and Spring Boot: REST APIs, JPA databases, Spring Security, testing and Docker',
+  'devops-cloud': 'Git, Linux, Docker, GitHub Actions, AWS basics, Kubernetes, Terraform and monitoring',
+};
 const DSA_SHEET_SLUG = 'blind-75'; // the sheet whose topics the plan may point to (the others have 28 to 56 topics each)
 
 const skillNames = catalog.map((s) => s.name);
@@ -34,7 +47,8 @@ const buildContext = async () => {
     refs: [...new Set([...dsaRefs, ...notesItems.map(([ref]) => ref), ...ROADMAP_SLUGS.map((slug) => `roadmap:${slug}`)])],
     titles: Object.fromEntries([...dsaItems, ...notesItems]),
     behavioral,
+    roadmapAbout: ROADMAP_SLUGS.map((slug) => `roadmap:${slug} = ${ROADMAP_ABOUT[slug]}`),
   };
 };
 
-module.exports = { buildContext, ROADMAP_SLUGS, DSA_SHEET_SLUG, skillNames };
+module.exports = { buildContext, ROADMAP_SLUGS, ROADMAP_ABOUT, DSA_SHEET_SLUG, skillNames };

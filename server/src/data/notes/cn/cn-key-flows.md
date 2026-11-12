@@ -26,7 +26,7 @@ After this section you can tell that story in about two minutes, go deeper on an
 
 ## Topic: Step 2: DNS lookup
 
-**Definition:** If the IP address is unknown, the operating system asks a DNS resolver (a helper server that looks names up for you), normally over UDP (a light, fast way to send small messages) port 53. The resolver answers from its cache, or it walks (asks in turn) the root, top-level domain and authoritative servers, then returns the IP address.
+**Definition:** If the IP address is unknown, the operating system asks a DNS resolver (a helper server that looks names up for you), normally over UDP (a light, fast way to send small messages) port 53 (a port is a numbered door a program listens on). The resolver answers from its cache, or it walks (asks in turn) the root, top-level domain and authoritative servers, then returns the IP address.
 
 **Why:** Connections need an IP address (a number), not a name.
 
@@ -52,7 +52,7 @@ After this section you can tell that story in about two minutes, go deeper on an
 
 **Example:** A bad certificate shows the browser a warning page and the connection stops.
 
-**Failure:** Skipping this step in the story when the URL is https.
+**Failure:** Skipping this step in the story when the URL (the web address) is https.
 
 ## Topic: Step 5: HTTP request and response
 

@@ -66,13 +66,20 @@ const UnifiedDashboard = () => {
     }
   }, []);
 
+  // The project list can fail on its own (the DSA data may still load): the Projects tab then says so and offers a retry
+  const [projectsError, setProjectsError] = useState(null);
+  const loadProjects = useCallback(() => {
+    setProjectsError(null);
+    getProjects().catch((err) => setProjectsError(err.message));
+  }, [getProjects]);
+
   useEffect(() => {
     fetchDashboard();
-    getProjects();
+    loadProjects();
     listReports(50)
       .then((r) => { setReports(r?.reports || r?.data?.reports || []); setReportTotal(r?.totalCount ?? r?.data?.totalCount ?? 0); })
       .catch(() => setReports([]));
-  }, [fetchDashboard, getProjects]);
+  }, [fetchDashboard, loadProjects]);
 
   const removeReport = async (id) => {
     if (!window.confirm("Delete this report? This cannot be undone.")) return;
@@ -183,7 +190,7 @@ const UnifiedDashboard = () => {
             </>
           )
         )}
-        {tab === "projects" && <ProjectDash />}
+        {tab === "projects" && (projectsError ? <PageErrorState title="Could not load your project ideas" message={projectsError} onRetry={loadProjects} backTo="/" backLabel="Go Home" /> : <ProjectDash />)}
         {tab === "reports" && (reports ? <ReportsDash reports={reports} onDelete={removeReport} /> : <SectionLoader message="Loading your reports..." />)}
       </div>
     </div>

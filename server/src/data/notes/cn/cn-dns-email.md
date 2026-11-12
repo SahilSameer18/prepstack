@@ -16,7 +16,7 @@ After this section you can walk through a DNS lookup, name the common record typ
 
 ## Topic: What DNS is
 
-**Definition:** DNS is a distributed (spread over many machines), hierarchical (layered like a tree) naming system. The names form a tree. A name is written as labels (the parts between dots) from the leaf up to the root, such as www.example.com. Each label can be up to 63 bytes and a whole name up to 255 bytes. The data is split into zones (parts of the tree that one party manages), and a name server is the authority for the zones it holds.
+**Definition:** DNS is a distributed (spread over many machines), hierarchical (layered like a tree) naming system. The names form a tree. A name is written as labels (the parts between dots) from the leaf up to the root (the top of the tree, where every name ends), such as www.example.com. Each label can be up to 63 bytes (a byte is 8 bits, about one letter) and a whole name up to 255 bytes. The data is split into zones (parts of the tree that one party manages), and a name server is the authority for the zones it holds.
 
 **Why:** Nobody remembers IP addresses, and the address of a site can change without the name changing.
 
@@ -56,7 +56,7 @@ After this section you can walk through a DNS lookup, name the common record typ
 
 ## Topic: DNS transport
 
-**Definition:** DNS normally uses UDP (a light, fast way to send small messages) port 53 because queries and answers are small. Messages over UDP are limited to 512 bytes in the original standard. Larger answers and zone transfers (copying a whole zone from one server to another) use TCP (the slower but reliable way).
+**Definition:** DNS normally uses UDP (a light, fast way to send small messages) port 53 (a port is a numbered door a program listens on) because queries and answers are small. Messages over UDP are limited to 512 bytes in the original standard. Larger answers and zone transfers (copying a whole zone from one server to another) use TCP (the slower but reliable way).
 
 **Why:** UDP avoids the handshake (the setup exchange TCP needs), so a lookup costs one round trip (one message out and one back).
 
@@ -66,7 +66,7 @@ After this section you can walk through a DNS lookup, name the common record typ
 
 ## Topic: Email: SMTP, POP3 and IMAP
 
-**Definition:** SMTP (Simple Mail Transfer Protocol) sends mail. Servers hand mail to each other over SMTP on port 25 (a port is a numbered door a program listens on; relay, meaning passing mail onward); a user's mail program submits mail on port 587 and normally must log in. POP3 (Post Office Protocol, port 110) lets a client fetch mail from the server, usually downloading and then deleting it. IMAP (Internet Message Access Protocol; port 143, or 993 with TLS, the encryption layer, from the start) keeps the mail and folders on the server so many devices see the same mailbox.
+**Definition:** SMTP (Simple Mail Transfer Protocol) sends mail. Servers hand mail to each other over SMTP on port 25 (relay, meaning passing mail onward); a user's mail program submits mail on port 587 and normally must log in. POP3 (Post Office Protocol, port 110) lets a client fetch mail from the server, usually downloading and then deleting it. IMAP (Internet Message Access Protocol; port 143, or 993 with TLS, the encryption layer, from the start) keeps the mail and folders on the server so many devices see the same mailbox.
 
 **Why:** Sending and reading are different jobs and use different protocols.
 

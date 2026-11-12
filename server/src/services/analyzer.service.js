@@ -22,10 +22,11 @@ const CATEGORY = ['dsa', 'cs-core', 'stack', 'soft', 'other'];
 const MAX_RESUME_CHARS = 6000; // text beyond this is not sent (a token budget, not a quality choice)
 const MAX_JD_CHARS = 4000;
 const MAX_PLAN_DAYS = 14;
-const MAX_OUTPUT_TOKENS = 4500;
+const MAX_OUTPUT_TOKENS = 6000;
 
 // ── size limits for every text field: one table, used by the schema and by the trimming step below ──
-const LIMIT = { title: 80, reqText: 120, evidence: 160, priTitle: 80, priWhy: 200, question: 220, why: 160, angle: 220, followUp: 140, focus: 100, task: 140, extra: 140, codeWhy: 140, keyword: 40, suggestion: 160 };
+// 12 Nov 2026: the text limits were raised by about half (and the prompt now states them) because reports showed sentences cut off with "…".
+const LIMIT = { title: 80, reqText: 140, evidence: 160, priTitle: 90, priWhy: 320, question: 260, why: 260, angle: 320, followUp: 180, focus: 120, task: 200, extra: 200, codeWhy: 220, keyword: 40, suggestion: 300 };
 
 // ── the shape of a report, with size limits on every field (a runaway reply can never be saved) ──
 const buildReportSchema = (ctx) => {
@@ -118,20 +119,27 @@ HOW TO WORK
 4. "category": dsa (algorithms and data structures), cs-core (operating systems, networks, databases, OOP), stack (languages, frameworks, tools), soft (communication, leadership), or other.
 5. "priorities": the 3 most valuable things to work on first, with an honest estimate of hours.
 6. "technicalQuestions": 5 or 6 questions interviewers for THIS job would likely ask, each tied to a requirement. For each give "why" they ask it, "resumeAngle" and up to 2 likely follow-ups. Do not write model answers. WRITING STYLE: speak directly to the student as "you" and "your", never "the candidate". "resumeAngle" says which project or experience from THIS resume to use in the answer (name it). If nothing in the resume fits, name the closest experience to compare it with (for example "Compare it with your Express.js work"); never only state that there is nothing.
-7. "behavioralQuestions": choose 4 questions from the BEHAVIORAL list by id (the id as text) and say in "resumeAngle" which experience in the resume fits (speak to the student as "you"; name the project or role; if nothing fits, name the closest experience to build the answer on).
+7. "behavioralQuestions": choose 4 different kinds of questions from the BEHAVIORAL list by id (the id as text). If the job description names a soft skill (for example teamwork, communication, leadership or working with other teams), at least one of the 4 must test that skill. Say in "resumeAngle" which experience in the resume fits (speak to the student as "you"; name the project or role; if nothing fits, name the closest experience to build the answer on).
 8. "plan": a study plan for ${Number(days) || 7} day(s), one entry per day and at most ${MAX_PLAN_DAYS} entries (if there are more days, give the ${MAX_PLAN_DAYS} most important). Each item needs a "ref" copied exactly from the ALLOWED REFS list, but ONLY if that PrepStack item really teaches the task. If PrepStack has nothing that fits (for example TypeScript, Docker or testing tools), use "none" for "ref" and set "skillKey" to the skill from ALLOWED SKILLS so the app can show learning links. For a PrepStack item set "skillKey" to the skill it practises, or "none". Spend the most effort on "must" requirements that are missing or partial. "extra" may hold one task that is not on PrepStack, or "".
 9. "codingTopics": up to 5 refs from the CODING list that this role is likely to test.
-10. "resumeTweaks": up to 5 wording changes, ONLY for things the resume already shows in other words (for example the resume describes token rotation but never says "JWT"). NEVER suggest adding a skill the candidate does not have; gaps belong in the plan, not in resume tweaks. Each "suggestion" must be concrete: say exactly which words to add or change, with a short example sentence the student can use, built only from what the resume already shows. Generic advice such as "highlight backend patterns" is not allowed. Use an empty list if there is nothing honest to suggest.
+10. "resumeTweaks": up to 5 wording changes, ONLY for things the resume already shows in other words (for example the resume describes token rotation but never says "JWT"). NEVER suggest adding a skill the candidate does not have; gaps belong in the plan, not in resume tweaks. Each "suggestion" must be concrete: say exactly which words to add or change, with a short example sentence the student can use, built only from what the resume already shows. Generic advice such as "highlight backend patterns" is not allowed. Never invent numbers, percentages, tools, standards, a domain (for example healthcare) or teamwork that the resume does not show: the example sentence may only reuse the resume's own facts. Use an empty list if there is nothing honest to suggest.
 11. Do NOT give a score. The system computes it from your marks.
 12. Be honest. If the resume is thin or does not match the job, show it with "missing" statuses. Never invent experience.
 13. "title": a short job title of at most 6 words, using words from the job description (for example "Full Stack Developer (Spring Boot, PERN)"). Never copy a whole sentence. Do not add words such as "report" or "candidate".
 14. Everywhere ("why", "priorities", "plan" and the rest) speak to the student as "you", never "the candidate".
+15. ROADMAPS: a plan task may use a "roadmap:" ref only when that roadmap really teaches the task, judged by the ROADMAPS list below. If no roadmap teaches it (for example React Native has no roadmap), use "none".
+16. NO INVENTED FACTS ABOUT INTERVIEWS: give reasons only from what the job description asks or what the resume shows. Never write how often something is asked or tested ("commonly asked", "most interviews"), and never claim what interviews in a city or company usually include, unless the job description says so.
+17. LENGTH: finish every sentence. Keep each "why" under ${LIMIT.why} characters, each "resumeAngle" under ${LIMIT.angle}, each resume "suggestion" under ${LIMIT.suggestion}, each plan "task" under ${LIMIT.task} and each follow-up under ${LIMIT.followUp}. Shorter and complete is better than long and cut off.
 Return ONLY valid JSON.
 
 ALLOWED SKILLS: ${ctx.skillNames.join('; ')}
 
 ALLOWED REFS:
 ${ctx.refs.join('\n')}
+
+
+ROADMAPS (what each one teaches):
+${(ctx.roadmapAbout || []).join('\n')}
 
 CODING:
 ${ctx.dsaRefs.join('\n')}
@@ -150,6 +158,12 @@ const clip = (value, max, ellipsis = true) => {
   if (typeof value !== 'string' || value.length <= max) return value;
   const room = ellipsis ? max - 1 : max;
   const cut = value.slice(0, room);
+  // a text that has to be cut ends at its last full sentence when that keeps at least half of it, so it reads as finished
+  if (ellipsis) {
+    const ends = [...cut.matchAll(/[.!?](?=\s|$)/g)].map((m) => m.index + 1);
+    const last = ends[ends.length - 1];
+    if (last && last >= room * 0.5) return cut.slice(0, last);
+  }
   const atWord = cut.lastIndexOf(' ') > room * 0.6 ? cut.slice(0, cut.lastIndexOf(' ')) : cut;
   return ellipsis ? `${atWord.trimEnd()}…` : atWord.trimEnd();
 };
@@ -167,6 +181,15 @@ const clampReport = (data) => {
   out.codingTopics = each(out.codingTopics, (c) => ({ ...c, why: clip(c.why, LIMIT.codeWhy) }));
   out.resumeTweaks = each(out.resumeTweaks, (t) => ({ ...t, keyword: clip(t.keyword, LIMIT.keyword), suggestion: clip(t.suggestion, LIMIT.suggestion) }));
   return out;
+};
+
+// The AI sometimes states how often something is asked ("commonly asked in fresher interviews in Delhi"). Nothing in the input can back that
+// up, so the whole sentence is removed; if nothing is left, a neutral line stands in. Rule 16 in the prompt asks it not to, this makes sure.
+const FREQUENCY_CLAIM = /\b(commonly|frequently|often|typically|usually|always|generally)\s+(asked|tested)\b|\b(asked|tested)\s+(in|at|by)\s+(most|many|every|all|top|big)\b|\b(most|many|every|all)\s+(fresher\s+|entry[- ]level\s+|junior\s+)?(interviews?|companies|employers|recruiters)\b/i;
+const stripFrequencyClaims = (text, fallback) => {
+  if (typeof text !== 'string' || !FREQUENCY_CLAIM.test(text)) return { text, dropped: 0 };
+  const kept = text.split(/(?<=[.!?])\s+/).filter((s) => !FREQUENCY_CLAIM.test(s));
+  return { text: kept.join(' ').trim() || fallback, dropped: 1 };
 };
 
 const parseReport = (raw, schema) => {
@@ -230,7 +253,23 @@ const safeTitle = (title, jobDescription) => {
 // breaks it, seen in a live run: "Specify TypeScript alongside JavaScript" for a resume with no TypeScript).
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const mentions = (text, term) => new RegExp(`(^|[^a-z0-9])${escapeRegExp(term)}($|[^a-z0-9])`).test(text);
-const honestTweaks = (tweaks, requirements, ctx) => {
+// A tip may only reuse facts the resume already shows. One that brings in a percentage, another number, or a tool or skill the resume does not contain
+// (the AI once wrote "improve engagement by 20%" and "compatible with MySQL" for a resume with neither) would have the student claim something untrue.
+const NUMBER = /\d+(?:\.\d+)?/g;
+const inventsFacts = (tweak, resume, ctx) => {
+  const percents = String(tweak.suggestion).match(/\d+(?:\.\d+)?\s*%/g) || [];
+  if (percents.some((p) => !String(resume).replace(/\s+/g, '').includes(p.replace(/\s+/g, '')))) return true;
+  const text = normalise(tweak.suggestion);
+  const resumeNorm = normalise(resume);
+  const resumeNumbers = new Set(resumeNorm.match(NUMBER) || []);
+  if ((text.match(NUMBER) || []).some((n) => !resumeNumbers.has(n))) return true;
+  const own = normalise(tweak.keyword);
+  return (ctx.skillNames || []).some((name) => {
+    const terms = [name, ...(ctx.aliases?.[name] || [])].map(normalise).filter((x) => x.length >= 4);
+    return !terms.includes(own) && terms.some((x) => mentions(text, x)) && !terms.some((x) => mentions(resumeNorm, x));
+  });
+};
+const honestTweaks = (tweaks, requirements, ctx, resume = '') => {
   const terms = new Set();
   for (const r of requirements) {
     if (r.status !== 'missing' || r.skillKey === 'none') continue;
@@ -238,7 +277,7 @@ const honestTweaks = (tweaks, requirements, ctx) => {
     for (const alias of ctx.aliases?.[r.skillKey] || []) terms.add(normalise(alias));
   }
   terms.delete('');
-  return tweaks.filter((t) => { const text = normalise(`${t.keyword} ${t.suggestion}`); return ![...terms].some((term) => mentions(text, term)); });
+  return tweaks.filter((t) => { const text = normalise(`${t.keyword} ${t.suggestion}`); return ![...terms].some((term) => mentions(text, term)) && !inventsFacts(t, resume, ctx); });
 };
 
 // Everything the code decides after the AI has answered.
@@ -270,16 +309,22 @@ const finalizeReport = (report, { resume, jobDescription }, ctx) => {
       return { ...d, items };
     })
     .filter((d) => d.items.length || d.extra);
-  const codingTopics = report.codingTopics.filter((c) => new Set(ctx.dsaRefs).has(c.ref) || (droppedRefs++, false));
-  const resumeTweaks = honestTweaks(report.resumeTweaks, requirements, ctx);
+  let droppedClaims = 0;
+  const scrub = (text, fallback) => { const r = stripFrequencyClaims(text, fallback); droppedClaims += r.dropped; return r.text; };
+  const codingTopics = report.codingTopics.filter((c) => new Set(ctx.dsaRefs).has(c.ref) || (droppedRefs++, false)).map((c) => ({ ...c, why: scrub(c.why, 'This topic fits what the job asks for.') }));
+  const resumeTweaks = honestTweaks(report.resumeTweaks, requirements, ctx, resume);
   const bank = new Map(ctx.behavioral.map((b) => [String(b.id), b]));
-  const behavioralQuestions = report.behavioralQuestions.map((q) => ({ ...q, id: Number(q.bankId), question: bank.get(q.bankId)?.question || '' }));
+  const behavioralQuestions = report.behavioralQuestions.map((q) => ({ ...q, id: Number(q.bankId), question: bank.get(q.bankId)?.question || '', resumeAngle: scrub(q.resumeAngle, 'Use the closest experience from your resume.') }));
+  const priorities = report.priorities.map((p) => ({ ...p, why: scrub(p.why, 'It fits what the job asks for.') }));
+  const technicalQuestions = report.technicalQuestions.map((q) => ({ ...q, why: scrub(q.why, 'It fits what the job asks for.'), resumeAngle: scrub(q.resumeAngle, 'Use the closest experience from your resume.') }));
   const counts = (imp) => Object.fromEntries(STATUS.map((s) => [s, requirements.filter((r) => r.importance === imp && r.status === s).length]));
   return {
     ...report,
     title: safeTitle(report.title, jobDescription),
     requirements,
     plan,
+    priorities,
+    technicalQuestions,
     codingTopics,
     resumeTweaks,
     behavioralQuestions,
@@ -290,6 +335,7 @@ const finalizeReport = (report, { resume, jobDescription }, ctx) => {
       withEvidence: requirements.filter((r) => r.status !== 'missing').length,
       downgraded: requirements.filter((r) => r.downgraded).length,
       droppedRefs,
+      droppedClaims,
       droppedTweaks: report.resumeTweaks.length - resumeTweaks.length,
     },
   };
@@ -312,5 +358,5 @@ const analyze = async ({ resume, jobDescription, days }, ctx, { label = 'report'
 
 module.exports = {
   analyze, buildReportSchema, buildJsonSchema, buildReportPrompt, parseReport, clampReport, finalizeReport,
-  verifyEvidence, computeScore, normalise, safeTitle, clip, LIMIT, MAX_RESUME_CHARS, MAX_JD_CHARS,
+  verifyEvidence, computeScore, normalise, safeTitle, clip, stripFrequencyClaims, FREQUENCY_CLAIM, LIMIT, MAX_RESUME_CHARS, MAX_JD_CHARS,
 };

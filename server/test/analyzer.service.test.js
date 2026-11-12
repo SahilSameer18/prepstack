@@ -317,3 +317,39 @@ describe('buildReportPrompt', () => {
     assert.match(prompt({ days: 'abc' }), /for 7 day\(s\)/);
   });
 });
+
+describe('long text is cut at a finished sentence when that keeps most of it (12 Nov 2026)', () => {
+  it('ends at the last full sentence if that keeps at least half, otherwise at a word with an ellipsis', () => {
+    const t = 'First sentence here is quite long and informative. Second sentence goes on and on and on past the limit for sure.';
+    assert.equal(a.clip(t, 70), 'First sentence here is quite long and informative.');
+    assert.equal(a.clip('One tiny. And then a very long second sentence that is cut somewhere in the middle of it.', 60).endsWith('…'), true);
+  });
+  it('the limits leave room for a reason and a resume tip to be written in full, and the prompt states them', () => {
+    assert.ok(a.LIMIT.why >= 250 && a.LIMIT.suggestion >= 280 && a.LIMIT.angle >= 300);
+    const prompt = a.buildReportPrompt({ resume: 'r', jobDescription: 'j', days: 7 }, ctx);
+    assert.match(prompt, new RegExp(`Keep each "why" under ${a.LIMIT.why} characters`));
+    assert.match(prompt, /Shorter and complete is better than long and cut off/);
+  });
+});
+
+describe('resume tips: never bring in a number, tool or skill the resume does not show (12 Nov 2026)', () => {
+  const c = { ...ctx, skillNames: [...ctx.skillNames, 'MySQL', 'Swagger / OpenAPI', 'MongoDB'], aliases: { MySQL: ['mysql'], 'Swagger / OpenAPI': ['openapi', 'swagger'], MongoDB: ['mongodb', 'mongo'] } };
+  const tips = (list) => a.finalizeReport(report({ requirements: [req(), req(), req(), req()], resumeTweaks: list }), { resume: RESUME }, c).resumeTweaks.map((t) => t.keyword);
+  it('drops a made-up percentage, even when the resume has the same digits in another unit', () => {
+    const resume100 = 'Built an upload pipeline for 100MB files with React.';
+    const out = a.finalizeReport(report({ requirements: [req(), req(), req(), req()], resumeTweaks: [{ keyword: 'Responsive Design', suggestion: 'Built a mobile UI, ensuring 100% cross-device compatibility.' }] }), { resume: resume100 }, c);
+    assert.equal(out.resumeTweaks.length, 0);
+  });
+  it('drops a made-up number and a tool the resume does not contain, and keeps a tip built from the resume', () => {
+    assert.deepEqual(tips([
+      { keyword: 'UI/UX', suggestion: 'Improved user engagement by 20% on the app.' },
+      { keyword: 'SQL', suggestion: 'Mention MySQL alongside the database you used.' },
+      { keyword: 'REST APIs', suggestion: 'Documented the REST API, following OpenAPI standards.' },
+      { keyword: 'Bugs', suggestion: 'Say that you fixed 14 UI bugs as an intern, and name the tools.' },
+      { keyword: 'Data', suggestion: 'Name MongoDB next to the data you stored.' },
+    ]), ['Bugs', 'Data']);
+  });
+  it('the keyword itself may be a word the resume lacks (that is the point of a tip), but another skill in the sentence may not', () => {
+    assert.deepEqual(tips([{ keyword: 'MySQL', suggestion: 'Say MySQL for the Stored data work you already describe.' }, { keyword: 'Data', suggestion: 'Say MySQL for the stored data.' }]), ['MySQL']);
+  });
+});
