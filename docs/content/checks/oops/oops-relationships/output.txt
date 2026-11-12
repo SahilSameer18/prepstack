@@ -1,0 +1,14 @@
+javac -version: javac 27
+
+=== a: java Main
+player still here: Asha
+rooms inside a house: 2
+doctor keeps: Meena
+treating Ravi
+doctor keeps after treat: Meena
+a Car moves
+
+=== b: java Main
+Rectangle: 10
+Square as Rectangle: 4
+SquareShape(4): 16

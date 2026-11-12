@@ -1,0 +1,39 @@
+javac 27
+== T1
+Rex says woof
+Milo says woof
+3 0
+== T2
+Max
+true
+false
+true
+== T4
+100
+rejected: deposit must be positive
+100
+== T5
+5
+== T6
+true
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "String.length()" because "s" is null
+	at T6.main(T6.java:5)
+== E5 (compile error)
+E5.java:4: error: non-static variable this cannot be referenced from a static context
+        System.out.println(this.count);
+                           ^
+1 error
+== app/Bad (compile errors)
+app\Bad.java:6: error: cost has private access in Item
+        System.out.println(it.cost);
+                             ^
+app\Bad.java:7: error: stock is not public in Item; cannot be accessed from outside package
+        System.out.println(it.stock);
+                             ^
+app\Bad.java:8: error: tag has protected access in Item
+        System.out.println(it.tag);
+                             ^
+3 errors
+== app.Main
+pen
+(T6 compiled with javac -g so the message names the variable)

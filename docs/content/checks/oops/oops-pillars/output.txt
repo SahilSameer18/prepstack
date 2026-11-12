@@ -1,0 +1,64 @@
+javac 27
+== T2
+Rex barks
+Object
+true
+== P1
+woof
+3
+== T3
+bone
+== T4
+dog, and also animal Rex
+== T5
+woof
+...
+== C1
+Rex
+== F1
+breathes
+== T7
+food woof
+food
+== T7c
+walk and swim
+== E3 (compile error expected)
+E3.java:4: error: secret has private access in Animal
+        void show() { System.out.println(secret); }
+                                         ^
+1 error
+== E4 (compile error expected)
+E4.java:3: error: constructor Animal in class Animal cannot be applied to given types;
+    static class Dog extends Animal { }
+           ^
+  required: String
+  found:    no arguments
+  reason: actual and formal argument lists differ in length
+1 error
+== E5 (compile error expected)
+E5.java:4: error: sond() in Dog does not override or implement a method from a supertype
+        @Override String sond() { return "woof"; }
+        ^
+1 error
+== E6a (compile error expected)
+E6a.java:3: error: cannot inherit from final Dog
+    static class Puppy extends Dog { }
+                               ^
+1 error
+== E6b (compile error expected)
+E6b.java:3: error: breathe() in Dog cannot override breathe() in Animal
+    static class Dog extends Animal { void breathe() { } }
+                                           ^
+  overridden method is final
+1 error
+== E7a (compile error expected)
+E7a.java:4: error: '{' expected
+    static class C extends A, B { }
+                            ^
+1 error
+== E7b (compile error expected)
+E7b.java:4: error: types Walker and Swimmer are incompatible;
+    static class Duck implements Walker, Swimmer { }
+           ^
+  class Duck inherits unrelated defaults for move() from types Walker and Swimmer
+1 error

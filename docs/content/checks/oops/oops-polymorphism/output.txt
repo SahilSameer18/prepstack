@@ -1,0 +1,66 @@
+javac 27
+== T1
+3
+3.5
+6
+== T2
+Dog
+dog
+== T3
+woof
+animal
+dog
+== T4
+animal
+dog
+== T5
+woof
+false
+Exception in thread "main" java.lang.ClassCastException: class Cat cannot be cast to class Dog (Cat and Dog are in unnamed module of loader 'app')
+	at T5.main(T5.java:11)
+== T6
+show(null):
+String
+show("hi"):
+String
+show((Object) "hi"):
+Object
+num(5):
+long
+num(Integer.valueOf(5)):
+Integer
+greet(a):
+greet Animal
+greet(new Dog()):
+greet Dog
+== T7
+... woof
+== E1 (compile error expected)
+E1.java:3: error: method get(int) is already defined in class E1
+    static String get(int a) { return "" + a; }
+                  ^
+1 error
+== E2a (compile error expected)
+E2a.java:3: error: name() in Dog cannot override name() in Animal
+    static class Dog extends Animal { String name() { return "dog"; } }
+                                             ^
+  attempting to assign weaker access privileges; was public
+1 error
+== E2b (compile error expected)
+E2b.java:3: error: run() in Dog cannot override run() in Animal
+    static class Dog extends Animal { void run() throws Exception { } }
+                                           ^
+  overridden method does not throw Exception
+1 error
+== E2c (compile error expected)
+E2c.java:3: error: info() in Dog cannot override info() in Animal
+    static class Dog extends Animal { void info() { } }
+                                           ^
+  overridden method is static
+1 error
+== E6 (compile error expected)
+E6.java:4: error: reference to show is ambiguous
+    public static void main(String[] args) { show(null); }
+                                             ^
+  both method show(String) in E6 and method show(Integer) in E6 match
+1 error

@@ -1,0 +1,82 @@
+javac -version: javac 27
+
+=== a: java Main
+Asha:100 Asha:5 unknown:0 Ravi:0
+0
+
+=== b: java Main
+-- first Dog
+1 Animal static block
+2 Dog static block
+3 Animal field
+4 Animal instance block
+5 Animal constructor
+6 Dog field
+7 Dog instance block
+8 Dog constructor
+-- second Dog
+3 Animal field
+4 Animal instance block
+5 Animal constructor
+6 Dog field
+7 Dog instance block
+8 Dog constructor
+
+=== d: java Main
+Base sees: label=null
+Child sees: label=ready
+
+=== e: java Main
+open A
+inside
+close A
+-- two doors
+open A
+open B
+inside
+close B
+close A
+after
+
+=== f: java Main
+Base sees: label=early
+
+=== g: java Main
+Base sees: label=ready
+
+=== c: javac Bad1.java
+Bad1.java:2: error: constructor Base in class Base cannot be applied to given types;
+class Child extends Base { }
+^
+  required: int
+  found:    no arguments
+  reason: actual and formal argument lists differ in length
+1 error
+
+=== c: javac Bad2.java
+Bad2.java:3: error: recursive constructor invocation
+    Loop(int x) { this(); }
+                  ^
+1 error
+
+=== c: javac Bad3.java
+Bad3.java:3: error: constructor Child in class Child cannot be applied to given types;
+public class Bad3 { public static void main(String[] a) { new Child(5); } }
+                                                          ^
+  required: no arguments
+  found:    int
+  reason: actual and formal argument lists differ in length
+1 error
+
+=== c: javac Bad4.java
+Bad4.java:2: error: Util() has private access in Util
+public class Bad4 { public static void main(String[] a) { new Util(); } }
+                                                          ^
+1 error
+
+=== f: javac --release 24 Main.java
+Main.java:8: error: flexible constructors is not supported in -source 24
+        label = "early";           // before super(...): allowed from Java 25
+        ^
+  (use -source 25 or higher to enable flexible constructors)
+1 error

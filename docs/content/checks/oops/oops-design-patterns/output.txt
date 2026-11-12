@@ -1,0 +1,18 @@
+Singleton lazy unsafe, instances created by 4 threads: 4
+Singleton double-checked, instances created by 4 threads: 1
+Singleton holder same object: true
+Singleton enum same object: true
+Reflection on private constructor, second object? true
+Reflection on enum: java.lang.IllegalArgumentException: Cannot reflectively create enum objects
+Global state: hits seen by any code = 1
+email: hi | sms: hi
+Ann got: Video 1
+Raj got: Video 1
+Strategy: 135.0 vs 130.0
+Comparator strategy by length: [fig, pear, banana]
+Comparator strategy reverse: [pear, fig, banana]
+large pizza, cheese=true, olives=false
+coffee + milk + sugar costs 62.0
+java.io decorator: line one
+State: closed -> open -> closed
+Adapter: 37.0 C

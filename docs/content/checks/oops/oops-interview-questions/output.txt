@@ -1,0 +1,75 @@
+javac -version: javac 27
+
+== javac BadOverload.java
+BadOverload.java:3: error: method size() is already defined in class BadOverload
+    long size() { return 2L; }
+         ^
+1 error
+
+== javac BadFinal.java
+BadFinal.java:3: error: non-static variable count cannot be referenced from a static context
+    static int total() { return count; }
+                                ^
+BadFinal.java:6: error: cannot assign a value to final variable k
+        k = 2;
+        ^
+2 errors
+
+== javac BadAbs.java
+BadAbs.java:4: error: Shape is abstract; cannot be instantiated
+        Shape s = new Shape();
+                  ^
+1 error
+
+== javac BadExtends.java
+BadExtends.java:4: error: '{' expected
+    static class C extends A, B { }
+                            ^
+1 error
+
+== javac BadComp.java
+BadComp.java:5: error: cannot find symbol
+        new Basket().clear();
+                    ^
+  symbol:   method clear()
+  location: class Basket
+1 error
+
+== javac Uninit.java
+Uninit.java:7: error: variable local might not have been initialized
+        System.out.println(local);
+                           ^
+1 error
+
+== java Dispatch
+Woof
+animal-field
+Animal.kind
+show(Object)
+show(String)
+
+== java Eq
+false
+true
+true
+false
+true
+
+== java PassVal
+1 2
+2
+2
+50
+
+== java Comp
+0
+1
+
+== java FinalList
+[still allowed]
+
+== java Multi
+swim fly
+
+== java FieldNull
+null

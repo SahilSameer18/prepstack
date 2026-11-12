@@ -1,0 +1,48 @@
+javac -version: javac 27
+
+=== f: java Main
+9.0
+10.0
+
+=== a: java Main
+Square with area 9.0
+
+=== b: java Main
+Hello, Asha [log]
+Hello, Ravi
+3
+
+=== c: java Main
+AB
+Base
+B2
+
+=== d: java Main
+true false
+
+=== a: javac -cp out Bad.java (Shape already compiled)
+Bad.java:3: error: Shape is abstract; cannot be instantiated
+        Shape s = new Shape("x");
+                  ^
+1 error
+
+=== b: javac Bad.java
+Bad.java:3: error: cannot assign a value to static final variable MAX
+    public static void main(String[] args) { Greeter.MAX = 4; }
+                                                    ^
+1 error
+
+=== c: javac Bad.java
+Bad.java:3: error: types A and B are incompatible;
+class Both implements A, B { }
+^
+  class Both inherits unrelated defaults for hi() from types A and B
+1 error
+
+=== e: private interface method, javac --release 8 Priv.java
+Priv.java:1: error: private interface methods are not supported in -source 8
+interface Q { private int g() { return 2; } default int f() { return g(); } }
+                           ^
+  (use -source 9 or higher to enable private interface methods)
+1 error
+--release 9 Priv.java: compiles with no error

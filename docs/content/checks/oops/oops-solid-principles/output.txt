@@ -1,0 +1,19 @@
+S bad : Invoice total: 300.0
+S good: Invoice total: 300.0 | total,300.0
+O bad : triangle -> -1.0
+O good: 19.14
+L Rectangle: 20
+L Square   : 16
+I bad : java.lang.UnsupportedOperationException: no scanner
+printing page
+I good: scanned page
+EMAIL: Order placed: book
+FAKE : Order placed: book
+EMAIL: Order placed: book
+
+--- compile error from err/Err.java (javac 27) ---
+Err.java:6: error: incompatible types: SimplePrinter cannot be converted to Scanner
+    public static void main(String[] a) { scanIt(new SimplePrinter()); }
+                                                 ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error

@@ -1,0 +1,25 @@
+== java StaticDemo
+start
+Counter loaded
+2 2
+Counter Sub
+== java FinalDemo
+[Asha]
+== java PassDemo
+1
+99
+== java EqDemo
+true
+false
+true
+false true
+== java Shapes
+[a]
+Point[x=1, y=2] 1 true true
+high 10
+1 [LOW, HIGH]
+== javac FinalError.java
+FinalError.java:4: error: cannot assign a value to final variable x
+        x = 2;
+        ^
+1 error
