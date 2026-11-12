@@ -413,6 +413,32 @@ Fill this in while writing each section, before it is reviewed. The DBMS rows ar
 | behavioral | The 50 STAR outlines and "what the interviewer is looking for" lines | Our own writing from the pages above; opinion | n/a (our writing) |  |
 | behavioral | The 50 example answers are made-up examples for students, not claims about any real person or company | Our own writing; labelled on the page as a guide, not a script | n/a (examples) |  |
 
+## Operating Systems and OOP (13 Nov 2026)
+
+**Operating Systems (11 sections).** Sources actually read: the OSTEP textbook (34 chapters, saved as text), the os-book.com OS10 slides (19 chapters), Linux man pages `pthreads(7)`, `wait(2)`, `pipe(7)`, `pipe(2)`, `execve(2)`, `fork(2)`, `getpagesize(2)` and the kernel CFS and EEVDF pages. Every number comes from `docs/content/checks/os-check.py`. The pages behind the claims and what each one said are in `docs/content/source-notes/os-oops-phase1.md` and `os-drafts.md`. Two AI accuracy reviewers recomputed every number and every quiz and found 3 wrong statements and about 25 missing conditions or unsupported claims; one AI wording reviewer found the plain-words problems; six editors fixed all of them (listed in `os-drafts.md`, "Review round"). Disputable claims that are deliberately **not** made because no source we read states them: which scheduler Linux uses by default today, a Linux page-size figure, the Windows and UNIX "ignore deadlock" claim, "shared memory is faster than message passing".
+
+| Claim | Source | Checked by |
+|---|---|---|
+| Linux began moving from CFS to EEVDF in kernel 6.6 | docs.kernel.org `sched-eevdf` and `sched-design-CFS` | author and AI reviewers (summary of the pages) |
+| A zombie keeps its process-table slot until the parent waits; orphans of a dead parent are adopted by init or a subreaper | `wait(2)` | author and AI reviewers |
+| A Linux pipe holds 65,536 bytes (16 pages of 4,096) and a reader gets end-of-file only after the remaining bytes are read | `pipe(7)` | author and AI reviewers (man page read through the Phase 1 summary) |
+| Banker's algorithm: safe sequence P1,P3,P0,P2,P4 for the 5-process example; P4 requesting (3,3,0) leaves an unsafe state | OSTEP `threads-bugs`, slides ch8, recomputed | os-check.py, two reviewers |
+| FIFO, LRU and optimal give 15, 12 and 9 faults on the 20-reference string; FIFO gives 9 then 10 faults on the Belady string | OSTEP `vm-beyondphys-policy`, slides ch10, recomputed | os-check.py, two reviewers |
+| Disk head at 53: FCFS 640, SSTF 236, SCAN 236 toward track 0 (the slide's 208 is the turn-at-the-last-request version), C-SCAN 382, LOOK 299, C-LOOK 322 | slides ch11, recomputed | os-check.py, two reviewers |
+| Two threads incrementing a counter in three steps: 20 orders, 18 end at 1 and 2 at 2 | OSTEP `threads-intro`, recomputed | os-check.py, two reviewers |
+
+**OOP in Java (10 sections).** Sources actually read: dev.java OOP pages, the Java Language Specification SE 27 (chapters 4, 5, 6, 8, 9, 12, 15), the `Object` and `String` API pages, Wikipedia (SOLID and pattern articles), Refactoring.Guru (pattern pages, restated, nothing copied) and the C++ Core Guidelines for the "In C++" lines (read, not run). Every Java example was compiled and run with Java 27 (`docs/content/checks/oops/`). Three AI accuracy reviewers re-fetched the primary sources and re-ran the examples, two wording reviewers read the text, ten editors applied the findings (listed in `oops-drafts.md`). Claims that still rest on fetch-tool summaries of Wikipedia and Refactoring.Guru are named there.
+
+| Claim | Source | Checked by |
+|---|---|---|
+| Java passes argument values copied into parameters (the JLS never writes "pass by value") | JLS 8.4.1, 15.12.4.5 | author and AI reviewers |
+| Overloading is chosen at compile time by argument count and types; the return type alone cannot overload | JLS 8.4.9, 15.12.2; run `method size() is already defined` | author, AI reviewers, run |
+| In Java 25 and later statements may come before `super(...)`/`this(...)`; with `--release 24` the compiler refuses | JLS SE 27 8.8.7; run | author, AI reviewers, run |
+| equal objects must have equal hash codes; default `equals` is reference identity | `Object` API (SE 27) | author and AI reviewers |
+| A private constructor does not stop reflection; Java does not allow enum objects to be created by reflection | JLS 8.9; run | author, AI reviewers, run |
+| `finalize` is deprecated since Java 9 and marked for removal since Java 18 | `Object` API (`forRemoval=true`); the "18" comes from dev.java and JEP 421 | author and AI reviewers (version number not on the API page) |
+| Martin introduced the SOLID principles in a 2000 paper; Feathers coined the acronym around 2004 | Wikipedia SOLID (Martin's own article could not be read) | author and AI reviewers |
+
 ## Outside readers (people who know the subject)
 
 Needed to review notes before they are published. Start asking in stage 0; people take weeks to answer. A reader is one person who has agreed to read specific sections and report mistakes. Fill this table yourself.

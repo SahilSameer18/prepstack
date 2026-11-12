@@ -82,7 +82,7 @@ describe('the skills added after the first 94', () => {
     assert.deepEqual(a.actions.map((x) => [x.kind, x.path]), [['behavioral', '/behavioral']]);
   });
   it('concurrency points at the OS notes it really relates to, and web basics at the Frontend roadmap', () => {
-    assert.deepEqual(skills.adviceFor('Concurrency & Multithreading', titles).actions[0].sections, ['Processes & Threads', 'Synchronization', 'Deadlocks']);
+    assert.deepEqual(skills.adviceFor('Concurrency & Multithreading', titles).actions[0].sections, ['Processes', 'Threads and Multithreading', 'Process Synchronization', 'Deadlocks']);
     assert.equal(skills.adviceFor('HTML', titles).actions.find((x) => x.kind === 'roadmap').path, '/roadmaps/frontend');
     assert.equal(skills.adviceFor('Statistics', titles).actions.find((x) => x.kind === 'roadmap').path, '/roadmaps/data-analytics');
   });
@@ -100,8 +100,8 @@ describe('adviceFor: what a student can do about a skill', () => {
     const os = skills.adviceFor('Operating Systems', titles);
     assert.equal(os.category, 'cs-core');
     assert.ok(os.resources.some((r) => r.type === 'docs') && os.resources.some((r) => r.type === 'video'));
-    assert.deepEqual(os.actions.map((a) => [a.kind, a.path]), [['notes', '/notes/os/os-processes-threads']]);
-    assert.deepEqual(os.actions[0].sections, ['Processes & Threads', 'CPU Scheduling', 'Synchronization', 'Deadlocks', 'Memory Management']);
+    assert.deepEqual(os.actions.map((a) => [a.kind, a.path]), [['notes', '/notes/os/os-processes']]);
+    assert.deepEqual(os.actions[0].sections, ['Processes', 'CPU Scheduling', 'Process Synchronization', 'Deadlocks', 'Memory Management']);
   });
   it('lists practice topics, notes, roadmap and project in a stable order', () => {
     assert.deepEqual(skills.adviceFor('Data Structures', titles).actions.map((a) => a.kind), ['dsa', 'roadmap']);
@@ -148,8 +148,8 @@ describe('permanent skill ids', () => {
   });
   it('the notes and DSA mappings use ids, and the advice labels show the readable titles', () => {
     const os = skills.adviceFor('Operating Systems', titles).actions[0];
-    assert.deepEqual(os.sectionIds, ['os-processes-threads', 'os-cpu-scheduling', 'os-synchronization', 'os-deadlocks', 'os-memory-management']);
-    assert.equal(os.label, 'Read Operating Systems notes: Processes & Threads, CPU Scheduling, Synchronization, Deadlocks, Memory Management');
+    assert.deepEqual(os.sectionIds, ['os-processes', 'os-cpu-scheduling', 'os-synchronization', 'os-deadlocks', 'os-memory-management']);
+    assert.equal(os.label, 'Read Operating Systems notes: Processes, CPU Scheduling, Process Synchronization, Deadlocks, Memory Management');
     const dsa = skills.adviceFor('Data Structures', titles).actions[0];
     assert.deepEqual(dsa.topicIds, ['arrays-hashing', 'stack', 'linked-list', 'trees', 'heap-priority-queue', 'trie', 'graph']);
     assert.equal(dsa.topics[4], 'Heap/Priority Queue');

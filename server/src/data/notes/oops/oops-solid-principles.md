@@ -1,11 +1,12 @@
 ---
 id: oops-solid-principles
 title: SOLID Principles
+lastChecked: 2026-11-12
 next: oops-design-patterns
 roadmapSteps: java-spring:java-language-basics, java-spring:spring-core-boot
 ---
 
-<!-- Draft 12 Nov 2026, not published. Examples compiled and run with Java 27; files in docs/content/checks/oops/oops-solid-principles/. -->
+<!-- Published 13 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date the author checked this section against its sources, and AI reviewers read it (accuracy and plain words); no second person did. Written from docs/content/source-notes/os-oops-phase1.md and oops-drafts.md. Java examples compiled and run with Java 27; files in docs/content/checks/oops/. Claims: docs/content/SOURCES.md. -->
 
 ## Overview
 

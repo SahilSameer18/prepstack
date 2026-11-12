@@ -267,7 +267,7 @@ Paste a job description and add your resume (PDF or pasted text). You get a repo
 
 ### 📚 CS Fundamentals Library
 
-- **Notes written from sources:** DBMS and Computer Networks are rewritten as 10 Markdown sections each (overview, topics with an example and a failure case, interview questions, mistakes, a 5-question quiz and diagrams), in easy words, with a source list and a claims table in `docs/content/`. OS and OOP are still the older text. A section shows its last-checked date; none has been read by an outside reviewer yet.
+- **Notes written from sources:** All four subjects are written as Markdown sections from sources: DBMS 10, Computer Networks 10, Operating Systems 11 and OOP 10 (OOP uses Java, and every Java example was compiled and run). Each has an overview, topics with an example and a failure case, interview questions, mistakes, a 5-question quiz and diagrams, in easy words, with a source list and a claims table in `docs/content/`. A section shows its last-checked date; none has been read by an outside reviewer yet.
 
 ### 📝 STAR Resume & Behavioral Hub
 

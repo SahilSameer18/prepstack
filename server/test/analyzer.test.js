@@ -171,7 +171,7 @@ describe('POST /api/analyzer: skills, learning links and what to do in PrepStack
     assert.ok(docker.resources.some((x) => x.type === 'docs') && docker.resources.some((x) => x.type === 'video'));
     assert.deepEqual(docker.actions.filter((a) => a.kind === 'roadmap').map((a) => a.path), ['/roadmaps/devops-cloud']);
     const os = r.skillAdvice['Operating Systems'];
-    assert.deepEqual(os.actions.map((a) => [a.kind, a.path]), [['notes', '/notes/os/os-processes-threads']]);
+    assert.deepEqual(os.actions.map((a) => [a.kind, a.path]), [['notes', '/notes/os/os-processes']]);
     assert.ok(!('React' in r.skillAdvice)); // a skill the resume already shows needs no advice
   });
   it('the code finds a skill the AI left as "none" from the requirement\'s own words', async () => {

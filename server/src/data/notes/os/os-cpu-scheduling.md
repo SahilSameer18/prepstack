@@ -1,11 +1,12 @@
 ---
 id: os-cpu-scheduling
 title: CPU Scheduling
+lastChecked: 2026-11-12
 next: os-synchronization
 roadmapSteps: backend:os-networking-basics, devops-cloud:linux-command-line
 ---
 
-<!-- Draft 12 Nov 2026, not published. Written from docs/content/source-notes/os-oops-phase1.md. Numbers from docs/content/checks/os-check.py. -->
+<!-- Published 13 Nov 2026 WITHOUT an outside reader (none has agreed yet; see docs/content/SOURCES.md). lastChecked is the date the author checked this section against its sources, and AI reviewers read it (two for accuracy, one for plain words); no second person did. Written from docs/content/source-notes/os-oops-phase1.md and os-drafts.md. Numbers computed by docs/content/checks/os-check.py. Claims: docs/content/SOURCES.md. -->
 
 ## Overview
 

@@ -444,7 +444,7 @@
       {"type":"docs","title":"Bash Reference Manual","url":"https://www.gnu.org/software/bash/manual/"},
       {"type":"video","title":"Linux Command Line Full Course","url":"https://youtube.com/playlist?list=PL5Qp2b7x1b6d899d3E1-78Qd1C1oW3W9p"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","sectionId":"os-system-concepts"}],"roadmap":"devops-cloud","projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","sectionId":"os-linux-security-interview"}],"roadmap":"devops-cloud","projectStack":null}
   },
   {
     "id": "github-actions", "name": "GitHub Actions", "category": "stack",
@@ -783,7 +783,7 @@
       {"type":"docs","title":"Operating Systems Three Easy Pieces (OSTEP)","url":"https://pages.cs.wisc.edu/~remzi/OSTEP/"},
       {"type":"video","title":"Operating Systems Full Course - freeCodeCamp","url":"https://youtu.be/26QPDBe-NB8"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","sectionId":"os-processes-threads"},{"subject":"os","sectionId":"os-cpu-scheduling"},{"subject":"os","sectionId":"os-synchronization"},{"subject":"os","sectionId":"os-deadlocks"},{"subject":"os","sectionId":"os-memory-management"}],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","sectionId":"os-processes"},{"subject":"os","sectionId":"os-cpu-scheduling"},{"subject":"os","sectionId":"os-synchronization"},{"subject":"os","sectionId":"os-deadlocks"},{"subject":"os","sectionId":"os-memory-management"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "computer-networks", "name": "Computer Networks", "category": "cs-core",
@@ -973,7 +973,7 @@
     "resources": [
       {"type":"docs","title":"Concurrency - The Java Tutorials","url":"https://docs.oracle.com/javase/tutorial/essential/concurrency/"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","sectionId":"os-processes-threads"},{"subject":"os","sectionId":"os-synchronization"},{"subject":"os","sectionId":"os-deadlocks"}],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"os","sectionId":"os-processes"},{"subject":"os","sectionId":"os-threads"},{"subject":"os","sectionId":"os-synchronization"},{"subject":"os","sectionId":"os-deadlocks"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "caching", "name": "Caching", "category": "cs-core",

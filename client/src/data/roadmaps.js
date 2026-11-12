@@ -134,7 +134,7 @@ export const roadmaps = [
           { kind: "notes", target: "cn:cn-transport-layer", label: "TCP and UDP, ports" },
           { kind: "notes", target: "cn:cn-http-https-tls", label: "HTTP, HTTPS and TLS" },
           { kind: "notes", target: "cn:cn-dns-email", label: "DNS" },
-          { kind: "notes", target: "os:os-processes-threads", label: "Processes and threads" },
+          { kind: "notes", target: "os:os-processes", label: "Processes" },
         ],
         checkpoint: ["Tell the story of opening a web page in order: name lookup, connection, lock, request, page drawn.", "Say when you would pick TCP (careful) and when UDP (quick), with one example each.", "Name five HTTP status codes and say what each one tells the browser."],
         project: { brief: "Write a tiny web server with only the tools built into Node.js. It answers one address with some data and every other address with a 404 (not found). Test it with the curl command and read the headers.", stack: "Node.js" },
@@ -148,7 +148,7 @@ export const roadmaps = [
         time: "20 to 30 hours",
         topics: ["What Node.js is: a way to run JavaScript outside the browser that does not wait around", "The event loop: the worker's to-do list that keeps Node.js busy", "Three ways to run code later: nextTick, setTimeout and setImmediate", "Promises and async/await: a clean way to wait for slow work", "Modules: splitting code into files (CommonJS and ES modules)", "Files: reading and writing, and why the waiting kind freezes everything", "Streams: handling big data a piece at a time", "Buffers: raw bytes and text encodings"],
         practice: [
-          { kind: "notes", target: "os:os-processes-threads", label: "Processes and threads" },
+          { kind: "notes", target: "os:os-processes", label: "Processes" },
         ],
         checkpoint: ["Explain why a file call that waits (a synchronous call) makes every other visitor wait too.", "Read a large file with a stream, a piece at a time, instead of loading it all into memory.", "Say that nextTick callbacks run first and setImmediate runs after the current work, and why too many nextTick calls can starve the loop."],
         project: { brief: "Build a command-line tool that reads a large text file a piece at a time and prints the ten most common words, without loading the whole file into memory.", stack: "Node.js" },
@@ -998,7 +998,8 @@ export const roadmaps = [
         time: "20 to 30 hours",
         topics: ["Processes and threads", "Starting a thread and waiting for it to finish", "Interference: two threads changing the same data at the same time", "Synchronization: letting one thread at a time use shared data", "Deadlock, starvation and livelock: ways threads can get stuck", "Executors and thread pools: reusing threads instead of creating new ones", "Concurrent collections"],
         practice: [
-          { kind: "notes", target: "os:os-processes-threads", label: "Processes and threads" },
+          { kind: "notes", target: "os:os-processes", label: "Processes" },
+          { kind: "notes", target: "os:os-threads", label: "Threads and multithreading" },
           { kind: "notes", target: "os:os-synchronization", label: "Synchronization" },
           { kind: "notes", target: "os:os-deadlocks", label: "Deadlocks" },
         ],
@@ -1109,7 +1110,7 @@ export const roadmaps = [
         time: "25 to 40 hours",
         topics: ["The command line and moving around the file system", "Reading and searching text files", "Users and file permissions", "Processes: seeing what is running and stopping it", "Installing software with a package manager", "Simple shell scripts: running several commands from a file", "Looking things up: the manual pages, and the logs where programs write what they do", "Getting a Linux system to practise on: a virtual machine, or the Windows Subsystem for Linux on Windows"],
         practice: [
-          { kind: "notes", target: "os:os-processes-threads", label: "Processes and threads" },
+          { kind: "notes", target: "os:os-processes", label: "Processes" },
         ],
         checkpoint: ["Create a folder, a file and a script, and make the script runnable.", "Find a process and stop it.", "Read the manual page of a command you have not used before."],
         project: { brief: "Write a shell script that backs up a folder into a dated archive and run it by hand on a Linux machine or a virtual machine.", stack: "Linux" },

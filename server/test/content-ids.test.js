@@ -31,9 +31,9 @@ describe('the real notes data', () => {
       assert.deepEqual(checkNotesSubject(slug, realData(slug)), []);
     });
   }
-  it('has 38 sections and no id is used twice, even across subjects', () => {
+  it('has 41 sections and no id is used twice, even across subjects', () => {
     const ids = SUBJECTS.flatMap((slug) => realData(slug).sections.map((s) => s.id));
-    assert.equal(ids.length, 38);
+    assert.equal(ids.length, 41);
     assert.equal(new Set(ids).size, ids.length);
     assert.ok(ids.every((id) => ID_PATTERN.test(id)));
   });
@@ -165,7 +165,7 @@ describe('notes numbers worked out from the data', () => {
     assert.equal(subjectStats([{ id: 'os-a', title: 'A', topics: [] }]).lastChecked, null);
   });
   it('the real subjects give sensible numbers (the Notes page no longer types them by hand)', () => {
-    assert.deepEqual(SUBJECTS.map((slug) => subjectStats(realData(slug).sections).topicCount), [29, 68, 61, 19]);
+    assert.deepEqual(SUBJECTS.map((slug) => subjectStats(realData(slug).sections).topicCount), [76, 68, 61, 66]);
   });
 });
 
