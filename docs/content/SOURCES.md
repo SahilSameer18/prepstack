@@ -439,6 +439,24 @@ Fill this in while writing each section, before it is reviewed. The DBMS rows ar
 | `finalize` is deprecated since Java 9 and marked for removal since Java 18 | `Object` API (`forRemoval=true`); the "18" comes from dev.java and JEP 421 | author and AI reviewers (version number not on the API page) |
 | Martin introduced the SOLID principles in a 2000 paper; Feathers coined the acronym around 2004 | Wikipedia SOLID (Martin's own article could not be read) | author and AI reviewers |
 
+## System Design (HLD) (13 Nov 2026)
+
+**System Design (23 sections: 11 concepts and 12 case studies).** Sources actually read: the Dynamo, GFS, Bigtable, MapReduce, Spanner, Chubby and Raft papers, "The Tail at Scale", Abadi's PACELC article and Gilbert and Lynch (2012) (all as extracted text); Jeff Dean's latency-numbers talk (about 2007); Kafka's design page (from its source repository); the Google SRE book (chapters 4, 6, 19 to 23, CC BY-NC-ND 4.0, restated only); the AWS Builders' Library (all rights reserved, restated only); the Redis, Cassandra, PostgreSQL, Flink, Azure Architecture Center, AWS SQS, API Gateway and storage, Stripe, Apple APNs and Firebase documents; RFC 9110, 6455, 6585, 8216 and 9309; Mercator (2001 report); the count-min sketch paper (2005); the Dropbox, Discord and Facebook (Memcache, TAO) papers and posts, as "described in <year>". Interview sites, the System Design Primer (CC BY 4.0) and the owner's notes only chose topics and questions. The awesome-low-level-design repository is GPL-3.0: for the LLD notes only its problem titles may be used. Every example number is computed by `docs/content/checks/hld-check.py` and `hld-case-check.py` (outputs saved beside them) from stated assumptions. What each draft rests on, what was read only through a fetch summary, which statements are the design's own reasoning, and the findings of the 10 reviews are in `docs/content/source-notes/hld-phase1.md`, `hld-drafts.md` and `hld-cases.md`. A full claim-by-claim table was not kept for this subject (the reviewers' findings files were in the working folder only); the rows below are the claims that carry the most weight.
+
+| Claim | Source | Checked by |
+|---|---|---|
+| Dynamo's common (N, R, W) setting is (3, 2, 2); its service target is 300 ms for 99.9 percent of requests | Dynamo paper (SOSP 2007), sections 4.5 and 6 | author, AI reviewer (text read) |
+| Abadi classifies Dynamo, Cassandra and Riak defaults as PA/EL, VoltDB and Bigtable as PC/EC, MongoDB as PA/EC, and says R + W > N does not give the full consistency of Gilbert and Lynch | Abadi, IEEE Computer, Feb 2012 | author, AI reviewer (text read) |
+| A typical five-server Raft cluster tolerates two failures; election timeouts are chosen at random (for example 150 to 300 ms) | Raft paper, sections 5.1 and 5.2 | author, AI reviewer (text read) |
+| GFS uses 64 MB chunks, three replicas by default and under 64 bytes of metadata per chunk | GFS paper (SOSP 2003) | author, AI reviewer (text read); script K3 |
+| 3 retries at each of 3 layers give 4^3 = 64 attempts; a client retry budget of 10 percent keeps the extra load near 1.1x | SRE book chapters 21 and 22 | author, AI reviewers (live pages, quoted sentences) |
+| 100 servers each slow on 1 percent of requests make 63 percent of whole requests slow | "The Tail at Scale" (CACM 2013) | author, AI reviewer (text read), arithmetic |
+| Kafka commits a message when every in-sync replica has it; exactly-once inside Kafka needs the idempotent producer and transactions (since 0.11) | Kafka design page | author, AI reviewers (text read) |
+| A 301 means a permanent move and is heuristically cacheable; a 302 means a temporary move | RFC 9110, 15.4.2 and 15.4.3 | author, AI reviewer (text read) |
+| A fencing token that only increases lets storage reject a paused client's late write | Kleppmann, 2016 | author, AI reviewers (page read) |
+| Count-min sketch width is ceil(e / error) and depth is ceil(ln(1 / failure chance)); it never undercounts | Cormode and Muthukrishnan, 2005 | author, AI reviewer (text read); script 12A to 12C |
+| Quorum overlap (R + W > N), consistent-hashing key movement (80 percent against about 19 percent), the rate-limiter trace and the Bloom filter rates | recomputed | hld-check.py, hld-case-check.py, AI reviewers re-ran them |
+
 ## Outside readers (people who know the subject)
 
 Needed to review notes before they are published. Start asking in stage 0; people take weeks to answer. A reader is one person who has agreed to read specific sections and report mistakes. Fill this table yourself.

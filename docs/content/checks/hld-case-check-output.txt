@@ -21,7 +21,8 @@ counter 125: code 21 (2 characters)
 counter 1,000,000: code 4c92 (4 characters)
 counter 6,000,000,000: code 6y3o5y (6 characters)
 multiplier coprime with 62^7: True
-counters 1 to 5 scrambled by multiplying and taking the remainder: ['02TDK01', '05Nhu02', '08GVe03', '0bAyY04', '0eucI05']
+multiplier mod 62 (the last character steps by this much each time): 19
+counters 1 to 5 scrambled by multiplying and taking the remainder: ['02XXDhj', '05VVgyC', '08TSTPV', '0bRQx7e', '0ePOaox']
 scrambling never repeats a code (checked on the first 1,000,000 counters): True
 
 ======== 1D random codes: the chance a new random code is already taken equals the share of the space used
@@ -141,6 +142,7 @@ a 1024 MB file: 256 blocks; changing one byte re-uploads 4 MB, not 1024 MB (0.39
 ======== 7B fixed-size blocks against content-defined blocks when 1 byte is inserted at the start (simulation: 4 MB of random bytes)
 fixed 64 KB blocks: blocks that differ after the insert: 65 of 65
 content-defined blocks (about 64 KB average): blocks that differ: 1 of 50
+average content-defined block size in this run: 82 KB (50 blocks in 4 MB)
 
 ======== 7C deduplication (assumption: 1 million users each store the same 100 MB installer)
 without dedupe: 100 TB
@@ -188,6 +190,10 @@ drivers checked per request with the grid: 211.0 (brute force: 10,000)
 requests where the grid found a driver: 1000 of 1000
 grid answer equals the true nearest driver: 1000 of 1000
 
+======== 9B2 the same grid search in a thin area (simulation: 100 drivers on the same 20 km x 20 km city, 1,000 rider requests)
+requests where the 3x3 block held any driver: 910 of 1000
+block answer equals the true nearest driver: 877 of 910
+
 ======== 9C a driver near a cell border (the true nearest driver can be outside the 3x3 block only when the nearest is more than 1 km away: checked above)
 
 ======== 9D matching rate (assumption: 100,000 ride requests a minute in the busiest hour)
@@ -212,8 +218,8 @@ Bloom filter, 15 bits a URL (10 hashes): 18.8 GB, about 0.07% of new URLs wrongl
 ======== 10D frontier by site (simulation: 3 sites, each polled at most once per 2 seconds, queue per site)
 (time in seconds, site) fetch order: [(0, 'a.com'), (0.5, 'b.com'), (1.0, 'c.com'), (2, 'a.com'), (2.5, 'b.com'), (4, 'a.com'), (4.5, 'b.com'), (6, 'a.com'), (8, 'a.com')]
 
-======== 10E DNS (assumption: 1 lookup of 50 ms per new site, 1,000 new sites a second)
-lookup time a second: 50 s of waiting per second: needs parallel lookups and a cache
+======== 10E DNS (assumption: 1 lookup of 50 ms per new site, 386 new sites a second, the same as the page rate)
+lookup time a second: 19.3 s of waiting per second: needs parallel lookups and a cache
 
 ======== 11A double booking: check-then-write (worked by hand, not simulated: 10 buyers look at the same free seat at the same moment; assumption)
 seat sold to: 10 buyers if each reads 'free' then writes 'mine' (no lock)
@@ -225,7 +231,7 @@ with a 10-minute timeout they come back after: 10 minutes; with 2 minutes they c
 
 ======== 11C waiting room (assumption: 1,000,000 people arrive at once, the booking service finishes 2,000 purchases a second at most)
 time to let everyone through at 2,000 a second: 500 s = 8.3 min
-50,000 seats sell out after at most: 25 s if every admitted person buys one seat
+50,000 seats sell out after at least: 25 s if every admitted person buys one seat
 
 ======== 11D payment retries (assumption: 1 percent of payment requests time out and the buyer presses again)
 duplicate charges without an idempotency key per 100,000 orders: 1000

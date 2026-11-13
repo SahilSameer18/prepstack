@@ -13,7 +13,7 @@ const { catalog } = skills;
 // ref -> readable title, built from the real notes data and the Blind 75 seed (the app builds the same map from the database)
 const titles = Object.fromEntries([
   ...t.sheetSeedData()[0].topics.map((tp) => [`dsa:blind-75:${tp.id}`, tp.title.trim()]),
-  ...['os', 'dbms', 'cn', 'oops'].flatMap((subject) => require(`../src/data/notes/${subject}.js`).sections.map((sec) => [`notes:${subject}:${sec.id}`, sec.title])),
+  ...['os', 'dbms', 'cn', 'oops', 'hld'].flatMap((subject) => require(`../src/data/notes/${subject}.js`).sections.map((sec) => [`notes:${subject}:${sec.id}`, sec.title])),
 ]);
 const match = (text) => skills.matchSkillText(text);
 
@@ -106,7 +106,7 @@ describe('adviceFor: what a student can do about a skill', () => {
   it('lists practice topics, notes, roadmap and project in a stable order', () => {
     assert.deepEqual(skills.adviceFor('Data Structures', titles).actions.map((a) => a.kind), ['dsa', 'roadmap']);
     assert.equal(skills.adviceFor('Data Structures', titles).actions[0].path, '/dsa/blind-75');
-    assert.deepEqual(skills.adviceFor('REST APIs', titles).actions.map((a) => a.kind), ['notes', 'roadmap', 'project']);
+    assert.deepEqual(skills.adviceFor('REST APIs', titles).actions.map((a) => a.kind), ['notes', 'notes', 'roadmap', 'project']);
     assert.equal(skills.adviceFor('Node.js', titles).actions.find((a) => a.kind === 'roadmap').path, '/roadmaps/backend');
   });
   it('encodes the project stack in the link, and it is a stack the AI page accepts', () => {

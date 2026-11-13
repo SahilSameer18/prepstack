@@ -116,33 +116,37 @@ trace2 = trace[:10000] + scan + trace[10000:]
 
 def lru(trace, size):
     from collections import OrderedDict
-    c = OrderedDict(); hits = 0
+    c = OrderedDict(); hits = 0; counted = 0
     for k in trace:
+        real = k < universe  # the scan keys are not counted, only the regular requests are
+        counted += real
         if k in c:
-            hits += 1; c.move_to_end(k)
+            hits += real; c.move_to_end(k)
         else:
             c[k] = 1
             if len(c) > size: c.popitem(last=False)
-    return hits / len(trace)
+    return hits / counted
 
 def lfu(trace, size):
-    cnt = {}; stamp = {}; c = set(); hits = 0; t = 0
+    cnt = {}; stamp = {}; c = set(); hits = 0; t = 0; counted = 0
     for k in trace:
         t += 1
+        real = k < universe
+        counted += real
         if k in c:
-            hits += 1
+            hits += real
         else:
             if len(c) >= size:
                 victim = min(c, key=lambda x: (cnt[x], stamp[x]))
                 c.remove(victim)
             c.add(k)
         cnt[k] = cnt.get(k, 0) + 1; stamp[k] = t
-    return hits / len(trace)
+    return hits / counted
 
 for size in [50, 100, 200]:
     p(f"cache size {size} (of {universe} keys), plain trace", f"LRU {lru(trace,size)*100:.1f}%  LFU {lfu(trace,size)*100:.1f}%")
 for size in [50, 100, 200]:
-    p(f"cache size {size}, same trace plus a 1,000-key one-time scan", f"LRU {lru(trace2,size)*100:.1f}%  LFU {lfu(trace2,size)*100:.1f}%")
+    p(f"cache size {size}, same trace plus a 1,000-key one-time scan (only the 20,000 regular requests are counted)", f"LRU {lru(trace2,size)*100:.1f}%  LFU {lfu(trace2,size)*100:.1f}%")
 
 sec("C3 stampede (many requests miss one key at once; made-up numbers)")
 qps_key, refill_s = 2000, 0.05

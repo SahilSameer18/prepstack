@@ -137,7 +137,7 @@ const EngineeringContrast = () => {
                 <div className="w-5 h-5 rounded-md bg-brand/15 border border-brand/30 text-brand flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_color-mix(in_srgb,var(--brand)_30%,transparent)]">
                   <FiCheck className="text-xs" />
                 </div>
-                <span>Synthesized OS, DBMS, Networks, and OOPs internals with exact interview question debriefs.</span>
+                <span>Synthesized OS, DBMS, Networks, OOPs and System Design notes with exact interview question debriefs.</span>
               </li>
             </ul>
           </div>

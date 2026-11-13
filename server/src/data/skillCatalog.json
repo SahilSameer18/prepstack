@@ -212,7 +212,7 @@
       {"type":"docs","title":"REST API Tutorial","url":"https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview"},
       {"type":"video","title":"REST API Crash Course","url":"https://youtu.be/XvFmUE-36Kc"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-http-https-tls"}],"roadmap":"backend","projectStack":"MERN Stack"}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-http-https-tls"},{"subject":"hld","sectionId":"hld-api-rate-limiting"}],"roadmap":"backend","projectStack":"MERN Stack"}
   },
   {
     "id": "graphql", "name": "GraphQL", "category": "stack",
@@ -311,7 +311,7 @@
       {"type":"docs","title":"MongoDB Docs","url":"https://docs.mongodb.com/"},
       {"type":"video","title":"MongoDB Full Course","url":"https://youtu.be/M1dKYQ7GsTg"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"backend","projectStack":"MERN Stack"}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"hld","sectionId":"hld-choosing-databases"}],"roadmap":"backend","projectStack":"MERN Stack"}
   },
   {
     "id": "redis", "name": "Redis", "category": "stack",
@@ -320,7 +320,7 @@
       {"type":"docs","title":"Redis Docs","url":"https://redis.io/docs/"},
       {"type":"video","title":"Redis Crash Course","url":"https://youtube.com/playlist?list=PLxamJ86SDCj28nzE9l6frczaVhPX7P7o7"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"hld","sectionId":"hld-caching"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "oracle-database", "name": "Oracle Database", "category": "stack",
@@ -462,7 +462,7 @@
       {"type":"docs","title":"Apache Kafka Documentation","url":"https://kafka.apache.org/documentation/"},
       {"type":"video","title":"Apache Kafka Course","url":"https://youtu.be/ZJJHm_bd9Zo"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"hld","sectionId":"hld-messaging-streaming"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "rabbitmq", "name": "RabbitMQ", "category": "stack",
@@ -471,7 +471,7 @@
       {"type":"docs","title":"RabbitMQ Documentation","url":"https://www.rabbitmq.com/documentation.html"},
       {"type":"video","title":"RabbitMQ Tutorial","url":"https://youtu.be/FGU3oFIeG0Q"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"hld","sectionId":"hld-messaging-streaming"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "unit-testing", "name": "Unit Testing", "category": "stack",
@@ -586,7 +586,7 @@
       {"type":"docs","title":"System Design Primer","url":"https://github.com/donnemartin/system-design-primer"},
       {"type":"video","title":"System Design Full Course","url":"https://youtube.com/playlist?list=PLMCXHnjXnTnvo6alSjVkgxV-VH6EPyvoX"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-system-design-concepts"},{"subject":"dbms","sectionId":"dbms-advanced-concepts"}],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-system-design-concepts"},{"subject":"dbms","sectionId":"dbms-advanced-concepts"},{"subject":"hld","sectionId":"hld-approach-estimation"},{"subject":"hld","sectionId":"hld-scaling-basics"},{"subject":"hld","sectionId":"hld-consistency-cap"},{"subject":"hld","sectionId":"hld-case-url-shortener"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "object-oriented-programming", "name": "Object-Oriented Programming", "category": "cs-core",
@@ -631,7 +631,7 @@
       {"type":"docs","title":"Load Balancing Guide","url":"https://www.nginx.com/resources/glossary/load-balancing/"},
       {"type":"video","title":"Load Balancing Crash Course","url":"https://youtu.be/C842vFY5kRo"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-system-design-concepts"}],"roadmap":"fullstack","projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-system-design-concepts"},{"subject":"hld","sectionId":"hld-scaling-basics"}],"roadmap":"fullstack","projectStack":null}
   },
   {
     "id": "message-queues", "name": "Message Queues", "category": "cs-core",
@@ -640,7 +640,7 @@
       {"type":"docs","title":"What is a Message Queue? - AWS","url":"https://aws.amazon.com/message-queue/"},
       {"type":"video","title":"Message Queues Crash Course","url":"https://youtu.be/IJkYipYNEtI"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"hld","sectionId":"hld-messaging-streaming"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "authentication-and-authorization", "name": "Authentication & Authorization", "category": "stack",
@@ -810,7 +810,7 @@
       {"type":"docs","title":"Apache Cassandra Official Documentation","url":"https://cassandra.apache.org/doc/latest/"},
       {"type":"video","title":"Apache Cassandra in 100 Seconds - Fireship","url":"https://youtu.be/4GWzU_mXyHQ"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","sectionId":"dbms-advanced-concepts"}],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"dbms","sectionId":"dbms-advanced-concepts"},{"subject":"hld","sectionId":"hld-choosing-databases"},{"subject":"hld","sectionId":"hld-replication-partitioning"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "machine-learning-fundamentals", "name": "Machine Learning Fundamentals", "category": "stack",
@@ -981,7 +981,7 @@
     "resources": [
       {"type":"docs","title":"HTTP Caching - MDN","url":"https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":"fullstack","projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"hld","sectionId":"hld-caching"}],"roadmap":"fullstack","projectStack":null}
   },
   {
     "id": "nginx", "name": "Nginx", "category": "stack",

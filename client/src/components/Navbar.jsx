@@ -57,7 +57,7 @@ const Navbar = () => {
   ];
 
   const exploreLinks = [
-    { name: "CS Notes", path: "/notes", icon: <FiBook />, desc: "OS, DBMS, Networks & OOPs" },
+    { name: "CS Notes", path: "/notes", icon: <FiBook />, desc: "OS, DBMS, Networks, OOPs & System Design" },
     { name: "Roadmaps", path: "/roadmaps", icon: <FiMap />, desc: "Step-by-step learning paths" },
     { name: "Behavioral Prep", path: "/behavioral", icon: <FiMessageSquare />, desc: "HR & soft skills questions" },
     { name: "Resume Guide", path: "/resume", icon: <FiFileText />, desc: "Build an ATS-ready resume" },

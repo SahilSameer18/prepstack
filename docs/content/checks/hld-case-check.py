@@ -30,9 +30,9 @@ def b62(n):
     while n: n, r = divmod(n, 62); s = A[r] + s
     return s or "0"
 for n in [1, 61, 62, 125, 1_000_000, 6_000_000_000]: p(f"counter {n:,}", f"code {b62(n)} ({len(b62(n))} characters)")
-M = 62**7; MULT = 2_654_435_761  # odd, and coprime with 62 (not divisible by 2 or 31)
+M = 62**7; MULT = 2_718_281_829  # odd, not divisible by 31, so coprime with 62
 from math import gcd
-p("multiplier coprime with 62^7", gcd(MULT, 62) == 1)
+p("multiplier coprime with 62^7", gcd(MULT, 62) == 1); p("multiplier mod 62 (the last character steps by this much each time)", MULT % 62)
 p("counters 1 to 5 scrambled by multiplying and taking the remainder", [b62((i * MULT) % M).rjust(7, "0") for i in range(1, 6)])
 p("scrambling never repeats a code (checked on the first 1,000,000 counters)", len({(i * MULT) % M for i in range(1, 1_000_001)}) == 1_000_000)
 sec("1D random codes: the chance a new random code is already taken equals the share of the space used")
@@ -185,6 +185,7 @@ f1, f2 = fixed_chunks(data), fixed_chunks(data2)
 p("fixed 64 KB blocks: blocks that differ after the insert", f"{len(set(f2)-set(f1))} of {len(f2)}")
 c1, c2 = cdc(data), cdc(data2)
 p("content-defined blocks (about 64 KB average): blocks that differ", f"{len(set(c2)-set(c1))} of {len(c2)}")
+p("average content-defined block size in this run", f"{len(data)/len(c1)/1024:.0f} KB ({len(c1)} blocks in 4 MB)")
 sec("7C deduplication (assumption: 1 million users each store the same 100 MB installer)")
 p("without dedupe", f"{1_000_000*100/1e6:,.0f} TB"); p("with one stored copy of each block", "100 MB plus a small reference per user")
 sec("7D metadata (assumption: 100 million users, 200 files each, 500 bytes of metadata a file)")
@@ -234,6 +235,20 @@ for (x, y) in rid:
         if best_c == best_all: same += 1
 p("drivers checked per request with the grid", f"{checked/1000:.1f} (brute force: 10,000)")
 p("requests where the grid found a driver", f"{found} of 1000"); p("grid answer equals the true nearest driver", f"{same} of {found}")
+sec("9B2 the same grid search in a thin area (simulation: 100 drivers on the same 20 km x 20 km city, 1,000 rider requests)")
+rng = random.Random(10); drivers2 = [(rng.uniform(0, 20), rng.uniform(0, 20)) for _ in range(100)]
+cells2 = {}
+for i, (x, y) in enumerate(drivers2): cells2.setdefault((int(x), int(y)), []).append(i)
+found2 = same2 = 0
+for (x, y) in rid:
+    cand = []
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1): cand += cells2.get((int(x) + dx, int(y) + dy), [])
+    best_all = min(range(len(drivers2)), key=lambda i: (drivers2[i][0] - x) ** 2 + (drivers2[i][1] - y) ** 2)
+    if cand:
+        found2 += 1; best_c = min(cand, key=lambda i: (drivers2[i][0] - x) ** 2 + (drivers2[i][1] - y) ** 2)
+        if best_c == best_all: same2 += 1
+p("requests where the 3x3 block held any driver", f"{found2} of 1000"); p("block answer equals the true nearest driver", f"{same2} of {found2}")
 sec("9C a driver near a cell border (the true nearest driver can be outside the 3x3 block only when the nearest is more than 1 km away: checked above)")
 sec("9D matching rate (assumption: 100,000 ride requests a minute in the busiest hour)")
 p("requests a second", f"{100_000/60:,.0f}")
@@ -259,8 +274,8 @@ while heap:
     else: continue
     t += 0.5
 p("(time in seconds, site) fetch order", order)
-sec("10E DNS (assumption: 1 lookup of 50 ms per new site, 1,000 new sites a second)")
-p("lookup time a second", f"{1000*0.05:.0f} s of waiting per second: needs parallel lookups and a cache")
+sec("10E DNS (assumption: 1 lookup of 50 ms per new site, 386 new sites a second, the same as the page rate)")
+p("lookup time a second", f"{386*0.05:.1f} s of waiting per second: needs parallel lookups and a cache")
 
 # ============================================================ 11. Ticket booking
 sec("11A double booking: check-then-write (worked by hand, not simulated: 10 buyers look at the same free seat at the same moment; assumption)")
@@ -271,7 +286,7 @@ p("seats held but never bought at the end of a 10-minute round", f"{int(50_000*0
 p("with a 10-minute timeout they come back after", "10 minutes; with 2 minutes they come back 5x sooner but honest buyers may lose the seat while paying")
 sec("11C waiting room (assumption: 1,000,000 people arrive at once, the booking service finishes 2,000 purchases a second at most)")
 p("time to let everyone through at 2,000 a second", f"{1_000_000/2000:,.0f} s = {1_000_000/2000/60:.1f} min")
-p("50,000 seats sell out after at most", f"{50_000/2000:.0f} s if every admitted person buys one seat")
+p("50,000 seats sell out after at least", f"{50_000/2000:.0f} s if every admitted person buys one seat")
 sec("11D payment retries (assumption: 1 percent of payment requests time out and the buyer presses again)")
 p("duplicate charges without an idempotency key per 100,000 orders", int(100_000 * 0.01)); p("with one", 0)
 

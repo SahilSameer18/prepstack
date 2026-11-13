@@ -133,6 +133,7 @@ describe("graph diagram layout: shapes, zones, numbered and dashed arrows", () =
     const small = layoutDiagram({ kind: "graph", caption: "c", nodes: nodes(8), edges: [] });
     const big = layoutDiagram({ kind: "graph", caption: "c", nodes: nodes(12), edges: [] });
     expect(big.height).toBeGreaterThan(small.height);
+    expect(big.width).toBeGreaterThan(small.width);
   });
 });
 

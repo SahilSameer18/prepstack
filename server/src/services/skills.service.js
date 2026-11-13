@@ -76,7 +76,7 @@ const matchSkillText = (text, index = catalogIndex) => {
 };
 
 // ── what a student can do about a skill ──
-const SUBJECTS = { os: 'Operating Systems', dbms: 'DBMS', cn: 'Computer Networks', oops: 'OOP' };
+const SUBJECTS = { os: 'Operating Systems', dbms: 'DBMS', cn: 'Computer Networks', oops: 'OOP', hld: 'System Design' };
 const ROADMAP_TITLES = { frontend: 'Frontend', backend: 'Backend', fullstack: 'Full Stack', android: 'Android', 'data-analytics': 'Data Analytics', 'machine-learning': 'Machine Learning', 'dsa': 'DSA & Problem Solving', 'java-spring': 'Java & Spring Boot', 'devops-cloud': 'DevOps & Cloud' };
 const DSA_SHEET = { slug: 'blind-75', name: 'Blind 75' };
 const bySkill = new Map(catalog.map((s) => [s.name, s]));

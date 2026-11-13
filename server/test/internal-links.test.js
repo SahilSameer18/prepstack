@@ -10,7 +10,7 @@ const { checkContentLinks } = require('../src/validators/contentLinks');
 
 const CLIENT_DATA = path.join(t.SERVER_ROOT, '..', 'client', 'src', 'data');
 const hasClient = fs.existsSync(path.join(CLIENT_DATA, 'roadmaps.js')); // the server may be tested alone, without the client folder
-const SUBJECTS = ['os', 'dbms', 'cn', 'oops'];
+const SUBJECTS = ['os', 'dbms', 'cn', 'oops', 'hld'];
 
 describe('links between notes, roadmaps and sheets', { skip: !hasClient && 'client folder not present' }, () => {
   it('every link in the real data resolves', async () => {

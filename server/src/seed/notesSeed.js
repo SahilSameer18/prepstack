@@ -7,6 +7,7 @@ const osNotes = require('../data/notes/os');
 const dbmsNotes = require('../data/notes/dbms');
 const cnNotes = require('../data/notes/cn');
 const oopsNotes = require('../data/notes/oops');
+const hldNotes = require('../data/notes/hld');
 
 const seedNotes = async () => {
   try {
@@ -16,6 +17,7 @@ const seedNotes = async () => {
       { subject: dbmsNotes.subject, subjectSlug: 'dbms', sections: dbmsNotes.sections },
       { subject: cnNotes.subject, subjectSlug: 'cn', sections: cnNotes.sections },
       { subject: oopsNotes.subject, subjectSlug: 'oops', sections: oopsNotes.sections },
+      { subject: hldNotes.subject, subjectSlug: 'hld', sections: hldNotes.sections },
     ];
 
     // Check the data before touching the database, so bad data can never wipe good notes

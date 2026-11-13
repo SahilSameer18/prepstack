@@ -85,9 +85,9 @@ hit ratio 99%: average 1.2 ms; database gets 100 of 10,000 requests per second
 cache size 50 (of 1000 keys), plain trace: LRU 46.3%  LFU 59.9%
 cache size 100 (of 1000 keys), plain trace: LRU 57.8%  LFU 68.2%
 cache size 200 (of 1000 keys), plain trace: LRU 69.8%  LFU 76.5%
-cache size 50, same trace plus a 1,000-key one-time scan: LRU 44.1%  LFU 57.0%
-cache size 100, same trace plus a 1,000-key one-time scan: LRU 54.9%  LFU 64.9%
-cache size 200, same trace plus a 1,000-key one-time scan: LRU 66.1%  LFU 72.9%
+cache size 50, same trace plus a 1,000-key one-time scan (only the 20,000 regular requests are counted): LRU 46.3%  LFU 59.9%
+cache size 100, same trace plus a 1,000-key one-time scan (only the 20,000 regular requests are counted): LRU 57.7%  LFU 68.2%
+cache size 200, same trace plus a 1,000-key one-time scan (only the 20,000 regular requests are counted): LRU 69.4%  LFU 76.5%
 
 ======== C3 stampede (many requests miss one key at once; made-up numbers)
 a popular key gets: 2,000 requests per second

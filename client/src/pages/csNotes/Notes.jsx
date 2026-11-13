@@ -46,13 +46,12 @@ const subjects = [
   },
   {
     title: "System Design",
-    slug: "system-design",
+    slug: "hld",
     icon: <FaProjectDiagram />,
     hoverColor: "var(--data-pink-soft)",   // pink-400
     bg: "bg-pink-solid/10", border: "border-pink-solid/20",
-    description: "Learn to architect scalable systems: load balancing, caching, microservices and API design.",
+    description: "Design systems the way big-tech interviews ask: caching, replication, consistency, queues, reliability and 12 full case studies.",
     difficulty: "Advanced",
-    comingSoon: true,
   },
 ];
 

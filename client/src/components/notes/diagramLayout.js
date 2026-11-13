@@ -8,7 +8,8 @@ const PAD = 16;
 const MAX_ROW = 640;
 const GRAPH_W = 600;
 const GRAPH_H = 280;
-const GRAPH_H_BIG = 400; // a graph with more than 8 nodes gets a taller canvas
+const GRAPH_H_BIG = 400; // a graph with more than 8 nodes gets a taller and wider canvas, so architecture pictures have room for their boxes
+const GRAPH_W_BIG = 760;
 const QUEUE_EXTRA = 24; // a queue box keeps its right edge for the tick marks, so its label stays clear of them
 const GROUP_PAD = 14;
 const GROUP_LABEL_H = 16;
@@ -56,10 +57,12 @@ const leaveBox = (box, tx, ty) => {
 };
 
 const layoutGraph = (graph) => {
-  const canvasH = graph.nodes.length > 8 ? GRAPH_H_BIG : GRAPH_H;
+  const big = graph.nodes.length > 8;
+  const canvasH = big ? GRAPH_H_BIG : GRAPH_H;
+  const canvasW = big ? GRAPH_W_BIG : GRAPH_W;
   const boxes = graph.nodes.map((n) => {
     const w = boxWidth(n.label) + (n.shape === 'queue' ? QUEUE_EXTRA : 0);
-    return { key: n.id, label: n.label, shape: n.shape || 'box', x: PAD + (n.x / 100) * (GRAPH_W - PAD * 2) - w / 2, y: PAD + (n.y / 100) * (canvasH - PAD * 2) - GRAPH_BOX_H / 2, w, h: GRAPH_BOX_H };
+    return { key: n.id, label: n.label, shape: n.shape || 'box', x: PAD + (n.x / 100) * (canvasW - PAD * 2) - w / 2, y: PAD + (n.y / 100) * (canvasH - PAD * 2) - GRAPH_BOX_H / 2, w, h: GRAPH_BOX_H };
   });
   const byId = Object.fromEntries(boxes.map((b) => [b.key, b]));
   const arrows = graph.edges.map((e) => {
