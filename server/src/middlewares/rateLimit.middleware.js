@@ -1,5 +1,5 @@
 const rateLimit = require("express-rate-limit");
-const { HOUR_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE, PROBLEM_NOTE_WRITES_PER_MINUTE } = require("../config/limits");
+const { HOUR_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE, PLAN_PREVIEWS_PER_MINUTE, PLAN_GENERATES_PER_HOUR, PLAN_CHANGES_PER_MINUTE, PROBLEM_NOTE_WRITES_PER_MINUTE } = require("../config/limits");
 
 const aiProjectLimiter = rateLimit({
   windowMs: HOUR_MS,
@@ -105,6 +105,50 @@ const planTickLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// My plan: the public preview needs no login, so it is limited per IP address (every request counts; it makes no database write).
+const planPreviewLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: PLAN_PREVIEWS_PER_MINUTE,
+  message: {
+    success: false,
+    message: "You're previewing plans too fast. Please wait a moment.",
+    errors: [`Rate limit exceeded. Maximum ${PLAN_PREVIEWS_PER_MINUTE} previews per minute.`],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// My plan: making or replacing a saved plan, per signed-in user. Only saved plans count.
+const planGenerateLimiter = rateLimit({
+  windowMs: HOUR_MS,
+  max: PLAN_GENERATES_PER_HOUR,
+  skipFailedRequests: true,
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip,
+  validate: { keyGeneratorIpFallback: false },
+  message: {
+    success: false,
+    message: "You've made several plans in the last hour. Please try again later.",
+    errors: [`Rate limit exceeded. Maximum ${PLAN_GENERATES_PER_HOUR} plans per hour.`],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// My plan: previewing and applying a rebuild, new hours or lighter days.
+const planChangeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: PLAN_CHANGES_PER_MINUTE,
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip,
+  validate: { keyGeneratorIpFallback: false },
+  message: {
+    success: false,
+    message: "You're changing the plan too fast. Please wait a moment.",
+    errors: [`Rate limit exceeded. Maximum ${PLAN_CHANGES_PER_MINUTE} plan changes per minute.`],
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Saving, deleting or importing problem notes (reading is not limited).
 const problemNoteLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -159,4 +203,4 @@ const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, planTickLimiter, problemNoteLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter };
+module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, planTickLimiter, planPreviewLimiter, planGenerateLimiter, planChangeLimiter, problemNoteLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter };

@@ -25,4 +25,9 @@ const loadPlanData = () => {
   };
 };
 
-module.exports = { loadPlanData, SUBJECTS };
+// Loading the notes and sheets takes a moment, so it is done once. Tests can replace `planClock.now` to play a plan on another day.
+let cached = null;
+const getPlanData = () => (cached ??= loadPlanData());
+const planClock = { now: () => new Date() };
+
+module.exports = { loadPlanData, getPlanData, planClock, SUBJECTS };

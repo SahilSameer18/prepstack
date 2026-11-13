@@ -349,7 +349,7 @@ const generatePlan = (input, data, context = {}) => {
   let mockDays = new Set(days.filter((d) => d.weekday === SATURDAY).map((d) => d.n));
   let result;
   for (let guard = 0; guard < 2000; guard += 1) {
-    const reserved = datedItems(input, days, origin, deadline, data, mockDays, context);
+    const reserved = content.length ? datedItems(input, days, origin, deadline, data, mockDays, context) : new Map(); // mock blocks and questions mean nothing without content
     result = fillDays(sequence, days, reserved, context);
     result.reserved = reserved;
     const useless = [...mockDays].filter((n) => reserved.has(n) && reserved.get(n).some((it) => it.type === 'mock') && result.placed.filter((p) => p.type === 'dsa' && p.core && dayNumber(p.day) > n).length < 2);

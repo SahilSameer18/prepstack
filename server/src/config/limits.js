@@ -15,6 +15,9 @@ const PLAN_GENERATES_PER_HOUR = 10; // creating, replacing or rebuilding a saved
 const PLAN_MAX_ITEMS = 600; // items in one plan
 const PLAN_TITLE_MAX = 120; // characters in a plan title or an item title
 const PLAN_CUSTOM_ITEM_MAX = 200; // characters in a custom item the student adds
+const PLAN_CHANGES_PER_MINUTE = 20; // previewing or applying a rebuild, new hours or lighter days, per user
+const PLAN_MAX_FINISHED = 5; // finished plans kept as history per user; the oldest is deleted when a sixth is finished
+const PLAN_MAX_START_DAYS_AHEAD = 60; // a plan may start up to this many days from today (and from yesterday, for the clock difference)
 const PLAN_MIN_WEEKS = 1;
 const PLAN_MAX_WEEKS = 52;
 const PLAN_MIN_DAILY_HOURS = 0.5; // hours a student may give a study day
@@ -28,4 +31,4 @@ const fromEnv = (name, fallback) => {
 const projectsPerDay = () => fromEnv('AI_DAILY_LIMIT', 15);
 const reportsPerDay = () => fromEnv('ANALYZER_DAILY_LIMIT', 5);
 
-module.exports = { HOUR_MS, DAY_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE, PLAN_PREVIEWS_PER_MINUTE, PLAN_GENERATES_PER_HOUR, PLAN_MAX_ITEMS, PLAN_TITLE_MAX, PLAN_CUSTOM_ITEM_MAX, PLAN_MIN_WEEKS, PLAN_MAX_WEEKS, PLAN_MIN_DAILY_HOURS, PLAN_MAX_DAILY_HOURS, PROBLEM_NOTE_WRITES_PER_MINUTE, PROBLEM_NOTE_IMPORT_BATCH, projectsPerDay, reportsPerDay };
+module.exports = { HOUR_MS, DAY_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE, PLAN_PREVIEWS_PER_MINUTE, PLAN_GENERATES_PER_HOUR, PLAN_CHANGES_PER_MINUTE, PLAN_MAX_FINISHED, PLAN_MAX_START_DAYS_AHEAD, PLAN_MAX_ITEMS, PLAN_TITLE_MAX, PLAN_CUSTOM_ITEM_MAX, PLAN_MIN_WEEKS, PLAN_MAX_WEEKS, PLAN_MIN_DAILY_HOURS, PLAN_MAX_DAILY_HOURS, PROBLEM_NOTE_WRITES_PER_MINUTE, PROBLEM_NOTE_IMPORT_BATCH, projectsPerDay, reportsPerDay };
