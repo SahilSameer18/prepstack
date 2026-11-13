@@ -622,7 +622,7 @@
       {"type":"docs","title":"Microservices Guide","url":"https://microservices.io/"},
       {"type":"video","title":"Microservices Crash Course","url":"https://youtu.be/Jl9OKQ92SJU"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"hld","sectionId":"hld-scaling-basics"},{"subject":"hld","sectionId":"hld-reliability"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "load-balancing", "name": "Load Balancing", "category": "cs-core",
@@ -828,7 +828,7 @@
       {"type":"docs","title":"gRPC Official Documentation","url":"https://grpc.io/docs/"},
       {"type":"video","title":"gRPC Crash Course - Hussein Nasser","url":"https://youtu.be/gn73U174YgU"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"hld","sectionId":"hld-api-rate-limiting"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "agile-and-scrum", "name": "Agile & Scrum", "category": "soft",
@@ -989,7 +989,7 @@
     "resources": [
       {"type":"docs","title":"nginx documentation","url":"https://nginx.org/en/docs/"}
     ],
-    "prepstack": {"dsaTopics":[],"notes":[],"roadmap":null,"projectStack":null}
+    "prepstack": {"dsaTopics":[],"notes":[{"subject":"cn","sectionId":"cn-system-design-concepts"},{"subject":"hld","sectionId":"hld-scaling-basics"}],"roadmap":null,"projectStack":null}
   },
   {
     "id": "jenkins", "name": "Jenkins", "category": "stack",

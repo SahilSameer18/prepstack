@@ -88,7 +88,7 @@ describe('the skills added after the first 94', () => {
   });
   it('the added tools have an official documentation link and nothing invented (no videos)', () => {
     for (const name of ['HTML', 'CSS', 'Rust', 'C#', 'Tableau', 'Power BI', 'Jenkins', 'Nginx']) {
-      const r = skills.adviceFor(name).resources;
+      const r = skills.adviceFor(name, titles).resources;
       assert.equal(r.length, 1, name);
       assert.equal(r[0].type, 'docs', name);
     }
