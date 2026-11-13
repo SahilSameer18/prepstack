@@ -1,6 +1,6 @@
 # Docs index
 
-Front page files live at the repo root: `README.md`, `TESTING.md`, `LICENSE`. Next work: `IMPROVEMENT_PLAN.md`.
+Front page files live at the repo root: `README.md`, `TESTING.md`, `LICENSE`. **Status and build order: `PROJECT_STATUS.md`. Rules for AI agents: `CLAUDE.md`.** Detailed plan: `IMPROVEMENT_PLAN.md`.
 
 | Folder / file | What is in it |
 |---|---|

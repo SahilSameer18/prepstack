@@ -76,6 +76,8 @@ PrepStack centralizes the workflow:
 ```text
 prepstack/
 ├── docs/                        # More technical details (ENGINEERING.md) and working notes
+├── PROJECT_STATUS.md            # What is done, what is left, and the build order
+├── CLAUDE.md                    # Rules for AI agents working on the project
 ├── TESTING.md                   # What is tested and how
 ├── LICENSE                      # MIT
 ├── client/                      # React 19 frontend
