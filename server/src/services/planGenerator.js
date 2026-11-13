@@ -2,8 +2,8 @@
 // No database, no clock, no randomness: the same input always gives the same plan (a test checks this).
 // The rules are decided in docs/plans/MY_PLAN_PLAN.md (decision numbers in the comments below). This file is Phase 1 (the core):
 // the three goals, core first, dependency order, the two study styles, the 85 percent rule with the 70/15/15 day budget, no gaps in a day,
-// dated mock and behavioral items, weeks, coverage numbers and the "on track" maths. The review ladder, skip, move, locks, lighter days
-// and the rebuild diff are Phase 2.
+// dated mock and behavioral items, weeks, coverage numbers and the "on track" maths. Phase 2 adds what a rebuild needs (the optional
+// `context`: items to keep, a fixed deadline, a review backlog) and lighter days; the review ladder, skip, move and the change preview are in planAdjust.js.
 //
 // Dates are plain "YYYY-MM-DD" strings (Indian time is decided by the caller: todayIst below). Weekdays are numbered Monday = 0 ... Sunday = 6.
 const limits = require('../config/limits');
@@ -58,6 +58,24 @@ class PlanInputError extends Error {
 // ---------- the day budget (decisions 11 and 37) ----------
 const dayBudget = (hours) => ({ planned: Math.floor((hours * 60 * PLANNED_PERCENT) / 100), fresh: Math.floor((hours * 60 * NEW_PERCENT) / 100) }); // whole percents, so 3 hours is exactly 126 minutes
 
+// A lighter stretch (exams, travel, illness): 1 to 14 days at fewer hours (decision 25). Whether it lies inside the plan is checked by the caller.
+const lighterDaysErrors = (list) => {
+  if (!Array.isArray(list)) return ['lighterDays must be a list'];
+  const errors = [];
+  const ranges = [];
+  list.forEach((r, k) => {
+    const from = dayNumber(r && r.from);
+    const to = dayNumber(r && r.to);
+    if (Number.isNaN(from) || Number.isNaN(to) || to < from) { errors.push(`lighterDays[${k}] needs real dates with from before or on to`); return; }
+    if (to - from + 1 > 14) errors.push(`lighterDays[${k}] may last at most 14 days`);
+    if (!(typeof r.hours === 'number' && (r.hours === 0 || (r.hours >= limits.PLAN_MIN_DAILY_HOURS && r.hours <= limits.PLAN_MAX_DAILY_HOURS)))) errors.push(`lighterDays[${k}] hours must be 0 or from ${limits.PLAN_MIN_DAILY_HOURS} to ${limits.PLAN_MAX_DAILY_HOURS}`);
+    ranges.push([from, to]);
+  });
+  ranges.sort((a, b) => a[0] - b[0]);
+  for (let k = 1; k < ranges.length; k += 1) if (ranges[k][0] <= ranges[k - 1][1]) errors.push('lighterDays must not overlap');
+  return errors;
+};
+
 const validateInput = (input, data) => {
   const errors = [];
   const i = input || {};
@@ -79,6 +97,7 @@ const validateInput = (input, data) => {
     else if (i.goalType === 'bigtech' && !BIGTECH_SHEETS.includes(i.sheetSlug)) errors.push(`the big-tech goal uses ${BIGTECH_SHEETS.join(' or ')}`);
   }
   if (i.goalType === 'role' && !data.roadmapCatalog.find((r) => r.slug === i.roadmapSlug)) errors.push('roadmapSlug must name one of the roadmaps');
+  if (i.lighterDays !== undefined) errors.push(...lighterDaysErrors(i.lighterDays));
   if (i.subjects !== undefined && !(Array.isArray(i.subjects) && i.subjects.every((s) => data.notes[s]))) errors.push('subjects must be a list of notes subjects');
   return errors;
 };
@@ -180,14 +199,16 @@ const sequenceItems = (dsa, notes, style) => {
 };
 
 // ---------- the days ----------
-const buildDays = (input) => {
+const buildDays = (input, context) => {
   const start = dayNumber(input.startDate);
-  const deadline = start + input.weeks * 7 - 1;
+  const deadline = context.deadline ? dayNumber(context.deadline) : start + input.weeks * 7 - 1;
+  const lighter = (input.lighterDays || []).map((r) => ({ from: dayNumber(r.from), to: dayNumber(r.to), hours: r.hours }));
   const rest = input.restDay ?? null;
   const days = [];
   for (let n = start; n <= deadline; n += 1) {
     const wd = weekdayOf(n);
-    const hours = wd === rest ? 0 : input.hoursByWeekday[wd];
+    const light = lighter.find((r) => n >= r.from && n <= r.to);
+    const hours = wd === rest ? 0 : light ? light.hours : input.hoursByWeekday[wd];
     days.push({ n, ymd: ymdOf(n), weekday: wd, hours, ...dayBudget(hours), reserved: [] });
   }
   return { days, start, deadline };
@@ -195,7 +216,7 @@ const buildDays = (input) => {
 const weekIndex = (n, start) => Math.floor((n - weekdayOf(n) - (start - weekdayOf(start))) / 7) + 1; // week 1 is the Monday-to-Sunday week that holds the start date
 
 // Dated items are kept first (decision 28): mock blocks from week 4 on Saturdays, behavioral questions in the last two weeks.
-const datedItems = (input, days, start, deadline, data, mockDays) => {
+const datedItems = (input, days, start, deadline, data, mockDays, context) => {
   const reserved = new Map();
   const add = (d, item) => { if (!reserved.has(d.n)) reserved.set(d.n, []); reserved.get(d.n).push(item); };
   if (input.goalType !== 'role') {
@@ -205,12 +226,15 @@ const datedItems = (input, days, start, deadline, data, mockDays) => {
       }
     }
   }
-  if (input.goalType === 'bigtech' && input.weeks >= BEHAVIORAL_MIN_WEEKS) {
-    const ids = (data.behavioral || []).map((q) => q.id);
+  if (input.goalType === 'bigtech' && (context.planWeeks ?? input.weeks) >= BEHAVIORAL_MIN_WEEKS) {
+    const doneIds = context.behavioralDone || new Set();
+    const pool = (data.behavioral || []).filter((q) => !doneIds.has(q.id));
+    const questions = pool.length ? pool : data.behavioral || [];
+    const ids = questions.map((q) => q.id);
     let k = 0;
     for (const d of days) {
       if (d.n <= deadline - BEHAVIORAL_LAST_DAYS || d.hours === 0 || !ids.length) continue;
-      const q = data.behavioral[k % ids.length];
+      const q = questions[k % ids.length];
       add(d, { type: 'behavioral', ref: `behavioral:${q.id}`, title: q.question, plannedMinutes: BEHAVIORAL_MINUTES, core: true });
       k += 1;
     }
@@ -219,10 +243,16 @@ const datedItems = (input, days, start, deadline, data, mockDays) => {
 };
 
 // ---------- filling the days (decisions 30 and 37) ----------
-const fillDays = (sequence, days, reserved) => {
+const fillDays = (sequence, days, reserved, context) => {
+  let backlog = context.backlogMinutes || 0; // overdue review minutes: while they are more than one day's review room, no new item is added
+  const keptMinutes = context.keptMinutes || new Map(); // minutes already taken on a day by items a rebuild keeps (done, locked, added by the student)
   const caps = days.map((d) => {
     const dated = (reserved.get(d.n) || []).reduce((s, it) => s + it.plannedMinutes, 0);
-    return Math.max(0, Math.min(d.fresh, d.planned - dated));
+    const kept = keptMinutes.get(d.n) || 0;
+    const reviewRoom = d.planned - d.fresh;
+    const blocked = backlog > reviewRoom;
+    backlog -= Math.min(backlog, reviewRoom);
+    return blocked ? 0 : Math.max(0, Math.min(d.fresh - kept, d.planned - dated - kept));
   });
   const used = new Array(sequence.length).fill(false);
   const placed = [];
@@ -282,9 +312,11 @@ const fillDays = (sequence, days, reserved) => {
 };
 
 const sumMinutes = (items) => items.reduce((s, it) => s + it.plannedMinutes, 0);
+// The identity of an item whatever its day or part: its ref plus its problem link (or its roadmap step).
+const baseId = (it) => [it.ref, it.link || it.stepId || ''].join('|');
 
 // ---------- the plan ----------
-const generatePlan = (input, data) => {
+const generatePlan = (input, data, context = {}) => {
   const errors = validateInput(input, data);
   if (errors.length) throw new PlanInputError(errors);
 
@@ -292,7 +324,8 @@ const generatePlan = (input, data) => {
   const known = new Set(input.knownTopics || []);
   const seenLinks = new Set();
   const subjects = orderedSubjects(input.subjects || (input.goalType === 'role' ? [] : DEFAULT_SUBJECTS), data);
-  const { days, start, deadline } = buildDays(input);
+  const { days, start, deadline } = buildDays(input, context);
+  const origin = context.weekOrigin ? dayNumber(context.weekOrigin) : start; // week numbers (for the mock blocks) count from the plan's own first day
 
   let units, alreadySolved = 0, knownTopics = [];
   if (input.goalType === 'role') {
@@ -303,7 +336,11 @@ const generatePlan = (input, data) => {
     const notes = subjects.flatMap((s) => data.notes[s].map((section) => notesUnit(s, section)));
     units = sequenceItems(dsa.units, notes, input.style);
   }
-  const content = input.goalType === 'role' ? units.flatMap((u) => u.items.map((it) => ({ ...it, unitId: u.unitId }))) : units;
+  const allContent = input.goalType === 'role' ? units.flatMap((u) => u.items.map((it) => ({ ...it, unitId: u.unitId }))) : units;
+  // a rebuild leaves out what is done, skipped, locked or added by the student, and plans only what is left of a part-done item
+  const exclude = context.exclude || new Set();
+  const remaining = context.remaining || new Map();
+  const content = allContent.filter((it) => !exclude.has(baseId(it))).map((it) => (remaining.has(baseId(it)) ? { ...it, plannedMinutes: remaining.get(baseId(it)) } : it));
   const syllabusMinutes = sumMinutes(content);
 
   // find the plan: fit, drop the last "extra" topic while things do not fit, and drop mock blocks that have no unsolved core problem after them
@@ -312,8 +349,8 @@ const generatePlan = (input, data) => {
   let mockDays = new Set(days.filter((d) => d.weekday === SATURDAY).map((d) => d.n));
   let result;
   for (let guard = 0; guard < 2000; guard += 1) {
-    const reserved = datedItems(input, days, start, deadline, data, mockDays);
-    result = fillDays(sequence, days, reserved);
+    const reserved = datedItems(input, days, origin, deadline, data, mockDays, context);
+    result = fillDays(sequence, days, reserved, context);
     result.reserved = reserved;
     const useless = [...mockDays].filter((n) => reserved.has(n) && reserved.get(n).some((it) => it.type === 'mock') && result.placed.filter((p) => p.type === 'dsa' && p.core && dayNumber(p.day) > n).length < 2);
     if (useless.length) { for (const n of useless) mockDays.delete(n); continue; }
@@ -336,7 +373,7 @@ const generatePlan = (input, data) => {
     items.push(...[...here, ...datedHere]);
   }
   let counter = 0;
-  const finalItems = items.map((it) => ({ ...it, key: `${it.ref}|${it.link || ''}|${it.part ? it.part.n : 0}`, source: 'planner', order: counter++ }));
+  const finalItems = items.map((it) => ({ ...it, key: `${baseId(it)}|${it.part ? it.part.n : 0}`, source: 'planner', plannedDay: it.day, order: counter++ }));
   const content2 = finalItems.filter((it) => it.type !== 'mock' && it.type !== 'behavioral');
   const placedMinutes = sumMinutes(content2);
   const leftOut = [
@@ -364,7 +401,7 @@ const generatePlan = (input, data) => {
   }
 
   return {
-    input: { goalType: input.goalType, style: input.style, startDate: input.startDate, weeks: input.weeks, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay ?? null, sheetSlug: input.sheetSlug || null, roadmapSlug: input.roadmapSlug || null, subjects },
+    input: { lighterDays: input.lighterDays || [], goalType: input.goalType, style: input.style, startDate: input.startDate, weeks: input.weeks, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay ?? null, sheetSlug: input.sheetSlug || null, roadmapSlug: input.roadmapSlug || null, subjects, knownTopics: input.knownTopics || [], solvedLinks: input.solvedLinks || [] },
     startDate: input.startDate,
     deadline: ymdOf(deadline),
     finishDate,
@@ -423,6 +460,6 @@ const previewPlan = (input, data) => {
 };
 
 module.exports = {
-  generatePlan, previewPlan, groupByWeek, onTrack, validateInput, dayBudget, todayIst, dayNumber, ymdOf, weekdayOf, PlanInputError,
+  generatePlan, previewPlan, groupByWeek, onTrack, validateInput, lighterDaysErrors, baseId, dayBudget, todayIst, dayNumber, ymdOf, weekdayOf, PlanInputError,
   MINUTES_BY_DIFFICULTY, MOCK_MINUTES, BEHAVIORAL_MINUTES, GOALS, STYLES, DEFAULT_SUBJECTS, notesMinutes, problemMinutes,
 };
