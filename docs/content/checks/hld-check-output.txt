@@ -1,0 +1,293 @@
+
+======== A1 seconds in a day and a quick rule
+seconds per day: 86400
+round to: about 100,000 (86,400 is 14 percent lower, good enough for a first estimate)
+
+======== A2 powers of two
+2^10 (KB): 1,024 bytes; decimal 10^3 is about 1,000
+2^20 (MB): 1,048,576 bytes; decimal 10^6 is about 1,000,000
+2^30 (GB): 1,073,741,824 bytes; decimal 10^9 is about 1,000,000,000
+2^40 (TB): 1,099,511,627,776 bytes; decimal 10^12 is about 1,000,000,000,000
+2^50 (PB): 1,125,899,906,842,624 bytes; decimal 10^15 is about 1,000,000,000,000,000
+
+======== A3 example traffic and storage (made-up numbers)
+daily active users: 100,000,000
+reads per user per day: 20
+writes per user per day: 2
+average read QPS: 23,148
+average write QPS: 2,315
+peak read QPS if peak is 2x average: 46,296
+peak write QPS if peak is 2x average: 4,630
+new data per day at 1 KB per write: 200 GB
+data kept for 5 years (no copies): 365.0 TB
+same with 3 copies: 1,095.0 TB
+read bandwidth if each read returns 2 KB, at average QPS: 46.3 MB per second
+
+======== A4 latency numbers (Jeff Dean's talk, about 2007; orders of magnitude only)
+L1 cache reference: 0.5 ns
+Branch mispredict: 5 ns
+L2 cache reference: 7 ns
+Mutex lock/unlock: 100 ns
+Main memory reference: 100 ns
+Read 1 MB sequentially from memory: 250,000 ns
+Round trip within same datacenter: 500,000 ns
+Disk seek: 10,000,000 ns
+Read 1 MB sequentially from disk: 30,000,000 ns
+Send packet CA->Netherlands->CA: 150,000,000 ns
+if a main memory reference took 1 second: a datacenter round trip takes: 5,000 s = 83 minutes
+                                            a disk seek takes: 100,000 s = 1.16 days
+                                            CA->Netherlands->CA takes: 17.4 days
+disk seek divided by memory reference: 100,000x
+
+======== A5 availability in nines
+99.0%: per year 5,256.0 min (87.60 h); per 30 days 432.0 min; per day 864.0 s
+99.9%: per year 525.6 min (8.76 h); per 30 days 43.2 min; per day 86.4 s
+99.95%: per year 262.8 min (4.38 h); per 30 days 21.6 min; per day 43.2 s
+99.99%: per year 52.6 min (0.88 h); per 30 days 4.3 min; per day 8.6 s
+99.999%: per year 5.3 min (0.09 h); per 30 days 0.4 min; per day 0.9 s
+two services in a row, each 99.9%: 99.8001%
+two copies in parallel, each 99.9%, if failures are independent: 99.9999%
+three services in a row, each 99.95%: 99.8501%
+
+======== B1 Little's law (concurrency = rate x time)
+1,000 requests per second, 100 ms each: requests in progress: 100.0
+same service when latency grows to 2 s: 2000
+100 messages per second, 100 ms each: threads needed (AWS queue article example): 10.0
+same when latency spikes to 10 s: 1000
+
+======== B2 N+2 capacity (Google SRE book chapter 22 example numbers)
+breaking point per cluster (QPS): 5000
+peak load (QPS): 19000
+clusters needed to carry peak: 4
+clusters for N+2: 6
+book says: approximately six clusters
+
+======== B3 round robin against least loaded on uneven requests (simulation, made-up costs)
+average work per server: 313.1
+round robin: busiest / quietest server: 1.24
+round robin: busiest / average: 1.11
+least loaded (ideal, sees all work): busiest / quietest: 1.032
+
+======== B4 hash mod N when N changes
+servers 4 -> 5: keys that change server: 80.0% (ideal minimum 1/5 = 20.0%)
+servers 10 -> 11: keys that change server: 90.8% (ideal minimum 1/11 = 9.1%)
+servers 100 -> 101: keys that change server: 99.0% (ideal minimum 1/101 = 1.0%)
+
+======== C1 hit ratio changes the average time and the load on the database (made-up latencies)
+hit takes: 1 ms; a miss takes 21 ms (1 ms cache look-up + 20 ms database)
+hit ratio 50%: average 11.0 ms; database gets 5,000 of 10,000 requests per second
+hit ratio 80%: average 5.0 ms; database gets 2,000 of 10,000 requests per second
+hit ratio 90%: average 3.0 ms; database gets 1,000 of 10,000 requests per second
+hit ratio 95%: average 2.0 ms; database gets 500 of 10,000 requests per second
+hit ratio 99%: average 1.2 ms; database gets 100 of 10,000 requests per second
+
+======== C2 LRU against LFU on a fixed trace (simulation; keys follow a Zipf-like spread)
+cache size 50 (of 1000 keys), plain trace: LRU 46.3%  LFU 59.9%
+cache size 100 (of 1000 keys), plain trace: LRU 57.8%  LFU 68.2%
+cache size 200 (of 1000 keys), plain trace: LRU 69.8%  LFU 76.5%
+cache size 50, same trace plus a 1,000-key one-time scan: LRU 44.1%  LFU 57.0%
+cache size 100, same trace plus a 1,000-key one-time scan: LRU 54.9%  LFU 64.9%
+cache size 200, same trace plus a 1,000-key one-time scan: LRU 66.1%  LFU 72.9%
+
+======== C3 stampede (many requests miss one key at once; made-up numbers)
+a popular key gets: 2,000 requests per second
+refilling it from the database takes: 50 ms
+requests that arrive while the first one refills (each goes to the database): 100
+with request coalescing (one refill, the rest wait): 1
+
+======== D1 how big is it (made-up example)
+1 billion rows of 200 bytes: 200 GB of table data
+with an index of 16 bytes per row: 16 GB more
+read 1 MB sequentially from disk (Dean, about 2007) versus 1 MB from memory: 120x slower
+
+======== E1 consistent hashing ring: how many keys move when a node is added
+virtual nodes per server 1: moved when E joins 17.3% (ideal 20.0%); busiest node 2.00x average, quietest 0.07x
+virtual nodes per server 10: moved when E joins 25.0% (ideal 20.0%); busiest node 1.64x average, quietest 0.49x
+virtual nodes per server 100: moved when E joins 19.3% (ideal 20.0%); busiest node 1.14x average, quietest 0.89x
+virtual nodes per server 200: moved when E joins 18.6% (ideal 20.0%); busiest node 1.15x average, quietest 0.86x
+moved keys all went to the new node: True
+
+======== E2 replica placement: walk the ring and take the next 3 different servers (v=100)
+user-1: ['A', 'D', 'C']
+user-2: ['E', 'C', 'B']
+user-3: ['D', 'C', 'B']
+
+======== E3 a hot partition (Zipf-like keys spread over 8 shards by hash)
+requests per shard: [17464, 17402, 28427, 40791, 15837, 27574, 26244, 26261]
+busiest shard / average: 1.63
+share of all requests that hit the single hottest key: 10.2%
+
+======== F1 quorums: a read and a write quorum must overlap when R + W > N (checked by trying every pair of replica sets)
+N = 3
+  W=1 R=1: R+W>N False; every read set meets every write set: False; write survives 2 down, read survives 2 down
+  W=1 R=3: R+W>N True; every read set meets every write set: True; write survives 2 down, read survives 0 down
+  W=2 R=2: R+W>N True; every read set meets every write set: True; write survives 1 down, read survives 1 down
+  W=2 R=3: R+W>N True; every read set meets every write set: True; write survives 1 down, read survives 0 down
+  W=3 R=1: R+W>N True; every read set meets every write set: True; write survives 0 down, read survives 2 down
+  W=3 R=2: R+W>N True; every read set meets every write set: True; write survives 0 down, read survives 1 down
+  W=3 R=3: R+W>N True; every read set meets every write set: True; write survives 0 down, read survives 0 down
+N = 5
+  W=1 R=1: R+W>N False; every read set meets every write set: False; write survives 4 down, read survives 4 down
+  W=1 R=5: R+W>N True; every read set meets every write set: True; write survives 4 down, read survives 0 down
+  W=2 R=4: R+W>N True; every read set meets every write set: True; write survives 3 down, read survives 1 down
+  W=2 R=5: R+W>N True; every read set meets every write set: True; write survives 3 down, read survives 0 down
+  W=3 R=3: R+W>N True; every read set meets every write set: True; write survives 2 down, read survives 2 down
+  W=3 R=4: R+W>N True; every read set meets every write set: True; write survives 2 down, read survives 1 down
+  W=3 R=5: R+W>N True; every read set meets every write set: True; write survives 2 down, read survives 0 down
+  W=4 R=2: R+W>N True; every read set meets every write set: True; write survives 1 down, read survives 3 down
+  W=4 R=3: R+W>N True; every read set meets every write set: True; write survives 1 down, read survives 2 down
+  W=4 R=4: R+W>N True; every read set meets every write set: True; write survives 1 down, read survives 1 down
+  W=4 R=5: R+W>N True; every read set meets every write set: True; write survives 1 down, read survives 0 down
+  W=5 R=1: R+W>N True; every read set meets every write set: True; write survives 0 down, read survives 4 down
+  W=5 R=2: R+W>N True; every read set meets every write set: True; write survives 0 down, read survives 3 down
+  W=5 R=3: R+W>N True; every read set meets every write set: True; write survives 0 down, read survives 2 down
+  W=5 R=4: R+W>N True; every read set meets every write set: True; write survives 0 down, read survives 1 down
+  W=5 R=5: R+W>N True; every read set meets every write set: True; write survives 0 down, read survives 0 down
+(N, R, W) = (3, 2, 2): R+W = 4 > 3, tolerates 1 replica down for reads and for writes (Dynamo paper's common setting)
+
+======== F2 vector clocks (made-up object, three servers X, Y, Z)
+write 1 at X: {'X': 1}
+write 2 at X (after write 1): {'X': 2}
+write 3 at Y, which saw write 2: {'X': 2, 'Y': 1}
+write 4 at Z, which saw write 2: {'X': 2, 'Z': 1}
+compare write 2 with write 1: a is newer or equal (a descends from b)
+compare write 3 with write 4: CONFLICT (neither descends from the other)
+client merges 3 and 4, X writes the result: {'X': 3, 'Y': 1, 'Z': 1}
+compare merged with write 3: a is newer or equal (a descends from b)
+compare merged with write 4: a is newer or equal (a descends from b)
+
+======== F3 last write wins loses a newer write when clocks differ (made-up)
+server A clock runs 5 ms fast. A writes 'blue' at true time 100 ms: stamp 105
+server B (accurate clock) writes 'green' at true time 103 ms, which is later in real life: stamp 103
+last-write-wins keeps: 'blue' (stamp 105 > 103): the later real write is lost
+
+======== G1 majority and failures tolerated
+1 servers: majority 1, tolerates 0 down; SRE rule 2f+1: f = 0
+2 servers: majority 2, tolerates 0 down; SRE rule 2f+1: f = 0
+3 servers: majority 2, tolerates 1 down; SRE rule 2f+1: f = 1
+4 servers: majority 3, tolerates 1 down; SRE rule 2f+1: f = 1
+5 servers: majority 3, tolerates 2 down; SRE rule 2f+1: f = 2
+6 servers: majority 4, tolerates 2 down; SRE rule 2f+1: f = 2
+7 servers: majority 4, tolerates 3 down; SRE rule 2f+1: f = 3
+
+======== G2 chance that a majority is up (each server up with probability 0.99, independent; made-up)
+3 servers: 99.97020% (down about 156.63 min a year)
+5 servers: 99.99901% (down about 5.18 min a year)
+6 servers: 99.99804% (down about 10.28 min a year)
+7 servers: 99.99997% (down about 0.18 min a year)
+
+======== G3 split votes: Raft picks election timeouts at random in a range (Monte Carlo; the network delay is an assumption)
+4 followers, timeouts uniform in 150 to 300 ms, message delay 10 ms: two or more time out within the delay: 24.1% of elections
+4 followers, timeouts uniform in 150 to 300 ms, message delay 20 ms: two or more time out within the delay: 43.5% of elections
+4 followers, timeouts uniform in 150 to 160 ms, message delay 10 ms: two or more time out within the delay: 100.0% of elections
+4 followers, timeouts uniform in 150 to 160 ms, message delay 20 ms: two or more time out within the delay: 100.0% of elections
+4 followers, timeouts uniform in 150 to 500 ms, message delay 10 ms: two or more time out within the delay: 11.0% of elections
+4 followers, timeouts uniform in 150 to 500 ms, message delay 20 ms: two or more time out within the delay: 20.9% of elections
+
+======== G4 fencing token trace (Kleppmann's example)
+client 1 gets lock token 33, then pauses for longer than its lease
+client 2 gets lock token 34
+client 2 write with token 34 accepted
+client 1 wakes up and still believes it holds the lock
+client 1 write with token 33 REJECTED (storage has seen 34)
+
+======== H1 backlog after an outage (arrival rate L per second, consumers can do M per second)
+capacity 1.25x arrivals, hour-long outage: backlog 360,000 messages; drains in 240 minutes
+capacity 1.5x arrivals, hour-long outage: backlog 360,000 messages; drains in 120 minutes
+capacity 2x arrivals, hour-long outage: backlog 360,000 messages; drains in 60 minutes
+capacity 3x arrivals, hour-long outage: backlog 360,000 messages; drains in 30 minutes
+AWS article example: capacity exactly 2x -> an hour-long outage takes: another hour to clear (3600 s backlog / (2L-L)/L = 3600 s)
+
+======== H2 partitions limit how many consumers can work in one group
+6 partitions, 3 consumers: 3 busy, 0 idle
+6 partitions, 6 consumers: 6 busy, 0 idle
+6 partitions, 10 consumers: 6 busy, 4 idle
+
+======== H3 at-least-once delivery and duplicates (simulation: crash after processing, before saving the offset)
+messages: 100,000
+chance of a crash between processing and saving the position: 0.001
+messages processed twice: 99 (about 100 expected)
+same run with an idempotent consumer (it remembers ids it has handled): 0 duplicate effects
+
+======== H4 order within a key (hash of the key picks the partition)
+user-1: partition 3 of 4
+user-2: partition 0 of 4
+user-3: partition 2 of 4
+user-4: partition 3 of 4
+user-5: partition 1 of 4
+user-6: partition 1 of 4
+
+======== I1 limit 5 requests per 10 seconds; five requests at 9.0-9.8 s and five at 10.0-10.8 s
+fixed window: allowed 10 of 10: YYYYYYYYYY
+sliding window log (exact): allowed 5 of 10: YYYYYnnnnn
+sliding window counter (estimate): allowed 6 of 10: YYYYYnYnnn
+token bucket (5 tokens, 0.5 a second): allowed 5 of 10: YYYYYnnnnn
+fixed window lets through: 10 requests inside 1.8 seconds although the limit is 5 per 10 seconds (twice the limit around the boundary)
+
+======== I2 how often the approximations disagree with the exact log (random arrivals, made-up)
+fixed window: decides differently from the exact log on 41.97% of requests; allowed 49.4% (exact allows 43.3%)
+sliding window counter: decides differently from the exact log on 33.03% of requests; allowed 47.6% (exact allows 43.3%)
+
+======== I3 memory per user for 1,000,000 users, limit 100 per minute (assumption: 8 bytes per number)
+sliding window log (up to 100 timestamps): 800 MB
+sliding window counter (2 counts): 16 MB
+token bucket (a count and a time): 16 MB
+
+======== J1 retries multiply (SRE chapter 22 and 21, AWS timeouts article)
+3 retries = 4 attempts per layer; 3 layers: 4^3 = 64 attempts on the database for one user request
+5 layers in a chain, 3 retries (4 attempts) each (made-up chain): 4^5 = 1024 attempts at the bottom for one user request
+per-client retry budget of 10 percent: worst case 1.1x load instead of about 3x (SRE chapter 21)
+
+======== J2 retry storm: 1,000 clients all fail at t = 0, then retry (simulation, made-up)
+exponential backoff, no jitter: busiest 50 ms slot for retry 1, 2, 3, 4, 5, 6: [1000, 1000, 1000, 1000, 1000, 1000] (of 1,000 clients)
+exponential backoff, full jitter: busiest 50 ms slot for retry 1, 2, 3, 4, 5, 6: [510, 268, 124, 73, 37, 27] (of 1,000 clients)
+
+======== J3 error budget
+SLO 99.9% over 30 days: 43.2 minutes of allowed failure
+SLO 99.95% over 30 days: 21.6 minutes of allowed failure
+SLO 99.99% over 30 days: 4.3 minutes of allowed failure
+
+======== J4 queues and deadlines (SRE chapter 22 examples)
+queue 10x the thread count, 100 ms a request: a full queue means 10 x 100 ms + 100 ms = 1.1 s (1.0 s waiting)
+deadline 30 s; 7 s used by the first service: 23 s left for B; B uses 4 s: 19 s left for C
+
+======== J5 bimodal latency (SRE chapter 22 example)
+thread-seconds per request: 5.095
+requests per second the 1,000 threads can finish: 196 of 1000 arriving
+share served: 19.6%; share failed: 80.4%
+
+======== K1 Bloom filter: false positive rate p = (1 - e^(-kn/m))^k, best k = (m/n) ln 2
+5 bits per item, 3 hash functions: false positive rate 9.18%; memory for 1,000,000 items 0.62 MB
+8 bits per item, 6 hash functions: false positive rate 2.16%; memory for 1,000,000 items 1.00 MB
+10 bits per item, 7 hash functions: false positive rate 0.82%; memory for 1,000,000 items 1.25 MB
+15 bits per item, 10 hash functions: false positive rate 0.07%; memory for 1,000,000 items 1.88 MB
+bits per item for a 1% rate (best k): 9.59 bits, k = 6.6
+measured: 10,000 items, 8 bits each, k = 6; 20,000 absent keys tested: 2.13% reported present (formula 2.16%)
+
+======== K2 replication against erasure coding (storing 1 PB of user data)
+3 copies: stored 3.00 PB; extra 200%; survives 2 lost pieces
+Reed-Solomon 6 data + 3 parity: stored 1.50 PB; extra 50%; survives 3 lost pieces
+Reed-Solomon 10 data + 4 parity: stored 1.40 PB; extra 40%; survives 4 lost pieces
+
+======== K3 chunk size and the master's memory (GFS paper: under 64 bytes of metadata per 64 MB chunk)
+1 PB of files in 64 MB chunks: 16,777,216 chunks
+master metadata at 64 bytes a chunk: 1.00 GiB
+same data in 4 KB blocks (made-up comparison): 274,877,906,944 blocks; at 64 bytes each 16 TiB of metadata
+
+======== K4 geohash cell size (a geohash character carries 5 bits, alternating longitude then latitude)
+1 characters: cell 45.00000 x 45.00000 degrees; at the equator about 5,009,400 m wide x 4,975,650 m tall (width: 1 degree of longitude = 40,075 km / 360 = 111.32 km; height: 110.57 km a degree of latitude near the equator)
+2 characters: cell 11.25000 x 5.62500 degrees; at the equator about 1,252,350 m wide x 621,956 m tall (width: 1 degree of longitude = 40,075 km / 360 = 111.32 km; height: 110.57 km a degree of latitude near the equator)
+3 characters: cell 1.40625 x 1.40625 degrees; at the equator about 156,544 m wide x 155,489 m tall (width: 1 degree of longitude = 40,075 km / 360 = 111.32 km; height: 110.57 km a degree of latitude near the equator)
+4 characters: cell 0.35156 x 0.17578 degrees; at the equator about 39,136 m wide x 19,436 m tall (width: 1 degree of longitude = 40,075 km / 360 = 111.32 km; height: 110.57 km a degree of latitude near the equator)
+5 characters: cell 0.04395 x 0.04395 degrees; at the equator about 4,892 m wide x 4,859 m tall (width: 1 degree of longitude = 40,075 km / 360 = 111.32 km; height: 110.57 km a degree of latitude near the equator)
+6 characters: cell 0.01099 x 0.00549 degrees; at the equator about 1,223 m wide x 607 m tall (width: 1 degree of longitude = 40,075 km / 360 = 111.32 km; height: 110.57 km a degree of latitude near the equator)
+7 characters: cell 0.00137 x 0.00137 degrees; at the equator about 153 m wide x 152 m tall (width: 1 degree of longitude = 40,075 km / 360 = 111.32 km; height: 110.57 km a degree of latitude near the equator)
+8 characters: cell 0.00034 x 0.00017 degrees; at the equator about 38 m wide x 19 m tall (width: 1 degree of longitude = 40,075 km / 360 = 111.32 km; height: 110.57 km a degree of latitude near the equator)
+
+======== K5 inverted index (three tiny documents)
+coffee: [1, 2]
+cold: [1]
+hot: [2, 3]
+shop: [2]
+tea: [3]
+search 'hot coffee' (documents that have both words): [2]

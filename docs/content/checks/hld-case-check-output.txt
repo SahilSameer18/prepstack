@@ -1,0 +1,258 @@
+
+======== 1A URL shortener: traffic and storage (assumption: 100 million new links a month, 100 reads per write, 500 bytes a record, kept 5 years)
+average write QPS: 38.6
+average read QPS: 3,858
+peak read QPS at 2x: 7,716
+links after 5 years: 6,000,000,000
+storage: 3.0 TB
+
+======== 1B code length: how many codes fit (62 characters: a-z, A-Z, 0-9)
+5 characters: 62^5 = 916,132,832
+6 characters: 62^6 = 56,800,235,584
+7 characters: 62^7 = 3,521,614,606,208
+8 characters: 62^8 = 218,340,105,584,896
+7 characters used after 5 years: 0.170% of the space
+
+======== 1C base-62 from a counter
+counter 1: code 1 (1 characters)
+counter 61: code Z (1 characters)
+counter 62: code 10 (2 characters)
+counter 125: code 21 (2 characters)
+counter 1,000,000: code 4c92 (4 characters)
+counter 6,000,000,000: code 6y3o5y (6 characters)
+multiplier coprime with 62^7: True
+counters 1 to 5 scrambled by multiplying and taking the remainder: ['02TDK01', '05Nhu02', '08GVe03', '0bAyY04', '0eucI05']
+scrambling never repeats a code (checked on the first 1,000,000 counters): True
+
+======== 1D random codes: the chance a new random code is already taken equals the share of the space used
+0.17% of codes used: average tries until a free one 1.00
+10.00% of codes used: average tries until a free one 1.11
+50.00% of codes used: average tries until a free one 2.00
+90.00% of codes used: average tries until a free one 10.00
+
+======== 1E cache hit ratio for redirects (assumption: 100,000 links, Zipf-like reads; LRU; simulation)
+cache holds 0.5% of the links: hit ratio 43.8%
+cache holds 1% of the links: hit ratio 50.3%
+cache holds 5% of the links: hit ratio 66.0%
+cache holds 10% of the links: hit ratio 72.5%
+
+======== 2A a counter updated as read-then-write is wrong when requests overlap (assumption: limit 5; 10 requests read the counter before any writes it)
+limit 5, 10 overlapping requests, read then write: 10 allowed
+same with an atomic increment: 5 allowed
+
+======== 2B splitting a quota across servers (assumption: limit 100 a minute, 5 servers)
+each server gets: 20
+a user whose requests all land on one server can use: 20 of 100 (20%)
+if each server only checks its own counter against the full limit, one user spread over 5 servers can send up to: 500 a minute (5x the limit)
+
+======== 2C memory for the limiter state (assumption: 10,000,000 active users, token bucket = a count and a time, 8 bytes each, plus 50 bytes of key)
+bytes per user: 66
+total: 660 MB
+requests per second if each user sends 1 request every 10 s on average: 1,000,000
+
+======== 2D token bucket: allowed requests in a burst (assumption: capacity 10 tokens, refill 5 a second)
+15 requests at t=0 then 15 at t=1: allowed 10 of the first 15, 5 of the next 15
+
+======== 3A sizing (assumption: 10 TB of data, 3 copies, 2 TB of data per node kept under 60 percent full)
+nodes needed: 25
+
+======== 3B read and write quorums with N = 3 (each node up with probability 0.99, independent; assumption)
+write succeeds with W = 2 (2 of the 3 replicas up): 99.9702%
+write succeeds with W = 3: 97.0299%
+write succeeds with W = 1: 99.99990%
+
+======== 3C Merkle tree comparison (assumption: 1,048,576 keys in a range, 32-byte hashes, one key differs)
+levels below the root: 20
+hashes exchanged walking down to the one differing key (both children at each level): 40 hashes = 1280 bytes
+sending every key's hash instead: 33.6 MB
+
+======== 3D replica set from the ring (see hld-check-output E2); sloppy quorum and hinted handoff are described in the Dynamo paper
+
+======== 3E writes and reads per second needed (assumption: 100,000 reads and 20,000 writes per second; each write goes to 3 replicas)
+replica writes per second: 60,000
+replica reads per second at R = 2: 200,000
+per node if spread over the nodes from 3A: 10,400 operations a second
+
+======== 4A traffic (assumption: 50 million daily users, 40 messages sent each, 300 bytes stored per message with metadata)
+messages a day: 2,000,000,000
+average messages a second: 23,148
+peak at 3x: 69,444
+storage a year: 219 TB
+
+======== 4B connections (assumption: 10 million users connected at once, 10 KB memory a connection, 100,000 connections a server)
+memory for connections: 100 GB
+connection servers: 100
+
+======== 4C group fan-out (assumption: a group of 500 members; 1 message)
+deliveries for one message: 500
+if 1 percent of all messages go to such groups: 115,741 extra deliveries a second on average
+
+======== 4D ordering: two senders, messages arrive out of order; the server stamps a sequence number per conversation
+order the server saw them: [(1, 'B', 'second'), (2, 'A', 'first')]
+a client sorts by the number, not by its own clock: ['second', 'first']
+
+======== 4E offline users (assumption: a phone is off for 8 hours; the user gets 5 messages an hour)
+messages waiting: 40
+stored for all such users if 20 percent of 50 million are offline: 400,000,000 messages = 120 GB
+
+======== 5A a burst (assumption: 5 million marketing pushes sent at once, one worker sends 1,000 a second)
+1 workers: 5,000 s (83.3 min)
+50 workers: 100 s (1.7 min)
+500 workers: 10 s (0.2 min)
+
+======== 5B one shared queue delays a login code behind the burst (assumption: 10,000 sends a second in total)
+a code that arrives just after 5,000,000 marketing messages waits: 500 s (8.3 min)
+with a separate queue for codes: no wait behind the marketing messages
+
+======== 5C retries with backoff (assumption: start 1 s, double each time, 5 retries)
+(retry, wait seconds, seconds since the first failure): [(1, 1, 1), (2, 2, 3), (3, 4, 7), (4, 8, 15), (5, 16, 31)]
+
+======== 5D duplicates: at-least-once sending with an id (assumption: 1,000,000 sends, 0.1 percent are repeated by a retry after a lost acknowledgement)
+repeated sends: 1000
+with a stored send id they are dropped: 0 duplicate pushes reach users
+
+======== 5E fan-out for an event (assumption: 1 event notifies 2,000 followers on 3 channels)
+deliveries: 6000
+
+======== 6A fan-out on write against fan-out on read (assumption: 100 million daily users, 200 follows each, 20 million posts a day, 10 feed loads per user a day)
+feed entries written a day if every post is copied to 200 followers: 4,000,000,000 = 46,296 a second
+feed loads a second: 11,574
+timeline reads a second if each load merges 200 timelines at read time: 2,314,815
+
+======== 6B storage of ready-made feeds (assumption: 800 post ids a user, 8 bytes each)
+all users: 640 GB (one copy)
+
+======== 6C who dominates the copying (simulation: 1,000,000 accounts, Pareto-distributed follower counts, assumption)
+total followers over all accounts: 107,032,464
+the top 0.1% of accounts (1,000) hold: 23.7% of all follower links
+the top 1.0% of accounts (10,000) hold: 40.4% of all follower links
+accounts with more than 10,000 followers: 595 (0.060%)
+copies avoided if accounts above 10,000 are read at feed time instead: 20.7% of all fan-out writes
+
+======== 6D one celebrity post (assumption: 50 million followers, one worker does 20,000 feed writes a second)
+workers needed to finish in 10 s: 250
+one worker alone needs: 2,500 s = 42 min
+
+======== 7A block size (assumption: 4 MB blocks)
+a 1 MB file: 1 block
+a 100 MB file: 25 blocks; changing one byte re-uploads 4 MB, not 100 MB (4.00%)
+a 1024 MB file: 256 blocks; changing one byte re-uploads 4 MB, not 1024 MB (0.39%)
+
+======== 7B fixed-size blocks against content-defined blocks when 1 byte is inserted at the start (simulation: 4 MB of random bytes)
+fixed 64 KB blocks: blocks that differ after the insert: 65 of 65
+content-defined blocks (about 64 KB average): blocks that differ: 1 of 50
+
+======== 7C deduplication (assumption: 1 million users each store the same 100 MB installer)
+without dedupe: 100 TB
+with one stored copy of each block: 100 MB plus a small reference per user
+
+======== 7D metadata (assumption: 100 million users, 200 files each, 500 bytes of metadata a file)
+metadata: 10 TB
+
+======== 8A storage of one hour of video in several renditions (assumption: the bit rates below)
+240p at 0.4 Mbit/s: 180 MB an hour
+360p at 0.8 Mbit/s: 360 MB an hour
+480p at 1.5 Mbit/s: 675 MB an hour
+720p at 3.0 Mbit/s: 1,350 MB an hour
+1080p at 6.0 Mbit/s: 2,700 MB an hour
+4K at 15.0 Mbit/s: 6,750 MB an hour
+all renditions together: 12,015 MB = 12.0 GB an hour of video
+
+======== 8B uploads (assumption: 100,000 hours of video uploaded a day)
+storage a day for all renditions: 1,202 TB
+a year: 439 PB
+
+======== 8C segments (assumption: 4-second segments)
+segments in one hour of one rendition: 900
+files for six renditions: 5400
+
+======== 8D adaptive bit rate: the player picks the highest rendition at or below 80 percent of the measured speed (assumption)
+measured speeds (Mbit/s): [8.0, 6.5, 3.0, 1.2, 0.6, 2.0, 5.0, 9.0]
+renditions chosen: ['1080p', '720p', '480p', '360p', '240p', '480p', '720p', '1080p']
+
+======== 8E delivery (assumption: 10 million viewers at 3 Mbit/s at the same time)
+total bandwidth: 30 Tbit/s
+CDN hit ratio 90%: origin must supply 3.00 Tbit/s
+CDN hit ratio 95%: origin must supply 1.50 Tbit/s
+CDN hit ratio 99%: origin must supply 0.30 Tbit/s
+
+======== 8F start-up delay (assumption: first segment of 4 s at 1 Mbit/s = 0.5 MB; connection speed 5 Mbit/s)
+download time of the first segment: 0.80 s
+
+======== 9A location updates (assumption: 1,000,000 drivers online, one update every 4 seconds, 100 bytes each)
+updates a second: 250,000
+data a second: 25 MB
+
+======== 9B finding nearby drivers: grid search against checking everyone (simulation: 10,000 drivers on a 20 km x 20 km city, 1 km cells, 1,000 rider requests, nearest driver within the 3x3 cells around the rider)
+drivers checked per request with the grid: 211.0 (brute force: 10,000)
+requests where the grid found a driver: 1000 of 1000
+grid answer equals the true nearest driver: 1000 of 1000
+
+======== 9C a driver near a cell border (the true nearest driver can be outside the 3x3 block only when the nearest is more than 1 km away: checked above)
+
+======== 9D matching rate (assumption: 100,000 ride requests a minute in the busiest hour)
+requests a second: 1,667
+
+======== 9E geohash cell sizes: see hld-check-output K4 (6 characters about 1.2 km wide at the equator)
+
+======== 10A crawl rate (assumption: 1 billion pages in 30 days, 100 KB a page)
+pages a second: 386
+download bandwidth: 38.6 MB/s = 309 Mbit/s
+storage for the pages: 100 TB
+
+======== 10B politeness (assumption: at most 1 request a second to one site)
+time to fetch 10,000 pages from one site: 10000 s = 2.8 hours
+sites that must be crawled in parallel to reach the rate above: about 386 (each at 1 page a second)
+
+======== 10C remembering visited URLs (assumption: 10 billion URLs seen, 8-byte hash each)
+exact set of hashes: 80 GB
+Bloom filter, 10 bits a URL (7 hashes): 12.5 GB, about 0.82% of new URLs wrongly seen as visited (see hld-check-output K1)
+Bloom filter, 15 bits a URL (10 hashes): 18.8 GB, about 0.07% of new URLs wrongly seen as visited (see hld-check-output K1)
+
+======== 10D frontier by site (simulation: 3 sites, each polled at most once per 2 seconds, queue per site)
+(time in seconds, site) fetch order: [(0, 'a.com'), (0.5, 'b.com'), (1.0, 'c.com'), (2, 'a.com'), (2.5, 'b.com'), (4, 'a.com'), (4.5, 'b.com'), (6, 'a.com'), (8, 'a.com')]
+
+======== 10E DNS (assumption: 1 lookup of 50 ms per new site, 1,000 new sites a second)
+lookup time a second: 50 s of waiting per second: needs parallel lookups and a cache
+
+======== 11A double booking: check-then-write (worked by hand, not simulated: 10 buyers look at the same free seat at the same moment; assumption)
+seat sold to: 10 buyers if each reads 'free' then writes 'mine' (no lock)
+with one atomic 'set owner where owner is empty' update: 1 buyer wins, 9 get 'taken'
+
+======== 11B holds that expire (assumption: 50,000 seats, 10-minute hold, 70 percent of holds are abandoned)
+seats held but never bought at the end of a 10-minute round: 35,000 of 50,000
+with a 10-minute timeout they come back after: 10 minutes; with 2 minutes they come back 5x sooner but honest buyers may lose the seat while paying
+
+======== 11C waiting room (assumption: 1,000,000 people arrive at once, the booking service finishes 2,000 purchases a second at most)
+time to let everyone through at 2,000 a second: 500 s = 8.3 min
+50,000 seats sell out after at most: 25 s if every admitted person buys one seat
+
+======== 11D payment retries (assumption: 1 percent of payment requests time out and the buyer presses again)
+duplicate charges without an idempotency key per 100,000 orders: 1000
+with one: 0
+
+======== 12A count-min sketch size: width = ceil(e / error), depth = ceil(ln(1 / failure chance)) (assumption: error 0.1 percent of the total count, failure chance 1 percent)
+width: 2719
+depth: 5
+counters: 13595
+memory at 4 bytes a counter: 54.4 KB
+
+======== 12B exact counting memory (assumption: 100,000 / 100,000,000 / 1,000,000,000 different items, 16 bytes each: id and count)
+100,000 items: 1.6 MB
+100,000,000 items: 1,600.0 MB
+1,000,000,000 items: 16 GB
+
+======== 12C count-min sketch on a stream (simulation: 1,000,000 events over 100,000 items, Zipf-like)
+true top 10 items and counts: [(0, 82624), (1, 41546), (2, 27512), (3, 20711), (4, 16514), (5, 13492), (6, 11805), (7, 10582), (8, 9169), (9, 8269)]
+sketch top 10 found among the true top 10: 10 of 10
+sketch minus true count for the true top 10 (never negative): [133, 143, 96, 136, 56, 76, 92, 54, 109, 75]
+largest overcount over 2,000 random items: 318
+allowed error (0.1 percent of 1,000,000 events): 1000
+
+======== 12D windows (assumption: top items of the last hour, kept as 1-minute buckets)
+buckets kept for a sliding hour: 60
+memory with 54 KB sketch each: 3.3 MB
+
+======== 12E late events (simulation: 100,000 events, 5 percent arrive 3 minutes late, a window closes 1 minute after its end)
+events that miss their window if lateness over 1 minute is dropped: 5,041 (5.0%)
+allowing 5 minutes of lateness: 0 dropped, the window result is delayed by 5 minutes
