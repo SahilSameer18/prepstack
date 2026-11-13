@@ -1,0 +1,699 @@
+{
+ "steps": [
+  "big-o-arrays-hashing",
+  "two-pointers-sliding-window",
+  "sorting-binary-search",
+  "linked-lists-stacks-queues",
+  "trees-bst",
+  "heaps-tries",
+  "recursion-backtracking",
+  "graphs-traversal",
+  "graphs-shortest-paths-mst",
+  "greedy-intervals",
+  "dynamic-programming",
+  "bit-manipulation-math",
+  "interview-practice"
+ ],
+ "sheets": {
+  "blind-75": {
+   "arrays-hashing": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "two-pointers": {
+    "step": "two-pointers-sliding-window",
+    "order": 2,
+    "core": true
+   },
+   "sliding-window": {
+    "step": "two-pointers-sliding-window",
+    "order": 2,
+    "core": true
+   },
+   "stack": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "binary-search": {
+    "step": "sorting-binary-search",
+    "order": 3,
+    "core": true
+   },
+   "linked-list": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "trees": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "heap-priority-queue": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "backtracking": {
+    "step": "recursion-backtracking",
+    "order": 7,
+    "core": true
+   },
+   "trie": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "graph": {
+    "step": "graphs-traversal",
+    "order": 8,
+    "core": true
+   },
+   "dynamic-programming": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "2-d-dynamic-programming": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "greedy": {
+    "step": "greedy-intervals",
+    "order": 10,
+    "core": true
+   },
+   "intervals": {
+    "step": "greedy-intervals",
+    "order": 10,
+    "core": true
+   },
+   "math-geometry": {
+    "step": "bit-manipulation-math",
+    "order": 12,
+    "core": true
+   },
+   "bit-manipulation": {
+    "step": "bit-manipulation-math",
+    "order": 12,
+    "core": true
+   }
+  },
+  "neetcode-150": {
+   "arrays-hashing": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "two-pointers": {
+    "step": "two-pointers-sliding-window",
+    "order": 2,
+    "core": true
+   },
+   "sliding-window": {
+    "step": "two-pointers-sliding-window",
+    "order": 2,
+    "core": true
+   },
+   "stack": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "binary-search": {
+    "step": "sorting-binary-search",
+    "order": 3,
+    "core": true
+   },
+   "linked-list": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "trees": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "heap-priority-queue": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "backtracking": {
+    "step": "recursion-backtracking",
+    "order": 7,
+    "core": true
+   },
+   "trie": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "graph": {
+    "step": "graphs-traversal",
+    "order": 8,
+    "core": true
+   },
+   "advanced-graphs": {
+    "step": "graphs-shortest-paths-mst",
+    "order": 9,
+    "core": false
+   },
+   "1d-dynamic-programming": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "2d-dynamic-programming": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "greedy": {
+    "step": "greedy-intervals",
+    "order": 10,
+    "core": true
+   },
+   "intervals": {
+    "step": "greedy-intervals",
+    "order": 10,
+    "core": true
+   },
+   "math-geometry": {
+    "step": "bit-manipulation-math",
+    "order": 12,
+    "core": true
+   },
+   "bit-manipulation": {
+    "step": "bit-manipulation-math",
+    "order": 12,
+    "core": true
+   }
+  },
+  "striver-sde": {
+   "arrays-i": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "arrays-ii": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "arrays-iii": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "arrays-iv": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "linked-list-i": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "linked-list-ii": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "linked-list-arrays": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "greedy": {
+    "step": "greedy-intervals",
+    "order": 10,
+    "core": true
+   },
+   "recursion": {
+    "step": "recursion-backtracking",
+    "order": 7,
+    "core": false
+   },
+   "recursion-backtracking": {
+    "step": "recursion-backtracking",
+    "order": 7,
+    "core": true
+   },
+   "binary-search": {
+    "step": "sorting-binary-search",
+    "order": 3,
+    "core": true
+   },
+   "heaps": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "stack-queue-i": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "stack-queue-ii": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "string-i": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": false
+   },
+   "string-ii": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": false
+   },
+   "binary-tree-i": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "binary-tree-ii": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "binary-tree-iii": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "binary-search-tree-i": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "binary-search-tree-ii": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "graph-i": {
+    "step": "graphs-traversal",
+    "order": 8,
+    "core": true
+   },
+   "graph-ii": {
+    "step": "graphs-shortest-paths-mst",
+    "order": 9,
+    "core": false
+   },
+   "dynamic-programming-i": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "dynamic-programming-ii": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "dynamic-programming-iii": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "trie": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "segment-tree-binary-indexed-tree": {
+    "step": "interview-practice",
+    "order": 13,
+    "core": false
+   }
+  },
+  "striver-a2z": {
+   "basics-things-to-know-in-c-java-python": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": false
+   },
+   "basics-build-up-mathematical-thinking": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": false
+   },
+   "basics-learn-stl-collections": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": false
+   },
+   "basics-basic-recursion": {
+    "step": "recursion-backtracking",
+    "order": 7,
+    "core": false
+   },
+   "basics-basic-hashing": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "step-2-1-sorting-i": {
+    "step": "sorting-binary-search",
+    "order": 3,
+    "core": false
+   },
+   "step-2-2-sorting-ii": {
+    "step": "sorting-binary-search",
+    "order": 3,
+    "core": false
+   },
+   "array-easy-array-problems": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "array-medium-array-problems": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "array-hard-array-problems": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "binary-search-binary-search-on-1d-arrays": {
+    "step": "sorting-binary-search",
+    "order": 3,
+    "core": true
+   },
+   "binary-search-binary-search-on-answers": {
+    "step": "sorting-binary-search",
+    "order": 3,
+    "core": false
+   },
+   "binary-search-binary-search-on-2d-arrays": {
+    "step": "sorting-binary-search",
+    "order": 3,
+    "core": false
+   },
+   "strings-basic-string-problems": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": false
+   },
+   "strings-medium-string-problems": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": false
+   },
+   "strings-hard-string-problems": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": false
+   },
+   "linked-list-learning-linked-list": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "linked-list-learn-doubly-linkedlist": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": false
+   },
+   "linked-list-medium-problems-of-ll": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "linked-list-hard-problems-of-ll": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "recursion-get-a-strong-hold": {
+    "step": "recursion-backtracking",
+    "order": 7,
+    "core": false
+   },
+   "recursion-subsequences-pattern": {
+    "step": "recursion-backtracking",
+    "order": 7,
+    "core": true
+   },
+   "recursion-trying-out-all-combos-hard": {
+    "step": "recursion-backtracking",
+    "order": 7,
+    "core": true
+   },
+   "learn-bit-manipulation": {
+    "step": "bit-manipulation-math",
+    "order": 12,
+    "core": true
+   },
+   "bit-manipulation-interview-problems": {
+    "step": "bit-manipulation-math",
+    "order": 12,
+    "core": true
+   },
+   "bit-manipulation-advanced-maths": {
+    "step": "bit-manipulation-math",
+    "order": 12,
+    "core": false
+   },
+   "stack-queues-learning": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "prefix-infix-postfix-conversion-problems": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": false
+   },
+   "monotonic-stack-queue-problems": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": false
+   },
+   "stack-queue-implementation-problems": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": false
+   },
+   "sliding-window-two-pointers-medium-problems": {
+    "step": "two-pointers-sliding-window",
+    "order": 2,
+    "core": true
+   },
+   "sliding-window-two-pointers-hard-problems": {
+    "step": "two-pointers-sliding-window",
+    "order": 2,
+    "core": true
+   },
+   "heaps-learning": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "heaps-medium-problems": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "heaps-hard-problems": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "greedy-algo-easy-problems": {
+    "step": "greedy-intervals",
+    "order": 10,
+    "core": true
+   },
+   "greedy-algo-medium-hard-problems": {
+    "step": "greedy-intervals",
+    "order": 10,
+    "core": true
+   },
+   "binary-trees-traversals": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "binary-trees-medium-problems": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "binary-trees-hard-problems": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "binary-search-tree-concept": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "binary-search-tree-practice-problems": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "graphs-learning": {
+    "step": "graphs-traversal",
+    "order": 8,
+    "core": true
+   },
+   "graphs-problems-on-bfs-dfs": {
+    "step": "graphs-traversal",
+    "order": 8,
+    "core": true
+   },
+   "graphs-topo-sort-problems": {
+    "step": "graphs-traversal",
+    "order": 8,
+    "core": true
+   },
+   "graphs-shortest-path-algorithms": {
+    "step": "graphs-shortest-paths-mst",
+    "order": 9,
+    "core": false
+   },
+   "graphs-minimum-spanning-tree-disjoint-set": {
+    "step": "graphs-shortest-paths-mst",
+    "order": 9,
+    "core": false
+   },
+   "graphs-other-algorithms": {
+    "step": "graphs-shortest-paths-mst",
+    "order": 9,
+    "core": false
+   },
+   "introduction-to-dp": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "2d-3d-dp-dp-on-grids": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "dp-on-subsequences": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "dp-on-strings": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "dp-on-stocks": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": false
+   },
+   "dp-on-lis": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "mcm-dp-interval-dp": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": false
+   },
+   "tries-theory": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   }
+  },
+  "love-babbar": {
+   "array": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": true
+   },
+   "matrix": {
+    "step": "bit-manipulation-math",
+    "order": 12,
+    "core": true
+   },
+   "string": {
+    "step": "big-o-arrays-hashing",
+    "order": 1,
+    "core": false
+   },
+   "searching-sorting": {
+    "step": "sorting-binary-search",
+    "order": 3,
+    "core": true
+   },
+   "linked-list": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "stacks-queues": {
+    "step": "linked-lists-stacks-queues",
+    "order": 4,
+    "core": true
+   },
+   "binary-tree": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "binary-search-tree": {
+    "step": "trees-bst",
+    "order": 5,
+    "core": true
+   },
+   "greedy": {
+    "step": "greedy-intervals",
+    "order": 10,
+    "core": true
+   },
+   "backtracking": {
+    "step": "recursion-backtracking",
+    "order": 7,
+    "core": true
+   },
+   "dynamic-programming": {
+    "step": "dynamic-programming",
+    "order": 11,
+    "core": true
+   },
+   "heap": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "graph": {
+    "step": "graphs-traversal",
+    "order": 8,
+    "core": true
+   },
+   "trie": {
+    "step": "heaps-tries",
+    "order": 6,
+    "core": true
+   },
+   "bit-manipulation": {
+    "step": "bit-manipulation-math",
+    "order": 12,
+    "core": true
+   }
+  }
+ }
+}

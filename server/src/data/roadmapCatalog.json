@@ -1,0 +1,1817 @@
+[
+ {
+  "slug": "frontend",
+  "title": "Frontend Development",
+  "steps": [
+   {
+    "id": "internet-web-fundamentals",
+    "title": "Internet & Web Fundamentals",
+    "time": "8 to 12 hours",
+    "from": 8,
+    "to": 12,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-key-flows",
+      "label": "What happens when you type a URL"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP, HTTPS and TLS"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-dns-email",
+      "label": "DNS"
+     }
+    ],
+    "project": {
+     "brief": "Open your browser's network tab, load a website, and write down every request it makes: what was asked, what came back and the status code.",
+     "stack": "Frontend"
+    }
+   },
+   {
+    "id": "html-basics",
+    "title": "HTML Basics",
+    "time": "10 to 20 hours",
+    "from": 10,
+    "to": 20,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Build a one-page personal profile with headings, a photo with a text description, a table of your skills and a contact form. Use only HTML; the form does not need to send anything.",
+     "stack": "Frontend"
+    }
+   },
+   {
+    "id": "css-advanced",
+    "title": "CSS Advanced",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Rebuild your profile page so that it uses Flexbox for the header and Grid for a card section, and changes layout under 600 pixels wide.",
+     "stack": "Frontend"
+    }
+   },
+   {
+    "id": "javascript-core",
+    "title": "JavaScript Core",
+    "time": "40 to 60 hours",
+    "from": 40,
+    "to": 60,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP methods and status codes"
+     }
+    ],
+    "project": {
+     "brief": "Build a to-do list that adds, ticks and removes items, and loads a joke or a quote from a public API when the page opens.",
+     "stack": "Frontend"
+    }
+   },
+   {
+    "id": "react-basics",
+    "title": "React Basics",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Rebuild your to-do list in React with a separate component for the list, an item and the add form.",
+     "stack": "React"
+    }
+   },
+   {
+    "id": "react-advanced",
+    "title": "React Advanced",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Add a login page and a dashboard page to your React app. Keep the signed-in user in context and write two tests.",
+     "stack": "React"
+    }
+   },
+   {
+    "id": "css-frameworks",
+    "title": "CSS Frameworks",
+    "time": "10 to 20 hours",
+    "from": 10,
+    "to": 20,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Restyle your React app with Tailwind CSS: a responsive layout and a dark mode switch.",
+     "stack": "React"
+    }
+   },
+   {
+    "id": "nextjs",
+    "title": "Next.js",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Build a small blog in Next.js with a list page, a page for each post and a shared layout. Keep posts in a simple file.",
+     "stack": "Next.js"
+    }
+   },
+   {
+    "id": "production-deployment",
+    "title": "Production & Deployment",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-system-design-concepts",
+      "label": "Load balancers, proxies and CDN"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTPS and caching"
+     }
+    ],
+    "project": {
+     "brief": "Deploy your Next.js or React app, add a GitHub Actions workflow that builds it on every push, and write down its Core Web Vitals scores.",
+     "stack": "Next.js"
+    }
+   }
+  ]
+ },
+ {
+  "slug": "backend",
+  "title": "Backend Development",
+  "steps": [
+   {
+    "id": "os-networking-basics",
+    "title": "OS & Networking Basics",
+    "time": "10 to 15 hours",
+    "from": 10,
+    "to": 15,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-key-flows",
+      "label": "What happens when you type a URL"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-transport-layer",
+      "label": "TCP and UDP, ports"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP, HTTPS and TLS"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-dns-email",
+      "label": "DNS"
+     },
+     {
+      "kind": "notes",
+      "target": "os:os-processes",
+      "label": "Processes"
+     }
+    ],
+    "project": {
+     "brief": "Write a tiny web server with only the tools built into Node.js. It answers one address with some data and every other address with a 404 (not found). Test it with the curl command and read the headers.",
+     "stack": "Node.js"
+    }
+   },
+   {
+    "id": "nodejs-fundamentals",
+    "title": "Node.js Fundamentals",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "os:os-processes",
+      "label": "Processes"
+     }
+    ],
+    "project": {
+     "brief": "Build a command-line tool that reads a large text file a piece at a time and prints the ten most common words, without loading the whole file into memory.",
+     "stack": "Node.js"
+    }
+   },
+   {
+    "id": "expressjs-routing",
+    "title": "Express.js & Routing",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP methods and status codes"
+     }
+    ],
+    "project": {
+     "brief": "Build a to-do list API that keeps items in a simple list in memory. Add a middleware that checks the data sent, and one error handler that returns a clean message.",
+     "stack": "Node.js / Express"
+    }
+   },
+   {
+    "id": "database-design",
+    "title": "Database Design",
+    "time": "30 to 40 hours",
+    "from": 30,
+    "to": 40,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-sql",
+      "label": "SQL"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-indexing-file-organization",
+      "label": "Indexing"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-keys-constraints",
+      "label": "Keys and constraints"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-transactions",
+      "label": "Transactions"
+     }
+    ],
+    "project": {
+     "brief": "Build a blog API with users, posts and comments. Write down why you embedded or linked each part, add two indexes, and add one query that counts posts per user. Connect it to Express with Mongoose.",
+     "stack": "Node.js / Express / MongoDB"
+    }
+   },
+   {
+    "id": "authentication-security",
+    "title": "Authentication & Security",
+    "time": "30 to 40 hours",
+    "from": 30,
+    "to": 40,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "Cookies, HTTPS and TLS"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-devices-routing-security",
+      "label": "Common attacks"
+     }
+    ],
+    "project": {
+     "brief": "Add register and login to your API. Scramble the passwords, keep the login in an HttpOnly cookie, limit login tries, add Helmet, and check that one user cannot read another user's data.",
+     "stack": "Node.js / Express"
+    }
+   },
+   {
+    "id": "testing-debugging",
+    "title": "Testing & Debugging",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "Status codes you check in tests"
+     }
+    ],
+    "project": {
+     "brief": "Write ten tests for your Express API, including a not-found case, a bad-input case and a failed login (this needs the login from the previous step). Run them with node --test.",
+     "stack": "Node.js / Express"
+    }
+   },
+   {
+    "id": "docker-containers",
+    "title": "Docker & Containers",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-transport-layer",
+      "label": "Ports"
+     }
+    ],
+    "project": {
+     "brief": "Pack your API and MongoDB with Docker Compose, so that one command starts both and all settings come from environment variables.",
+     "stack": "Docker"
+    }
+   },
+   {
+    "id": "deployment-cloud",
+    "title": "Deployment & Cloud",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-system-design-concepts",
+      "label": "Load balancers, proxies and CDN"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTPS and TLS"
+     }
+    ],
+    "project": {
+     "brief": "Add a GitHub Actions workflow that runs your tests on every push. Then deploy the API to a service with a free or trial plan, after reading its limits, so that every setting, including the database address, comes from environment variables.",
+     "stack": "Docker"
+    }
+   }
+  ]
+ },
+ {
+  "slug": "fullstack",
+  "title": "Full Stack MERN",
+  "steps": [
+   {
+    "id": "frontend-development",
+    "title": "Frontend Development",
+    "time": "55 to 85 hours",
+    "from": 55,
+    "to": 85,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP methods and status codes"
+     }
+    ],
+    "project": {
+     "brief": "Build the front end of a notes app: a list page, an add form and a page for one note. Use fake data first, then a real API.",
+     "stack": "MERN Stack"
+    }
+   },
+   {
+    "id": "backend-api",
+    "title": "Backend API",
+    "time": "25 to 35 hours",
+    "from": 25,
+    "to": 35,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP methods and status codes"
+     }
+    ],
+    "project": {
+     "brief": "Build the notes API for your front end: list, create, edit and delete notes, with input checks and one error handler.",
+     "stack": "MERN Stack"
+    }
+   },
+   {
+    "id": "database-layer",
+    "title": "Database Layer",
+    "time": "25 to 35 hours",
+    "from": 25,
+    "to": 35,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-sql",
+      "label": "SQL"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-indexing-file-organization",
+      "label": "Indexing"
+     }
+    ],
+    "project": {
+     "brief": "Add MongoDB and Mongoose to your notes API: a User model and a Note model that belongs to a user, with one index and one count-per-user query.",
+     "stack": "MERN Stack"
+    }
+   },
+   {
+    "id": "full-stack-authentication",
+    "title": "Full Stack Authentication",
+    "time": "25 to 35 hours",
+    "from": 25,
+    "to": 35,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "Cookies, HTTPS and TLS"
+     }
+    ],
+    "project": {
+     "brief": "Add register, login and logout to your notes app. Keep the login in an HttpOnly cookie and let a user see only their own notes.",
+     "stack": "MERN Stack"
+    }
+   },
+   {
+    "id": "state-management",
+    "title": "State Management",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Move the notes list and the signed-in user of your app into shared state, using Context with a reducer or Zustand.",
+     "stack": "MERN Stack"
+    }
+   },
+   {
+    "id": "file-storage-media",
+    "title": "File Storage & Media",
+    "time": "10 to 20 hours",
+    "from": 10,
+    "to": 20,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Add profile pictures to your app: pick a file, check its type and size on the server, upload it to cloud storage and show it.",
+     "stack": "MERN Stack"
+    }
+   },
+   {
+    "id": "testing-debugging",
+    "title": "Testing & Debugging",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "Status codes you check in tests"
+     }
+    ],
+    "project": {
+     "brief": "Write five tests for your notes app: two for components and three for API routes.",
+     "stack": "MERN Stack"
+    }
+   },
+   {
+    "id": "deployment-scaling",
+    "title": "Deployment & Scaling",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-system-design-concepts",
+      "label": "Load balancers, proxies and CDN"
+     }
+    ],
+    "project": {
+     "brief": "Deploy your notes app: the API on Render and the React app on Vercel, with every secret set as an environment setting.",
+     "stack": "MERN Stack"
+    }
+   },
+   {
+    "id": "security-performance",
+    "title": "Security & Performance",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-devices-routing-security",
+      "label": "Common attacks"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-system-design-concepts",
+      "label": "Load balancers, proxies and CDN"
+     }
+    ],
+    "project": {
+     "brief": "Add rate limiting to your login route, set cache headers on your static files and measure the Core Web Vitals before and after.",
+     "stack": "MERN Stack"
+    }
+   }
+  ]
+ },
+ {
+  "slug": "android",
+  "title": "Android Development",
+  "steps": [
+   {
+    "id": "kotlin-basics",
+    "title": "Kotlin Basics",
+    "time": "30 to 50 hours",
+    "from": 30,
+    "to": 50,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "oops:oops-basics",
+      "label": "OOP basics"
+     }
+    ],
+    "project": {
+     "brief": "Write a command-line program in Kotlin that keeps a list of expenses, adds new ones and prints the total.",
+     "stack": "Kotlin"
+    }
+   },
+   {
+    "id": "android-fundamentals",
+    "title": "Android Fundamentals",
+    "time": "50 to 80 hours",
+    "from": 50,
+    "to": 80,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Build a two-screen app: a list of items and a detail screen. Keep what the user typed when the phone is rotated.",
+     "stack": "Android (Kotlin)"
+    }
+   },
+   {
+    "id": "modern-ui-with-compose",
+    "title": "Modern UI with Compose",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Build a notes app in Compose with a list screen, an edit screen and navigation between them.",
+     "stack": "Android (Kotlin)"
+    }
+   },
+   {
+    "id": "data-storage",
+    "title": "Data Storage",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-sql",
+      "label": "SQL"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-keys-constraints",
+      "label": "Keys and constraints"
+     }
+    ],
+    "project": {
+     "brief": "Make your notes app save notes in a Room database and remember the dark mode setting with DataStore.",
+     "stack": "Android (Kotlin)"
+    }
+   },
+   {
+    "id": "networking-api-calls",
+    "title": "Networking & API Calls",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP methods and status codes"
+     }
+    ],
+    "project": {
+     "brief": "Add a screen to your app that loads items from a public API, shows a loading indicator and shows an error with a retry button.",
+     "stack": "Android (Kotlin)"
+    }
+   },
+   {
+    "id": "firebase-services",
+    "title": "Firebase Services",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Add sign-in and a Firestore database to your notes app so each user sees only their own notes on any phone.",
+     "stack": "Android (Kotlin)"
+    }
+   },
+   {
+    "id": "testing-debugging",
+    "title": "Testing & Debugging",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Add three local tests to your app and set up Crashlytics. Force a test crash and find it in the console.",
+     "stack": "Android (Kotlin)"
+    }
+   },
+   {
+    "id": "publishing",
+    "title": "Publishing",
+    "time": "10 to 20 hours",
+    "from": 10,
+    "to": 20,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Create a signed release build of your app and write the checklist you would follow to publish it on Google Play.",
+     "stack": "Android (Kotlin)"
+    }
+   }
+  ]
+ },
+ {
+  "slug": "data-analytics",
+  "title": "Data Analytics",
+  "steps": [
+   {
+    "id": "data-fundamentals",
+    "title": "Data Fundamentals",
+    "time": "10 to 15 hours",
+    "from": 10,
+    "to": 15,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-introduction",
+      "label": "Databases"
+     }
+    ],
+    "project": {
+     "brief": "Pick a small public data table, describe each column in plain words, and write three questions the data could answer.",
+     "stack": "Spreadsheet"
+    }
+   },
+   {
+    "id": "spreadsheet-skills-excel",
+    "title": "Spreadsheet Skills (Excel)",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Take a sales table, clean it, build a PivotTable of sales by month and a chart, and write three sentences about what you see.",
+     "stack": "Excel / Google Sheets"
+    }
+   },
+   {
+    "id": "python-for-data-analytics",
+    "title": "Python for Data Analytics",
+    "time": "40 to 60 hours",
+    "from": 40,
+    "to": 60,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Take a public CSV of your choice, load it with pandas, and answer five questions about it with code.",
+     "stack": "Python / Pandas"
+    }
+   },
+   {
+    "id": "data-cleaning-preprocessing",
+    "title": "Data Cleaning & Preprocessing",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Download a messy public data table, clean it with pandas, and write a short list of every change you made and why.",
+     "stack": "Python / Pandas"
+    }
+   },
+   {
+    "id": "statistics-probability",
+    "title": "Statistics & Probability",
+    "time": "40 to 60 hours",
+    "from": 40,
+    "to": 60,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Pick a public data table, compute the mean, median and spread of two columns, and test whether they move together. Write your findings in plain words.",
+     "stack": "Python / Pandas"
+    }
+   },
+   {
+    "id": "data-visualization",
+    "title": "Data Visualization",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Make a one-page report of five charts from a public data table, each with a title and a one-sentence message.",
+     "stack": "Python / Pandas"
+    }
+   },
+   {
+    "id": "sql-databases",
+    "title": "SQL & Databases",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-sql",
+      "label": "SQL"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-keys-constraints",
+      "label": "Keys and constraints"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-normalization",
+      "label": "Normalization"
+     }
+    ],
+    "project": {
+     "brief": "Load two related tables into a database and write ten queries that answer business questions, including two joins and two groups.",
+     "stack": "SQL"
+    }
+   },
+   {
+    "id": "business-analytics",
+    "title": "Business Analytics",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Build a dashboard for a small shop's sales with five KPIs, two charts and a filter, and write a half-page summary for the owner.",
+     "stack": "Looker Studio or Power BI"
+    }
+   },
+   {
+    "id": "capstone-portfolio",
+    "title": "Capstone & Portfolio",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Do an end-to-end analysis of a public data set: question, cleaning, analysis, charts, a dashboard and a short write-up on GitHub.",
+     "stack": "Python / Pandas"
+    }
+   }
+  ]
+ },
+ {
+  "slug": "machine-learning",
+  "title": "Machine Learning",
+  "steps": [
+   {
+    "id": "python-basics",
+    "title": "Python Basics",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "oops:oops-basics",
+      "label": "OOP basics"
+     }
+    ],
+    "project": {
+     "brief": "Write a Python program that reads a text file, counts the words and prints the ten most common ones.",
+     "stack": "Python / scikit-learn"
+    }
+   },
+   {
+    "id": "data-handling",
+    "title": "Data Handling",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Load a public table (for example house prices), clean it and add three new columns that might help predict the price.",
+     "stack": "Python / scikit-learn"
+    }
+   },
+   {
+    "id": "eda-visualization",
+    "title": "EDA & Visualization",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Explore a public data table with six charts and write a half-page note about what the data tells you.",
+     "stack": "Python / scikit-learn"
+    }
+   },
+   {
+    "id": "ml-algorithms",
+    "title": "ML Algorithms",
+    "time": "50 to 80 hours",
+    "from": 50,
+    "to": 80,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Predict house prices with linear regression and compare it to a decision tree. Keep part of the data aside for testing.",
+     "stack": "Python / scikit-learn"
+    }
+   },
+   {
+    "id": "deep-learning",
+    "title": "Deep Learning",
+    "time": "50 to 80 hours",
+    "from": 50,
+    "to": 80,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Train a small neural network to recognize handwritten digits using PyTorch and report its accuracy on test data.",
+     "stack": "Python / scikit-learn"
+    }
+   },
+   {
+    "id": "model-evaluation",
+    "title": "Model Evaluation",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Train a classifier on a data set where one class is rare. Report accuracy, precision, recall and the confusion matrix, and tune one setting with grid search.",
+     "stack": "Python / scikit-learn"
+    }
+   },
+   {
+    "id": "deployment",
+    "title": "Deployment",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP methods and status codes"
+     }
+    ],
+    "project": {
+     "brief": "Wrap your model in a FastAPI app with one prediction route, pack it with Docker and run it on your own computer.",
+     "stack": "Python / scikit-learn"
+    }
+   },
+   {
+    "id": "monitoring-optimization",
+    "title": "Monitoring & Tracking",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Track three training runs of your model with MLflow, then split your data into an earlier part and a later part and compare the average and spread of each column to look for drift.",
+     "stack": "Python / scikit-learn"
+    }
+   },
+   {
+    "id": "capstone-project",
+    "title": "Capstone Project",
+    "time": "40 to 60 hours",
+    "from": 40,
+    "to": 60,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Pick a Kaggle data set, build and compare two models, wrap the best one in a small API or demo, and write a short report.",
+     "stack": "Python / scikit-learn"
+    }
+   }
+  ]
+ },
+ {
+  "slug": "dsa",
+  "title": "DSA & Problem Solving",
+  "steps": [
+   {
+    "id": "big-o-arrays-hashing",
+    "title": "Big O, Arrays and Hash Tables",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:arrays-hashing",
+      "label": "NeetCode 150: Arrays and hashing"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:arrays-hashing",
+      "label": "Blind 75: Arrays and hashing"
+     },
+     {
+      "kind": "sheet",
+      "target": "love-babbar:array",
+      "label": "Love Babbar: Array"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:array-easy-array-problems",
+      "label": "Striver A2Z: Easy array problems"
+     }
+    ],
+    "project": {
+     "brief": "Write a program that counts how often each word appears in a text file using a hash table (a dictionary), and write down the Big O of each step.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "two-pointers-sliding-window",
+    "title": "Two Pointers and Sliding Window",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:two-pointers",
+      "label": "NeetCode 150: Two pointers"
+     },
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:sliding-window",
+      "label": "NeetCode 150: Sliding window"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:two-pointers",
+      "label": "Blind 75: Two pointers"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:sliding-window",
+      "label": "Blind 75: Sliding window"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:sliding-window-two-pointers-medium-problems",
+      "label": "Striver A2Z: Sliding window and two pointers"
+     }
+    ],
+    "project": {
+     "brief": "Write one function that finds the best sum of k neighbours in a list using a sliding window, and compare its running time with a version that adds up every window from scratch on a list of 100,000 numbers.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "sorting-binary-search",
+    "title": "Sorting and Binary Search",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:binary-search",
+      "label": "NeetCode 150: Binary search"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:binary-search",
+      "label": "Blind 75: Binary search"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:binary-search-binary-search-on-1d-arrays",
+      "label": "Striver A2Z: Binary search on lists"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:binary-search-binary-search-on-answers",
+      "label": "Striver A2Z: Binary search on answers"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:step-2-1-sorting-i",
+      "label": "Striver A2Z: Sorting I (simple sorts only)"
+     }
+    ],
+    "project": {
+     "brief": "Write binary search yourself, count the rounds of its loop on a sorted list of 1,000,000 numbers, and check that it never needs more than 20 rounds.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "linked-lists-stacks-queues",
+    "title": "Linked Lists, Stacks and Queues",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:linked-list",
+      "label": "NeetCode 150: Linked list"
+     },
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:stack",
+      "label": "NeetCode 150: Stack"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:linked-list",
+      "label": "Blind 75: Linked list"
+     },
+     {
+      "kind": "sheet",
+      "target": "love-babbar:linked-list",
+      "label": "Love Babbar: Linked list"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:stack-queues-learning",
+      "label": "Striver A2Z: Stacks and queues"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:monotonic-stack-queue-problems",
+      "label": "Striver A2Z: Monotonic stack and queue (a harder follow-up)"
+     }
+    ],
+    "project": {
+     "brief": "Build a stack and a queue yourself (a stack with a list, a queue with a linked list), then use the stack to check that the brackets in a piece of code match.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "trees-bst",
+    "title": "Trees and Binary Search Trees",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:trees",
+      "label": "NeetCode 150: Trees"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:trees",
+      "label": "Blind 75: Trees"
+     },
+     {
+      "kind": "sheet",
+      "target": "love-babbar:binary-tree",
+      "label": "Love Babbar: Binary tree"
+     },
+     {
+      "kind": "sheet",
+      "target": "love-babbar:binary-search-tree",
+      "label": "Love Babbar: Binary search tree"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:binary-trees-traversals",
+      "label": "Striver A2Z: Tree traversals"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:binary-search-tree-concept",
+      "label": "Striver A2Z: Binary search tree"
+     }
+    ],
+    "project": {
+     "brief": "Build a binary search tree with insert, search and the four walks, then insert 1 to 1000 in order and in random order and compare the heights.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "heaps-tries",
+    "title": "Heaps and Tries",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:heap-priority-queue",
+      "label": "NeetCode 150: Heap and priority queue"
+     },
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:trie",
+      "label": "NeetCode 150: Trie"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:heap-priority-queue",
+      "label": "Blind 75: Heap and priority queue"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:trie",
+      "label": "Blind 75: Trie"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:heaps-learning",
+      "label": "Striver A2Z: Heaps"
+     },
+     {
+      "kind": "sheet",
+      "target": "love-babbar:trie",
+      "label": "Love Babbar: Trie"
+     }
+    ],
+    "project": {
+     "brief": "Build a small autocomplete: store 1,000 words in a trie and print every word that starts with the letters a user types.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "recursion-backtracking",
+    "title": "Recursion and Backtracking",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:backtracking",
+      "label": "NeetCode 150: Backtracking"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:backtracking",
+      "label": "Blind 75: Backtracking"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:recursion-get-a-strong-hold",
+      "label": "Striver A2Z: Recursion"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:recursion-subsequences-pattern",
+      "label": "Striver A2Z: Subsequences"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-sde:recursion-backtracking",
+      "label": "Striver SDE: Recursion and backtracking"
+     }
+    ],
+    "project": {
+     "brief": "Write a program that places 8 queens on a chess board so that none attacks another, using backtracking, and count how many solutions it finds.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "graphs-traversal",
+    "title": "Graphs: Walking Through a Network",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:graph",
+      "label": "NeetCode 150: Graph"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:graph",
+      "label": "Blind 75: Graph"
+     },
+     {
+      "kind": "sheet",
+      "target": "love-babbar:graph",
+      "label": "Love Babbar: Graph"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:graphs-learning",
+      "label": "Striver A2Z: Graphs"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:graphs-problems-on-bfs-dfs",
+      "label": "Striver A2Z: BFS and DFS problems"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:graphs-topo-sort-problems",
+      "label": "Striver A2Z: Topological sort"
+     }
+    ],
+    "project": {
+     "brief": "Model a small map of 10 places as a graph, then write BFS to find the fewest steps between two places and DFS to list every place you can reach.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "graphs-shortest-paths-mst",
+    "title": "Graphs: Shortest Paths and Spanning Trees",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:advanced-graphs",
+      "label": "NeetCode 150: Advanced graphs"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:graphs-shortest-path-algorithms",
+      "label": "Striver A2Z: Shortest paths"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:graphs-minimum-spanning-tree-disjoint-set",
+      "label": "Striver A2Z: Spanning trees and disjoint sets"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-sde:graph-ii",
+      "label": "Striver SDE: Graph II"
+     }
+    ],
+    "project": {
+     "brief": "Use a small road map of 8 towns with distances: find the shortest route between two towns with Dijkstra and the cheapest set of roads that joins all towns with Kruskal.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "greedy-intervals",
+    "title": "Greedy Methods and Intervals",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:greedy",
+      "label": "NeetCode 150: Greedy"
+     },
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:intervals",
+      "label": "NeetCode 150: Intervals"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:greedy",
+      "label": "Blind 75: Greedy"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:intervals",
+      "label": "Blind 75: Intervals"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:greedy-algo-easy-problems",
+      "label": "Striver A2Z: Easy greedy"
+     }
+    ],
+    "project": {
+     "brief": "Write a program that schedules the most meetings from a list and compare it with a brute-force search that tries every combination on 12 meetings.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "dynamic-programming",
+    "title": "Dynamic Programming",
+    "time": "40 to 60 hours",
+    "from": 40,
+    "to": 60,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:1d-dynamic-programming",
+      "label": "NeetCode 150: 1D dynamic programming"
+     },
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:2d-dynamic-programming",
+      "label": "NeetCode 150: 2D dynamic programming"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:dynamic-programming",
+      "label": "Blind 75: Dynamic programming"
+     },
+     {
+      "kind": "sheet",
+      "target": "love-babbar:dynamic-programming",
+      "label": "Love Babbar: Dynamic programming"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:introduction-to-dp",
+      "label": "Striver A2Z: Introduction to DP"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:dp-on-subsequences",
+      "label": "Striver A2Z: DP on subsequences"
+     }
+    ],
+    "project": {
+     "brief": "Solve the same problem (for example the number of ways to climb 30 stairs taking 1 or 2 steps) three ways: plain recursion, memoization and a table, and time all three.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "bit-manipulation-math",
+    "title": "Bit Tricks and Maths",
+    "time": "10 to 20 hours",
+    "from": 10,
+    "to": 20,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:bit-manipulation",
+      "label": "NeetCode 150: Bit manipulation"
+     },
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:math-geometry",
+      "label": "NeetCode 150: Math and geometry (matrices, powers, digits)"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:bit-manipulation",
+      "label": "Blind 75: Bit manipulation"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:learn-bit-manipulation",
+      "label": "Striver A2Z: Bit manipulation"
+     }
+    ],
+    "project": {
+     "brief": "Write a function that counts the one bits in a number two ways (a loop over every bit, and a loop that clears the lowest one bit each time) and check that both agree for the numbers 0 to 1000.",
+     "stack": "Python or Java"
+    }
+   },
+   {
+    "id": "interview-practice",
+    "title": "Putting It Together: Interview Practice",
+    "time": "40 to 80 hours",
+    "from": 40,
+    "to": 80,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "blind-75:arrays-hashing",
+      "label": "Blind 75: start with arrays and hashing"
+     },
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:trees",
+      "label": "NeetCode 150: Trees"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:graphs-problems-on-bfs-dfs",
+      "label": "Striver A2Z: BFS and DFS problems"
+     }
+    ],
+    "project": {
+     "brief": "Pick 10 problems from one sheet, solve each in two ways when you can, and write the Big O and the idea of each answer in your PrepStack problem notes.",
+     "stack": "Python or Java"
+    }
+   }
+  ]
+ },
+ {
+  "slug": "java-spring",
+  "title": "Java & Spring Boot",
+  "steps": [
+   {
+    "id": "java-language-basics",
+    "title": "Java Language Basics",
+    "time": "40 to 60 hours",
+    "from": 40,
+    "to": 60,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "oops:oops-basics",
+      "label": "OOP basics"
+     },
+     {
+      "kind": "notes",
+      "target": "oops:oops-pillars",
+      "label": "The four pillars of OOP"
+     }
+    ],
+    "project": {
+     "brief": "Build a console library program with classes for Book and Member and an interface for things that can be borrowed. Print who has borrowed which book.",
+     "stack": "Java / Spring Boot"
+    }
+   },
+   {
+    "id": "java-collections-generics-exceptions",
+    "title": "Collections, Generics and Exceptions",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:arrays-hashing",
+      "label": "NeetCode 150: Arrays and hashing"
+     }
+    ],
+    "project": {
+     "brief": "Read a CSV file of students and marks, store them in collections, print the top three with streams, and handle a missing file or a bad line with exceptions.",
+     "stack": "Java / Spring Boot"
+    }
+   },
+   {
+    "id": "java-concurrency-basics",
+    "title": "Concurrency Basics",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "os:os-processes",
+      "label": "Processes"
+     },
+     {
+      "kind": "notes",
+      "target": "os:os-threads",
+      "label": "Threads and multithreading"
+     },
+     {
+      "kind": "notes",
+      "target": "os:os-synchronization",
+      "label": "Synchronization"
+     },
+     {
+      "kind": "notes",
+      "target": "os:os-deadlocks",
+      "label": "Deadlocks"
+     }
+    ],
+    "project": {
+     "brief": "Write a program that downloads or reads ten files at the same time with a thread pool and prints how long it took, then compare it with reading them one by one.",
+     "stack": "Java / Spring Boot"
+    }
+   },
+   {
+    "id": "build-tools-junit",
+    "title": "Maven and JUnit",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Turn your library program into a Maven project and write ten JUnit tests for it.",
+     "stack": "Java / Spring Boot"
+    }
+   },
+   {
+    "id": "spring-core-boot",
+    "title": "Spring Core and Spring Boot",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Generate a Spring Boot project and add two classes where one needs the other, so that Spring connects them for you (dependency injection). Print a message when the app starts, with a small piece of code that runs at startup.",
+     "stack": "Java / Spring Boot"
+    }
+   },
+   {
+    "id": "spring-rest-api",
+    "title": "Building a REST API with Spring MVC",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP methods and status codes"
+     }
+    ],
+    "project": {
+     "brief": "Build a to-do list API with Spring Boot: list, add, finish and delete items, kept in memory for now. Return 404 when an item does not exist.",
+     "stack": "Java / Spring Boot"
+    }
+   },
+   {
+    "id": "spring-data-jpa",
+    "title": "Databases with Spring Data JPA",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-sql",
+      "label": "SQL"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-keys-constraints",
+      "label": "Keys and constraints"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-transactions",
+      "label": "Transactions"
+     },
+     {
+      "kind": "notes",
+      "target": "dbms:dbms-indexing-file-organization",
+      "label": "Indexing"
+     }
+    ],
+    "project": {
+     "brief": "Add a database to your to-do API: store items with Spring Data JPA in a database that keeps its data after a restart (add the JPA starter and your database's driver), and add a query that finds the unfinished items.",
+     "stack": "Java / Spring Boot"
+    }
+   },
+   {
+    "id": "spring-security",
+    "title": "Securing the App with Spring Security",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "Cookies, HTTPS and TLS"
+     }
+    ],
+    "project": {
+     "brief": "Add sign-in to your to-do API (HTTP Basic or a login form) so that each user sees only their own items. Keep users in the database with BCrypt-hashed passwords.",
+     "stack": "Java / Spring Boot"
+    }
+   },
+   {
+    "id": "spring-testing-docker",
+    "title": "Testing and Packaging with Docker",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Add tests to your to-do API and build a Docker image of it. Start the container and check that the API answers.",
+     "stack": "Java / Spring Boot"
+    }
+   }
+  ]
+ },
+ {
+  "slug": "devops-cloud",
+  "title": "DevOps & Cloud",
+  "steps": [
+   {
+    "id": "git-github",
+    "title": "Git and GitHub",
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Put one of your projects on GitHub with a README, work on a new feature in a branch and merge it.",
+     "stack": "Git"
+    }
+   },
+   {
+    "id": "linux-command-line",
+    "title": "Linux and the Command Line",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "os:os-processes",
+      "label": "Processes"
+     }
+    ],
+    "project": {
+     "brief": "Write a shell script that backs up a folder into a dated archive and run it by hand on a Linux machine or a virtual machine.",
+     "stack": "Linux"
+    }
+   },
+   {
+    "id": "networking-for-devops",
+    "title": "Networking for DevOps",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-ip-addressing",
+      "label": "IP addressing, NAT and DHCP"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-subnetting",
+      "label": "Subnetting"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-dns-email",
+      "label": "DNS"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-http-https-tls",
+      "label": "HTTP, HTTPS and TLS"
+     },
+     {
+      "kind": "notes",
+      "target": "cn:cn-system-design-concepts",
+      "label": "Load balancers, proxies and CDN"
+     }
+    ],
+    "project": {
+     "brief": "Draw the network of a small web app (a user, DNS, a load balancer, two servers and a database) and write what each arrow carries.",
+     "stack": "Linux"
+    }
+   },
+   {
+    "id": "docker-containers",
+    "title": "Docker and Containers",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-transport-layer",
+      "label": "Ports"
+     }
+    ],
+    "project": {
+     "brief": "Pack a small web app and its database with Docker Compose, so that one command starts both.",
+     "stack": "Docker"
+    }
+   },
+   {
+    "id": "ci-cd-github-actions",
+    "title": "Automatic Checks with GitHub Actions",
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Add a GitHub Actions workflow to one of your earlier projects that has tests, so that it installs the project, runs its tests and shows a failed build when a test fails.",
+     "stack": "GitHub Actions"
+    }
+   },
+   {
+    "id": "cloud-aws-basics",
+    "title": "Cloud Basics with AWS",
+    "time": "30 to 45 hours",
+    "from": 30,
+    "to": 45,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Within the free limits, start one small server (open port 80 in its security group and install a web server), put a file in a storage bucket, then delete everything and check the billing page. Public IPv4 addresses can cost money, so check that too.",
+     "stack": "AWS"
+    }
+   },
+   {
+    "id": "kubernetes-terraform",
+    "title": "Kubernetes and Terraform",
+    "time": "50 to 80 hours",
+    "from": 50,
+    "to": 80,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Follow the Kubernetes basics tutorial in a practice cluster, then write a small Terraform file that creates one harmless local resource (for example a text file) so that no cloud account or payment is needed, and destroy it afterwards.",
+     "stack": "Kubernetes / Terraform"
+    }
+   },
+   {
+    "id": "monitoring-reliability",
+    "title": "Monitoring and Reliability",
+    "time": "25 to 40 hours",
+    "from": 25,
+    "to": 40,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Add a metrics page to a small app with a Prometheus library, collect it with Prometheus, draw two charts in Grafana with PromQL and set one alert rule.",
+     "stack": "Prometheus / Grafana"
+    }
+   },
+   {
+    "id": "devops-capstone",
+    "title": "Capstone: Ship an App End to End",
+    "time": "40 to 70 hours",
+    "from": 40,
+    "to": 70,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Take one app and ship it end to end: code on GitHub, tests in GitHub Actions, a Docker image that runs with Compose on your own computer (no paid cloud is needed; you may also use a free plan), and metrics on a dashboard. Write a one-page guide so someone else can run it.",
+     "stack": "Docker"
+    }
+   }
+  ]
+ }
+]

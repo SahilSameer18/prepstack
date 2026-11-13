@@ -126,14 +126,14 @@ const neetcode150Data = {
       problems: [
         { title: "Generate Parentheses", link: "https://leetcode.com/problems/generate-parentheses/", difficulty: "Medium", tags: ["backtracking"] },
         { title: "Subsets", link: "https://leetcode.com/problems/subsets/", difficulty: "Medium", tags: ["backtracking"] },
+        { title: "Subsets II", link: "https://leetcode.com/problems/subsets-ii/", difficulty: "Medium", tags: ["backtracking"] },
         { title: "Permutations", link: "https://leetcode.com/problems/permutations/", difficulty: "Medium", tags: ["backtracking"] },
         { title: "Combination Sum", link: "https://leetcode.com/problems/combination-sum/", difficulty: "Medium", tags: ["backtracking"] },
         { title: "Word Search", link: "https://leetcode.com/problems/word-search/", difficulty: "Medium", tags: ["backtracking"] },
         { title: "Palindrome Partitioning", link: "https://leetcode.com/problems/palindrome-partitioning/", difficulty: "Medium", tags: ["backtracking"] },
         { title: "Combination Sum II", link: "https://leetcode.com/problems/combination-sum-ii/", difficulty: "Medium", tags: ["backtracking"] },
-        { title: "Word Search II", link: "https://leetcode.com/problems/word-search-ii/", difficulty: "Hard", tags: ["backtracking"] },
         { title: "Letter Combinations of a Phone Number", link: "https://leetcode.com/problems/letter-combinations-of-a-phone-number/", difficulty: "Medium", tags: ["backtracking"] },
-        { title: "N Queens", link: "https://leetcode.com/problems/n-queens/", difficulty: "Hard", tags: ["backtracking"] }
+        { title: "N-Queens", link: "https://leetcode.com/problems/n-queens/", difficulty: "Hard", tags: ["backtracking"] }
       ]
     },
     {
@@ -191,7 +191,6 @@ const neetcode150Data = {
         { title: "Maximum Product Subarray", link: "https://leetcode.com/problems/maximum-product-subarray/", difficulty: "Medium", tags: ["dp"] },
         { title: "Word Break", link: "https://leetcode.com/problems/word-break/", difficulty: "Medium", tags: ["dp"] },
         { title: "Longest Increasing Subsequence", link: "https://leetcode.com/problems/longest-increasing-subsequence/", difficulty: "Medium", tags: ["dp"] },
-        { title: "Longest Common Subsequence", link: "https://leetcode.com/problems/longest-common-subsequence/", difficulty: "Medium", tags: ["dp"] },
         { title: "Partition Equal Subset Sum", link: "https://leetcode.com/problems/partition-equal-subset-sum/", difficulty: "Medium", tags: ["dp"] }
       ]
     },

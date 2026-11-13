@@ -9,6 +9,7 @@
 //                               test/analyzer.context.test.js fails if they drift from client/src/data/roadmaps.js
 //   behavioral   PrepStack's behavioral question bank (id and text), copied from the client for the same reason
 const DSASheet = require('../models/sheets.model');
+const roadmapCatalog = require('../data/roadmapCatalog.json');
 const Notes = require('../models/notes.model');
 const catalog = require('../data/skillCatalog.json');
 const behavioral = require('../data/behavioralQuestions.json');
@@ -40,12 +41,15 @@ const buildContext = async () => {
   const dsaItems = (sheet?.topics || []).map((t) => [`dsa:${DSA_SHEET_SLUG}:${t.id}`, String(t.title).trim()]); // one Blind 75 title has a stray leading space
   const notesItems = notes.flatMap((n) => (n.sections || []).map((s) => [`notes:${n.subjectSlug}:${s.id}`, s.title]));
   const dsaRefs = dsaItems.map(([ref]) => ref);
+  // titles for the other ref kinds a plan item can have (behavioral:<id>, project:<roadmap>:<step>); they are not in `refs`, so the AI can never pick them
+  const behavioralItems = behavioral.map((q) => [`behavioral:${q.id}`, q.question]);
+  const projectItems = roadmapCatalog.flatMap((r) => r.steps.map((s) => [`project:${r.slug}:${s.id}`, s.title]));
   return {
     skillNames,
     aliases, // used to recognise a skill under another name ("ts" for TypeScript) when checking resume tips
     dsaRefs,
     refs: [...new Set([...dsaRefs, ...notesItems.map(([ref]) => ref), ...ROADMAP_SLUGS.map((slug) => `roadmap:${slug}`)])],
-    titles: Object.fromEntries([...dsaItems, ...notesItems]),
+    titles: Object.fromEntries([...dsaItems, ...notesItems, ...behavioralItems, ...projectItems]),
     behavioral,
     roadmapAbout: ROADMAP_SLUGS.map((slug) => `roadmap:${slug} = ${ROADMAP_ABOUT[slug]}`),
   };
