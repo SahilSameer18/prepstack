@@ -38,19 +38,42 @@ const solvedLinksFor = async (userId, input, data) => {
   return [...solved].filter((l) => inPlan.has(l)).slice(0, MAX_SOLVED_LINKS);
 };
 
-const presentItem = (it) => ({
+// Storage ordinals keep occurrence keys unique through rebuilds. Display ordinals describe only
+// surviving parts, without changing saved completions or using a Today subset as the total.
+const partLabels = (items) => {
+  const groups = new Map();
+  for (const it of items) {
+    if (!it.part) continue;
+    const id = gen.baseId(it);
+    if (!groups.has(id)) groups.set(id, []);
+    groups.get(id).push(it);
+  }
+  const labels = new Map();
+  for (const parts of groups.values()) {
+    parts.sort((a, b) => a.part.n - b.part.n);
+    parts.forEach((it, i) => labels.set(it.key, { n: i + 1, of: parts.length }));
+  }
+  return labels;
+};
+const presentItem = (it, labels) => ({
   id: it._id ? String(it._id) : null, key: it.key ?? null, originalKey: it.originalKey ?? null, type: it.type, ref: it.ref ?? null, link: it.link ?? null, title: it.title,
-  plannedMinutes: it.plannedMinutes, day: it.day ?? null, part: it.part ?? null, source: it.source ?? 'planner', core: it.core ?? true, sheet: it.sheet ?? null,
+  plannedMinutes: it.plannedMinutes, day: it.day ?? null, part: labels?.get(it.key) ?? it.part ?? null, source: it.source ?? 'planner', core: it.core ?? true, sheet: it.sheet ?? null,
   topicId: it.topicId ?? null, topicTitle: it.topicTitle ?? null, subject: it.subject ?? null, difficulty: it.difficulty ?? null,
   starred: !!it.starred, locked: !!it.locked, skipped: !!it.skipped, result: it.result ?? null, quizScore: it.quizScore ?? null, doneAt: it.doneAt ?? null,
   reviewStage: it.reviewStage ?? null, nextReviewDay: it.nextReviewDay ?? null, dueDay: it.dueDay ?? null, failed: it.failed ?? undefined, solvedOnSheet: !!it.solvedOnSheet,
 });
-const presentPlan = (doc) => ({
-  id: String(doc._id), goalType: doc.goalType, style: doc.style, title: doc.title, targetRole: doc.targetRole, status: doc.status, sheetSlug: doc.sheetSlug, roadmapSlug: doc.roadmapSlug,
-  subjects: doc.subjects, knownTopics: doc.knownTopics, weeks: doc.weeks, startDate: doc.startDate, deadline: doc.deadline, hoursByWeekday: doc.hoursByWeekday, restDay: doc.restDay,
-  lighterDays: doc.lighterDays, coverage: doc.coverage, notices: doc.notices, createdAt: doc.createdAt, updatedAt: doc.updatedAt, items: doc.items.map(presentItem),
-});
-const presentView = (v) => ({ ...v, items: v.items.map(presentItem), startItem: v.startItem ? presentItem(v.startItem) : null });
+const presentPlan = (doc) => {
+  const labels = partLabels(doc.items);
+  return {
+    id: String(doc._id), goalType: doc.goalType, style: doc.style, title: doc.title, targetRole: doc.targetRole, status: doc.status, sheetSlug: doc.sheetSlug, roadmapSlug: doc.roadmapSlug,
+    subjects: doc.subjects, knownTopics: doc.knownTopics, weeks: doc.weeks, startDate: doc.startDate, deadline: doc.deadline, hoursByWeekday: doc.hoursByWeekday, restDay: doc.restDay,
+    lighterDays: doc.lighterDays, coverage: doc.coverage, notices: doc.notices, createdAt: doc.createdAt, updatedAt: doc.updatedAt, items: doc.items.map((it) => presentItem(it, labels)),
+  };
+};
+const presentView = (v, allItems) => {
+  const labels = partLabels(allItems);
+  return { ...v, items: v.items.map((it) => presentItem(it, labels)), startItem: v.startItem ? presentItem(v.startItem, labels) : null };
+};
 
 // A saved plan in the shape the generator and the adjust module work on.
 const toStored = (doc) => {
@@ -82,7 +105,7 @@ const getPlan = async (req, res, next) => {
     stored.items = withSheetSolves(stored.items, solved);
     const plan = presentPlan(doc);
     plan.items = plan.items.map((it) => ({ ...it, solvedOnSheet: it.type === 'dsa' && !it.doneAt && solved.has(it.link) }));
-    return sendSuccess(res, 200, 'Plan fetched successfully', { plan, today: presentView(adj.todayView(stored, today())), finished: doc.deadline < today() });
+    return sendSuccess(res, 200, 'Plan fetched successfully', { plan, today: presentView(adj.todayView(stored, today()), stored.items), finished: doc.deadline < today() });
   } catch (error) {
     return next(error);
   }
@@ -123,7 +146,7 @@ const createPlan = async (req, res, next) => {
     }
     const old = await Plan.find({ user: req.user._id, status: 'finished' }).sort({ createdAt: -1 }).skip(PLAN_MAX_FINISHED).select('_id').lean();
     if (old.length) await Plan.deleteMany({ _id: { $in: old.map((p) => p._id) }, user: req.user._id });
-    return sendSuccess(res, 201, 'Plan created successfully', { plan: presentPlan(doc), today: presentView(adj.todayView(toStored(doc), today())) });
+    return sendSuccess(res, 201, 'Plan created successfully', { plan: presentPlan(doc), today: presentView(adj.todayView(toStored(doc), today()), doc.items) });
   } catch (error) {
     return next(error);
   }
@@ -192,7 +215,7 @@ const applyChange = async (req, res, next) => {
       { returnDocument: 'after', runValidators: true }
     );
     if (!updated) return next(new AppError(409, 'The plan changed while you were looking at it. Preview the change again.'));
-    return sendSuccess(res, 200, 'Change applied', { plan: presentPlan(updated), today: presentView(adj.todayView(toStored(updated), today())) });
+    return sendSuccess(res, 200, 'Change applied', { plan: presentPlan(updated), today: presentView(adj.todayView(toStored(updated), today()), updated.items) });
   } catch (error) {
     return next(error);
   }
@@ -295,8 +318,8 @@ const solvedOnSheets = async (userId, doc) => {
   return solved;
 };
 // An open DSA item whose problem is solved on its sheet counts as done, with the date it was solved there. Used by the plan, Today and the weekly review,
-// so they all agree. Nothing is written.
-const withSheetSolves = (items, solved) => items.map((it) => (it.type === 'dsa' && !it.doneAt && solved.has(it.link) ? { ...it, doneAt: solved.get(it.link) ?? planClock.now(), solvedOnSheet: true } : it));
+// so they all agree. An unknown date stays unknown and earns no dated weekly credit. Nothing is written.
+const withSheetSolves = (items, solved) => items.map((it) => (it.type === 'dsa' && !it.doneAt && solved.has(it.link) ? { ...it, doneAt: solved.get(it.link) ?? null, solvedOnSheet: true } : it));
 
 const applyItemsUpdate = (doc, updatedList) => {
   for (const updated of updatedList) {
@@ -396,7 +419,7 @@ const updateItem = async (req, res, next) => {
     await persistWithSync(doc, dsaSync);
 
     const updated = findItemInPlan(doc, req.params.id);
-    return sendSuccess(res, 200, 'Item updated', { item: presentItem(updated) });
+    return sendSuccess(res, 200, 'Item updated', { item: presentItem(updated, partLabels(doc.items)) });
   } catch (error) {
     return next(error);
   }
@@ -431,7 +454,7 @@ const addItem = async (req, res, next) => {
     doc.items.push(newItem);
     await doc.save();
     const created = doc.items[doc.items.length - 1];
-    return sendSuccess(res, 201, 'Item added', { item: presentItem(created) });
+    return sendSuccess(res, 201, 'Item added', { item: presentItem(created, partLabels(doc.items)) });
   } catch (error) {
     return next(error);
   }
@@ -460,7 +483,7 @@ const starItem = async (req, res, next) => {
     const item = findItemInPlan(doc, req.params.id);
     item.starred = !item.starred;
     await doc.save();
-    return sendSuccess(res, 200, 'Item star toggled', { item: presentItem(item) });
+    return sendSuccess(res, 200, 'Item star toggled', { item: presentItem(item, partLabels(doc.items)) });
   } catch (error) {
     return next(error);
   }
@@ -501,7 +524,7 @@ const recordResult = async (req, res, next) => {
     await persistWithSync(doc, dsaSync);
 
     const updated = findItemInPlan(doc, req.params.id);
-    return sendSuccess(res, 200, 'Result recorded', { item: presentItem(updated), started: markRes.started });
+    return sendSuccess(res, 200, 'Result recorded', { item: presentItem(updated, partLabels(doc.items)), started: markRes.started });
   } catch (error) {
     return next(error);
   }
@@ -523,7 +546,7 @@ const recordReview = async (req, res, next) => {
     return sendSuccess(res, 200, 'Review recorded', {
       retired: reviewRes.retired,
       offerRecode: reviewRes.offerRecode,
-      item: presentItem(updated),
+      item: presentItem(updated, partLabels(doc.items)),
     });
   } catch (error) {
     return next(error);
@@ -542,7 +565,7 @@ const skipItem = async (req, res, next) => {
     applyItemsUpdate(doc, skipRes.items);
     await doc.save();
     const updated = findItemInPlan(doc, req.params.id);
-    return sendSuccess(res, 200, 'Item skipped', { warning: skipRes.warning, item: presentItem(updated) });
+    return sendSuccess(res, 200, 'Item skipped', { warning: skipRes.warning, item: presentItem(updated, partLabels(doc.items)) });
   } catch (error) {
     return next(error);
   }
@@ -557,7 +580,7 @@ const unskipItem = async (req, res, next) => {
     applyItemsUpdate(doc, unskipRes.items);
     await doc.save();
     const updated = findItemInPlan(doc, req.params.id);
-    return sendSuccess(res, 200, 'Item unskipped', { item: presentItem(updated) });
+    return sendSuccess(res, 200, 'Item unskipped', { item: presentItem(updated, partLabels(doc.items)) });
   } catch (error) {
     return next(error);
   }

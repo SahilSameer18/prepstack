@@ -4,7 +4,7 @@
 
 **What PrepStack is:** a free interview-prep platform (no payment). Login is the gate for generating plans and saving progress. Content must be accurate, in easy words, and sourced. The goal planner "My plan" is the planned differentiator. The owner starts their own MAANG SDE prep in Dec 2026.
 
-**Repository audit, 14 Nov 2026:** architecture and critical flows reviewed. Fixed the same day (server 890, client 91, build, lint and SEO checks pass): duplicate planner item keys (one notes section linked from several roadmap steps, and part numbers after a rebuild), split problems now tick the sheet only when the last part is done, Today never hides carried-over work or due reviews, the weekly review counts sheet solves like the plan, and a failed sign-out keeps the user signed in with an error message. Homepage claims also fixed: the named testimonials are removed, and the progress, privacy and AI-output wording now matches what the product does. Findings: `docs/AUDIT_2026_11_14.md`. Protected-page browser checks and independent content-source verification remain incomplete.
+**Audit follow-up fixes, 14 Nov 2026:** all four findings from the fix review are addressed: refused sign-outs reject (including the two-device case); the homepage project card describes ideas with a labelled example and no fake CLI/artifacts; undated sheet solves stay solved without invented weekly credit; rebuild part labels are consecutive across plan, Today and item responses while saved completions and keys stay intact. Full checks pass: server 893, client 92, build, lint and SEO (35 pages, 6 indexable, no SEO warnings). Five deliberate mutations were caught. The changed homepage card was checked at desktop and mobile widths; protected-page browser checks and independent content-source verification remain incomplete. Details and historical review: `docs/AUDIT_FIX_REVIEW_2026_11_14.md`. Other original audit findings are still tracked in `docs/AUDIT_2026_11_14.md`; this follow-up does not close them.
 
 ## Done
 
@@ -17,7 +17,7 @@
 | Behavioral guide | 50 questions in 10 groups; the story bank was **skipped** by the owner | `client/src/data/behavioralQuestions.js` |
 | Resume guide, checklist, saved problem notes, Role Analyzer | built and live-tested (analyzer fixes after two live runs on 12 Nov) | `IMPROVEMENT_PLAN.md` A3, B2, B4, `docs/plans/ANALYZER_PLAN.md` |
 | Password reset, login lock, account deletion | built | `README.md` |
-| Tests | server 890, client 91, build, lint and SEO check pass (re-run 14 Nov 2026); audit fixes for plan keys, split problems, Today, weekly review and sign-out done, homepage claims waiting for the owner | `TESTING.md`, `docs/AUDIT_2026_11_14.md` |
+| Tests | server 893, client 92, build, lint and SEO pass (14 Nov 2026); all four fix-review findings have regression coverage; five deliberate mutations caught | `TESTING.md`, `docs/AUDIT_FIX_REVIEW_2026_11_14.md` |
 
 ## Left, in build order
 

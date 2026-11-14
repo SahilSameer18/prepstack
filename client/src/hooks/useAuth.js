@@ -25,7 +25,7 @@ export const useAuth = () => {
     try {
       if (setIsLoggingOut) setIsLoggingOut(true);
       
-      await signOut(logout); // throws when the server could not end the session; the user then stays signed in
+      await signOut(logout); // only a confirmed sign-out may continue to the success path
       setUser(null);
     } finally {
       if (setIsLoggingOut) setIsLoggingOut(false);

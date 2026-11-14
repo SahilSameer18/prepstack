@@ -435,17 +435,18 @@ const groupByWeek = (plan) => {
 
 // ---------- "on track" (decision 15 and plan step 9) ----------
 // Planned minutes before today against the minutes of everything done. Days behind = the gap divided by an average study day, rounded down.
+const isComplete = (it) => !!(it.doneAt || it.solvedOnSheet);
 const onTrack = (items, todayYmd) => {
   const today = dayNumber(todayYmd);
   const live = items.filter((it) => !it.skipped);
   const before = live.filter((it) => dayNumber(it.day) < today);
   const plannedBefore = sumMinutes(before);
-  const done = sumMinutes(live.filter((it) => it.doneAt));
+  const done = sumMinutes(live.filter(isComplete));
   const behindMinutes = Math.max(0, plannedBefore - done);
   const studyDays = new Set(live.map((it) => it.day)).size;
   const avgDay = studyDays ? sumMinutes(live) / studyDays : 0;
   const daysBehind = avgDay > 0 ? Math.floor(behindMinutes / avgDay) : 0;
-  const missedItems = before.filter((it) => !it.doneAt).length;
+  const missedItems = before.filter((it) => !isComplete(it)).length;
   const suggestRebuild = daysBehind >= 2 || missedItems >= 3;
   return { status: daysBehind > 0 ? 'behind' : 'on-track', daysBehind, behindMinutes, missedItems, suggestRebuild, text: daysBehind > 0 ? `${daysBehind} day${daysBehind === 1 ? '' : 's'} behind` : 'On track' };
 };
@@ -462,6 +463,6 @@ const previewPlan = (input, data) => {
 };
 
 module.exports = {
-  generatePlan, previewPlan, groupByWeek, onTrack, validateInput, lighterDaysErrors, baseId, dayBudget, todayIst, dayNumber, ymdOf, weekdayOf, PlanInputError,
+  generatePlan, previewPlan, groupByWeek, onTrack, isComplete, validateInput, lighterDaysErrors, baseId, dayBudget, todayIst, dayNumber, ymdOf, weekdayOf, PlanInputError,
   MINUTES_BY_DIFFICULTY, MOCK_MINUTES, BEHAVIORAL_MINUTES, GOALS, STYLES, DEFAULT_SUBJECTS, notesMinutes, problemMinutes,
 };

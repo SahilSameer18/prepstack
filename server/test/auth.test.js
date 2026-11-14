@@ -296,6 +296,19 @@ describe('Authentication: register, login, refresh, sessions', () => {
       }
       assert.equal((await sessionsInDb(acct.email)).length, 0);
     });
+    it('the client cannot confirm all-device sign-out with a revoked session while another device remains active', async () => {
+      const { signOut, SIGN_OUT_FAILED } = await import('../../client/src/utils/signOut.js');
+      const acct = await t.register();
+      const other = await t.login(acct);
+      assert.equal((await t.api.post('/api/auth/logout', { cookies: acct.cookies })).status, 200);
+      const refused = await t.api.post('/api/auth/logout-all', { cookies: acct.cookies });
+      assert.equal(refused.status, 401);
+      // Model the HTTP client's rejection using the real API response, then run the shared UI helper.
+      const failedCall = () => Promise.reject(Object.assign(new Error(refused.body.message), { response: refused }));
+      await assert.rejects(signOut(failedCall, 0), { message: SIGN_OUT_FAILED });
+      assert.equal((await t.api.get('/api/auth/current-user', { cookies: other.cookies })).status, 200);
+      assert.equal((await sessionsInDb(acct.email)).length, 1);
+    });
   });
 
   // ───────────────────────────── refresh ─────────────────────────────

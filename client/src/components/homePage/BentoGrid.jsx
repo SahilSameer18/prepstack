@@ -1,16 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { FiExternalLink, FiCopy, FiCheck, FiCpu, FiCode, FiLayers, FiCompass, FiAward } from "react-icons/fi";
+import { FiExternalLink, FiCpu, FiCode, FiLayers, FiCompass, FiAward } from "react-icons/fi";
 
 const BentoGrid = () => {
-  const [copiedSpec, setCopiedSpec] = useState(false);
-
-  const handleCopySpec = () => {
-    navigator.clipboard?.writeText("prepstack spec --template=distributed-cache --scale=100k");
-    setCopiedSpec(true);
-    setTimeout(() => setCopiedSpec(false), 2000);
-  };
-
   return (
     <section className="relative text-left">
       <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
@@ -100,7 +92,7 @@ const BentoGrid = () => {
           </div>
         </div>
 
-        {/* ── Bento 2: AI System Architect ── */}
+        {/* ── Bento 2: AI project ideas ── */}
         <div className="rounded-2xl titanium-card p-6 sm:p-8 flex flex-col justify-between group relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-brand/30 to-transparent" />
           <div>
@@ -117,30 +109,22 @@ const BentoGrid = () => {
             </div>
 
             <h3 className="font-display text-xl font-bold text-fg tracking-tight mb-2">
-              Recruiter-Grade Projects
+              Find your next project idea
             </h3>
             <p className="text-sm text-muted leading-relaxed mb-6">
-              AI-generated production specs detailing schemas, concurrency bottlenecks, and real engineering trade-offs.
+              Choose a tech stack and level. Get a project idea with features, an estimated time and notes for your resume.
             </p>
 
-            {/* Micro Terminal with Copy Trigger */}
+            {/* A labelled example, not generated output or an executable command. */}
             <div className="bg-scrim/70 rounded-xl p-3.5 font-ui text-xs text-fg-3 relative group/terminal shadow-[inset_0_1px_0_color-mix(in_srgb,var(--ink)_6%,transparent)]">
               <div className="flex items-center justify-between text-muted pb-2 mb-2 border-b border-ink/[0.06] text-xs">
-                <span>ARCH_CLI</span>
-                <button
-                  type="button"
-                  onClick={handleCopySpec}
-                  className="hover:text-fg transition-colors flex items-center gap-1 cursor-pointer min-h-[44px] min-w-[44px] justify-center sm:min-h-0 sm:min-w-0"
-                >
-                  {copiedSpec ? <FiCheck className="text-ok" /> : <FiCopy />}
-                  <span>{copiedSpec ? "Copied" : "Copy"}</span>
-                </button>
+                <span>Example idea (made up)</span>
               </div>
               <div className="leading-relaxed">
-                <span className="text-brand">$</span> prepstack spec --distributed --cache redis --p99 5ms
+                <span className="text-brand">Study group planner</span>
               </div>
               <div className="text-muted text-xs mt-1.5">
-                &rarr; Generated 12 architectural diagrams &amp; Docker manifests
+                Organize study sessions, share tasks and track what your group finishes.
               </div>
             </div>
           </div>

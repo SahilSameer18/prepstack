@@ -109,7 +109,7 @@ const revisionList = (items) => items.filter((it) => it.starred && !it.skipped);
 
 // ---------- carried over, skip, move ----------
 const carriedOver = (items, today) => items
-  .filter((it) => it.source === 'planner' && !it.doneAt && !it.skipped && it.day < today && it.type !== 'mock' && it.type !== 'behavioral')
+  .filter((it) => it.source === 'planner' && !gen.isComplete(it) && !it.skipped && it.day < today && it.type !== 'mock' && it.type !== 'behavioral')
   .sort((a, b) => a.day.localeCompare(b.day) || (a.order ?? 0) - (b.order ?? 0));
 
 // Skip puts the item (all its parts) on the skipped list and warns when later topics build on it, in our dependency order.
@@ -164,7 +164,7 @@ const moveItem = (stored, key, newDay) => {
 // What the student has to do today, the time it needs, and the item the Start button opens (the smallest first). Nothing else.
 const todayView = (stored, today) => {
   const live = stored.items.filter((it) => !it.skipped);
-  const open = live.filter((it) => !it.doneAt);
+  const open = live.filter((it) => !gen.isComplete(it));
   // waiting work always shows: items carried over from earlier days, today's own items, and the reviews due today that fit the day's room
   const carried = carriedOver(live, today);
   const reviews = reviewsForDay(live, today, reviewRoom(hoursOn(stored.input, today))).shown;

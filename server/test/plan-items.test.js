@@ -254,6 +254,69 @@ describe('Phase 4: Plan Items API', () => {
   });
 
   describe('the plan, Today and the weekly review agree about what was solved on a sheet', () => {
+    it('an undated sheet solve stays solved without earning a new completion each week', async () => {
+      planClock.now = () => new Date('2026-11-14T06:00:00Z');
+      const acct = await t.register();
+      const created = await createPlan(acct);
+      const first = created.body.data.plan.items.find((it) => it.type === 'dsa');
+      await Progress.create({ user: acct.id, sheetSlug: first.sheet, solvedProblems: [{ link: first.link, solvedAt: null }] });
+      for (const date of ['2026-11-14', '2026-11-21']) {
+        planClock.now = () => new Date(`${date}T06:00:00Z`);
+        const current = (await getPlan(acct)).body.data;
+        const item = current.plan.items.find((it) => it.id === first.id);
+        assert.equal(item.solvedOnSheet, true);
+        assert.equal(item.doneAt, null);
+        assert.ok(!current.today.items.some((it) => it.id === first.id));
+        const expectedMissed = current.plan.items.filter((it) => !it.skipped && !it.doneAt && !it.solvedOnSheet && it.day < date).length;
+        assert.equal(current.today.onTrack.missedItems, expectedMissed);
+        const live = current.plan.items.filter((it) => !it.skipped);
+        const plannedBefore = live.filter((it) => it.day < date).reduce((s, it) => s + it.plannedMinutes, 0);
+        const doneMinutes = live.filter((it) => it.doneAt || it.solvedOnSheet).reduce((s, it) => s + it.plannedMinutes, 0);
+        assert.equal(current.today.onTrack.behindMinutes, Math.max(0, plannedBefore - doneMinutes));
+        for (const weekStart of ['2026-11-09', '2026-11-16']) {
+          const review = (await getWeeklyReview(acct, `weekStart=${weekStart}`)).body.data;
+          assert.equal(review.summary.completedCount, 0, `no invented credit for ${weekStart} when read on ${date}`);
+          assert.equal(review.summary.completedMinutes, 0);
+        }
+      }
+      assert.equal((await Plan.findOne({ user: acct.id })).items.id(first.id).doneAt, null);
+      assert.equal((await Progress.findOne({ user: acct.id })).solvedProblems[0].solvedAt, null);
+    });
+
+    it('repeated rebuilds display contiguous parts across plan, Today and item responses while preserving saved completions', async () => {
+      planClock.now = () => new Date('2026-11-16T06:00:00Z');
+      const acct = await t.register();
+      const created = await createPlan(acct, form({ weekdayHours: 0.5, weekendHours: 0.5, restDay: null }));
+      assert.equal(created.status, 201);
+      const first = created.body.data.plan.items.find((it) => it.type === 'dsa' && it.part?.of >= 3);
+      assert.ok(first);
+      assert.equal((await patchItem(acct, first.id, { done: true, result: 'alone' })).status, 200);
+      const saved = (await Plan.findOne({ user: acct.id })).items.id(first.id).toObject();
+      const originalMinutes = created.body.data.plan.items.filter((it) => it.link === first.link).reduce((s, it) => s + it.plannedMinutes, 0);
+      const changes = [{ type: 'rebuild' }, { type: 'hours', weekdayHours: 1, weekendHours: 1 }, { type: 'hours', weekdayHours: 0.5, weekendHours: 0.5 }];
+      for (const change of changes) {
+        const preview = await t.api.post('/api/plan/changes/preview', { cookies: acct.cookies, body: change });
+        assert.equal(preview.status, 200);
+        const applied = await t.api.post('/api/plan/changes/apply', { cookies: acct.cookies, body: { ...change, checksum: preview.body.data.diff.checksum } });
+        assert.equal(applied.status, 200);
+        for (const response of [applied, await getPlan(acct)]) {
+          const { plan, today } = response.body.data;
+          const parts = plan.items.filter((it) => it.link === first.link).sort((a, b) => a.part.n - b.part.n);
+          assert.deepEqual(parts.map((it) => it.part), parts.map((_, i) => ({ n: i + 1, of: parts.length })));
+          assert.equal(parts.reduce((s, it) => s + it.plannedMinutes, 0), originalMinutes);
+          assert.equal(new Set(plan.items.map((it) => it.key)).size, plan.items.length);
+          for (const item of [...today.items, today.startItem].filter(Boolean)) {
+            if (item.link === first.link) assert.deepEqual(item.part, parts.find((it) => it.key === item.key).part);
+          }
+          const pending = parts.find((it) => !it.doneAt);
+          const starred = await starItem(acct, pending.id);
+          assert.equal(starred.status, 200);
+          assert.deepEqual(starred.body.data.item.part, pending.part);
+        }
+        assert.deepEqual((await Plan.findOne({ user: acct.id })).items.id(first.id).toObject(), saved);
+      }
+    });
+
     it('a problem solved on its sheet this week counts as done in the weekly review, as in the plan', async () => {
       const acct = await t.register();
       const res = await createPlan(acct);
