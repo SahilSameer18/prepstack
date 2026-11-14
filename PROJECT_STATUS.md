@@ -37,6 +37,9 @@
 - No outside reader has read any notes subject, roadmap or the behavioral guide: the notes say "checked by the author and AI reviewers".
 - Known limitations: rate limits live in server memory; free AI tiers can fail; reset emails go from a free address (README).
 
+## Handoff
+Another agent can continue from `docs/HANDOFF.md` (state, API contract, client conventions, practical notes) and `AGENTS.md`.
+
 ## Rules for the work (short)
 Content: every fact from a primary source that was read; own words; easy words with the technical term kept; numbers computed by a script; reviewers re-fetch sources; publish only on the owner's word. The owner commits and runs the seeds (one-line commit message, no trailer). Recommend, then ask, for decisions. Details: `CLAUDE.md`, `docs/content/NOTES_TEMPLATE.md`, `IMPROVEMENT_PLAN.md` section 6.
 
