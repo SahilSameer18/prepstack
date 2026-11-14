@@ -196,10 +196,24 @@ describe('carried over and the calm Today list (decisions 24, 27, 33)', () => {
     const items = tick(stored.items, first.key, '2026-11-05'); // due 2026-11-12
     const v = adj.todayView({ ...stored, items }, '2026-11-16');
     assert.ok(v.items.some((i) => i.type === 'review' && i.originalKey === first.key));
-    const sundayView = adj.todayView(stored, '2026-11-22'); // the rest day
-    assert.equal(sundayView.date, '2026-11-23');
-    assert.equal(sundayView.isToday, false);
-    assert.ok(sundayView.items.length > 0 && sundayView.items.every((i) => i.day === '2026-11-23'));
+    const before = adj.todayView(stored, '2026-11-15'); // the day before the plan starts: nothing waits, so the next day with items is shown
+    assert.equal(before.date, '2026-11-16');
+    assert.equal(before.isToday, false);
+    assert.ok(before.items.length > 0 && before.items.every((i) => i.day === '2026-11-16'));
+  });
+  it('Today never hides waiting work: on a rest day the carried over items stay, and with nothing planned for today the reviews due today stay', () => {
+    const rest = adj.todayView(stored, '2026-11-22'); // the rest day, with unfinished items from earlier days
+    assert.equal(rest.date, '2026-11-22');
+    assert.equal(rest.isToday, true);
+    assert.ok(rest.items.length > 0 && rest.items.every((i) => i.day < '2026-11-22'), 'the carried over items');
+    // everything up to and including Friday 20 Nov is done, and a review is due that day: Today shows the review, not the next day's items
+    const first = dsaItems(stored.items)[0];
+    const doneUpToFriday = stored.items.map((i) => (i.day <= '2026-11-20' ? { ...i, doneAt: 'x' } : i));
+    const items = adj.markDone(doneUpToFriday.map((i) => (i.key === first.key ? { ...i, doneAt: null } : i)), first.key, { doneAt: 'x', doneDay: '2026-11-13', result: 'alone' }).items; // due 2026-11-20
+    const view = adj.todayView({ ...stored, items }, '2026-11-20');
+    assert.equal(view.isToday, true);
+    assert.equal(view.items.length, 1);
+    assert.deepEqual([view.items[0].type, view.items[0].originalKey], ['review', first.key]);
   });
 });
 
@@ -302,6 +316,16 @@ describe('changes with a preview (decisions 16, 25, 42)', () => {
     assert.ok(mocks.length > 0 && mocks.every((m) => Number(m.split(':')[1]) >= 5), `mock weeks ${mocks}`);
     const again = r.plan.items.filter((i) => i.type === 'behavioral' && !i.doneAt);
     assert.ok(!again.some((b) => b.ref === beh[0].ref), 'the done question is not planned again');
+  });
+  it('what is left of a part-done item is numbered after its existing parts, so no two items share a key', () => {
+    const s = makeStored({ hoursByWeekday: [1, 1, 1, 1, 1, 0, 0], restDay: null });
+    const parts = s.items.filter((i) => i.part && i.link === s.items.find((x) => x.part).link);
+    const items = adj.markDone(s.items, parts[0].key, { doneAt: 'x', doneDay: parts[0].day, result: 'alone' }).items;
+    const r = adj.previewChange({ ...s, items }, data, '2026-11-30', { type: 'rebuild' });
+    const keys = r.plan.items.map((i) => i.key);
+    assert.equal(new Set(keys).size, keys.length, 'every key is unique');
+    const same = r.plan.items.filter((i) => i.link === parts[0].link).map((i) => i.part?.n);
+    assert.ok(same.slice(1).every((n) => n > parts.length), 'the new parts come after the ones that exist: ' + same);
   });
   it('a rebuild past the deadline says the plan is finished, and a start before the plan starts is treated as its first day', () => {
     assert.deepEqual(adj.previewChange(store2, data, '2027-03-01', { type: 'rebuild' }), { error: 'finished' });

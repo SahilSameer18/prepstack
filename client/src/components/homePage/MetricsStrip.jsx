@@ -4,7 +4,7 @@ const STATS = [
   { value: "5 Curated", label: "Gold-Standard Sheets", detail: "Blind 75 · NeetCode · Striver" },
   { value: "1,200+", label: "Pattern Problems", detail: "Indexed by algorithmic pattern" },
   { value: "5 Core", label: "CS Fundamentals", detail: "OS · DBMS · Networks · OOPs · System Design" },
-  { value: "100%", label: "Atomic Progress", detail: "Zero lost checks, instant sync" },
+  { value: "Saved", label: "Progress per Sheet", detail: "Ticks saved to your account" },
 ];
 
 const MetricsStrip = () => {

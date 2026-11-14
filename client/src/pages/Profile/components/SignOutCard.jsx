@@ -17,8 +17,8 @@ const SignOutCard = () => {
     try {
       await handleLogout();
       navigate('/');
-    } catch {
-      toast.error("Logout failed");
+    } catch (error) {
+      toast.error(error.message);
     } finally {
       setIsLoggingOut(false);
     }
@@ -33,8 +33,8 @@ const SignOutCard = () => {
       await handleLogoutAll();
       toast.success("Successfully signed out of all devices");
       navigate('/login');
-    } catch {
-      toast.error("Failed to sign out of all devices");
+    } catch (error) {
+      toast.error(error.message);
     } finally {
       setIsLoggingOutAll(false);
     }

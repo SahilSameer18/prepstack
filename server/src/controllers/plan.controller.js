@@ -79,7 +79,7 @@ const getPlan = async (req, res, next) => {
     // a problem solved on its sheet (not through the plan) counts as done here: it leaves Today and the on-track numbers, and the page can show it done
     const solved = await solvedOnSheets(req.user._id, doc);
     const stored = toStored(doc);
-    stored.items = stored.items.map((it) => (it.type === 'dsa' && !it.doneAt && solved.has(it.link) ? { ...it, doneAt: planClock.now(), solvedOnSheet: true } : it));
+    stored.items = withSheetSolves(stored.items, solved);
     const plan = presentPlan(doc);
     plan.items = plan.items.map((it) => ({ ...it, solvedOnSheet: it.type === 'dsa' && !it.doneAt && solved.has(it.link) }));
     return sendSuccess(res, 200, 'Plan fetched successfully', { plan, today: presentView(adj.todayView(stored, today())), finished: doc.deadline < today() });
@@ -206,6 +206,10 @@ const findActivePlan = async (userId) => {
   return doc;
 };
 
+// All the parts of one item (an item longer than a day is split into parts that share a problem or a step).
+const partsOf = (doc, item) => doc.items.filter((it) => gen.baseId(it) === gen.baseId(item));
+const clearLadder = (it) => { it.reviewLadder = null; it.reviewStage = null; it.reviewBaseDay = null; it.nextReviewDay = null; it.lastFailedDay = null; };
+
 const findItemInPlan = (doc, id) => {
   const item = doc.items.find((it) => String(it._id) === id || it.key === id);
   if (!item) throw new AppError(404, 'Item not found');
@@ -281,12 +285,18 @@ const persistWithSync = (doc, sync) => withTransaction(async (session) => {
 });
 
 // What the user has marked solved on the sheets for the plan's open DSA items (decision 2: a problem solved on the sheet shows done in the plan).
+// Returns link -> the date it was solved (or null for old ticks with no date).
 const solvedOnSheets = async (userId, doc) => {
   const open = new Set(doc.items.filter((it) => it.type === 'dsa' && it.link && !it.doneAt).map((it) => it.link));
-  if (!open.size) return new Set();
-  const docs = await Progress.find({ user: userId }).select('solvedProblems.link').lean();
-  return new Set(docs.flatMap((d) => (d.solvedProblems || []).map((p) => p.link)).filter((l) => open.has(l)));
+  if (!open.size) return new Map();
+  const docs = await Progress.find({ user: userId }).select('solvedProblems').lean();
+  const solved = new Map();
+  for (const d of docs) for (const p of d.solvedProblems || []) if (open.has(p.link) && !solved.has(p.link)) solved.set(p.link, p.solvedAt ?? null);
+  return solved;
 };
+// An open DSA item whose problem is solved on its sheet counts as done, with the date it was solved there. Used by the plan, Today and the weekly review,
+// so they all agree. Nothing is written.
+const withSheetSolves = (items, solved) => items.map((it) => (it.type === 'dsa' && !it.doneAt && solved.has(it.link) ? { ...it, doneAt: solved.get(it.link) ?? planClock.now(), solvedOnSheet: true } : it));
 
 const applyItemsUpdate = (doc, updatedList) => {
   for (const updated of updatedList) {
@@ -342,17 +352,17 @@ const updateItem = async (req, res, next) => {
     if (body.done !== undefined) {
       if (body.done === false) {
         if (item.doneAt) {
+          const wasFull = partsOf(doc, item).every((p) => p.doneAt);
           item.doneAt = null;
           item.result = null;
           item.quizScore = null;
-          item.reviewLadder = null;
-          item.reviewStage = null;
-          item.reviewBaseDay = null;
-          item.nextReviewDay = null;
-          item.lastFailedDay = null;
-          if (item.type === 'dsa' && item.link) {
-            dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: false };
-            doc.solvedLinks = doc.solvedLinks.filter((l) => l !== item.link);
+          clearLadder(item);
+          if (wasFull) { // the whole problem was done: it is not any more, and its review ladder (kept on one part) goes
+            for (const p of partsOf(doc, item)) { p.result = null; p.quizScore = null; clearLadder(p); }
+            if (item.type === 'dsa' && item.link) {
+              dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: false };
+              doc.solvedLinks = doc.solvedLinks.filter((l) => l !== item.link);
+            }
           }
         }
       } else {
@@ -375,7 +385,7 @@ const updateItem = async (req, res, next) => {
             return next(new AppError(422, errorMessages[markRes.error] || markRes.error));
           }
           applyItemsUpdate(doc, markRes.items);
-          if (item.type === 'dsa' && item.link) {
+          if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt)) { // the sheet is ticked when the last part is done
             dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true };
             if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);
           }
@@ -483,7 +493,7 @@ const recordResult = async (req, res, next) => {
     applyItemsUpdate(doc, markRes.items);
 
     let dsaSync = null;
-    if (item.type === 'dsa' && item.link) {
+    if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt)) {
       dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true };
       if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);
     }
@@ -564,21 +574,23 @@ const getWeeklyReview = async (req, res, next) => {
     const startNum = gen.dayNumber(doc.startDate);
     const weekIdx = Math.floor((gen.dayNumber(monday) - gen.weekdayOf(gen.dayNumber(monday)) - (startNum - gen.weekdayOf(startNum))) / 7) + 1;
 
-    const plannedItems = doc.items.filter((it) => it.day >= monday && it.day <= sunday && !it.skipped);
+    const solved = await solvedOnSheets(req.user._id, doc);
+    const items = withSheetSolves(doc.items.map((it) => (typeof it.toObject === 'function' ? it.toObject() : it)), solved);
+    const plannedItems = items.filter((it) => it.day >= monday && it.day <= sunday && !it.skipped);
     const plannedMinutes = plannedItems.reduce((s, it) => s + it.plannedMinutes, 0);
 
-    const completedItems = doc.items.filter((it) => {
+    const completedItems = items.filter((it) => {
       if (!it.doneAt) return false;
       const doneDay = gen.todayIst(it.doneAt);
       return doneDay >= monday && doneDay <= sunday;
     });
     const completedMinutes = completedItems.reduce((s, it) => s + it.plannedMinutes, 0);
 
-    const movedItems = doc.items.filter((it) => it.day >= monday && it.day <= sunday && it.locked && it.plannedDay && it.plannedDay !== it.day);
+    const movedItems = items.filter((it) => it.day >= monday && it.day <= sunday && it.locked && it.plannedDay && it.plannedDay !== it.day);
 
     const weakTopics = [];
     const seenWeak = new Set();
-    for (const it of doc.items) {
+    for (const it of items) {
       const wasDoneInWeek = it.doneAt && gen.todayIst(it.doneAt) >= monday && gen.todayIst(it.doneAt) <= sunday;
       const wasScheduledInWeek = it.day >= monday && it.day <= sunday;
       const failedInWeek = it.lastFailedDay && it.lastFailedDay >= monday && it.lastFailedDay <= sunday;
@@ -628,7 +640,7 @@ const getWeeklyReview = async (req, res, next) => {
       }
     }
 
-    const track = gen.onTrack(doc.items, today());
+    const track = gen.onTrack(items, today());
 
     return sendSuccess(res, 200, 'Weekly review computed', {
       week: {

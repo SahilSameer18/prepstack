@@ -165,18 +165,17 @@ const moveItem = (stored, key, newDay) => {
 const todayView = (stored, today) => {
   const live = stored.items.filter((it) => !it.skipped);
   const open = live.filter((it) => !it.doneAt);
+  // waiting work always shows: items carried over from earlier days, today's own items, and the reviews due today that fit the day's room
+  const carried = carriedOver(live, today);
+  const reviews = reviewsForDay(live, today, reviewRoom(hoursOn(stored.input, today))).shown;
+  const ids = new Set(carried.map((c) => c.key));
   let date = today;
-  let todays = open.filter((it) => it.day === today);
-  if (!todays.length) {
+  let list = [...carried, ...open.filter((it) => it.day === today && !ids.has(it.key)), ...reviews];
+  if (!list.length) { // nothing at all today: show the next day that has items, labelled with its date (decision 7)
     const later = open.filter((it) => it.day > today).map((it) => it.day).sort()[0];
-    if (later) { date = later; todays = open.filter((it) => it.day === later); }
+    if (later) { date = later; list = open.filter((it) => it.day === later); }
   }
   const isToday = date === today;
-  const carried = isToday ? carriedOver(live, today) : [];
-  const room = isToday ? reviewRoom(hoursOn(stored.input, today)) : 0;
-  const reviews = isToday ? reviewsForDay(live, today, room).shown : [];
-  const ids = new Set(carried.map((c) => c.key));
-  const list = [...carried, ...todays.filter((it) => !ids.has(it.key)), ...reviews];
   const start = [...list].sort((a, b) => a.plannedMinutes - b.plannedMinutes)[0] || null;
   return { date, isToday, items: list, minutes: sum(list), startItem: start, onTrack: gen.onTrack(live, today) };
 };
@@ -219,6 +218,7 @@ const previewChange = (stored, data, todayYmd, change) => {
   const kept = [];
   const exclude = new Set();
   const remaining = new Map();
+  const partOffset = new Map(); // what is left of a part-done item is numbered after its existing parts
   for (const it of stored.items) {
     if (!isPlannedContent(it)) { if (it.doneAt || it.source !== 'planner' || it.type === 'custom') kept.push(it); }
   }
@@ -226,14 +226,14 @@ const previewChange = (stored, data, todayYmd, change) => {
     if (parts.some((p) => p.skipped || p.locked)) { exclude.add(id); kept.push(...parts); continue; }
     const done = parts.filter((p) => p.doneAt);
     if (done.length === parts.length) { exclude.add(id); kept.push(...parts); continue; }
-    if (done.length) { kept.push(...done); remaining.set(id, sum(parts.filter((p) => !p.doneAt))); }
+    if (done.length) { kept.push(...done); remaining.set(id, sum(parts.filter((p) => !p.doneAt))); partOffset.set(id, Math.max(...parts.map((p) => p.part?.n ?? 0))); }
   }
   const keptMinutes = new Map();
   for (const it of kept) if (dayNumber(it.day) >= t) keptMinutes.set(dayNumber(it.day), (keptMinutes.get(dayNumber(it.day)) || 0) + it.plannedMinutes);
   const behavioralDone = new Set(stored.items.filter((it) => it.type === 'behavioral' && it.doneAt).map((it) => Number(it.ref.split(':')[1])));
   const backlogMinutes = sum(dueReviews(stored.items, today));
 
-  const generated = gen.generatePlan(input, data, { deadline: stored.deadline, weekOrigin: stored.startDate, planWeeks: stored.input.weeks, exclude, remaining, keptMinutes, behavioralDone, backlogMinutes });
+  const generated = gen.generatePlan(input, data, { deadline: stored.deadline, weekOrigin: stored.startDate, planWeeks: stored.input.weeks, exclude, remaining, partOffset, keptMinutes, behavioralDone, backlogMinutes });
   const items = [...kept, ...generated.items].sort((a, b) => a.day.localeCompare(b.day));
 
   const before = stored.items.filter((it) => isPlannedContent(it) && !it.doneAt && !it.skipped);

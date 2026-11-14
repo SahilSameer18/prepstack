@@ -6,7 +6,7 @@ const TECHNICAL_FAQS = [
   {
     idx: "01",
     question: "How does PrepStack differ from solving directly on LeetCode?",
-    answer: "LeetCode has 3,000+ uncurated problems with noisy forums. PrepStack provides vetted pattern progressions (Blind 75, NeetCode 150, Striver SDE) with instant atomic progress tracking, low-level CS interview internals, and production project blueprints all in one unified cockpit.",
+    answer: "LeetCode has 3,000+ uncurated problems with noisy forums. PrepStack provides vetted pattern progressions (Blind 75, NeetCode 150, Striver SDE) with progress tracking per sheet, CS interview notes, and AI-written project ideas in one place.",
   },
   {
     idx: "02",
@@ -15,18 +15,18 @@ const TECHNICAL_FAQS = [
   },
   {
     idx: "03",
-    question: "How does the atomic progress sync work?",
-    answer: "Every time you toggle a problem or complete a topic, your client updates state optimistically in 0ms while silently persisting to the database. If your network hiccups, changes rollback gracefully with instant feedback.",
+    question: "How is my progress saved?",
+    answer: "When you tick a problem, the page updates at once and the tick is saved to your account. If the save fails, the tick is undone and you see a message. Progress is kept for each sheet separately: ticking a problem on one sheet does not tick it on another.",
   },
   {
     idx: "04",
-    question: "What makes the AI project specs recruiter-ready?",
-    answer: "Rather than spitting out generic to-do apps or weather widgets, our Gemini-backed architect designs high-throughput services (e.g. distributed rate limiters, write-ahead logs, cache-aside pipelines) with schema definitions, p99 latency targets, and talking points for technical rounds.",
+    question: "What does the AI project generator give me?",
+    answer: "Each idea comes with a title, a short description, a feature list, a suggested tech stack, a difficulty level, an estimated time and a note on how it can look on a resume. It is a starting point written by an AI, so check it before you build on it.",
   },
   {
     idx: "05",
-    question: "Is my progress and account data fully private?",
-    answer: "Yes. PrepStack is engineered with zero-knowledge token hashing at rest, enterprise multi-device session management with remote kill-switches, and full GDPR Article 17 self-service account erasure with cascading collection wipe.",
+    question: "What happens to my data?",
+    answer: "Your progress, notes and projects are tied to your account, and you can delete the account yourself to remove them. You can sign out of one device or all devices. When you use an AI feature, the text you send is shared with the AI provider that answers it. See the Privacy page for details.",
   },
 ];
 

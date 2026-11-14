@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { login, logout, logoutAll, register, getCurrentUser, loginWithGoogle, linkGoogle, setPassword } from "../api/services/authService";
 import { extractError } from "../utils/extractError";
+import { signOut } from "../utils/signOut";
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -24,16 +25,8 @@ export const useAuth = () => {
     try {
       if (setIsLoggingOut) setIsLoggingOut(true);
       
-      // Perform server logout and allow the full-screen overlay to display smoothly for 800ms
-      await Promise.allSettled([
-        logout(),
-        new Promise((resolve) => setTimeout(resolve, 800)),
-      ]);
-
+      await signOut(logout); // throws when the server could not end the session; the user then stays signed in
       setUser(null);
-    } catch (error) {
-      setUser(null);
-      throw new Error(extractError(error, 'Logout failed. Please try again.'));
     } finally {
       if (setIsLoggingOut) setIsLoggingOut(false);
     }
@@ -43,15 +36,8 @@ export const useAuth = () => {
     try {
       if (setIsLoggingOut) setIsLoggingOut(true);
 
-      await Promise.allSettled([
-        logoutAll(),
-        new Promise((resolve) => setTimeout(resolve, 800)),
-      ]);
-
+      await signOut(logoutAll);
       setUser(null);
-    } catch (error) {
-      setUser(null);
-      throw new Error(extractError(error, 'Global sign out failed. Please try again.'));
     } finally {
       if (setIsLoggingOut) setIsLoggingOut(false);
     }

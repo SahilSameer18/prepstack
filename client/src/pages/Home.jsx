@@ -3,7 +3,6 @@ import HeroSection from "../components/homePage/HeroSection";
 import MetricsStrip from "../components/homePage/MetricsStrip";
 import EngineeringContrast from "../components/homePage/EngineeringContrast";
 import BentoGrid from "../components/homePage/BentoGrid";
-import Testimonial from "../components/homePage/Testimonial";
 import FAQ from "../components/homePage/FAQ";
 
 const Home = () => {
@@ -27,7 +26,6 @@ const Home = () => {
         <MetricsStrip />
         <EngineeringContrast />
         <BentoGrid />
-        <Testimonial />
         <FAQ />
       </div>
     </div>

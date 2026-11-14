@@ -228,6 +228,48 @@ describe('Phase 4: Plan Items API', () => {
     });
   });
 
+  describe('a problem split over days is solved on the sheet only when its last part is done', () => {
+    it('ticking part 1 does not mark the sheet or hide the other parts; the last part does; unticking any part takes it off again', async () => {
+      const acct = await t.register();
+      const res = await createPlan(acct, form({ weekdayHours: 0.5, weekendHours: 0.5, restDay: null, weeks: 8, subjects: [] })); // 21 new minutes a day: an Easy (40) is split
+      const first = res.body.data.plan.items.find((i) => i.type === 'dsa' && i.part);
+      assert.ok(first, 'the plan has a split problem');
+      const parts = res.body.data.plan.items.filter((i) => i.link === first.link).sort((a, b) => a.part.n - b.part.n);
+      assert.ok(parts.length >= 2);
+      const solved = async () => (await Progress.findOne({ user: acct.id, sheetSlug: first.sheet }))?.solvedProblems.some((p) => p.link === first.link) ?? false;
+
+      assert.equal((await patchItem(acct, parts[0].id, { done: true, result: 'alone' })).status, 200);
+      assert.equal(await solved(), false, 'part 1 is not the whole problem');
+      const mid = (await getPlan(acct)).body.data.plan.items.filter((i) => i.link === first.link);
+      assert.ok(mid.slice(1).every((i) => !i.solvedOnSheet && !i.doneAt), 'the other parts are still open');
+
+      for (const p of parts.slice(1)) assert.equal((await patchItem(acct, p.id, { done: true, result: 'alone' })).status, 200);
+      assert.equal(await solved(), true, 'the last part ticks the sheet');
+      assert.ok((await Plan.findOne({ user: acct.id })).items.some((i) => i.link === first.link && i.nextReviewDay), 'and the review ladder starts');
+
+      assert.equal((await patchItem(acct, parts[0].id, { done: false })).status, 200);
+      assert.equal(await solved(), false, 'unticking one part takes the problem off the sheet again');
+      assert.ok(!(await Plan.findOne({ user: acct.id })).items.some((i) => i.link === first.link && i.nextReviewDay), 'and the ladder is cleared');
+    });
+  });
+
+  describe('the plan, Today and the weekly review agree about what was solved on a sheet', () => {
+    it('a problem solved on its sheet this week counts as done in the weekly review, as in the plan', async () => {
+      const acct = await t.register();
+      const res = await createPlan(acct);
+      const first = res.body.data.plan.items.find((it) => it.type === 'dsa');
+      const monday = (() => { const n = dayNumber(todayIst()); return ymdOf(n - ((new Date(n * 86400000).getUTCDay() + 6) % 7)); })();
+      const week = await getWeeklyReview(acct, `weekStart=${monday}`);
+      assert.equal(week.body.data.summary.completedCount, 0);
+      await Progress.create({ user: acct.id, sheetSlug: first.sheet, solvedProblems: [{ link: first.link, solvedAt: new Date() }] });
+      const after = await getWeeklyReview(acct, `weekStart=${monday}`);
+      assert.equal(after.body.data.summary.completedCount, 1, 'the sheet solve counts as done this week');
+      assert.ok(after.body.data.summary.completedMinutes >= first.plannedMinutes);
+      const plan = (await getPlan(acct)).body.data.plan.items.find((i) => i.id === first.id);
+      assert.equal(plan.solvedOnSheet, true);
+    });
+  });
+
   describe('a problem solved on its sheet shows done in the plan (decision 2)', () => {
     it('marks it done in the plan and the Today list without changing the stored plan, and not for a problem solved only elsewhere', async () => {
       const acct = await t.register();

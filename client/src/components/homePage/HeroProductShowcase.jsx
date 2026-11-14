@@ -326,7 +326,7 @@ const HeroProductShowcase = () => {
                 <div>
                   <p className="text-xs font-ui uppercase tracking-widest text-brand font-semibold flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-                    Production Architecture Spec
+                    Example Architecture Spec (sample, not AI output)
                   </p>
                   <h3 className="font-display text-fg text-sm sm:text-base font-bold tracking-tight mt-0.5">
                     Distributed Sliding-Window Rate Limiter

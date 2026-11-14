@@ -106,7 +106,7 @@ const BentoGrid = () => {
           <div>
             <div className="flex items-center justify-between mb-5">
               <span className="font-ui text-xs text-brand uppercase tracking-wider font-semibold flex items-center gap-1.5">
-                <FiCpu className="text-sm" /> SYSTEM ARCHITECTURE STUDIO
+                <FiCpu className="text-sm" /> AI PROJECT GENERATOR
               </span>
               <Link
                 to="/ai-projects"

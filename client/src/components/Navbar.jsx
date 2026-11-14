@@ -6,6 +6,7 @@ import {
   FiArrowRight, FiZap, FiLogOut, FiGrid, FiUser, FiTarget
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import { InlineSpinner } from "../components/ui/Skeletons";
 import LogoMark from "./ui/LogoMark";
@@ -27,6 +28,8 @@ const Navbar = () => {
     try {
       await handleLogout();
       navigate('/');
+    } catch (error) {
+      toast.error(error.message);
     } finally {
       setIsLoggingOut(false);
     }

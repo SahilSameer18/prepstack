@@ -347,6 +347,19 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
     assert.equal(all.coverage.plannedMinutes, all.coverage.syllabusMinutes);
     assert.ok(all.notices.includes('early-finish') && all.earlyDays > 0);
   });
+  it('every key is unique in every kind of plan, and a notes section linked from several roadmap steps is scheduled once', () => {
+    for (const r of data.roadmapCatalog) {
+      const p = generatePlan({ ...input, goalType: 'role', roadmapSlug: r.slug, weeks: 26 }, data);
+      const keys = p.items.map((i) => i.key);
+      assert.equal(new Set(keys).size, keys.length, `${r.slug}: duplicate keys`);
+      const notes = p.items.filter((i) => i.type === 'notes').map((i) => i.ref);
+      assert.equal(new Set(notes).size, notes.length, `${r.slug}: a notes section twice`);
+    }
+    for (const over of [{ weeks: 12 }, { weeks: 6, style: 'mixed' }, { goalType: 'placements', sheetSlug: 'striver-a2z', weeks: 20 }]) {
+      const keys = generatePlan({ ...input, ...over }, data).items.map((i) => i.key);
+      assert.equal(new Set(keys).size, keys.length);
+    }
+  });
   it('the other goals and styles run on the real data: placements on Striver A2Z, a role on every roadmap, mixed style', () => {
     const a2z = generatePlan({ ...input, goalType: 'placements', sheetSlug: 'striver-a2z', weeks: 20, subjects: ['os'] }, data);
     assert.ok(a2z.items.length > 0 && a2z.coverage.leftOut.some((l) => l.reason === 'extra'));

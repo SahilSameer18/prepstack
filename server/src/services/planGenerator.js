@@ -148,13 +148,14 @@ const roadmapUnits = (input, data, solved, known, seenLinks) => {
   const units = [];
   let alreadySolved = 0;
   const knownTopics = [];
+  const seenNotes = new Set(); // a notes section linked from two steps is scheduled once, in the first
   for (const step of road.steps) {
     const items = [{ type: 'roadmap', ref: `roadmap:${road.slug}`, stepId: step.id, title: step.title, plannedMinutes: Math.round(((step.from + step.to) / 2) * 60), core: true }];
     for (const p of step.practice) {
       if (p.kind === 'notes') {
         const [subject, id] = p.target.split(':');
         const section = (data.notes[subject] || []).find((s) => s.id === id);
-        if (section) items.push(notesUnit(subject, section).items[0]);
+        if (section && !seenNotes.has(p.target)) { seenNotes.add(p.target); items.push(notesUnit(subject, section).items[0]); }
       } else if (p.kind === 'sheet') {
         const [sheetSlug, topicId] = p.target.split(':');
         const topic = data.sheets[sheetSlug]?.topics.find((t) => t.id === topicId);
@@ -169,8 +170,7 @@ const roadmapUnits = (input, data, solved, known, seenLinks) => {
       }
     }
     items.push({ type: 'roadmap', ref: `project:${road.slug}:${step.id}`, stepId: step.id, title: `Project: ${step.title}`, plannedMinutes: ROADMAP_PROJECT_MINUTES, core: true });
-    const seenNotes = new Set();
-    units.push({ unitId: `step:${road.slug}:${step.id}`, core: true, items: items.filter((it) => (it.type !== 'notes' || (!seenNotes.has(it.ref) && seenNotes.add(it.ref)))) });
+    units.push({ unitId: `step:${road.slug}:${step.id}`, core: true, items });
   }
   return { units, alreadySolved, knownTopics };
 };
@@ -373,7 +373,9 @@ const generatePlan = (input, data, context = {}) => {
     items.push(...[...here, ...datedHere]);
   }
   let counter = 0;
-  const finalItems = items.map((it) => ({ ...it, key: `${baseId(it)}|${it.part ? it.part.n : 0}`, source: 'planner', plannedDay: it.day, order: counter++ }));
+  const offsets = context.partOffset || new Map();
+  const numbered = items.map((it) => { const k = offsets.get(baseId(it)); return k ? { ...it, part: it.part ? { n: it.part.n + k, of: it.part.of + k } : { n: k + 1, of: k + 1 } } : it; });
+  const finalItems = numbered.map((it) => ({ ...it, key: `${baseId(it)}|${it.part ? it.part.n : 0}`, source: 'planner', plannedDay: it.day, order: counter++ }));
   const content2 = finalItems.filter((it) => it.type !== 'mock' && it.type !== 'behavioral');
   const placedMinutes = sumMinutes(content2);
   const leftOut = [

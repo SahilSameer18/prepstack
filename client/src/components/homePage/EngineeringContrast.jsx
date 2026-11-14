@@ -5,7 +5,7 @@ const COMPARISON_ROWS = [
   {
     feature: "Problem Tracking",
     legacy: "Scattered spreadsheets, manual Notion checklists abandoned after 10 days",
-    prepstack: "Atomic DB synchronization across Blind 75, NeetCode 150, and Striver SDE",
+    prepstack: "Saved progress for each sheet: Blind 75, NeetCode 150, Striver SDE and more",
     latency: "Real-time",
   },
   {
@@ -17,13 +17,13 @@ const COMPARISON_ROWS = [
   {
     feature: "System Architecture",
     legacy: "Generic clone projects (Netflix clone, to-do list) that recruiters immediately skip",
-    prepstack: "Production blueprints: Rate limiters, distributed WAL caches, p99 latency SLAs",
+    prepstack: "AI project ideas with features, tech stack and resume notes",
     latency: "FAANG Bar",
   },
   {
     feature: "CS Fundamentals",
     legacy: "Dry, fragmented academic slides without interview focus or memory diagrams",
-    prepstack: "OS virtual memory, DBMS B-Trees, TCP handshakes, and exact FAANG debriefs",
+    prepstack: "OS virtual memory, DBMS B-Trees, TCP handshakes, explained from primary sources",
     latency: "High-Signal",
   },
 ];
@@ -119,7 +119,7 @@ const EngineeringContrast = () => {
                 <div className="w-5 h-5 rounded-md bg-brand/15 border border-brand/30 text-brand flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_color-mix(in_srgb,var(--brand)_30%,transparent)]">
                   <FiCheck className="text-xs" />
                 </div>
-                <span>Unified dashboard syncing every solved problem atomically across Blind 75, NeetCode, and Striver.</span>
+                <span>One dashboard that saves your solved problems for each sheet.</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-md bg-brand/15 border border-brand/30 text-brand flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_color-mix(in_srgb,var(--brand)_30%,transparent)]">
@@ -131,19 +131,19 @@ const EngineeringContrast = () => {
                 <div className="w-5 h-5 rounded-md bg-brand/15 border border-brand/30 text-brand flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_color-mix(in_srgb,var(--brand)_30%,transparent)]">
                   <FiCheck className="text-xs" />
                 </div>
-                <span>AI system architect generating production blueprints with latency specs, schemas, and indexing tradeoffs.</span>
+                <span>AI project generator that suggests ideas with features, a tech stack and resume notes.</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-md bg-brand/15 border border-brand/30 text-brand flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_8px_color-mix(in_srgb,var(--brand)_30%,transparent)]">
                   <FiCheck className="text-xs" />
                 </div>
-                <span>Synthesized OS, DBMS, Networks, OOPs and System Design notes with exact interview question debriefs.</span>
+                <span>OS, DBMS, Networks, OOPs and System Design notes written in plain words, with interview questions.</span>
               </li>
             </ul>
           </div>
 
           <div className="mt-8 pt-4 border-t border-ink/[0.08] flex items-center justify-between font-ui text-xs text-brand">
-            <span>Advantage: Atomic DB sync &amp; structured patterns</span>
+            <span>Advantage: saved progress &amp; structured patterns</span>
             <span className="font-bold text-brand bg-brand/10 px-2 py-0.5 rounded border border-brand/20 text-xs">
               Single Source of Truth
             </span>
