@@ -69,6 +69,24 @@ const addDays = (n) => ymdOf(dayNumber(todayIst()) + n);
 const L = 'https://leetcode.com/problems/';
 
 describe('POST /api/plan/preview (public)', () => {
+  it('the public builder choices match the generator without exposing problems or private plans', async () => {
+    const countBefore = await Plan.countDocuments();
+    const response = await t.api.get('/api/plan/options');
+    assert.equal(response.status, 200);
+    const options = response.body.data;
+    const data = require('../src/services/planData').getPlanData();
+    assert.equal(options.sheets.length, Object.keys(data.sheets).length);
+    assert.equal(options.roadmaps.length, data.roadmapCatalog.length);
+    assert.deepEqual(options.subjects.map((s) => s.id), Object.keys(data.notes));
+    for (const sheet of options.sheets) {
+      assert.ok(sheet.title);
+      assert.deepEqual(sheet.topics.map((t) => t.id), data.sheets[sheet.slug].topics.map((t) => t.id));
+      assert.ok(sheet.topics.every((t) => Object.keys(t).sort().join(',') === 'id,title'));
+    }
+    assert.ok(options.roadmaps.find((r) => r.slug === 'dsa').topics.length > 0);
+    assert.ok(!JSON.stringify(options).includes('plannedMinutes'));
+    assert.equal(await Plan.countDocuments(), countBefore);
+  });
   it('works without login and gives the numbers and week 1 only, writing nothing', async () => {
     const before = await Plan.countDocuments();
     const res = await preview(form());

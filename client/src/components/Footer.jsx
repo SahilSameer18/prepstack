@@ -4,6 +4,7 @@ import LogoMark from "./ui/LogoMark";
 
 const Footer = () => {
   const resources = [
+    { name: 'My plan', url: '/my-plan' },
     { name: "DSA Sheets", url: "/dsa" },
     { name: "CS Notes", url: "/notes" },
     { name: "Roadmaps", url: "/roadmaps" },

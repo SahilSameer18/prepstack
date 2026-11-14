@@ -7,7 +7,7 @@ import { formatDoneAt } from "./planProgress";
 // days:     [{ day, focus, extra, items: [{ index?, task, ref, done, doneAt }] }]  (index defaults to the item's position)
 // todayDay: the day to highlight (the server works it out)
 // onToggle: (day, index, done) => void
-const PlanChecklist = ({ days, todayDay, refTitles, onToggle, busyKey }) => (
+const PlanChecklist = ({ days, todayDay, refTitles, onToggle, busyKey, readOnly = false }) => (
   <ol className="space-y-3">
     {(days || []).map((d) => {
       const isToday = d.day === todayDay;
@@ -23,16 +23,16 @@ const PlanChecklist = ({ days, todayDay, refTitles, onToggle, busyKey }) => (
               const id = `plan-${d.day}-${index}`;
               return (
                 <li key={key} className="flex items-start gap-3 text-sm text-fg-3 leading-relaxed">
-                  <input
+                  {!readOnly && <input
                     id={id} type="checkbox" checked={!!it.done} disabled={busyKey === key}
                     onChange={(e) => onToggle(d.day, index, e.target.checked)}
                     className="peer sr-only"
-                  />
-                  <label htmlFor={id} className="flex shrink-0 items-center justify-center w-11 h-11 -m-2 cursor-pointer peer-focus-visible:[&>span]:ring-2 peer-focus-visible:[&>span]:ring-brand" aria-label={`${it.done ? "Mark not done" : "Mark done"}: ${it.task}`}>
+                  />}
+                  {!readOnly && <label htmlFor={id} className="flex shrink-0 items-center justify-center w-11 h-11 -m-2 cursor-pointer peer-focus-visible:[&>span]:ring-2 peer-focus-visible:[&>span]:ring-brand" aria-label={`${it.done ? "Mark not done" : "Mark done"}: ${it.task}`}>
                     <span className={`flex items-center justify-center w-5 h-5 rounded border transition-colors ${it.done ? "bg-brand border-brand text-on-brand" : "border-ink/[0.3] bg-card"}`}>
                       {it.done && <FiCheck className="text-xs" aria-hidden="true" />}
                     </span>
-                  </label>
+                  </label>}
                   <div className="min-w-0 pt-1.5">
                     <span className={it.done ? "line-through text-muted" : ""}>{it.task}</span>
                     {l && <> <Link to={l.path} className="text-xs text-info hover:text-info">{l.label}</Link></>}

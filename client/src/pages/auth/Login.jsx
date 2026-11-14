@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
@@ -8,6 +8,7 @@ import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 import { GoogleLogin } from "@react-oauth/google";
 import toast from 'react-hot-toast';
 import { extractError } from "../../utils/extractError";
+import { safeReturnTo } from '../../utils/planBuilder';
 
 /* ── variants ── */
 const panelLeft = {
@@ -32,6 +33,9 @@ const formItem = {
 
 const Login = () => {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  // Keep the builder's settings through password login, Google login and the sign-up link.
+  const returnTo = safeReturnTo(params.get('returnTo'));
   const { handleLogin, handleGoogleLogin, handleLinkGoogle, loading } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +65,7 @@ const Login = () => {
           setError(extractError(linkError, "Login succeeded but Google linking failed. You can try linking from your profile."));
         }
       }
-      navigate("/");
+      navigate(returnTo, { replace: true });
     } catch (error) {
       setError(error.message || "Login failed. Please try again.");
     }
@@ -71,7 +75,7 @@ const Login = () => {
     const idToken = credentialResponse.credential;
     try {
       await handleGoogleLogin(idToken);
-      navigate("/");
+      navigate(returnTo, { replace: true });
     } catch (error) {
       if (error.response?.status === 409) {
         setPendingGoogleToken(idToken);
@@ -288,7 +292,7 @@ const Login = () => {
 
             <motion.p className="text-center text-muted text-sm" variants={formItem}>
               Don&apos;t have an account?{" "}
-              <Link to="/register" className="text-brand hover:text-brand-hover font-semibold transition-colors">
+              <Link to={`/register?returnTo=${encodeURIComponent(returnTo)}`} className="text-brand hover:text-brand-hover font-semibold transition-colors">
                 Create one for free
               </Link>
             </motion.p>

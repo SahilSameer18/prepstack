@@ -6,11 +6,20 @@ const AppError = require('../utils/AppError');
 const { sendSuccess } = require('../utils/responseFormatter');
 const gen = require('../services/planGenerator');
 const adj = require('../services/planAdjust');
-const { getPlanData, planClock } = require('../services/planData');
+const { getPlanData, getPlanChoices, planClock } = require('../services/planData');
 const { PLAN_MAX_ITEMS, PLAN_MAX_FINISHED, PLAN_MAX_START_DAYS_AHEAD } = require('../config/limits');
 
 const GOAL_TITLES = { placements: 'Placement prep', role: 'Role switch', bigtech: 'Big-tech SDE interview' };
 const MAX_SOLVED_LINKS = 1500;
+
+// Public builder choices only: no user data, problem lists or generated schedules.
+const getPlanOptions = (req, res, next) => {
+  try {
+    return sendSuccess(res, 200, 'Plan choices fetched', getPlanChoices());
+  } catch (error) {
+    return next(error);
+  }
+};
 
 const today = () => gen.todayIst(planClock.now());
 const weekdayHours = (b) => [b.weekdayHours, b.weekdayHours, b.weekdayHours, b.weekdayHours, b.weekdayHours, b.weekendHours, b.weekendHours];
@@ -713,6 +722,7 @@ const getWeeklyReview = async (req, res, next) => {
 };
 
 module.exports = {
+  getPlanOptions,
   previewPlan,
   getPlan,
   createPlan,

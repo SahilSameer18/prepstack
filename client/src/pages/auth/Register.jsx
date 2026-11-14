@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowLeft, FiCheck } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
@@ -7,6 +7,7 @@ import { InlineSpinner } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 import { GoogleLogin } from "@react-oauth/google";
 import { extractError } from "../../utils/extractError";
+import { safeReturnTo } from '../../utils/planBuilder';
 
 /* ── variants ── */
 const panelLeft = {
@@ -31,6 +32,9 @@ const formItem = {
 
 const Register = () => {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  // Account creation returns to the same builder settings as an ordinary login.
+  const returnTo = safeReturnTo(params.get('returnTo'));
   const { handleRegister, handleGoogleLogin, loading } = useAuth();
   const [formData, setFormData] = useState({ username: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -48,7 +52,7 @@ const Register = () => {
     setError(null);
     try {
       await handleRegister(formData.username, formData.email, formData.password);
-      navigate("/");
+      navigate(returnTo, { replace: true });
     } catch (error) {
       setError(error.message || "Registration failed. Please try again.");
     }
@@ -58,11 +62,11 @@ const Register = () => {
     const idToken = credentialResponse.credential;
     try {
       await handleGoogleLogin(idToken);
-      navigate("/");
+      navigate(returnTo, { replace: true });
     } catch (error) {
       if (error.response?.status === 409) {
         setError("An account with this email already exists. Redirecting to login...");
-        setTimeout(() => navigate("/login"), 2500);
+        navigate(`/login?returnTo=${encodeURIComponent(returnTo)}`, { replace: true });
       } else {
         setError(extractError(error, "Google sign-up failed. Please try again."));
       }
@@ -325,7 +329,7 @@ const Register = () => {
 
             <motion.p className="text-center text-muted text-sm" variants={formItem}>
               Already have an account?{" "}
-              <Link to="/login" className="text-brand hover:text-brand-hover font-semibold transition-colors">
+              <Link to={`/login?returnTo=${encodeURIComponent(returnTo)}`} className="text-brand hover:text-brand-hover font-semibold transition-colors">
                 Log in here
               </Link>
             </motion.p>

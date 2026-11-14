@@ -30,4 +30,45 @@ let cached = null;
 const getPlanData = () => (cached ??= loadPlanData());
 const planClock = { now: () => new Date() };
 
-module.exports = { loadPlanData, getPlanData, planClock, SUBJECTS };
+// Only DSA practice topics can be excluded from a roadmap by the current generator.
+function roadmapTopicChoices(roadmap, sheets) {
+  const topics = new Map();
+  for (const step of roadmap.steps) {
+    for (const practice of step.practice) {
+      if (practice.kind !== 'sheet') continue;
+      const [sheetSlug, topicId] = practice.target.split(':');
+      const topic = sheets[sheetSlug]?.topics.find((item) => item.id === topicId);
+      if (topic) {
+        topics.set(topicId, { id: topic.id, title: String(topic.title).trim() });
+      }
+    }
+  }
+  return [...topics.values()];
+}
+
+// Build public form choices from the same data as the planner, without exposing problem lists.
+function getPlanChoices() {
+  const data = getPlanData();
+  const sheetNames = {
+    'blind-75': 'Blind 75', 'neetcode-150': 'NeetCode 150', 'striver-sde': 'Striver SDE',
+    'striver-a2z': 'Striver A2Z', 'love-babbar': 'Love Babbar',
+  };
+  const subjectNames = {
+    os: 'Operating Systems', dbms: 'DBMS', cn: 'Computer Networks',
+    oops: 'OOP in Java', hld: 'System Design',
+  };
+  const sheets = Object.entries(data.sheets).map(([slug, sheet]) => ({
+    slug,
+    title: sheetNames[slug],
+    topics: sheet.topics.map((topic) => ({ id: topic.id, title: String(topic.title).trim() })),
+  }));
+  const subjects = Object.keys(data.notes).map((id) => ({ id, title: subjectNames[id] }));
+  const roadmaps = data.roadmapCatalog.map((roadmap) => ({
+    slug: roadmap.slug,
+    title: roadmap.title,
+    topics: roadmapTopicChoices(roadmap, data.sheets),
+  }));
+  return { sheets, subjects, roadmaps };
+}
+
+module.exports = { loadPlanData, getPlanData, getPlanChoices, planClock, SUBJECTS };

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
+  getPlanOptions,
   previewPlan,
   getPlan,
   createPlan,
@@ -41,6 +42,7 @@ const {
 } = require('../validators/plan.validators');
 
 // The one public route: the form's preview (numbers and week 1 only, no database write).
+router.get('/options', getPlanOptions);
 router.post('/preview', planPreviewLimiter, validate(previewPlanSchema), previewPlan);
 
 // Everything else needs login.

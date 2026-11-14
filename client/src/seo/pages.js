@@ -48,6 +48,14 @@ const HOME = { name: 'Home', path: '/' };
 
 const pages = [
   {
+    path: '/my-plan', kind: 'static', priority: 0.9, changefreq: 'monthly', parent: HOME,
+    title: 'My Plan: Free Interview Study Plan Builder | PrepStack',
+    description: 'Build a free interview study plan around your goal and available hours. Preview coverage and your first week, then sign in to save the full schedule.',
+    h1: 'Build your interview study plan',
+    intro: ['Choose placements, a role switch or big-tech interview prep. Set your available hours, pick your learning material and preview what fits before creating an account. Time estimates are a guide, not a promise of results.'],
+    links: [link('/dsa', 'DSA sheets'), link('/notes', 'CS notes'), link('/roadmaps', 'Role roadmaps')],
+  },
+  {
     path: '/', kind: 'home', priority: 1.0, changefreq: 'weekly',
     title: 'PrepStack | DSA Sheets, CS Notes & AI Project Ideas',
     description: 'Prepare for software engineering interviews with curated DSA sheets, computer science notes, developer roadmaps and AI-generated project ideas. Free to start.',

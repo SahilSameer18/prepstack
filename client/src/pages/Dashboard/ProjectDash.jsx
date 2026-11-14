@@ -1,3 +1,4 @@
+import SelectField from "../../components/ui/SelectField";
 import React, { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -196,26 +197,28 @@ const ProjectDash = () => {
                 className="w-full pl-10 pr-4 py-2 rounded-xl bg-card border border-ink/[0.08] text-xs sm:text-sm text-fg placeholder-faint focus:outline-none focus:border-brand transition-colors"
               />
             </div>
-            <div className="flex gap-2">
-              <select
+            <div className="grid min-w-0 grid-cols-2 gap-2 md:w-80">
+              <SelectField
+                aria-label="Filter project ideas by difficulty"
                 value={projectFilter}
-                onChange={(e) => setProjectFilter(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-card border border-ink/[0.08] text-xs sm:text-sm text-fg-3 cursor-pointer hover:border-ink/[0.15] transition-colors focus:outline-none focus:border-brand"
-              >
-                <option value="all">All Tiers</option>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
-              <select
+                onValueChange={setProjectFilter}
+                options={[
+                  { value: "all", label: "All levels" },
+                  { value: "Beginner", label: "Beginner" },
+                  { value: "Intermediate", label: "Intermediate" },
+                  { value: "Advanced", label: "Advanced" },
+                ]}
+              />
+              <SelectField
+                aria-label="Sort project ideas"
                 value={projectSort}
-                onChange={(e) => setProjectSort(e.target.value)}
-                className="px-3 py-2 rounded-xl bg-card border border-ink/[0.08] text-xs sm:text-sm text-fg-3 cursor-pointer hover:border-ink/[0.15] transition-colors focus:outline-none focus:border-brand"
-              >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="difficulty">Difficulty</option>
-              </select>
+                onValueChange={setProjectSort}
+                options={[
+                  { value: "newest", label: "Newest first" },
+                  { value: "oldest", label: "Oldest first" },
+                  { value: "difficulty", label: "Difficulty" },
+                ]}
+              />
             </div>
           </div>
         )}

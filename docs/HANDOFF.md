@@ -2,10 +2,17 @@
 
 Written 14 Nov 2026 by the agent that did the work so far (Claude), for the next agent. Read this file, then `PROJECT_STATUS.md` (what is done and left), then `CLAUDE.md` (the rules). Everything the previous agent knew that matters is in the repository; nothing important lives only in a chat or in an agent's memory.
 
+## Phase 5 handoff, 14 Nov 2026
+- Phase 5 is built; Phase 6 daily screens are next. `/my-plan` is public and indexable. Client API calls: `api/services/planService.js`; readable settings/validation helpers: `utils/planBuilder.js`; requests/login/save lifecycle: `hooks/usePlanBuilder.js`; UI: `pages/MyPlan.jsx` and `components/plan/`. Shared `PlanChecklist` has an optional readOnly mode.
+- Public `GET /api/plan/options` returns `{ sheets, subjects, roadmaps }` with labels and supported DSA topic IDs. It uses generator source data and no database/user data. Other existing plan API contracts are unchanged.
+- The builder keeps settings in its query string. Generate while logged out stores a one-use, setting-bound intent in sessionStorage, carries an internal returnTo through login/sign-up, then saves once after login. A shared URL cannot authorize an automatic save. Existing plans need explicit replacement consent. Blocked session storage restores settings for a manual Generate click.
+- All seven native selects now use `components/ui/SelectField.jsx` (Radix Select). Popup width follows the trigger; height and positioning respect the viewport. Trigger tap state prevents close/reopen on the same tap. Stable scrollbar gutter removes desktop page shifts. Navigation is compact below 1280 px.
+- Final checks: server 901, client 112, build/lint/SEO passed (36 pages, 7 indexable); two login-intent mutations caught. Previous pending client checks cleared. No live deployment or real Google login. See TESTING.md for exact browser limits.
+
 ## 1. Where things are
-- **Next job: My plan Phase 5** (the first screens). Phases 0 to 4 are done and committed or ready to commit: data fixes, the generator, the adjust module, the model and API, the item routes. Plan: `docs/plans/MY_PLAN_PLAN.md` (version 9; its first paragraph is a dated log of what each phase did and the choices made). Phases left: 5 builder page and form, 6 daily screens, 7 connections and close-out, 8 the student check (the owner).
+- **Next job: My plan Phase 6** (daily screens). Phases 0 to 5 are implemented. Phase 5 details are above; the current plan is `docs/plans/MY_PLAN_PLAN.md`.
 - **Other open work**, in order: seed and deploy (owner), LLD notes (new notes subject; a plan must be written first), student check, stage 6 (quizzes, DSA problems plan, Redis, light theme, public profile, CI). See `PROJECT_STATUS.md`.
-- **Tests now:** server 900 (`cd server && npm test`), client 100 defined (last full run passed 99; final rerun declined, see TESTING.md) (`cd client && npm test`), build `cd client && npm run build` (also runs the SEO check), lint `cd client && npm run lint`. The last full run passed on 14 Nov 2026; the final client lifecycle corrections still need test/build verification. Lint passed after those corrections. A full server run can fail the replica-set or AI-lock tests when the machine is busy; they pass on a rerun.
+- **Tests now:** server 901, client 112, build, lint and SEO passed on 14 Nov 2026. The previous pending client verification is cleared.
 
 ## 2. Rules that cost the owner time when broken
 - **Git:** never stage, commit or push. Give the `git add` and a one-line `git commit -m "..."` (no trailer, no Co-Authored-By). Never touch `server/.env`. Never use ports 3000 or 5173 for throwaway servers (use 3100 for the server and 5175 for the client; start the client with `VITE_API_URL=http://localhost:3100`).

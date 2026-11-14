@@ -1,7 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { pageFor } from "./pages";
+import { pageFor, indexablePages } from "./pages";
 
 describe("pageFor", () => {
+  it('the My plan builder is public, indexable and has real prerender content', () => {
+    const page = pageFor('/my-plan');
+    expect(page.noindex).not.toBe(true);
+    expect(indexablePages.map((item) => item.path)).toContain('/my-plan');
+    expect(page.description.length).toBeLessThanOrEqual(160);
+    expect(page.intro.join(' ')).toContain('before creating an account');
+  });
   it("gives a notes section the title of its subject, kept private (noindex)", () => {
     const subject = pageFor("/notes/os");
     const section = pageFor("/notes/os/os-deadlocks");

@@ -27,6 +27,7 @@ const UnifiedDashboard = lazy(() => import('./pages/Dashboard/UnifiedDashboard')
 const Profile = lazy(() => import('./pages/Profile/Profile'));
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
 const TermsOfUse = lazy(() => import('./pages/legal/TermsOfUse'));
+const MyPlan = lazy(() => import('./pages/MyPlan'));
 
 
 export const router = createBrowserRouter([
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
     children: [
 
       { path: "/", element: <Home /> },
+      { path: '/my-plan', element: <MyPlan /> },
 
       {
         path: "/dsa",

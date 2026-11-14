@@ -635,14 +635,14 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **900 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **901 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
 
 ```bash
 cd server
 npm test
 ```
 
-They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **100 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh plus a Google conflict hook check (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, 2 for the resume checklist PDF (it must draw as one page), and the rest for the notes quiz scoring and diagram layout, the roadmap data rules and links, the Analyzer link builder, the study-plan checklist helpers, the problem-note import and merge helpers and the page titles. The screens themselves have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
+They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **112 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh plus a Google conflict hook check (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, 2 for the resume checklist PDF (it must draw as one page), and the rest for the notes quiz scoring and diagram layout, the roadmap data rules and links, the Analyzer link builder, the study-plan checklist helpers, the problem-note import and merge helpers and the page titles. The screens themselves have no automated tests: they were checked by hand in a browser at phone and desktop widths. Details, and what is not covered: [TESTING.md](TESTING.md).
 
 The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota).
 

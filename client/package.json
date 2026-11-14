@@ -12,6 +12,7 @@
     "build:app": "vite build"
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.4.1",
     "@react-oauth/google": "^0.13.5",
     "@react-pdf/renderer": "^4.9.0",
     "@tailwindcss/vite": "^4.2.1",

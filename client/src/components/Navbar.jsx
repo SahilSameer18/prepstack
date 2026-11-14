@@ -66,6 +66,7 @@ const Navbar = () => {
   }, []);
 
   const mainLinks = [
+    { name: 'My plan', path: '/my-plan', icon: <FiTarget /> },
     { name: "DSA Sheets", path: "/dsa", icon: <FiCode /> },
     { name: "AI Projects", path: "/ai-projects", icon: <FiCpu /> },
     { name: "Role Analyzer", path: "/analyzer", icon: <FiTarget /> },
@@ -92,7 +93,7 @@ const Navbar = () => {
           </NavLink>
 
           {/* ── Desktop Nav ── */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden xl:flex items-center gap-1">
             {mainLinks.map((link) => (
               <NavLink
                 key={link.path}
@@ -143,7 +144,7 @@ const Navbar = () => {
                     exit={{ opacity: 0, y: -6, scale: 0.96 }}
                     transition={{ type: "spring", damping: 25, stiffness: 360 }}
                     style={{ transformOrigin: "top center" }}
-                    className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-72 bg-card border border-ink/[0.1] rounded-2xl shadow-[0_20px_50px_color-mix(in_srgb,var(--shadow)_85%,transparent)] overflow-hidden backdrop-blur-2xl"
+                    className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-72 max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-6rem)] overflow-y-auto bg-card border border-ink/[0.1] rounded-2xl shadow-[0_20px_50px_color-mix(in_srgb,var(--shadow)_85%,transparent)] overflow-hidden backdrop-blur-2xl"
                   >
                     <div className="px-4 py-3 border-b border-ink/[0.06]">
                       <p className="text-xs font-ui text-muted font-semibold uppercase tracking-wider">More Resources</p>
@@ -180,7 +181,7 @@ const Navbar = () => {
           </div>
 
           {/* ── Desktop CTA ── */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden xl:flex items-center gap-2">
             {user ? (
               <div className="relative" ref={userRef} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setUserMenuOpen(false); }}>
                 <button
@@ -206,7 +207,7 @@ const Navbar = () => {
                       <span className="text-on-brand text-xs font-bold">{user.username?.[0]?.toUpperCase() || "U"}</span>
                     )}
                   </div>
-                  {user.username}
+                  <span className="max-w-28 truncate">{user.username}</span>
                   <FaChevronDown className="text-xs text-muted" />
                 </button>
                 <AnimatePresence>
@@ -218,7 +219,7 @@ const Navbar = () => {
                       exit={{ opacity: 0, y: -6, scale: 0.96 }}
                       transition={{ type: "spring", damping: 25, stiffness: 360 }}
                       style={{ transformOrigin: "top right" }}
-                      className="absolute right-0 top-[calc(100%+8px)] w-48 bg-card border border-ink/[0.1] rounded-xl shadow-[0_20px_50px_color-mix(in_srgb,var(--shadow)_85%,transparent)] overflow-hidden backdrop-blur-2xl"
+                      className="absolute right-0 top-[calc(100%+8px)] w-48 max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-6rem)] overflow-y-auto bg-card border border-ink/[0.1] rounded-xl shadow-[0_20px_50px_color-mix(in_srgb,var(--shadow)_85%,transparent)] overflow-hidden backdrop-blur-2xl"
                     >
                       <div className="px-4 py-2.5 border-b border-ink/[0.06]">
                         <p className="text-xs font-ui text-muted uppercase tracking-wider">Signed in as</p>
@@ -275,7 +276,7 @@ const Navbar = () => {
             aria-expanded={mobileOpen}
             aria-controls="navbar-mobile"
             aria-label="Toggle Navigation Menu"
-            className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors"
+            className="xl:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             <AnimatePresence mode="wait">
@@ -302,7 +303,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
-            className="md:hidden overflow-hidden bg-canvas/98 backdrop-blur-2xl border-t border-ink/[0.08]"
+            className="xl:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto bg-canvas/98 backdrop-blur-2xl border-t border-ink/[0.08]"
           >
             <div className="px-5 py-4 space-y-1">
               {[...mainLinks, ...exploreLinks].map((link) => (
