@@ -6,8 +6,8 @@
  * @param {import('zod').ZodSchema} schema
  */
 
-const validate = (schema) => (req, res, next) => {
-  const result = schema.safeParse(req.body);
+const validate = (schema, target = 'body') => (req, res, next) => {
+  const result = schema.safeParse(req[target]);
 
   if (!result.success) {
     const errors = (result.error.issues ?? result.error.errors ?? []).map((e) => ({
@@ -17,16 +17,12 @@ const validate = (schema) => (req, res, next) => {
 
     return res.status(422).json({
       success: false,
-      // Use the first specific field error as the top-level message so the
-      // client always gets a human-readable string (e.g. "Password must be
-      // at least 8 characters") rather than a vague "Validation failed".
       message: errors[0]?.message || 'Validation failed',
       errors,
     });
   }
 
-  // Replace body with parsed data so controllers get clean, coerced values
-  req.body = result.data;
+  req[target] = result.data;
   next();
 };
 

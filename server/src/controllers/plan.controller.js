@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+const mongoose = require('mongoose');
 const Plan = require('../models/plan.model');
 const Progress = require('../models/progress.model');
 const AppError = require('../utils/AppError');
@@ -40,8 +42,8 @@ const presentItem = (it) => ({
   id: it._id ? String(it._id) : null, key: it.key ?? null, originalKey: it.originalKey ?? null, type: it.type, ref: it.ref ?? null, link: it.link ?? null, title: it.title,
   plannedMinutes: it.plannedMinutes, day: it.day ?? null, part: it.part ?? null, source: it.source ?? 'planner', core: it.core ?? true, sheet: it.sheet ?? null,
   topicId: it.topicId ?? null, topicTitle: it.topicTitle ?? null, subject: it.subject ?? null, difficulty: it.difficulty ?? null,
-  starred: !!it.starred, locked: !!it.locked, skipped: !!it.skipped, result: it.result ?? null, doneAt: it.doneAt ?? null,
-  reviewStage: it.reviewStage ?? null, nextReviewDay: it.nextReviewDay ?? null, dueDay: it.dueDay ?? null, failed: it.failed ?? undefined,
+  starred: !!it.starred, locked: !!it.locked, skipped: !!it.skipped, result: it.result ?? null, quizScore: it.quizScore ?? null, doneAt: it.doneAt ?? null,
+  reviewStage: it.reviewStage ?? null, nextReviewDay: it.nextReviewDay ?? null, dueDay: it.dueDay ?? null, failed: it.failed ?? undefined, solvedOnSheet: !!it.solvedOnSheet,
 });
 const presentPlan = (doc) => ({
   id: String(doc._id), goalType: doc.goalType, style: doc.style, title: doc.title, targetRole: doc.targetRole, status: doc.status, sheetSlug: doc.sheetSlug, roadmapSlug: doc.roadmapSlug,
@@ -74,8 +76,13 @@ const getPlan = async (req, res, next) => {
   try {
     const doc = await Plan.findOne({ user: req.user._id, status: 'active' });
     if (!doc) return sendSuccess(res, 200, 'No active plan', { plan: null, today: null, finished: false });
-    const view = adj.todayView(toStored(doc), today());
-    return sendSuccess(res, 200, 'Plan fetched successfully', { plan: presentPlan(doc), today: presentView(view), finished: doc.deadline < today() });
+    // a problem solved on its sheet (not through the plan) counts as done here: it leaves Today and the on-track numbers, and the page can show it done
+    const solved = await solvedOnSheets(req.user._id, doc);
+    const stored = toStored(doc);
+    stored.items = stored.items.map((it) => (it.type === 'dsa' && !it.doneAt && solved.has(it.link) ? { ...it, doneAt: planClock.now(), solvedOnSheet: true } : it));
+    const plan = presentPlan(doc);
+    plan.items = plan.items.map((it) => ({ ...it, solvedOnSheet: it.type === 'dsa' && !it.doneAt && solved.has(it.link) }));
+    return sendSuccess(res, 200, 'Plan fetched successfully', { plan, today: presentView(adj.todayView(stored, today())), finished: doc.deadline < today() });
   } catch (error) {
     return next(error);
   }
@@ -191,4 +198,477 @@ const applyChange = async (req, res, next) => {
   }
 };
 
-module.exports = { previewPlan, getPlan, createPlan, deletePlan, deleteHistory, previewChange, applyChange };
+// ── Phase 4: Items API, DSA sync, and Weekly Review ──────────────────────────
+
+const findActivePlan = async (userId) => {
+  const doc = await Plan.findOne({ user: userId, status: 'active' });
+  if (!doc) throw new AppError(404, 'You have no active plan');
+  return doc;
+};
+
+const findItemInPlan = (doc, id) => {
+  const item = doc.items.find((it) => String(it._id) === id || it.key === id);
+  if (!item) throw new AppError(404, 'Item not found');
+  return item;
+};
+
+const withTransaction = async (fn) => {
+  const session = await mongoose.startSession();
+  try {
+    let result;
+    await session.withTransaction(async () => {
+      result = await fn(session);
+    });
+    return result;
+  } catch (txError) {
+    if (
+      txError.message?.includes('replica set member') ||
+      txError.message?.includes('retryable writes') ||
+      txError.codeName === 'IllegalOperation' ||
+      txError.code === 20
+    ) {
+      return await fn(null);
+    }
+    throw txError;
+  } finally {
+    await session.endSession();
+  }
+};
+
+// Ticking a DSA item in the plan marks the problem solved on its sheet, unticking removes it. Returns what it changed
+// ({ changed, previous: the earlier solvedAt }) so the caller can undo it if the plan cannot be saved.
+const syncDsaProgress = async (userId, sheetSlug, link, isDone, session = null) => {
+  if (!sheetSlug || !link) return { changed: false, previous: null };
+  const filter = { user: userId, sheetSlug };
+  const opts = session ? { session } : {};
+  if (isDone) {
+    const now = new Date();
+    const push = { $push: { solvedProblems: { link, solvedAt: now } } };
+    const matches = { ...filter, 'solvedProblems.link': { $ne: link } };
+    let result;
+    try {
+      result = await Progress.updateOne(matches, { ...push, $setOnInsert: { createdAt: now } }, { upsert: true, ...opts });
+    } catch (err) {
+      if (err.code !== 11000) throw err;
+      result = await Progress.updateOne(matches, push, opts); // two first ticks at once: the other one created the document
+    }
+    return { changed: (result.modifiedCount || 0) + (result.upsertedCount || 0) > 0, previous: null };
+  }
+  const before = await Progress.findOne(filter, { solvedProblems: { $elemMatch: { link } } }, opts).lean();
+  const previous = before?.solvedProblems?.[0]?.solvedAt ?? null;
+  const result = await Progress.updateOne(filter, { $pull: { solvedProblems: { link } } }, opts);
+  return { changed: (result.modifiedCount || 0) > 0, previous };
+};
+
+// Saves the plan and the sheet progress as one operation. On a replica set that is a transaction. On a single MongoDB server (no
+// transactions) the sheet is written first and put back if the plan cannot be saved, so the two never disagree after a failure.
+const persistWithSync = (doc, sync) => withTransaction(async (session) => {
+  if (session) {
+    await doc.save({ session });
+    if (sync) await syncDsaProgress(doc.user, sync.sheet, sync.link, sync.isDone, session);
+    return;
+  }
+  const info = sync ? await syncDsaProgress(doc.user, sync.sheet, sync.link, sync.isDone) : null;
+  try {
+    await doc.save();
+  } catch (error) {
+    if (info?.changed) {
+      if (sync.isDone) await syncDsaProgress(doc.user, sync.sheet, sync.link, false);
+      else await Progress.updateOne({ user: doc.user, sheetSlug: sync.sheet }, { $push: { solvedProblems: { link: sync.link, solvedAt: info.previous } } });
+    }
+    throw error;
+  }
+});
+
+// What the user has marked solved on the sheets for the plan's open DSA items (decision 2: a problem solved on the sheet shows done in the plan).
+const solvedOnSheets = async (userId, doc) => {
+  const open = new Set(doc.items.filter((it) => it.type === 'dsa' && it.link && !it.doneAt).map((it) => it.link));
+  if (!open.size) return new Set();
+  const docs = await Progress.find({ user: userId }).select('solvedProblems.link').lean();
+  return new Set(docs.flatMap((d) => (d.solvedProblems || []).map((p) => p.link)).filter((l) => open.has(l)));
+};
+
+const applyItemsUpdate = (doc, updatedList) => {
+  for (const updated of updatedList) {
+    const target = doc.items.find((it) => it.key === updated.key);
+    if (target) {
+      if ('doneAt' in updated) target.doneAt = updated.doneAt ?? null;
+      if ('result' in updated) target.result = updated.result ?? null;
+      if ('quizScore' in updated) target.quizScore = updated.quizScore ?? null;
+      if ('reviewLadder' in updated) target.reviewLadder = updated.reviewLadder ?? null;
+      if ('reviewStage' in updated) target.reviewStage = updated.reviewStage ?? null;
+      if ('reviewBaseDay' in updated) target.reviewBaseDay = updated.reviewBaseDay ?? null;
+      if ('nextReviewDay' in updated) target.nextReviewDay = updated.nextReviewDay ?? null;
+      if ('lastFailedDay' in updated) target.lastFailedDay = updated.lastFailedDay ?? null;
+      if ('day' in updated) target.day = updated.day;
+      if ('plannedDay' in updated) target.plannedDay = updated.plannedDay;
+      if ('locked' in updated) target.locked = updated.locked;
+      if ('skipped' in updated) target.skipped = updated.skipped;
+    }
+  }
+};
+
+// PATCH /api/plan/items/:id   body: { done?, result?, quizScore?, day?, plannedMinutes? }
+const updateItem = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user._id);
+    const item = findItemInPlan(doc, req.params.id);
+    const body = req.body;
+    let dsaSync = null;
+
+    if (body.day !== undefined) {
+      const moveRes = adj.moveItem(toStored(doc), item.key, body.day);
+      if (moveRes.error) {
+        const errorMessages = {
+          'already-done': 'Done items cannot be moved',
+          'skipped': 'Skipped items cannot be moved',
+          'dated-item': 'Mock and behavioral items cannot be moved',
+          'outside-plan': 'Day must be between start date and deadline',
+          'too-far': 'Items can only be moved up to 3 days from their planned day',
+          'no-hours': 'Cannot move item to a day with no study hours',
+          'mock-day': 'Cannot move item to a mock interview day',
+        };
+        return next(new AppError(422, errorMessages[moveRes.error] || moveRes.error));
+      }
+      applyItemsUpdate(doc, moveRes.items);
+    }
+
+    if (body.plannedMinutes !== undefined) {
+      if (item.doneAt) return next(new AppError(422, 'Cannot change planned minutes of a done item'));
+      if (item.skipped) return next(new AppError(422, 'Cannot change planned minutes of a skipped item'));
+      item.plannedMinutes = body.plannedMinutes;
+    }
+
+    if (body.done !== undefined) {
+      if (body.done === false) {
+        if (item.doneAt) {
+          item.doneAt = null;
+          item.result = null;
+          item.quizScore = null;
+          item.reviewLadder = null;
+          item.reviewStage = null;
+          item.reviewBaseDay = null;
+          item.nextReviewDay = null;
+          item.lastFailedDay = null;
+          if (item.type === 'dsa' && item.link) {
+            dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: false };
+            doc.solvedLinks = doc.solvedLinks.filter((l) => l !== item.link);
+          }
+        }
+      } else {
+        if (!item.doneAt) {
+          if (item.skipped) return next(new AppError(422, 'Cannot mark a skipped item as done'));
+          const info = {
+            doneAt: new Date(),
+            doneDay: today(),
+            result: body.result || (item.type === 'dsa' ? 'alone' : undefined),
+            quizScore: body.quizScore,
+          };
+          const markRes = adj.markDone(toStored(doc).items, item.key, info);
+          if (markRes.error) {
+            const errorMessages = {
+              'already-done': 'Item is already completed',
+              'skipped': 'Cannot mark a skipped item as done',
+              'bad-quiz-score': 'Quiz score must be an integer between 0 and 5',
+              'result-required': 'Result must be alone, hints or solution',
+            };
+            return next(new AppError(422, errorMessages[markRes.error] || markRes.error));
+          }
+          applyItemsUpdate(doc, markRes.items);
+          if (item.type === 'dsa' && item.link) {
+            dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true };
+            if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);
+          }
+        }
+      }
+    }
+
+    await persistWithSync(doc, dsaSync);
+
+    const updated = findItemInPlan(doc, req.params.id);
+    return sendSuccess(res, 200, 'Item updated', { item: presentItem(updated) });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// POST /api/plan/items   body: { title, plannedMinutes, day }
+const addItem = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user._id);
+    if (doc.items.length >= PLAN_MAX_ITEMS) {
+      return next(new AppError(422, `This plan already has ${PLAN_MAX_ITEMS} items`));
+    }
+    const { title, plannedMinutes, day } = req.body;
+    if (day < doc.startDate || day > doc.deadline) {
+      return next(new AppError(422, 'Day must be between start date and deadline'));
+    }
+    if (adj.hoursOn(toStored(doc).input, day) <= 0) {
+      return next(new AppError(422, 'Cannot add an item to a day with no study hours'));
+    }
+    const key = `custom:${crypto.randomBytes(8).toString('hex')}`;
+    const newItem = {
+      key,
+      type: 'custom',
+      title,
+      plannedMinutes,
+      day,
+      plannedDay: day,
+      source: 'student',
+      core: false,
+      locked: true,
+    };
+    doc.items.push(newItem);
+    await doc.save();
+    const created = doc.items[doc.items.length - 1];
+    return sendSuccess(res, 201, 'Item added', { item: presentItem(created) });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// DELETE /api/plan/items/:id   Only items the student added (or a report added) can be removed. An item the planner made is skipped instead:
+// a removed one would come back at the next rebuild, and removing an item must never un-solve a problem on its sheet.
+const removeItem = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user._id);
+    const item = findItemInPlan(doc, req.params.id);
+    if (item.source === 'planner') return next(new AppError(422, 'This item came from your plan. Skip it instead of removing it.'));
+    doc.items.pull(item._id);
+    await doc.save();
+
+    return sendSuccess(res, 200, 'Item removed', { removed: true, id: req.params.id });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// PATCH /api/plan/items/:id/star
+const starItem = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user._id);
+    const item = findItemInPlan(doc, req.params.id);
+    item.starred = !item.starred;
+    await doc.save();
+    return sendSuccess(res, 200, 'Item star toggled', { item: presentItem(item) });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// POST /api/plan/items/:id/result   body: { result?, quizScore? }
+const recordResult = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user._id);
+    const item = findItemInPlan(doc, req.params.id);
+    if (item.doneAt) return next(new AppError(422, 'Item is already completed'));
+    if (item.skipped) return next(new AppError(422, 'Cannot record result for a skipped item'));
+
+    const info = {
+      doneAt: new Date(),
+      doneDay: today(),
+      result: req.body.result,
+      quizScore: req.body.quizScore,
+    };
+    const markRes = adj.markDone(toStored(doc).items, item.key, info);
+    if (markRes.error) {
+      const errorMessages = {
+        'already-done': 'Item is already completed',
+        'skipped': 'Cannot record result for a skipped item',
+        'bad-quiz-score': 'Quiz score must be an integer between 0 and 5',
+        'result-required': 'Result must be alone, hints or solution',
+      };
+      return next(new AppError(422, errorMessages[markRes.error] || markRes.error));
+    }
+    applyItemsUpdate(doc, markRes.items);
+
+    let dsaSync = null;
+    if (item.type === 'dsa' && item.link) {
+      dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true };
+      if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);
+    }
+
+    await persistWithSync(doc, dsaSync);
+
+    const updated = findItemInPlan(doc, req.params.id);
+    return sendSuccess(res, 200, 'Result recorded', { item: presentItem(updated), started: markRes.started });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// POST /api/plan/items/:id/review   body: { passed }
+const recordReview = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user._id);
+    const item = findItemInPlan(doc, req.params.id);
+    const reviewRes = adj.recordReview(toStored(doc).items, item.key, req.body.passed, today());
+    if (reviewRes.error) {
+      if (reviewRes.error === 'no-review-due') return next(new AppError(422, 'No review is due for this item'));
+      return next(new AppError(422, reviewRes.error));
+    }
+    applyItemsUpdate(doc, reviewRes.items);
+    await doc.save();
+    const updated = findItemInPlan(doc, req.params.id);
+    return sendSuccess(res, 200, 'Review recorded', {
+      retired: reviewRes.retired,
+      offerRecode: reviewRes.offerRecode,
+      item: presentItem(updated),
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// POST /api/plan/items/:id/skip
+const skipItem = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user._id);
+    const item = findItemInPlan(doc, req.params.id);
+    if (item.doneAt) return next(new AppError(422, 'Completed items cannot be skipped'));
+
+    const skipRes = adj.skipItem(toStored(doc).items, item.key, getPlanData());
+    if (skipRes.error === 'already-done') return next(new AppError(422, 'Completed items cannot be skipped'));
+    applyItemsUpdate(doc, skipRes.items);
+    await doc.save();
+    const updated = findItemInPlan(doc, req.params.id);
+    return sendSuccess(res, 200, 'Item skipped', { warning: skipRes.warning, item: presentItem(updated) });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// POST /api/plan/items/:id/unskip
+const unskipItem = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user._id);
+    const item = findItemInPlan(doc, req.params.id);
+    const unskipRes = adj.unskipItem(toStored(doc).items, item.key);
+    applyItemsUpdate(doc, unskipRes.items);
+    await doc.save();
+    const updated = findItemInPlan(doc, req.params.id);
+    return sendSuccess(res, 200, 'Item unskipped', { item: presentItem(updated) });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// GET /api/plan/review?weekStart=YYYY-MM-DD
+const getWeeklyReview = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user._id);
+    const queryStart = req.query?.weekStart;
+    const n = queryStart ? gen.dayNumber(queryStart) : gen.dayNumber(today());
+    const monday = gen.ymdOf(n - gen.weekdayOf(n));
+    const sunday = gen.ymdOf(gen.dayNumber(monday) + 6);
+    const startNum = gen.dayNumber(doc.startDate);
+    const weekIdx = Math.floor((gen.dayNumber(monday) - gen.weekdayOf(gen.dayNumber(monday)) - (startNum - gen.weekdayOf(startNum))) / 7) + 1;
+
+    const plannedItems = doc.items.filter((it) => it.day >= monday && it.day <= sunday && !it.skipped);
+    const plannedMinutes = plannedItems.reduce((s, it) => s + it.plannedMinutes, 0);
+
+    const completedItems = doc.items.filter((it) => {
+      if (!it.doneAt) return false;
+      const doneDay = gen.todayIst(it.doneAt);
+      return doneDay >= monday && doneDay <= sunday;
+    });
+    const completedMinutes = completedItems.reduce((s, it) => s + it.plannedMinutes, 0);
+
+    const movedItems = doc.items.filter((it) => it.day >= monday && it.day <= sunday && it.locked && it.plannedDay && it.plannedDay !== it.day);
+
+    const weakTopics = [];
+    const seenWeak = new Set();
+    for (const it of doc.items) {
+      const wasDoneInWeek = it.doneAt && gen.todayIst(it.doneAt) >= monday && gen.todayIst(it.doneAt) <= sunday;
+      const wasScheduledInWeek = it.day >= monday && it.day <= sunday;
+      const failedInWeek = it.lastFailedDay && it.lastFailedDay >= monday && it.lastFailedDay <= sunday;
+      if (!wasDoneInWeek && !wasScheduledInWeek && !failedInWeek) continue;
+
+      let isWeak = false;
+      let reason = '';
+      if (it.result === 'solution') {
+        isWeak = true;
+        reason = 'Viewed solution';
+      } else if (it.quizScore != null && it.quizScore < 4) {
+        isWeak = true;
+        reason = `Quiz score ${it.quizScore}/5`;
+      } else if (failedInWeek) {
+        isWeak = true;
+        reason = 'Failed review';
+      } else if (it.result === 'hints') {
+        isWeak = true;
+        reason = 'Needed hints';
+      }
+
+      if (isWeak) {
+        const id = it.key;
+        if (!seenWeak.has(id)) {
+          seenWeak.add(id);
+          let link = null;
+          let quizLink = null;
+          if (it.type === 'notes') {
+            const sectionId = it.ref ? it.ref.split(':')[2] : null;
+            link = `/notes/${it.subject}/${sectionId || ''}`;
+            quizLink = link; // the 5-question quiz is at the end of the section's page
+          } else if (it.type === 'dsa') {
+            link = `/dsa/${it.sheet || doc.sheetSlug || 'blind-75'}`;
+          }
+          weakTopics.push({
+            key: it.key,
+            title: it.title,
+            type: it.type,
+            subject: it.subject || null,
+            sheet: it.sheet || doc.sheetSlug || null,
+            topicTitle: it.topicTitle || null,
+            reason,
+            link,
+            quizLink,
+          });
+        }
+      }
+    }
+
+    const track = gen.onTrack(doc.items, today());
+
+    return sendSuccess(res, 200, 'Weekly review computed', {
+      week: {
+        from: monday,
+        to: sunday,
+        weekNumber: Math.max(1, weekIdx),
+      },
+      summary: {
+        plannedMinutes,
+        completedMinutes,
+        plannedCount: plannedItems.length,
+        completedCount: completedItems.length,
+        movedCount: movedItems.length,
+        completionRate: plannedMinutes > 0 ? Math.min(100, Math.round((completedMinutes / plannedMinutes) * 100)) : 0,
+      },
+      weakTopics,
+      onTrack: track,
+      suggestRebuild: track.suggestRebuild,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = {
+  previewPlan,
+  getPlan,
+  createPlan,
+  deletePlan,
+  deleteHistory,
+  previewChange,
+  applyChange,
+  updateItem,
+  addItem,
+  removeItem,
+  starItem,
+  recordResult,
+  recordReview,
+  skipItem,
+  unskipItem,
+  getWeeklyReview,
+  syncDsaProgress,
+};

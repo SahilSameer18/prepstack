@@ -1,7 +1,7 @@
 const { z } = require('zod');
 const { GOALS, STYLES, dayNumber } = require('../services/planGenerator');
 const { SUBJECTS } = require('../services/planData');
-const { PLAN_MIN_WEEKS, PLAN_MAX_WEEKS, PLAN_MIN_DAILY_HOURS, PLAN_MAX_DAILY_HOURS, PLAN_TITLE_MAX } = require('../config/limits');
+const { PLAN_MIN_WEEKS, PLAN_MAX_WEEKS, PLAN_MIN_DAILY_HOURS, PLAN_MAX_DAILY_HOURS, PLAN_TITLE_MAX, PLAN_CUSTOM_ITEM_MAX } = require('../config/limits');
 
 // The My plan form. The form asks for hours on a weekday and on a weekend day plus a rest day; the controller turns that into hours for each weekday.
 const date = (what) => z.string({ error: `${what} is required` }).regex(/^\d{4}-\d{2}-\d{2}$/, `${what} must look like 2026-11-13`).refine((s) => !Number.isNaN(dayNumber(s)), `${what} must be a real date`);
@@ -45,4 +45,46 @@ const checkChange = (c, ctx) => {
 const previewChangeSchema = z.object(changeShape).superRefine(checkChange);
 const applyChangeSchema = z.object({ ...changeShape, checksum: z.string({ error: 'checksum is required' }).regex(/^[0-9a-f]{16}$/, 'checksum is not valid') }).superRefine(checkChange);
 
-module.exports = { previewPlanSchema, createPlanSchema, previewChangeSchema, applyChangeSchema };
+// Phase 4: items and review validators
+const updateItemSchema = z.object({
+  done: z.boolean({ error: 'done must be true or false' }).optional(),
+  result: z.enum(['alone', 'hints', 'solution'], { error: 'result must be alone, hints or solution' }).optional(),
+  quizScore: z.number().int().min(0, 'quizScore must be from 0 to 5').max(5, 'quizScore must be from 0 to 5').optional(),
+  day: date('Day').optional(),
+  plannedMinutes: z.number({ error: 'plannedMinutes must be a number' }).int().min(1, 'plannedMinutes must be at least 1').max(360, 'plannedMinutes must be at most 360').optional(),
+}).refine((b) => b.done !== undefined || b.day !== undefined || b.plannedMinutes !== undefined || b.result !== undefined || b.quizScore !== undefined, {
+  message: 'At least one field (done, day, plannedMinutes, result, quizScore) must be provided',
+});
+
+const addItemSchema = z.object({
+  title: z.string({ error: 'title is required' }).trim().min(1, 'title cannot be empty').max(PLAN_CUSTOM_ITEM_MAX, `title must be at most ${PLAN_CUSTOM_ITEM_MAX} characters`),
+  plannedMinutes: z.number({ error: 'plannedMinutes is required' }).int().min(1, 'plannedMinutes must be at least 1').max(360, 'plannedMinutes must be at most 360'),
+  day: date('Day'),
+});
+
+const recordResultSchema = z.object({
+  result: z.enum(['alone', 'hints', 'solution'], { error: 'result must be alone, hints or solution' }).optional(),
+  quizScore: z.number().int().min(0, 'quizScore must be from 0 to 5').max(5, 'quizScore must be from 0 to 5').optional(),
+}).refine((b) => (b.result !== undefined && b.quizScore === undefined) || (b.result === undefined && b.quizScore !== undefined), {
+  message: 'Provide either result (for DSA/other) or quizScore (for notes), not both',
+});
+
+const recordReviewSchema = z.object({
+  passed: z.boolean({ error: 'passed must be true or false' }),
+});
+
+const weeklyReviewQuerySchema = z.object({
+  weekStart: date('weekStart').optional(),
+});
+
+module.exports = {
+  previewPlanSchema,
+  createPlanSchema,
+  previewChangeSchema,
+  applyChangeSchema,
+  updateItemSchema,
+  addItemSchema,
+  recordResultSchema,
+  recordReviewSchema,
+  weeklyReviewQuerySchema,
+};
