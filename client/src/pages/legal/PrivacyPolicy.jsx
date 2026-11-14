@@ -118,7 +118,7 @@ const PrivacyPolicy = () => {
             <li><strong className="text-fg">Access cookie:</strong> proves who you are for 15 minutes at a time.</li>
             <li><strong className="text-fg">Refresh cookie:</strong> renews your access for up to 7 days, and is replaced every time it is used.</li>
             <li>Both cookies are HttpOnly (page scripts cannot read them) and Secure.</li>
-            <li><strong className="text-fg">Browser storage:</strong> notes you wrote before they were saved to your account stay in your browser&apos;s local storage only until they are moved to your account on your next sign-in, and are then removed from the browser.</li>
+            <li><strong className="text-fg">Browser storage:</strong> older browser-only notes are removed after they are moved to your account. Pending note edits and deletion requests are also kept in this browser, under your account, so they can be retried after a failed save or reload. They are removed when the server confirms the save. Unsent copies can remain on an offline device until you return or clear that browser&apos;s storage.</li>
           </ul>
         </section>
 

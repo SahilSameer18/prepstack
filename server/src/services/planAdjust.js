@@ -66,6 +66,8 @@ const recordReview = (items, key, passed, day) => {
   if (at < 0) return { error: 'not-found', items };
   const item = items[at];
   if (!item.reviewLadder || item.nextReviewDay == null) return { error: 'no-review-due', items };
+  if (item.skipped || item.nextReviewDay > day) return { error: 'no-review-due', items };
+  if (item.lastReviewDay === day) return { error: 'already-reviewed-today', items };
   const ladder = LADDERS[item.reviewLadder];
   let changes;
   if (passed) {
@@ -75,7 +77,7 @@ const recordReview = (items, key, passed, day) => {
     changes = { reviewStage: 0, reviewBaseDay: day, nextReviewDay: addDays(day, ladder[0]), lastFailedDay: day };
   }
   const next = items.slice();
-  next[at] = { ...item, ...changes };
+  next[at] = { ...item, ...changes, lastReviewDay: day };
   return { items: next, retired: changes.nextReviewDay == null, offerRecode: !passed && item.type === 'dsa' };
 };
 

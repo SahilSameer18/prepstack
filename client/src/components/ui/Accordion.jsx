@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronDown } from "react-icons/fa";
 
@@ -6,13 +6,15 @@ import { FaChevronDown } from "react-icons/fa";
 // look is optional: { icon, color, bg } draws a small coloured icon tile before the title.
 const Accordion = ({ title, look, children }) => {
   const [open, setOpen] = useState(false);
+  const panelId = useId();
   return (
     <div className={`luxury-card rounded-2xl overflow-hidden transition-colors duration-300 ${open ? "border-brand/50" : ""}`}>
       <button
         type="button"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
-        className="w-full p-5 flex items-center gap-4 text-left focus:outline-none cursor-pointer min-h-[44px]"
+        aria-controls={panelId}
+        className="w-full p-5 flex items-center gap-4 text-left focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand cursor-pointer min-h-[44px]"
       >
         {look && <div className={`p-3 rounded-xl ${look.bg} ${look.color} text-base flex-shrink-0`}>{look.icon}</div>}
         <span className="font-display text-base sm:text-lg font-bold text-fg flex-1">{title}</span>
@@ -21,6 +23,7 @@ const Accordion = ({ title, look, children }) => {
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
+            id={panelId}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}

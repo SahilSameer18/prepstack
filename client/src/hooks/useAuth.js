@@ -72,8 +72,6 @@ export const useAuth = () => {
       setLoading(true);
       const data = await loginWithGoogle(idToken);
       setUser(data?.data?.user || data?.user);
-    } catch (error) {
-      throw new Error(extractError(error, "Google sign-in failed. Please try again."));
     } finally {
       setLoading(false);
     }

@@ -18,6 +18,7 @@ const Navbar = () => {
   const [exploreOpen, setExploreOpen] = useState(false);
   const exploreRef = useRef();
   const userRef = useRef();
+  const mobileToggleRef = useRef();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user, handleLogout } = useAuth();
@@ -43,6 +44,17 @@ const Navbar = () => {
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
+
+  useEffect(() => {
+    const closeOnEscape = (event) => {
+      if (event.key !== 'Escape') return;
+      if (exploreOpen) { setExploreOpen(false); exploreRef.current?.querySelector('button')?.focus(); }
+      else if (userMenuOpen) { setUserMenuOpen(false); userRef.current?.querySelector('button')?.focus(); }
+      else if (mobileOpen) { setMobileOpen(false); mobileToggleRef.current?.focus(); }
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [exploreOpen, userMenuOpen, mobileOpen]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -108,8 +120,11 @@ const Navbar = () => {
             ))}
 
             {/* Explore Dropdown */}
-            <div className="relative" ref={exploreRef}>
+            <div className="relative" ref={exploreRef} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setExploreOpen(false); }}>
               <button
+                type="button"
+                aria-expanded={exploreOpen}
+                aria-controls="navbar-explore"
                 onClick={() => setExploreOpen(!exploreOpen)}
                 className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${exploreOpen ? "text-fg bg-ink/[0.08]" : "text-fg-3 hover:text-fg hover:bg-ink/[0.05]"}`}
               >
@@ -122,6 +137,7 @@ const Navbar = () => {
               <AnimatePresence>
                 {exploreOpen && (
                   <motion.div
+                    id="navbar-explore"
                     initial={{ opacity: 0, y: -6, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.96 }}
@@ -166,8 +182,12 @@ const Navbar = () => {
           {/* ── Desktop CTA ── */}
           <div className="hidden md:flex items-center gap-2">
             {user ? (
-              <div className="relative" ref={userRef}>
+              <div className="relative" ref={userRef} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setUserMenuOpen(false); }}>
                 <button
+                  type="button"
+                  aria-label="Account navigation"
+                  aria-expanded={userMenuOpen}
+                  aria-controls="navbar-account"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg bg-ink/[0.05] border border-ink/[0.08] text-sm text-fg-3 hover:text-fg hover:bg-ink/[0.08] hover:border-ink/[0.15] transition-all"
                 >
@@ -192,6 +212,7 @@ const Navbar = () => {
                 <AnimatePresence>
                   {userMenuOpen && (
                     <motion.div
+                      id="navbar-account"
                       initial={{ opacity: 0, y: -6, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -6, scale: 0.96 }}
@@ -249,6 +270,10 @@ const Navbar = () => {
 
           {/* ── Mobile Toggle (WCAG 44x44px target) ── */}
           <button
+            type="button"
+            ref={mobileToggleRef}
+            aria-expanded={mobileOpen}
+            aria-controls="navbar-mobile"
             aria-label="Toggle Navigation Menu"
             className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -272,6 +297,7 @@ const Navbar = () => {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="navbar-mobile"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}

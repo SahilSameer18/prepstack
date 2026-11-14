@@ -26,6 +26,18 @@ const dsaItems = (items) => items.filter((i) => i.type === 'dsa');
 describe('the review ladder (decisions 20 to 22)', () => {
   const stored = makeStored();
   const first = dsaItems(stored.items)[0];
+  it('refuses early, skipped and repeated same-day reviews without advancing an overdue ladder', () => {
+    const items = tick(stored.items, first.key, '2026-11-16', { result: 'hints' });
+    for (const passed of [true, false]) {
+      const early = adj.recordReview(items, first.key, passed, '2026-11-18');
+      assert.equal(early.error, 'no-review-due');
+      assert.strictEqual(early.items, items);
+    }
+    const late = adj.recordReview(items, first.key, true, '2026-12-01');
+    assert.ok(!late.error);
+    assert.equal(adj.recordReview(late.items, first.key, true, '2026-12-01').error, 'already-reviewed-today');
+    assert.equal(adj.recordReview(items.map((it) => ({ ...it, skipped: true })), first.key, true, '2026-12-01').error, 'no-review-due');
+  });
   it('starts a ladder when an item is ticked: alone 7 days, hints 3, solution 1, a notes section 3', () => {
     const at = (result) => adj.markDone(stored.items, first.key, { doneAt: 'x', doneDay: '2026-11-16', result }).items.find((i) => i.key === first.key);
     assert.equal(at('alone').nextReviewDay, '2026-11-23');
@@ -85,8 +97,8 @@ describe('the review ladder (decisions 20 to 22)', () => {
     items = tick(items, c.key, '2026-11-12');       // due 11-19
     items = tick(items, d.key, '2026-11-13');       // due 11-20
     items = items.map((i) => (i.key === c.key ? { ...i, starred: true } : i));
-    items = adj.recordReview(items, d.key, false, '2026-11-14').items; // failed: due 11-21
-    const due = adj.dueReviews(items, '2026-11-25');
+    items = adj.recordReview(items, d.key, false, '2026-11-20').items; // failed when due, returns 11-27
+    const due = adj.dueReviews(items, '2026-11-30');
     assert.deepEqual(due.map((r) => r.originalKey), [d.key, c.key, a.key, b.key]);
     assert.deepEqual([due[0].failed, due[1].starred, due[2].failed], [true, true, false]);
     assert.equal(due[0].plannedMinutes, 3);

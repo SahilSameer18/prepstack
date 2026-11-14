@@ -216,11 +216,11 @@ const Login = () => {
 
             {/* Email */}
             <motion.div className="space-y-1.5" variants={formItem}>
-              <label className="text-sm font-medium text-fg-3">Email address</label>
+              <label htmlFor="login-email" className="text-sm font-medium text-fg-3">Email address</label>
               <div className={`flex items-center gap-3 w-full bg-card border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "email" ? "border-brand shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)]" : "border-ink/[0.08] hover:border-ink/[0.15]"}`}>
                 <FiMail className={`text-lg flex-shrink-0 transition-colors ${focusedField === "email" ? "text-brand" : "text-muted"}`} />
                 <input
-                  type="email" name="email" placeholder="you@example.com"
+                  id="login-email" type="email" name="email" placeholder="you@example.com"
                   className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.email} onChange={handleChange}
                   onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} required
@@ -230,16 +230,16 @@ const Login = () => {
 
             {/* Password */}
             <motion.div className="space-y-1.5" variants={formItem}>
-              <label className="text-sm font-medium text-fg-3">Password</label>
+              <label htmlFor="login-password" className="text-sm font-medium text-fg-3">Password</label>
               <div className={`flex items-center gap-3 w-full bg-card border rounded-xl px-4 h-12 transition-colors duration-150 ${focusedField === "password" ? "border-brand shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)]" : "border-ink/[0.08] hover:border-ink/[0.15]"}`}>
                 <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-brand" : "text-muted"}`} />
                 <input
-                  type={showPassword ? "text" : "password"} name="password" placeholder="Enter your password"
+                  id="login-password" type={showPassword ? "text" : "password"} name="password" placeholder="Enter your password"
                   className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.password} onChange={handleChange}
                   onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)} required
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-muted hover:text-fg-3 transition-colors flex-shrink-0">
+                <button type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)} className="text-muted hover:text-fg-3 transition-colors flex-shrink-0 focus-visible:outline-2 focus-visible:outline-brand">
                   {showPassword ? <FiEye className="text-lg" /> : <FiEyeOff className="text-lg" />}
                 </button>
               </div>

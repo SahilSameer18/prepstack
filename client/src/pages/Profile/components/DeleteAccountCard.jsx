@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiAlertTriangle, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +16,17 @@ const DeleteAccountCard = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
+  const dialogRef = useRef(null);
+  const cancelRef = useRef(null);
+
+  useEffect(() => {
+    if (!showDeleteModal) return;
+    const previousFocus = document.activeElement;
+    const dialog = dialogRef.current;
+    dialog.showModal();
+    cancelRef.current?.focus();
+    return () => { dialog.close(); previousFocus?.focus(); };
+  }, [showDeleteModal]);
 
   const handleDeleteAccount = async (e) => {
     e.preventDefault();
@@ -40,6 +51,7 @@ const DeleteAccountCard = () => {
         : { confirmationEmail: deleteConfirmation.trim() };
 
       await deleteUserAccount(payload);
+      try { localStorage.removeItem(`prepstack_problem_notes_pending_v1:${user._id || user.id}`); } catch { /* Browser storage may be unavailable. */ }
       toast.success("Your account and all data have been permanently deleted.");
       setShowDeleteModal(false);
       // Go to /register first (flushSync commits the route change immediately), then clear the user. Clearing the
@@ -83,12 +95,20 @@ const DeleteAccountCard = () => {
       {/* ── Account Deletion Confirmation Modal ── */}
       <AnimatePresence>
         {showDeleteModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-scrim/80 backdrop-blur-sm"
+          <dialog
+            ref={dialogRef}
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            aria-describedby="delete-account-description"
+            onKeyDown={(event) => {
+              if (event.key !== 'Tab') return;
+              const controls = [...event.currentTarget.querySelectorAll('button:not([disabled]), input:not([disabled]), [href], [tabindex="0"]')];
+              const first = controls[0], last = controls.at(-1);
+              if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+              else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+            }}
+            onCancel={(event) => { event.preventDefault(); if (!isDeletingAccount) setShowDeleteModal(false); }}
+            className="fixed m-auto w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto p-0 bg-transparent text-fg backdrop:bg-scrim/80 backdrop:backdrop-blur-sm"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 8 }}
@@ -102,10 +122,12 @@ const DeleteAccountCard = () => {
                   <div className="w-8 h-8 rounded-lg bg-bad-solid/10 flex items-center justify-center text-base">
                     <FiAlertTriangle />
                   </div>
-                  <span>Delete Account Permanently</span>
+                  <span id="delete-account-title">Delete Account Permanently</span>
                 </div>
                 <button
                   type="button"
+                  aria-label="Close delete account dialog"
+                  disabled={isDeletingAccount}
                   onClick={() => setShowDeleteModal(false)}
                   className="text-muted hover:text-fg p-1 cursor-pointer transition-colors"
                 >
@@ -114,7 +136,7 @@ const DeleteAccountCard = () => {
               </div>
 
               <div className="text-xs text-fg-3 space-y-2 leading-relaxed">
-                <p>This action is irreversible. The following data will be permanently wiped:</p>
+                <p id="delete-account-description">This action is irreversible. The following data will be permanently wiped:</p>
                 <ul className="list-disc list-inside space-y-1 text-muted pl-1 font-ui text-xs">
                   <li>All solved DSA problem tracker entries across all sheets.</li>
                   <li>All your notes on DSA problems.</li>
@@ -128,7 +150,7 @@ const DeleteAccountCard = () => {
 
               <form onSubmit={handleDeleteAccount} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-ui font-medium text-fg-3">
+                  <label htmlFor="delete-account-confirmation" className="text-xs font-ui font-medium text-fg-3">
                     {user.hasPassword ? (
                       "Enter current password to verify:"
                     ) : (
@@ -136,6 +158,7 @@ const DeleteAccountCard = () => {
                     )}
                   </label>
                   <input
+                    id="delete-account-confirmation"
                     type={user.hasPassword ? "password" : "text"}
                     value={deleteConfirmation}
                     onChange={(e) => setDeleteConfirmation(e.target.value)}
@@ -148,6 +171,7 @@ const DeleteAccountCard = () => {
                 <div className="flex items-center justify-end gap-3 pt-2">
                   <button
                     type="button"
+                    ref={cancelRef}
                     onClick={() => setShowDeleteModal(false)}
                     disabled={isDeletingAccount}
                     className="px-4 py-2 text-xs font-ui font-semibold rounded-xl bg-ink/[0.05] text-fg-3 hover:bg-ink/[0.1] transition-colors cursor-pointer min-h-[44px]"
@@ -165,7 +189,7 @@ const DeleteAccountCard = () => {
                 </div>
               </form>
             </motion.div>
-          </motion.div>
+          </dialog>
         )}
       </AnimatePresence>
     </>

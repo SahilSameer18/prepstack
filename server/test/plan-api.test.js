@@ -20,6 +20,48 @@ const form = (over = {}) => ({ goalType: 'bigtech', style: 'one-topic', weeks: 1
 const preview = (body, ip) => t.api.post('/api/plan/preview', { body, ip });
 const create = (acct, body) => t.api.post('/api/plan', { cookies: acct.cookies, body });
 const getPlan = (acct) => t.api.get('/api/plan', { cookies: acct.cookies });
+
+describe('Finished-plan history is private and read-only', () => {
+  it('lists and reads owned snapshots after replacement, without later sheet overlays', async () => {
+    const acct = await t.register();
+    const old = (await create(acct, form({ weeks: 4 }))).body.data.plan;
+    assert.equal((await create(acct, form({ weeks: 5, replace: true }))).status, 201);
+    const list = await t.api.get('/api/plan/history', { cookies: acct.cookies });
+    assert.equal(list.status, 200);
+    assert.deepEqual(list.body.data.plans.map((p) => p.id), [old.id]);
+    const item = old.items.find((it) => it.type === 'dsa');
+    await Progress.create({ user: acct.id, sheetSlug: item.sheet, solvedProblems: [{ link: item.link, solvedAt: new Date() }] });
+    const read = await t.api.get(`/api/plan/history/${old.id}`, { cookies: acct.cookies });
+    assert.equal(read.status, 200);
+    assert.equal(read.body.data.readOnly, true);
+    assert.equal(read.body.data.plan.status, 'finished');
+    assert.equal(read.body.data.plan.items.find((it) => it.id === item.id).solvedOnSheet, false);
+    assert.equal((await t.api.patch(`/api/plan/items/${item.id}`, { cookies: acct.cookies, body: { done: true } })).status, 404);
+    const stranger = await t.register();
+    assert.deepEqual((await t.api.get('/api/plan/history', { cookies: stranger.cookies })).body.data.plans, []);
+    assert.equal((await t.api.get(`/api/plan/history/${old.id}`, { cookies: stranger.cookies })).status, 404);
+    assert.equal((await t.api.get('/api/plan/history')).status, 401);
+    assert.equal((await t.api.get(`/api/plan/history/${old.id}`)).status, 401);
+    assert.equal((await t.api.get('/api/plan/history/not-an-id', { cookies: acct.cookies })).status, 404);
+  });
+  it('expired active plans can be read, but every item mutation is refused', async () => {
+    planClock.now = () => new Date('2026-11-16T08:00:00Z');
+    const acct = await t.register();
+    const plan = (await create(acct, form({ weeks: 1 }))).body.data.plan;
+    planClock.now = () => new Date('2026-11-23T08:00:00Z');
+    assert.equal((await getPlan(acct)).body.data.finished, true);
+    assert.equal((await t.api.get(`/api/plan/history/${plan.id}`, { cookies: acct.cookies })).status, 200);
+    assert.equal((await t.api.get('/api/plan/history', { cookies: acct.cookies })).body.data.plans.length, 1);
+    const path = `/api/plan/items/${plan.items[0].id}`;
+    for (const [method, url, body] of [
+      ['patch', path, { done: true }], ['patch', `${path}/star`, {}], ['del', path, {}],
+      ['post', '/api/plan/items', { title: 'Extra', plannedMinutes: 10, day: plan.startDate }],
+      ['post', `${path}/result`, { result: 'alone' }], ['post', `${path}/review`, { passed: true }],
+      ['post', `${path}/skip`, {}], ['post', `${path}/unskip`, {}],
+    ]) assert.equal((await t.api[method](url, { cookies: acct.cookies, body })).status, 409, url);
+    assert.deepEqual((await getPlan(acct)).body.data.plan.items, plan.items);
+  });
+});
 const delPlan = (acct) => t.api.del('/api/plan', { cookies: acct.cookies });
 const changePreview = (acct, body) => t.api.post('/api/plan/changes/preview', { cookies: acct.cookies, body });
 const changeApply = (acct, body) => t.api.post('/api/plan/changes/apply', { cookies: acct.cookies, body });

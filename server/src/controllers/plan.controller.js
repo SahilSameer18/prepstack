@@ -163,11 +163,28 @@ const deletePlan = async (req, res, next) => {
 };
 const deleteHistory = async (req, res, next) => {
   try {
-    const { deletedCount } = await Plan.deleteMany({ user: req.user._id, status: 'finished' });
+    const { deletedCount } = await Plan.deleteMany(historyFilter(req.user._id));
     return sendSuccess(res, 200, 'Plan history deleted successfully', { deleted: deletedCount });
   } catch (error) {
     return next(error);
   }
+};
+
+// Finished plans are snapshots: reading history never overlays later sheet progress.
+const historyFilter = (user) => ({ user, $or: [{ status: 'finished' }, { deadline: { $lt: today() } }] });
+const getHistory = async (req, res, next) => {
+  try {
+    const docs = await Plan.find(historyFilter(req.user._id)).sort({ createdAt: -1, _id: -1 }).select('title goalType startDate deadline createdAt');
+    return sendSuccess(res, 200, 'Plan history fetched', { plans: docs.map((doc) => ({ id: String(doc._id), title: doc.title, goalType: doc.goalType, startDate: doc.startDate, deadline: doc.deadline, createdAt: doc.createdAt, readOnly: true })) });
+  } catch (error) { return next(error); }
+};
+const getHistoryPlan = async (req, res, next) => {
+  try {
+    if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new AppError(404, 'Plan not found');
+    const doc = await Plan.findOne({ ...historyFilter(req.user._id), _id: req.params.id });
+    if (!doc) throw new AppError(404, 'Plan not found');
+    return sendSuccess(res, 200, 'Finished plan fetched', { plan: { ...presentPlan(doc), status: 'finished' }, readOnly: true });
+  } catch (error) { return next(error); }
 };
 
 // The change a request describes, in the adjust module's words, with the current solved list so a rebuild does not bring solved problems back.
@@ -223,15 +240,16 @@ const applyChange = async (req, res, next) => {
 
 // ── Phase 4: Items API, DSA sync, and Weekly Review ──────────────────────────
 
-const findActivePlan = async (userId) => {
+const findActivePlan = async (userId, editable = true) => {
   const doc = await Plan.findOne({ user: userId, status: 'active' });
   if (!doc) throw new AppError(404, 'You have no active plan');
+  if (editable && doc.deadline < today()) throw new AppError(409, 'This plan is finished. Its history is read-only.');
   return doc;
 };
 
 // All the parts of one item (an item longer than a day is split into parts that share a problem or a step).
 const partsOf = (doc, item) => doc.items.filter((it) => gen.baseId(it) === gen.baseId(item));
-const clearLadder = (it) => { it.reviewLadder = null; it.reviewStage = null; it.reviewBaseDay = null; it.nextReviewDay = null; it.lastFailedDay = null; };
+const clearLadder = (it) => { it.reviewLadder = null; it.reviewStage = null; it.reviewBaseDay = null; it.nextReviewDay = null; it.lastFailedDay = null; it.lastReviewDay = null; };
 
 const findItemInPlan = (doc, id) => {
   const item = doc.items.find((it) => String(it._id) === id || it.key === id);
@@ -538,15 +556,21 @@ const recordReview = async (req, res, next) => {
     const reviewRes = adj.recordReview(toStored(doc).items, item.key, req.body.passed, today());
     if (reviewRes.error) {
       if (reviewRes.error === 'no-review-due') return next(new AppError(422, 'No review is due for this item'));
+      if (reviewRes.error === 'already-reviewed-today') return next(new AppError(422, 'You have already reviewed this item today.'));
       return next(new AppError(422, reviewRes.error));
     }
-    applyItemsUpdate(doc, reviewRes.items);
-    await doc.save();
-    const updated = findItemInPlan(doc, req.params.id);
+    // Two simultaneous replies must not advance the same overdue ladder twice.
+    const saved = await Plan.findOneAndUpdate(
+      { _id: doc._id, user: req.user._id, status: 'active', updatedAt: doc.updatedAt,
+        items: { $elemMatch: { _id: item._id, reviewStage: item.reviewStage, nextReviewDay: item.nextReviewDay, lastReviewDay: { $ne: today() } } } },
+      { $set: { items: reviewRes.items } }, { returnDocument: 'after', runValidators: true }
+    );
+    if (!saved) throw new AppError(409, 'The plan changed. Refresh it before reviewing again.');
+    const updated = findItemInPlan(saved, req.params.id);
     return sendSuccess(res, 200, 'Review recorded', {
       retired: reviewRes.retired,
       offerRecode: reviewRes.offerRecode,
-      item: presentItem(updated, partLabels(doc.items)),
+      item: presentItem(updated, partLabels(saved.items)),
     });
   } catch (error) {
     return next(error);
@@ -589,7 +613,7 @@ const unskipItem = async (req, res, next) => {
 // GET /api/plan/review?weekStart=YYYY-MM-DD
 const getWeeklyReview = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id);
+    const doc = await findActivePlan(req.user._id, false);
     const queryStart = req.query?.weekStart;
     const n = queryStart ? gen.dayNumber(queryStart) : gen.dayNumber(today());
     const monday = gen.ymdOf(n - gen.weekdayOf(n));
@@ -694,6 +718,8 @@ module.exports = {
   createPlan,
   deletePlan,
   deleteHistory,
+  getHistory,
+  getHistoryPlan,
   previewChange,
   applyChange,
   updateItem,

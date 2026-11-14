@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const connectDB = require('./seedConfig');
 const notesModel = require('../models/notes.model');
 const { checkNotesSubject } = require('../validators/notes.validators');
 
@@ -8,6 +7,22 @@ const dbmsNotes = require('../data/notes/dbms');
 const cnNotes = require('../data/notes/cn');
 const oopsNotes = require('../data/notes/oops');
 const hldNotes = require('../data/notes/hld');
+
+const publishNotes = async (notesToInsert) => {
+  const problems = notesToInsert.flatMap(({ subjectSlug, subject, sections }) => checkNotesSubject(subjectSlug, { subject, sections }));
+  if (!notesToInsert.length || new Set(notesToInsert.map((n) => n.subjectSlug)).size !== notesToInsert.length) problems.push('Subjects must be nonempty and unique');
+  if (problems.length) throw new Error('The notes data has problems, nothing was changed:\n- ' + problems.join('\n- '));
+  const topology = await mongoose.connection.db.admin().command({ hello: 1 });
+  if (!topology.setName && topology.msg !== 'isdbgrid') throw new Error('Notes publishing needs a MongoDB replica set or Atlas; previous notes were left unchanged.');
+  const session = await mongoose.startSession();
+  try {
+    // Requires a replica set (including Atlas). There is deliberately no destructive standalone fallback.
+    await session.withTransaction(async () => {
+      await notesModel.deleteMany({}, { session });
+      await notesModel.insertMany(notesToInsert, { session });
+    });
+  } finally { await session.endSession(); }
+};
 
 const seedNotes = async () => {
   try {
@@ -20,29 +35,19 @@ const seedNotes = async () => {
       { subject: hldNotes.subject, subjectSlug: 'hld', sections: hldNotes.sections },
     ];
 
-    // Check the data before touching the database, so bad data can never wipe good notes
-    const problems = notesToInsert.flatMap(({ subjectSlug, subject, sections }) => checkNotesSubject(subjectSlug, { subject, sections }));
-    if (problems.length > 0) {
-      console.error('The notes data has problems, nothing was changed:\n- ' + problems.join('\n- '));
-      process.exitCode = 1;
-      return;
-    }
-
-    await connectDB();
-
-    console.log('Clearing existing notes...');
-    await notesModel.deleteMany({});
-
-    console.log('Seeding new rich structured notes...');
-    await notesModel.insertMany(notesToInsert);
+    // Only the explicit command loads environment/connection configuration.
+    await require('./seedConfig')();
+    await publishNotes(notesToInsert);
     console.log('Notes seeded successfully!');
 
   } catch (error) {
     console.error('Error seeding notes:', error);
+    process.exitCode = 1;
   } finally {
-    mongoose.connection.close();
+    await mongoose.connection.close();
     console.log('Database connection closed.');
   }
 };
 
-seedNotes();
+if (require.main === module) seedNotes();
+module.exports = { publishNotes, seedNotes };

@@ -439,36 +439,42 @@ describe('Phase 4: Plan Items API', () => {
     });
 
     it('advances review ladder on pass and resets on fail', async () => {
+      planClock.now = () => new Date('2026-11-16T08:00:00Z');
       const acct = await t.register();
-      const planRes = await createPlan(acct);
+      const planRes = await createPlan(acct, form({ weeks: 12 }));
       const dsaItem = planRes.body.data.plan.items.find((it) => it.type === 'dsa');
 
       // Start ladder with 'alone' ([7, 30])
       await recordResult(acct, dsaItem.id, { result: 'alone' });
 
       // Pass review -> moves to stage 1, next review is base + 30
+      planClock.now = () => new Date('2026-11-23T08:00:00Z');
       const passRes = await recordReview(acct, dsaItem.id, { passed: true });
       assert.equal(passRes.status, 200);
       assert.equal(passRes.body.data.item.reviewStage, 1);
-      assert.equal(passRes.body.data.item.nextReviewDay, ymdOf(dayNumber(todayIst()) + 30));
+      assert.equal(passRes.body.data.item.nextReviewDay, '2026-12-16');
       assert.equal(passRes.body.data.retired, false);
 
       // Fail review -> resets to stage 0, offers recode for DSA
+      planClock.now = () => new Date('2026-12-16T08:00:00Z');
       const failRes = await recordReview(acct, dsaItem.id, { passed: false });
       assert.equal(failRes.status, 200);
       assert.equal(failRes.body.data.item.reviewStage, 0);
-      assert.equal(failRes.body.data.item.nextReviewDay, ymdOf(dayNumber(todayIst()) + 7));
+      assert.equal(failRes.body.data.item.nextReviewDay, '2026-12-23');
       assert.equal(failRes.body.data.offerRecode, true);
     });
 
     it('retires an item when the final review gap is passed', async () => {
+      planClock.now = () => new Date('2026-11-16T08:00:00Z');
       const acct = await t.register();
-      const planRes = await createPlan(acct);
+      const planRes = await createPlan(acct, form({ weeks: 12 }));
       const dsaItem = planRes.body.data.plan.items.find((it) => it.type === 'dsa');
 
       // 'alone' has 2 gaps: [7, 30]
       await recordResult(acct, dsaItem.id, { result: 'alone' });
+      planClock.now = () => new Date('2026-11-23T08:00:00Z');
       await recordReview(acct, dsaItem.id, { passed: true }); // stage 1
+      planClock.now = () => new Date('2026-12-16T08:00:00Z');
       const retireRes = await recordReview(acct, dsaItem.id, { passed: true }); // passed stage 1 -> retired
       assert.equal(retireRes.status, 200);
       assert.equal(retireRes.body.data.retired, true);
@@ -477,6 +483,21 @@ describe('Phase 4: Plan Items API', () => {
       // Reviewing retired item gives 422
       const afterRes = await recordReview(acct, dsaItem.id, { passed: true });
       assert.equal(afterRes.status, 422);
+    });
+    it('refuses early reviews and accepts only one concurrent overdue review per day', async () => {
+      planClock.now = () => new Date('2026-11-16T08:00:00Z');
+      const acct = await t.register();
+      const item = (await createPlan(acct, form({ weeks: 12 }))).body.data.plan.items.find((it) => it.type === 'dsa');
+      await recordResult(acct, item.id, { result: 'hints' });
+      const before = (await Plan.findOne({ user: acct.id })).items.id(item.id).toObject();
+      for (const passed of [true, false]) assert.equal((await recordReview(acct, item.id, { passed })).status, 422);
+      assert.deepEqual((await Plan.findOne({ user: acct.id })).items.id(item.id).toObject(), before);
+      planClock.now = () => new Date('2026-12-01T08:00:00Z');
+      const replies = await Promise.all([recordReview(acct, item.id, { passed: true }), recordReview(acct, item.id, { passed: true })]);
+      assert.equal(replies.filter((r) => r.status === 200).length, 1);
+      assert.ok(replies.every((r) => [200, 409, 422].includes(r.status)));
+      assert.equal((await recordReview(acct, item.id, { passed: true })).status, 422);
+      assert.equal((await Plan.findOne({ user: acct.id })).items.id(item.id).reviewStage, 1);
     });
   });
 

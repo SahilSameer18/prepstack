@@ -1,6 +1,7 @@
 const t = require('./helpers/setup');
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
 
 describe('CS notes (public)', () => {
   before(async () => {
@@ -12,6 +13,26 @@ describe('CS notes (public)', () => {
     ]);
   });
   after(() => t.stop());
+
+  it('publishing on a standalone database fails safely without clearing existing notes', async () => {
+    const Notes = t.getModels().Notes;
+    const { publishNotes } = require('../src/seed/notesSeed');
+    const os = require('../src/data/notes/os');
+    const before = await Notes.find({}).lean();
+    await assert.rejects(publishNotes([{ subject: os.subject, subjectSlug: 'os', sections: os.sections }]), /Transaction numbers|replica set/i);
+    assert.deepEqual(await Notes.find({}).lean(), before);
+  });
+
+  it('the seed command returns a failing exit code when publishing cannot connect', () => {
+    const script = `
+      const config = require.resolve('./src/seed/seedConfig');
+      require.cache[config] = { id: config, filename: config, loaded: true, exports: async () => { throw new Error('simulated offline database'); } };
+      require('./src/seed/notesSeed').seedNotes();
+    `;
+    const child = spawnSync(process.execPath, ['-e', script], { cwd: require('node:path').join(__dirname, '..'), encoding: 'utf8', timeout: 10000 });
+    assert.equal(child.status, 1);
+    assert.match(child.stderr, /simulated offline database/);
+  });
 
   it('GET /api/notes lists every subject with its name, slug and counts, but no sections, no login needed', async () => {
     const res = await t.api.get('/api/notes');

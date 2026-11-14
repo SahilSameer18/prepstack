@@ -34,6 +34,7 @@ const itemSchema = new mongoose.Schema({
   reviewBaseDay: { type: String, default: null },
   nextReviewDay: { type: String, default: null },
   lastFailedDay: { type: String, default: null },
+  lastReviewDay: { type: String, default: null },
   doneAt: { type: Date, default: null },
 });
 

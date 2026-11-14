@@ -14,6 +14,25 @@ describe('Plan ticks on a replica set (transaction path)', () => {
   });
   after(() => t.stop());
 
+  it('notes publishing rolls back a failure after deletion, validates first, then replaces successfully', async () => {
+    const Notes = t.mongoose.model('Notes');
+    const { publishNotes } = require('../src/seed/notesSeed');
+    await Notes.init();
+    await Notes.create({ subject: 'Previous notes', subjectSlug: 'previous', sections: [] });
+    const before = await Notes.find({}).lean();
+    await assert.rejects(publishNotes([{ subject: '', subjectSlug: 'os', sections: [] }]), /problems/);
+    assert.deepEqual(await Notes.find({}).lean(), before);
+    const os = require('../src/data/notes/os');
+    const replacement = [{ subject: os.subject, subjectSlug: 'os', sections: os.sections }];
+    const insert = Notes.insertMany;
+    Notes.insertMany = async () => { throw new Error('replacement failed'); };
+    try { await assert.rejects(publishNotes(replacement), /replacement failed/); }
+    finally { Notes.insertMany = insert; }
+    assert.deepEqual(await Notes.find({}).lean(), before, 'deletion was rolled back');
+    await publishNotes(replacement);
+    assert.deepEqual((await Notes.find({}).lean()).map((n) => n.subjectSlug), ['os']);
+  });
+
   const make = async () => {
     const acct = await t.register();
     const res = await t.api.post('/api/plan', { cookies: acct.cookies, body: { goalType: 'placements', style: 'one-topic', weeks: 4, weekdayHours: 3, weekendHours: 5, restDay: 6, sheetSlug: 'blind-75', subjects: ['os'] } });

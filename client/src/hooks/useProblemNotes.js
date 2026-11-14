@@ -1,89 +1,82 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useAuth } from './useAuth';
 import { listNotes, saveNote, deleteNote, importNotes } from '../api/services/problemNoteService';
-import { LOCAL_KEY, readLocalNotes, toImportBatches, listToMap, mergeNotes, isEmptyNote, noteBody } from './problemNotesSync';
+import { LOCAL_KEY, readLocalNotes, toImportBatches, listToMap, mergeNotes, createNoteSaveQueue } from './problemNotesSync';
 
-const SAVE_DELAY_MS = 600; // wait for a pause in typing before saving
+const memoryOnlyStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 
-// Per-problem notes (pattern, complexity, approach), saved to the account.
-// - Typing shows at once and is saved after a short pause (one save per problem, the whole note).
-// - Notes that used to live only in this browser are moved to the account once; the browser copy is removed only after the
-//   server has confirmed every batch, so a failed import never loses anything and is tried again on the next visit.
-// - saveStatus is 'saved', 'saving' or 'error' (the last save failed; the next change tries again).
+// Ordered writes and an account-specific journal protect unsaved edits across navigation/reload.
 export const useProblemNotes = () => {
-  const [notesMap, setNotesMap] = useState({});
+  const { user } = useAuth();
+  const userId = user?._id || user?.id;
+  const [visible, setVisible] = useState({ userId: null, notes: {} });
   const [saveStatus, setSaveStatus] = useState('saved');
   const mapRef = useRef({});
-  const timers = useRef(new Map()); // link -> pending save
-
-  const setMap = useCallback((next) => { mapRef.current = next; setNotesMap(next); }, []);
-
-  const send = useCallback(async (link) => {
-    const n = mapRef.current[link];
-    try {
-      if (isEmptyNote(n)) await deleteNote(link); else await saveNote(noteBody(link, n));
-      if (timers.current.size === 0) setSaveStatus('saved');
-    } catch {
-      setSaveStatus('error');
-    }
-  }, []);
-
-  const schedule = useCallback((link) => {
-    clearTimeout(timers.current.get(link));
-    setSaveStatus('saving');
-    timers.current.set(link, setTimeout(() => { timers.current.delete(link); send(link); }, SAVE_DELAY_MS));
-  }, [send]);
-
-  // Save everything that is still waiting (the page is being left or hidden).
-  const flush = useCallback(() => {
-    for (const [link, id] of [...timers.current]) { clearTimeout(id); timers.current.delete(link); send(link); }
-  }, [send]);
+  const queueRef = useRef(null);
 
   useEffect(() => {
+    if (!userId) return;
+    mapRef.current = {};
     let live = true;
+    let allowWrites;
+    let storage;
+    try { storage = window.localStorage; } catch { storage = memoryOnlyStorage; }
+    const ready = new Promise((resolve) => { allowWrites = resolve; });
+    const edited = new Set();
+    const queue = createNoteSaveQueue({ save: saveNote, remove: deleteNote, storage, userId, ready,
+      onStatus: (status) => { if (live) setSaveStatus(status); } });
+    const recovered = queue.pendingNotes();
+    queueRef.current = { queue, edited };
+    const apply = (base) => {
+      const next = { ...base };
+      for (const [link, note] of Object.entries({ ...recovered, ...queue.pendingNotes() })) { if (note) next[link] = note; else delete next[link]; }
+      for (const link of edited) { if (mapRef.current[link]) next[link] = mapRef.current[link]; else delete next[link]; }
+      mapRef.current = next; setVisible({ userId, notes: next });
+    };
     (async () => {
-      let serverMap = {};
+      let loaded = {};
       try {
-        serverMap = listToMap((await listNotes())?.data?.notes);
-      } catch {
-        return; // not signed in or offline: show nothing, and leave the browser notes where they are
-      }
-      if (!live) return;
-      const local = readLocalNotes(localStorage);
-      setMap(mergeNotes(local, serverMap));
-      const batches = toImportBatches(local);
-      if (batches.length === 0) { if (Object.keys(local).length) { try { localStorage.removeItem(LOCAL_KEY); } catch { /* ignore */ } } return; }
-      try {
-        for (const batch of batches) await importNotes(batch);
-        try { localStorage.removeItem(LOCAL_KEY); } catch { /* ignore */ }
-        if (live) {
+        const serverMap = listToMap((await listNotes())?.data?.notes);
+        if (!live) return;
+        const local = readLocalNotes(storage);
+        loaded = mergeNotes(local, serverMap);
+        apply(loaded);
+        for (const batch of toImportBatches(local)) { if (!live) return; await importNotes(batch); }
+        if (!live) return;
+        try { storage.removeItem(LOCAL_KEY); } catch { /* Keep account notes working. */ }
+        if (Object.keys(local).length) {
           const fresh = listToMap((await listNotes())?.data?.notes);
-          // keep anything typed while the import ran
-          setMap({ ...fresh, ...Object.fromEntries([...timers.current.keys()].map((l) => [l, mapRef.current[l]])) });
+          if (live) apply(fresh);
         }
-      } catch {
-        // the browser copy stays; it is imported on the next visit
-      }
+      } catch { if (live) { apply(loaded); setSaveStatus('error'); } }
+      finally { allowWrites(); }
+      if (live) void queue.flush();
     })();
+    const flush = () => { void queue.flush(); };
     const onHide = () => { if (document.visibilityState === 'hidden') flush(); };
     document.addEventListener('visibilitychange', onHide);
-    return () => { live = false; document.removeEventListener('visibilitychange', onHide); flush(); };
-  }, [setMap, flush]);
+    window.addEventListener('online', flush);
+    window.addEventListener('pagehide', flush);
+    return () => {
+      live = false;
+      document.removeEventListener('visibilitychange', onHide);
+      window.removeEventListener('online', flush);
+      window.removeEventListener('pagehide', flush);
+      queue.stop(); // Pending text stays recoverable even if the browser cancels a request.
+      queueRef.current = null;
+    };
+  }, [userId]);
 
-  const updateNote = (link, updates) => {
-    const next = { ...mapRef.current, [link]: { ...(mapRef.current[link] || {}), ...updates, problemLink: link } };
-    setMap(next);
-    schedule(link);
-  };
-
-  const clearNote = (link) => {
-    clearTimeout(timers.current.get(link));
-    timers.current.delete(link);
+  const changeNote = (link, note) => {
+    const current = queueRef.current;
+    if (!current) return;
     const next = { ...mapRef.current };
-    delete next[link];
-    setMap(next);
-    setSaveStatus('saving');
-    deleteNote(link).then(() => { if (timers.current.size === 0) setSaveStatus('saved'); }).catch(() => setSaveStatus('error'));
+    if (note) next[link] = note; else delete next[link];
+    mapRef.current = next; setVisible({ userId, notes: next });
+    current.edited.add(link);
+    current.queue.enqueue(link, note);
   };
-
-  return { notesMap, updateNote, clearNote, saveStatus };
+  const updateNote = (link, updates) => changeNote(link, { ...(mapRef.current[link] || {}), ...updates, problemLink: link });
+  const clearNote = (link) => changeNote(link, null);
+  return { notesMap: visible.userId === userId ? visible.notes : {}, updateNote, clearNote, saveStatus };
 };

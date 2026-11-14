@@ -51,3 +51,79 @@ export const noteBody = (problemLink, n) => ({
   spaceComplexity: n.spaceComplexity || '',
   approach: n.approach || '',
 });
+
+// Reuse the same writer when a drawer remounts while a request is still in flight.
+const queuesByStorage = new WeakMap();
+// A single writer per problem; the account's pending snapshots include deletion tombstones.
+export const createNoteSaveQueue = ({ save, remove, storage, userId, onStatus = () => {}, delay = 600, ready = Promise.resolve() }) => {
+  if (!queuesByStorage.has(storage)) queuesByStorage.set(storage, new Map());
+  const accountQueues = queuesByStorage.get(storage);
+  if (accountQueues.has(userId)) {
+    const existing = accountQueues.get(userId);
+    existing.connect(onStatus, ready);
+    return existing;
+  }
+  const storageKey = `prepstack_problem_notes_pending_v1:${userId}`;
+  const pending = new Map();
+  const timers = new Map();
+  const running = new Map();
+  const failed = new Set();
+  let stopped = false;
+  try {
+    const saved = JSON.parse(storage.getItem(storageKey) || '{}');
+    if (saved && typeof saved === 'object' && !Array.isArray(saved)) {
+      for (const [link, note] of Object.entries(saved)) {
+        if (note === null || (note && typeof note === 'object' && !Array.isArray(note))) pending.set(link, { note });
+      }
+    }
+  } catch { /* Damaged or unavailable storage must not block account notes. */ }
+  const persist = () => {
+    try {
+      if (pending.size) storage.setItem(storageKey, JSON.stringify(Object.fromEntries([...pending].map(([link, entry]) => [link, entry.note]))));
+      else storage.removeItem(storageKey);
+    } catch { /* Server saves still work without browser storage. */ }
+  };
+  const status = () => onStatus(failed.size ? 'error' : pending.size || running.size ? 'saving' : 'saved');
+  const drain = (link) => {
+    clearTimeout(timers.get(link)); timers.delete(link);
+    if (running.has(link)) return running.get(link);
+    const job = (async () => {
+      while (pending.has(link) && !stopped) {
+        // If a remount replaces the load/import gate while we wait, honor the newer gate too.
+        let loading;
+        do { loading = ready; await loading; } while (loading !== ready);
+        if (stopped) break;
+        const entry = pending.get(link);
+        try {
+          if (isEmptyNote(entry.note)) await remove(link); else await save(noteBody(link, entry.note));
+          failed.delete(link);
+          if (pending.get(link) === entry) pending.delete(link);
+          persist();
+        } catch {
+          failed.add(link);
+          break; // Keep the latest snapshot for an edit, reconnect or explicit flush to retry.
+        }
+      }
+    })();
+    const completion = job.finally(() => { running.delete(link); status(); });
+    running.set(link, completion);
+    status();
+    return completion;
+  };
+  const queue = {
+    connect(listener, loaded) { onStatus = listener; ready = loaded; stopped = false; },
+    pendingNotes: () => Object.fromEntries([...pending].map(([link, entry]) => [link, entry.note])),
+    enqueue(link, note) {
+      if (stopped) return;
+      pending.set(link, { note: isEmptyNote(note) ? null : noteBody(link, note) });
+      failed.delete(link); persist();
+      clearTimeout(timers.get(link));
+      timers.set(link, setTimeout(() => drain(link), delay));
+      status();
+    },
+    flush: () => Promise.all([...pending.keys()].map(drain)),
+    stop() { stopped = true; for (const timer of timers.values()) clearTimeout(timer); timers.clear(); },
+  };
+  accountQueues.set(userId, queue);
+  return queue;
+};

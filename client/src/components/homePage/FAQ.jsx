@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo } from "react";
+import React, { useState, useCallback, useId, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiChevronDown } from "react-icons/fi";
 
@@ -31,6 +31,7 @@ const TECHNICAL_FAQS = [
 ];
 
 const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
+  const panelId = useId();
   return (
     <div
       className={`rounded-2xl transition-all duration-200 border overflow-hidden relative ${
@@ -45,7 +46,9 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
       <button
         type="button"
         onClick={toggle}
-        className="w-full p-5 sm:p-6 flex items-center justify-between text-left focus:outline-none cursor-pointer group select-none"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        className="w-full p-5 sm:p-6 flex items-center justify-between text-left focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand cursor-pointer group select-none"
       >
         <div className="flex items-center gap-3.5 sm:gap-4 pr-3">
           <span className="font-ui text-xs font-semibold text-brand shrink-0">
@@ -71,6 +74,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
+            id={panelId}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}

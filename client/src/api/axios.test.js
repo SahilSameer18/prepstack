@@ -3,6 +3,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AxiosError } from 'axios';
 import api, { setLogoutCallback } from './axios';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { AuthContext } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
+import { extractError } from '../utils/extractError';
 
 let calls; // every request the fake server saw, as "METHOD /path"
 let script; // path -> list of replies, used in order (the last one repeats)
@@ -36,6 +41,25 @@ beforeEach(() => {
 });
 
 const count = (needle) => calls.filter((c) => c === needle).length;
+
+describe('Google conflict through the auth hook', () => {
+  it('preserves the 409 response so Login can offer password sign-in and linking', async () => {
+    const setUser = vi.fn();
+    const setLoading = vi.fn();
+    let auth;
+    // eslint-disable-next-line react-hooks/globals -- This test-only SSR harness captures the real hook actions.
+    function Capture() { auth = useAuth(); return null; }
+    renderToStaticMarkup(createElement(AuthContext.Provider, { value: { setUser, setLoading } }, createElement(Capture)));
+    script['/api/auth/google'] = [{ status: 409, data: { message: 'Sign in with your password to link Google.' } }];
+    let conflict;
+    try { await auth.handleGoogleLogin('fake-test-token'); } catch (error) { conflict = error; }
+    expect(conflict?.response?.status).toBe(409);
+    expect(extractError(conflict)).toBe('Sign in with your password to link Google.');
+    expect(setUser).not.toHaveBeenCalled();
+    expect(setLoading.mock.calls).toEqual([[true], [false]]);
+    expect(calls).toEqual(['POST /api/auth/google']);
+  });
+});
 
 describe('shared axios instance: refreshing the login', () => {
   it('a 401 on a normal request triggers ONE refresh, then retries the request and returns its data', async () => {

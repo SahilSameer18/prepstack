@@ -6,6 +6,8 @@ const {
   createPlan,
   deletePlan,
   deleteHistory,
+  getHistory,
+  getHistoryPlan,
   previewChange,
   applyChange,
   updateItem,
@@ -46,6 +48,8 @@ router.get('/', authMiddleware, getPlan);
 router.post('/', authMiddleware, planGenerateLimiter, validate(createPlanSchema), createPlan);
 router.delete('/', authMiddleware, deletePlan);
 router.delete('/history', authMiddleware, deleteHistory);
+router.get('/history', authMiddleware, getHistory);
+router.get('/history/:id', authMiddleware, getHistoryPlan);
 router.post('/changes/preview', authMiddleware, planChangeLimiter, validate(previewChangeSchema), previewChange);
 router.post('/changes/apply', authMiddleware, planChangeLimiter, validate(applyChangeSchema), applyChange);
 
