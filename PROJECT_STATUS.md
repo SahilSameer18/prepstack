@@ -18,6 +18,7 @@
 | Roadmaps | 9 roadmaps (the first 6 with 52 steps, then DSA, Java and Spring Boot, DevOps and cloud), all in the full template with official-doc resources | `client/src/data/roadmaps.js` |
 | Behavioral guide | 50 questions in 10 groups; the story bank was **skipped** by the owner | `client/src/data/behavioralQuestions.js` |
 | Resume guide, checklist, saved problem notes, Role Analyzer | built and live-tested (analyzer fixes after two live runs on 12 Nov) | `IMPROVEMENT_PLAN.md` A3, B2, B4, `docs/plans/ANALYZER_PLAN.md` |
+| Live database seeding | OS, OOP, and System Design notes (`npm run seed:notes`) and all DSA sheets (`npm run seed:all`) seeded on live database by owner | Live MongoDB instance |
 | Password reset, login lock, account deletion | built | `README.md` |
 | Tests | server 901, client 112, build, lint and SEO pass; pending checks cleared; Phase 5 login-intent mutations caught | `TESTING.md` |
 
@@ -25,9 +26,9 @@
 
 | # | What | Who | Size | Notes |
 |---|---|---|---|---|
-| 1 | **Seed and deploy:** `npm run seed:notes` on the live database (OS, OOP and System Design are not live until then), deploy the server, then the client; open one System Design page live (it has not been seen with real data) | owner | about 30 min | deploy order in `IMPROVEMENT_PLAN.md` |
+| 1 | **My plan (B5): Phases 0 to 5 done.** Generator, adjustment rules, model/API, item routes, public builder and login/save flow built. **Phase 6 is next:** Today, daily actions, reviews and weekly-plan controls. Then Phase 7 connections/close-out and Phase 8 student check. | Claude | no timer in version 1 | `docs/plans/MY_PLAN_PLAN.md` |
 | 2 | **LLD notes** (the owner started My plan Phase 0 first, so LLD can run before or after My plan Phase 1; the owner decides): new subject `lld`, one section per classic problem (parking lot, LRU cache, elevator and so on) in Java, every program run. `awesome-low-level-design` is GPL: use problem titles only, never its code. Write the plan first (`docs/plans/LLD_NOTES_PLAN.md`), then drafts, reviews, publish, wiring (same list as System Design: `server/src/data/notes/<slug>.js`, seed, test subject lists and counts, skill catalog, Notes page card, SEO page, report-link names, docs) | Claude | about a third of the System Design effort; use few agents (cost) | build order set by the owner 13 Nov 2026 |
-| 3 | **My plan (B5): Phases 0 to 5 done.** Generator, adjustment rules, model/API, item routes, public builder and login/save flow built. **Phase 6 is next:** Today, daily actions, reviews and weekly-plan controls. Then Phase 7 connections/close-out and Phase 8 student check. Owner runs live seeds/deploys. | Claude | no timer in version 1 | `docs/plans/MY_PLAN_PLAN.md` |
+| 3 | **Deploy to production:** Deploy server and client; open one System Design page live (now live-seeded with real data) | owner | about 15 min | deploy order in `IMPROVEMENT_PLAN.md` |
 | 4 | **Student check on the working My plan:** 3 to 5 students and 2 to 3 job switchers; start finding them now, people take weeks. Also find one outside reader per notes subject and per roadmap (none yet) | owner | weeks of waiting | `docs/content/SOURCES.md` tables; if they say no, stop at the checklist (B4) |
 | 5 | **Stage 6 (later):** B7 quizzes (the quiz data already exists in every section), the DSA problems plan (one problem file for many sheets), Redis and background jobs (an evening learning track; the DSA cache is built there), B12 light theme, B8 public profile, CI | Claude | after My plan | `IMPROVEMENT_PLAN.md` stage 6, `docs/plans/DSA_PROBLEMS_PLAN.md`, `docs/plans/REDIS_PLAN.md` |
 
