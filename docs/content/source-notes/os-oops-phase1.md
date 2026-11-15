@@ -1,6 +1,6 @@
 # Source notes: OS and OOP notes, Phase 1 (12 Nov 2026)
 
-What was checked or read on 12 Nov 2026 for the Operating Systems and OOP notes (plan: `docs/plans/NOTES_OS_OOP_PLAN.md`). Tags: **[V]** verified by reading the page or file today; **[S]** summarised by the fetch tool, not word for word; **not read** means no claim may rest on it.
+What was checked or read on 12 Nov 2026 for the Operating Systems and OOP notes (plan: `docs/archive/NOTES_OS_OOP_PLAN.md`). Tags: **[V]** verified by reading the page or file today; **[S]** summarised by the fetch tool, not word for word; **not read** means no claim may rest on it.
 
 ## 1. Reported items, now checked
 | Item | URL read | Result |

@@ -25,7 +25,7 @@
 | Diagrams | flow, layers, graph (shapes, zones, numbered and dashed arrows) and sequence; 6 per section for System Design | `client/src/components/notes/` |
 | Roadmaps | 9 roadmaps (the first 6 with 52 steps, then DSA, Java and Spring Boot, DevOps and cloud), all in the full template with official-doc resources | `client/src/data/roadmaps.js` |
 | Behavioral guide | 50 questions in 10 groups; the story bank was **skipped** by the owner | `client/src/data/behavioralQuestions.js` |
-| Resume guide, checklist, saved problem notes, Role Analyzer | built and live-tested (analyzer fixes after two live runs on 12 Nov) | `IMPROVEMENT_PLAN.md` A3, B2, B4, `docs/plans/ANALYZER_PLAN.md` |
+| Resume guide, checklist, saved problem notes, Role Analyzer | built and live-tested (analyzer fixes after two live runs on 12 Nov) | `IMPROVEMENT_PLAN.md` A3, B2, B4, `docs/archive/ANALYZER_PLAN.md` |
 | Live database seeding | OS, OOP, and System Design notes (`npm run seed:notes`) and all DSA sheets (`npm run seed:all`) seeded on live database by owner | Live MongoDB instance |
 | Password reset, login lock, account deletion | built | `README.md` |
 | My plan (B5) | Phases 0–7 implemented: builder, daily workspace, dashboard, report imports, reviews and read-only history; Phase 8 real-user validation remains | `docs/plans/MY_PLAN_PLAN.md` |

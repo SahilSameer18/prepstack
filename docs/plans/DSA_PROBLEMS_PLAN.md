@@ -100,7 +100,7 @@ A sheet:
 
 - The skill catalog keeps pointing at sheet topic ids (they do not change).
 - The shared tag list lets **code** (not the AI) answer "how many Graph problems has this student solved": count the student's solved problems that carry the `graph` tag. This is the real signal for the analyzer (Part 2, I-5) and for My plan.
-- Whether the analyzer's "likely coding topics" stays an AI guess or becomes a rule is a separate open decision (see `docs/plans/ANALYZER_PLAN.md` and the notes in `IMPROVEMENT_PLAN.md`). This plan only provides the data.
+- Whether the analyzer's "likely coding topics" stays an AI guess or becomes a rule is a separate open decision (see `docs/archive/ANALYZER_PLAN.md` and the notes in `IMPROVEMENT_PLAN.md`). This plan only provides the data.
 
 ## 4. How a new sheet is added (the tool)
 

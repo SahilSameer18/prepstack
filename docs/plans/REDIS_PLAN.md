@@ -1,6 +1,6 @@
 # Redis, BullMQ and background jobs: learning and integration plan
 
-Written 9 Nov 2026. Status: **planned, nothing built.** This replaces the old analysis in `docs/archive/REDIS_INTEGRATION_ANALYSIS.md`. Do not copy code from that file: it was written against code that no longer exists, and its login limiter counts the wrong requests (it skips failed attempts, so wrong passwords would never be limited).
+Written 9 Nov 2026. Status: **planned, nothing built.** This replaces the old analysis in the old analysis (file removed 15 Nov 2026). Do not copy code from that file: it was written against code that no longer exists, and its login limiter counts the wrong requests (it skips failed attempts, so wrong passwords would never be limited).
 
 **Two goals, one path.**
 1. **Learn** Redis, BullMQ and background jobs from the basics, by building small things that work.
