@@ -28,6 +28,7 @@ const Profile = lazy(() => import('./pages/Profile/Profile'));
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
 const TermsOfUse = lazy(() => import('./pages/legal/TermsOfUse'));
 const MyPlan = lazy(() => import('./pages/MyPlan'));
+const MyPlanStudy = lazy(() => import('./pages/MyPlanStudy'));
 
 
 export const router = createBrowserRouter([
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
 
       { path: "/", element: <Home /> },
       { path: '/my-plan', element: <MyPlan /> },
+      { path: '/my-plan/study', element: <ProtectedRoute><MyPlanStudy /></ProtectedRoute> },
 
       {
         path: "/dsa",

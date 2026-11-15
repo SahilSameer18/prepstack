@@ -8,6 +8,7 @@
     "build": "vite build && node scripts/prerender.mjs && node scripts/seo-check.mjs",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:browser": "playwright test",
     "preview": "vite preview",
     "build:app": "vite build"
   },
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.65.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",

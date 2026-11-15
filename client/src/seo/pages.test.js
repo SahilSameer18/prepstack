@@ -8,6 +8,9 @@ describe("pageFor", () => {
     expect(indexablePages.map((item) => item.path)).toContain('/my-plan');
     expect(page.description.length).toBeLessThanOrEqual(160);
     expect(page.intro.join(' ')).toContain('before creating an account');
+    expect(pageFor('/my-plan/study').noindex).toBe(true);
+    expect(pageFor('/my-plan/study').title).toBe('My study plan | PrepStack');
+    expect(indexablePages.map((item) => item.path)).not.toContain('/my-plan/study');
   });
   it("gives a notes section the title of its subject, kept private (noindex)", () => {
     const subject = pageFor("/notes/os");

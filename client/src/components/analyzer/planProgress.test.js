@@ -11,6 +11,72 @@ import PlanChecklist from './PlanChecklist';
 import { AuthContext } from '../../context/AuthContext';
 import MyPlan from '../../pages/MyPlan';
 import SelectField from '../ui/SelectField';
+import StudyToday from '../plan/StudyToday';
+import { pullForwardItem, revisionRoundItems, resolveStudyItem, studyProgress, studyChecklistDays, studyWeeks } from '../../utils/studyPlan';
+
+describe('Daily study screens', () => {
+  it('groups the partial first week separately from the following Monday', () => {
+    const days = [{ day: '2026-11-15' }, { day: '2026-11-16' }, { day: '2026-11-22' }];
+    expect(studyWeeks(days, '2026-11-15').map((week) => [week.number, week.days.length])).toEqual([[1, 1], [2, 2]]);
+  });
+  it('keeps Today to its exact allowed text, one button and the task list', () => {
+    const items = [{ key: 'carry', title: 'Arrays', plannedMinutes: 40 }, { key: 'review', title: 'Recall processes', plannedMinutes: 10 }];
+    const today = { date: '2026-11-15', isToday: true, items, minutes: 50, startItem: items[1] };
+    const markup = renderToStaticMarkup(createElement(StudyToday, { today, onStart: () => {} }));
+    expect(markup.match(/<button\b/g)).toHaveLength(1);
+    expect(markup.match(/<li\b/g)).toHaveLength(2);
+    expect(markup.replace(/<[^>]*>/g, '')).toBe('Today: 2 tasks, 50 minStartArrays40 minRecall processes10 min');
+    expect(markup).not.toMatch(/<(?:a|input|select|details|svg|canvas)\b/);
+    const split = { ...today, items: [{ ...items[0], part: { n: 2, of: 3 } }] };
+    expect(renderToStaticMarkup(createElement(StudyToday, { today: split }))).toContain('Arrays (part 2 of 3)');
+  });
+  it('labels a future day and disables Start when there is no task', () => {
+    const today = { date: '2026-11-16', isToday: false, items: [], minutes: 0, startItem: null };
+    const markup = renderToStaticMarkup(createElement(StudyToday, { today }));
+    expect(markup).toContain('Mon, 16 Nov');
+    expect(markup).toContain('disabled=""');
+  });
+  it('keeps sheet overlays in progress and checklist, without inventing timestamps', () => {
+    const items = [{ id: 'one', day: '2026-11-15', title: 'Arrays', plannedMinutes: 40, solvedOnSheet: true }];
+    expect(studyProgress(items)).toEqual({ total: 1, done: 1, minutes: 40, complete: true });
+    expect(studyChecklistDays(items)[0].items[0]).toMatchObject({ id: 'one', done: true, disabled: true });
+    expect(items[0].doneAt).toBeUndefined();
+  });
+  it('resolves virtual reviews to their original item, never another occurrence', () => {
+    const items = [{ id: 'one', key: 'part1' }, { id: 'two', key: 'part2' }];
+    expect(resolveStudyItem({ items }, { key: 'review:part2', originalKey: 'part2' }).id).toBe('two');
+  });
+  it('deduplicates split practice, prioritizes stars and leaves saved reviews unchanged', () => {
+    const items = [
+      { id: '1', ref: 'dsa:a', link: 'a', type: 'dsa', doneAt: 'saved', plannedMinutes: 20, nextReviewDay: '2026-11-20' },
+      { id: '2', ref: 'dsa:a', link: 'a', type: 'dsa', doneAt: 'saved', plannedMinutes: 30 },
+      { id: '3', ref: 'notes:os:x', type: 'notes', solvedOnSheet: true, plannedMinutes: 10, starred: true },
+      { id: '4', type: 'mock', doneAt: 'saved', plannedMinutes: 60 },
+    ];
+    const before = JSON.stringify(items);
+    const round = revisionRoundItems(items);
+    expect(round.map((item) => item.ref)).toEqual(['notes:os:x', 'dsa:a']);
+    expect(round[1].plannedMinutes).toBe(50);
+    expect(JSON.stringify(items)).toBe(before);
+  });
+  it('pulls only tomorrow work within free room, move limits and study-day rules', () => {
+    const task = { id: '1', day: '2026-11-16', plannedDay: '2026-11-16', plannedMinutes: 30, type: 'dsa' };
+    const plan = { hoursByWeekday: [2, 2, 2, 2, 2, 2, 2], lighterDays: [], restDay: null, items: [task] };
+    const today = { date: '2026-11-15', isToday: true, items: [], minutes: 60 };
+    expect(pullForwardItem(plan, today)).toBe(task);
+    expect(pullForwardItem(plan, { ...today, minutes: 100 })).toBeNull();
+    expect(pullForwardItem(plan, { ...today, items: [{ type: 'review' }] })).toBeNull();
+    expect(pullForwardItem({ ...plan, restDay: 6 }, today)).toBeNull();
+    expect(pullForwardItem({ ...plan, items: [{ ...task, locked: true }] }, today)).toBeNull();
+    expect(pullForwardItem({ ...plan, items: [{ ...task, plannedDay: '2026-11-20' }] }, today)).toBeNull();
+    expect(pullForwardItem(plan, { ...today, isToday: false, date: '2026-11-16', minutes: 100 }, '2026-11-15')).toBe(task);
+    const doneToday = { day: '2026-11-15', doneAt: 'saved', plannedMinutes: 90 };
+    expect(pullForwardItem({ ...plan, items: [doneToday, task] }, { ...today, minutes: 0 })).toBeNull();
+    expect(pullForwardItem({ ...plan, items: [{ ...doneToday, nextReviewDay: '2026-11-15' }, task] }, { ...today, minutes: 0 })).toBeNull();
+    const carried = { day: '2026-11-14', plannedMinutes: 20 };
+    expect(pullForwardItem({ ...plan, items: [{ ...doneToday, plannedMinutes: 60 }, task] }, { ...today, items: [carried], minutes: 20 })).toBeNull();
+  });
+});
 
 const plan = [
   { day: 1, items: [{ task: "a", done: true }, { task: "b", done: false }] },

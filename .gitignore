@@ -3,6 +3,7 @@
 # Dependencies and build output
 node_modules/
 dist/
+.tmp/
 
 # Secrets: real env files are never committed (the .example templates stay tracked)
 .env

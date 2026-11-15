@@ -6,8 +6,8 @@ export const notesService = {
     const response = await api.get('/api/notes');
     return response.data;
   },
-  getNotesBySubject: async (subject) => {
-    const response = await api.get(`/api/notes/${subject}`);
+  getNotesBySubject: async (subject, signal) => {
+    const response = await api.get(`/api/notes/${subject}`, { signal });
     return response.data;
   }
 };

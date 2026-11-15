@@ -5,9 +5,17 @@ import { scoreQuiz, pick, emptyPicks } from "./quizScoring";
 const LETTERS = ["A", "B", "C", "D"];
 
 // A short multiple-choice quiz. Pick an answer to see whether it was right and why; the score shows when every question is answered.
-const Quiz = ({ quiz }) => {
+const Quiz = ({ quiz, onComplete, disabled = false }) => {
   const [picks, setPicks] = useState(() => emptyPicks(quiz));
   const score = scoreQuiz(quiz, picks);
+
+  // The study screen receives a score only after every question has been answered.
+  function chooseAnswer(question, answer) {
+    const next = pick(picks, question, answer);
+    setPicks(next);
+    const result = scoreQuiz(quiz, next);
+    if (result.done) onComplete?.(result.correct);
+  }
 
   return (
     <div className="space-y-6">
@@ -25,8 +33,8 @@ const Quiz = ({ quiz }) => {
                   <button
                     key={option}
                     type="button"
-                    disabled={answered}
-                    onClick={() => setPicks((p) => pick(p, i, o))}
+                    disabled={answered || disabled}
+                    onClick={() => chooseAnswer(i, o)}
                     aria-pressed={chosen === o}
                     className={`flex items-start gap-3 text-left px-4 py-3 min-h-[44px] rounded-xl border text-sm transition-colors ${
                       isRight ? "border-ok-solid/40 bg-ok-solid/10 text-fg"
@@ -52,7 +60,8 @@ const Quiz = ({ quiz }) => {
           <p className="text-fg text-sm font-semibold">You got {score.correct} of {score.total} right.</p>
           <button
             type="button"
-            onClick={() => setPicks(emptyPicks(quiz))}
+            disabled={disabled}
+            onClick={() => { setPicks(emptyPicks(quiz)); onComplete?.(null); }}
             className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-brand min-h-[44px] cursor-pointer"
           >
             <FiRefreshCw /> Try again

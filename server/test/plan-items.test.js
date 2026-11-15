@@ -1,6 +1,6 @@
 // Phase 4: Item API, DSA progress synchronization, review items & ladders, and the weekly review route.
 const t = require('./helpers/setup');
-const { describe, it, before, after, afterEach } = require('node:test');
+const { describe, it, before, after, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { planClock } = require('../src/services/planData');
 const { todayIst, dayNumber, ymdOf } = require('../src/services/planGenerator');
@@ -14,6 +14,13 @@ before(async () => {
   await Plan.init();
 });
 after(() => t.stop());
+// Start on this week's Monday; real completion timestamps remain in the same week.
+beforeEach(() => {
+  const day = dayNumber(todayIst());
+  const weekday = (new Date(day * 86400000).getUTCDay() + 6) % 7;
+  const monday = ymdOf(day - weekday);
+  planClock.now = () => new Date(monday + 'T08:00:00Z');
+});
 afterEach(() => { planClock.now = () => new Date(); });
 
 const form = (over = {}) => ({
@@ -121,6 +128,7 @@ describe('Phase 4: Plan Items API', () => {
       const moveRes = await patchItem(acct, item.id, { day: targetDay });
       assert.equal(moveRes.status, 200);
       assert.equal(moveRes.body.data.item.day, targetDay);
+      assert.equal(moveRes.body.data.item.plannedDay, item.day);
       assert.equal(moveRes.body.data.item.locked, true);
 
       // Moving more than 3 days returns 422
@@ -321,10 +329,10 @@ describe('Phase 4: Plan Items API', () => {
       const acct = await t.register();
       const res = await createPlan(acct);
       const first = res.body.data.plan.items.find((it) => it.type === 'dsa');
-      const monday = (() => { const n = dayNumber(todayIst()); return ymdOf(n - ((new Date(n * 86400000).getUTCDay() + 6) % 7)); })();
+      const monday = (() => { const n = dayNumber(todayIst(planClock.now())); return ymdOf(n - ((new Date(n * 86400000).getUTCDay() + 6) % 7)); })();
       const week = await getWeeklyReview(acct, `weekStart=${monday}`);
       assert.equal(week.body.data.summary.completedCount, 0);
-      await Progress.create({ user: acct.id, sheetSlug: first.sheet, solvedProblems: [{ link: first.link, solvedAt: new Date() }] });
+      await Progress.create({ user: acct.id, sheetSlug: first.sheet, solvedProblems: [{ link: first.link, solvedAt: planClock.now() }] });
       const after = await getWeeklyReview(acct, `weekStart=${monday}`);
       assert.equal(after.body.data.summary.completedCount, 1, 'the sheet solve counts as done this week');
       assert.ok(after.body.data.summary.completedMinutes >= first.plannedMinutes);
@@ -340,7 +348,7 @@ describe('Phase 4: Plan Items API', () => {
       const first = planRes.body.data.plan.items.find((it) => it.type === 'dsa');
       const before = planRes.body.data.today;
       assert.ok(before.items.some((i) => i.id === first.id), 'the first item is on Today');
-      await Progress.create({ user: acct.id, sheetSlug: first.sheet, solvedProblems: [{ link: first.link, solvedAt: new Date() }] });
+      await Progress.create({ user: acct.id, sheetSlug: first.sheet, solvedProblems: [{ link: first.link, solvedAt: planClock.now() }] });
       const res = await getPlan(acct);
       const item = res.body.data.plan.items.find((i) => i.id === first.id);
       assert.equal(item.solvedOnSheet, true);
@@ -418,7 +426,7 @@ describe('Phase 4: Plan Items API', () => {
       assert.equal(resResult.status, 200);
       assert.equal(resResult.body.data.item.result, 'solution');
       assert.equal(resResult.body.data.item.reviewStage, 0);
-      assert.equal(resResult.body.data.item.nextReviewDay, ymdOf(dayNumber(todayIst()) + 1));
+      assert.equal(resResult.body.data.item.nextReviewDay, ymdOf(dayNumber(todayIst(planClock.now())) + 1));
       assert.equal(resResult.body.data.started, true);
 
       // Recording result again on done item -> 422
@@ -435,7 +443,7 @@ describe('Phase 4: Plan Items API', () => {
       assert.equal(resNotes.status, 200);
       assert.equal(resNotes.body.data.item.quizScore, 4);
       assert.equal(resNotes.body.data.item.reviewStage, 0);
-      assert.equal(resNotes.body.data.item.nextReviewDay, ymdOf(dayNumber(todayIst()) + 3)); // notes ladder starts at gap 3
+      assert.equal(resNotes.body.data.item.nextReviewDay, ymdOf(dayNumber(todayIst(planClock.now())) + 3)); // notes ladder starts at gap 3
     });
 
     it('advances review ladder on pass and resets on fail', async () => {

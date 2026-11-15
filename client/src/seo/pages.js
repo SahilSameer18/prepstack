@@ -130,6 +130,7 @@ const pages = [
   },
   // ── private / not-yet-built pages: crawlable by nobody, never in the sitemap ──
   ...[
+    ['/my-plan/study', 'My study plan | PrepStack', 'Your private daily study plan and reviews.'],
     ['/dashboard', 'Dashboard | PrepStack', 'Your PrepStack dashboard.'],
     ['/profile', 'Profile | PrepStack', 'Your PrepStack profile.'],
     ['/ai-projects', 'AI Project Ideas | PrepStack', 'Generate project ideas with AI.'],

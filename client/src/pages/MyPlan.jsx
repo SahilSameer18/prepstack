@@ -18,6 +18,7 @@ function ExistingPlanNotice({ builder }) {
       >
         View saved plan
       </button>
+      <Link to="/my-plan/study" className="ml-4 inline-flex min-h-[44px] items-center text-brand">Open daily plan</Link>
       <label className="flex items-start gap-3">
         <input
           type="checkbox"
@@ -31,7 +32,7 @@ function ExistingPlanNotice({ builder }) {
   );
 }
 
-// Show the actual saved schedule. Daily actions will be added in Phase 6.
+// Show the saved schedule and provide the entry to daily study actions.
 function SavedPlanResult({ plan }) {
   if (!plan) return null;
 
@@ -42,8 +43,8 @@ function SavedPlanResult({ plan }) {
         {plan.title} · {plan.startDate} to {plan.deadline}. All weeks are saved to your account.
       </p>
       <PlanWeeks items={plan.items} startDate={plan.startDate} />
-      <Link to="/dashboard" className="mt-5 inline-flex min-h-[44px] items-center text-sm text-brand">
-        Back to your dashboard
+      <Link to="/my-plan/study" className="mt-5 inline-flex min-h-[44px] items-center text-sm text-brand">
+        Open daily plan
       </Link>
     </section>
   );

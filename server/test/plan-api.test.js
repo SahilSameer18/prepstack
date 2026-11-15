@@ -89,7 +89,8 @@ describe('POST /api/plan/preview (public)', () => {
   });
   it('works without login and gives the numbers and week 1 only, writing nothing', async () => {
     const before = await Plan.countDocuments();
-    const res = await preview(form());
+    // A Sunday rest day legitimately leaves the first calendar week empty.
+    const res = await preview(form({ restDay: null }));
     assert.equal(res.status, 200);
     const d = res.body.data;
     assert.deepEqual(Object.keys(d).sort(), ['coverage', 'deadline', 'earlyDays', 'finishDate', 'notices', 'startDate', 'week1']);
