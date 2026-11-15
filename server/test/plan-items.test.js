@@ -609,6 +609,10 @@ describe('Phase 4: Plan Items API', () => {
       await createPlan(acct);
       assert.equal(await Plan.countDocuments({ user: acct.id }), 1);
 
+      const current = await Plan.findOne({ user: acct.id }).lean();
+      await Plan.create({ ...current, _id: new t.mongoose.Types.ObjectId(), status: 'finished' });
+      assert.equal(await Plan.countDocuments({ user: acct.id }), 2);
+
       // Delete account
       const delAcc = await t.api.del('/api/user/account', {
         cookies: acct.cookies,

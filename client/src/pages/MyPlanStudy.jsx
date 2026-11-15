@@ -28,8 +28,9 @@ import {
 const TABS = ["Today", "Plan", "Reviews", "Starred", "History"];
 
 // The workspace owns navigation and saves. Each tab owns only its own presentation.
-export default function MyPlanStudy() {
-  const model = useStudyPlan();
+export default function MyPlanStudy({ embedded = false, planModel }) {
+  const ownModel = useStudyPlan(!planModel);
+  const model = planModel || ownModel;
   const [params, setParams] = useSearchParams();
   const [dialog, setDialog] = useState(null);
   const [round, setRound] = useState(null);
@@ -38,7 +39,7 @@ export default function MyPlanStudy() {
   const [historyVersion, setHistoryVersion] = useState(0);
   const plan = model.data?.plan;
   const readOnly = !!model.data?.finished;
-  const requestedTab = params.get("tab") || (readOnly ? "plan" : "today");
+  const requestedTab = params.get(embedded ? "view" : "tab") || (readOnly ? "plan" : "today");
   const tab = TABS.some((name) => name.toLowerCase() === requestedTab)
     ? requestedTab
     : "today";
@@ -46,10 +47,19 @@ export default function MyPlanStudy() {
   const selected = plan?.items.find((item) => item.id === params.get("item"));
   const roundItem = round?.[roundIndex];
 
+  // Dashboard tabs and study views have separate query keys. Reuse the same
+  // workspace without losing its parent tab on Start, Back or result saves.
+  function setStudyParams(next) {
+    const query = embedded ? { tab: 'plan', view: next.tab } : { tab: next.tab };
+    if (next.item) query.item = next.item;
+    if (next.mode) query.mode = next.mode;
+    setParams(query);
+  }
+
   function navigate(name) {
     model.clearActionError();
     setNotice(null);
-    setParams({ tab: name });
+    setStudyParams({ tab: name });
   }
 
   function openDialog(type, item) {
@@ -63,7 +73,7 @@ export default function MyPlanStudy() {
     model.clearActionError();
     const nextMode =
       requestedMode || (entry.type === "review" ? "review" : "task");
-    setParams({ tab, item: item.id, mode: nextMode });
+    setStudyParams({ tab, item: item.id, mode: nextMode });
   }
 
   // A revision round is deliberately local practice: no completion or review writes.
@@ -88,7 +98,7 @@ export default function MyPlanStudy() {
       return recordPlanResult(selected.id, payload);
     });
     if (!result) return;
-    setParams({ tab });
+    setStudyParams({ tab });
     if (result.offerRecode)
       setNotice({
         text: "Review saved. Your next review is scheduled; you can practise the problem again now.",

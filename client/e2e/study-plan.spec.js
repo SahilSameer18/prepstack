@@ -44,6 +44,118 @@ async function assertFits(page) {
   ).toBe(true);
 }
 
+async function createReport(page, user) {
+  const response = await page.request.post(API + '/__test/report', { data: { user } });
+  expect(response.ok()).toBe(true);
+  return (await response.json()).id;
+}
+
+test('Phase 7: dashboard uses one calm goal-plan Today and preserves nested navigation', async ({ page }) => {
+  const { user } = await createPlan(page);
+  await createReport(page, user);
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/dashboard');
+  const tabs = page.getByRole('tablist', { name: 'Dashboard sections' });
+  await expect(tabs.getByRole('tab').first()).toHaveText(/My plan/);
+  await expect(tabs.getByRole('tab', { name: /My plan/ })).toHaveAttribute('aria-selected', 'true');
+  const today = page.getByRole('region', { name: 'Today', exact: true });
+  const start = today.getByRole('button', { name: 'Start', exact: true });
+  await expect(start).toBeVisible();
+  expect((await start.boundingBox()).y + (await start.boundingBox()).height).toBeLessThan(812);
+  await expect(today.getByRole('button')).toHaveCount(1);
+  await assertFits(page);
+  await page.screenshot({ path: '../.tmp/phase7-mobile.png', fullPage: true });
+  await start.click();
+  await page.getByRole('button', { name: 'Solved alone', exact: true }).click();
+  await expect(page).toHaveURL(/tab=plan&view=today/);
+  await expect(today).toBeVisible();
+  await tabs.getByRole('tab', { name: /^DSA/ }).click();
+  await expect(page.getByRole('region', { name: 'Overview' }).getByRole('button', { name: /Plan tasks/ })).toContainText('1');
+  await expect(page.getByRole('region', { name: "Today's study plan" })).toHaveCount(0);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await tabs.getByRole('tab', { name: /My plan/ }).click();
+  await page.getByRole('button', { name: 'Plan', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Rebuild from today' })).toBeVisible();
+  await assertFits(page);
+  await page.screenshot({ path: '../.tmp/phase7-desktop.png', fullPage: true });
+  await tabs.getByRole('tab', { name: /My plan/ }).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(tabs.getByRole('tab', { name: /^DSA/ })).toBeFocused();
+  await page.keyboard.press('Home');
+  await expect(tabs.getByRole('tab', { name: /My plan/ })).toBeFocused();
+});
+
+test('Phase 7: report merge and replacement require a fresh preview and preserve history', async ({ page }) => {
+  const { user, plan } = await createPlan(page);
+  const report = await createReport(page, user);
+  const dsa = plan.items.find((item) => item.type === 'dsa' && !item.part);
+  await page.request.post(API + '/api/plan/items/' + dsa.id + '/result', { data: { result: 'alone' } });
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/analyzer/' + report);
+  await page.getByRole('button', { name: 'Add to My plan', exact: true }).click();
+  await expect(page.getByRole('radio', { name: /Merge with/ })).toBeChecked();
+  await page.getByRole('button', { name: 'Preview changes', exact: true }).click();
+  await expect(page.getByLabel('Report plan preview')).toContainText('3 new tasks');
+  await assertFits(page);
+  await page.screenshot({ path: '../.tmp/phase7-import-mobile.png', fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await assertFits(page);
+  await page.screenshot({ path: '../.tmp/phase7-import-desktop.png', fullPage: true });
+  await page.setViewportSize({ width: 375, height: 812 });
+  expect((await savedPlan(page)).items.length).toBe(plan.items.length);
+  await page.request.post(API + '/api/plan/items', { data: { title: 'Added after preview', day: plan.startDate, plannedMinutes: 15 } });
+  await page.getByRole('button', { name: 'Confirm add to My plan' }).click();
+  await expect(page.getByRole('alert')).toContainText('changed');
+  await page.getByRole('button', { name: 'Preview changes', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirm add to My plan' }).click();
+  await expect(page.getByRole('link', { name: 'Open My plan', exact: true })).toBeVisible();
+  const merged = await savedPlan(page);
+  expect(merged.id).toBe(plan.id);
+  expect(merged.items.find((item) => item.id === dsa.id).doneAt).toBeTruthy();
+  expect(merged.items.filter((item) => item.source === 'analyzer:' + report)).toHaveLength(3);
+  await assertFits(page);
+  await page.goto('/analyzer/' + report);
+  await page.getByRole('button', { name: 'Add to My plan', exact: true }).click();
+  await page.getByRole('radio', { name: /Replace with/ }).check();
+  await page.getByRole('button', { name: 'Preview changes', exact: true }).click();
+  await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+  expect((await savedPlan(page)).id).toBe(plan.id);
+  await page.getByRole('button', { name: 'Add to My plan', exact: true }).click();
+  await page.getByRole('button', { name: 'Preview changes', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirm add to My plan' }).click();
+  const replacement = await savedPlan(page);
+  expect(replacement.id).not.toBe(plan.id);
+  const history = await page.request.get(API + '/api/plan/history/' + plan.id);
+  expect(history.status()).toBe(200);
+  expect((await history.json()).data.plan.items.find((item) => item.id === dsa.id).doneAt).toBeTruthy();
+  await page.getByRole('link', { name: 'Open My plan', exact: true }).click();
+  await page.getByRole('button', { name: 'Rebuild from today' }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  expect((await savedPlan(page)).items).toHaveLength(3);
+});
+
+test('Phase 7: no goal plan keeps DSA first and falls back to the latest report', async ({ page }) => {
+  const { user } = await createPlan(page);
+  await page.request.delete(API + '/api/plan');
+  const report = await createReport(page, user);
+  await page.goto('/dashboard');
+  const tabs = page.getByRole('tablist', { name: 'Dashboard sections' });
+  await expect(tabs.getByRole('tab').first()).toHaveText(/^DSA/);
+  await expect(page.getByRole('region', { name: "Today's study plan" })).toContainText('Frontend role connection');
+  await tabs.getByRole('tab', { name: /My plan/ }).click();
+  await expect(page.getByRole('link', { name: 'Build your plan' })).toBeVisible();
+  await page.goto('/analyzer/' + report);
+  await page.getByRole('button', { name: 'Add to My plan', exact: true }).click();
+  await page.getByRole('button', { name: 'Preview changes', exact: true }).click();
+  await page.getByRole('button', { name: 'Confirm add to My plan' }).click();
+  await page.getByRole('link', { name: 'Open My plan', exact: true }).click();
+  await expect(tabs.getByRole('tab').first()).toHaveText(/My plan/);
+  expect((await savedPlan(page)).items).toHaveLength(3);
+});
+
 test("mobile Today, real DSA result, retry, custom tasks and keyboard dialogs", async ({
   page,
 }) => {

@@ -4,7 +4,7 @@ import { getPlan } from "../api/services/planService";
 import { extractError } from "../utils/extractError";
 
 // One owner-scoped source of truth. Every successful write reloads the server's projections.
-export function useStudyPlan() {
+export function useStudyPlan(enabled = true) {
   const { user } = useAuth();
   const owner = user?.id || user?._id;
   const [state, setState] = useState(null);
@@ -27,11 +27,12 @@ export function useStudyPlan() {
   }, [owner]);
 
   useEffect(() => {
+    if (!enabled) return;
     reload();
     return () => {
       request.current += 1;
     };
-  }, [reload]);
+  }, [reload, enabled]);
 
   // Serialize actions to avoid double clicks and keep a failed save on its current screen.
   async function runAction(action) {

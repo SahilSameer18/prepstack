@@ -20,6 +20,8 @@ const {
   skipItem,
   unskipItem,
   getWeeklyReview,
+  previewReportImport,
+  applyReportImport,
 } = require('../controllers/plan.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
 const validate = require('../middlewares/validate.middleware');
@@ -39,6 +41,8 @@ const {
   recordResultSchema,
   recordReviewSchema,
   weeklyReviewQuerySchema,
+  reportImportSchema,
+  applyReportImportSchema,
 } = require('../validators/plan.validators');
 
 // The one public route: the form's preview (numbers and week 1 only, no database write).
@@ -54,6 +58,8 @@ router.get('/history', authMiddleware, getHistory);
 router.get('/history/:id', authMiddleware, getHistoryPlan);
 router.post('/changes/preview', authMiddleware, planChangeLimiter, validate(previewChangeSchema), previewChange);
 router.post('/changes/apply', authMiddleware, planChangeLimiter, validate(applyChangeSchema), applyChange);
+router.post('/reports/:reportId/preview', authMiddleware, planChangeLimiter, validate(reportImportSchema), previewReportImport);
+router.post('/reports/:reportId/apply', authMiddleware, planChangeLimiter, validate(applyReportImportSchema), applyReportImport);
 
 // Weekly review
 router.get('/review', authMiddleware, validate(weeklyReviewQuerySchema, 'query'), getWeeklyReview);

@@ -8,6 +8,7 @@
 // A stored plan is { input, startDate, deadline, items }, where input is the generator's input.
 const crypto = require('crypto');
 const gen = require('./planGenerator');
+const { previewReportChange } = require('./planReport');
 
 const { dayNumber, ymdOf, baseId, dayBudget } = gen;
 
@@ -111,7 +112,8 @@ const revisionList = (items) => items.filter((it) => it.starred && !it.skipped);
 
 // ---------- carried over, skip, move ----------
 const carriedOver = (items, today) => items
-  .filter((it) => it.source === 'planner' && !gen.isComplete(it) && !it.skipped && it.day < today && it.type !== 'mock' && it.type !== 'behavioral')
+  .filter((it) => !gen.isComplete(it) && !it.skipped && it.day < today
+    && ((it.source && it.source !== 'planner') || !['mock', 'behavioral'].includes(it.type)))
   .sort((a, b) => a.day.localeCompare(b.day) || (a.order ?? 0) - (b.order ?? 0));
 
 // Skip puts the item (all its parts) on the skipped list and warns when later topics build on it, in our dependency order.
@@ -213,6 +215,8 @@ const previewChange = (stored, data, todayYmd, change) => {
   if (change.solvedLinks) input.solvedLinks = change.solvedLinks;
   input.startDate = today;
   input.weeks = Math.min(52, Math.max(1, Math.ceil((deadline - t + 1) / 7)));
+
+  if (input.originReport) return previewReportChange(stored, input, today);
 
   // what a rebuild keeps: everything done, skipped, locked or added by the student (and mock or behavioral items already done); the rest is planned again
   const groups = new Map();

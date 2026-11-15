@@ -119,3 +119,17 @@ export async function deletePlanHistory() {
   const response = await api.delete("/api/plan/history");
   return response.data.data;
 }
+
+// Report imports are derived from an owned saved report, never client task text.
+export async function previewReportPlan(reportId, mode) {
+  const path = '/api/plan/reports/' + encodeURIComponent(reportId) + '/preview';
+  const response = await api.post(path, { mode });
+  return response.data.data;
+}
+
+// Apply the exact report mode and checksum the learner reviewed.
+export async function applyReportPlan(reportId, preview) {
+  const path = '/api/plan/reports/' + encodeURIComponent(reportId) + '/apply';
+  const response = await api.post(path, { mode: preview.mode, checksum: preview.checksum });
+  return response.data.data;
+}

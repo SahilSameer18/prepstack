@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiArrowRight } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { getToday, setPlanItem } from "../../api/services/analyzerService";
@@ -7,11 +7,13 @@ import { extractError } from "../../utils/extractError";
 import { formatTitle } from "../../utils/formatTitle";
 import PlanChecklist from "./PlanChecklist";
 import { setItemDone } from "./planProgress";
+import StudyToday from '../plan/StudyToday';
+import { resolveStudyItem } from '../../utils/studyPlan';
 
 // Dashboard card: today's items from the latest Role Analyzer report, with the same checklist as the report page.
 // It stays hidden while loading, when there is no report with a plan, and when the request fails: the rest of the dashboard
 // does not depend on it.
-const TodayCard = () => {
+const AnalyzerTodayCard = () => {
   const [data, setData] = useState(null);
   const [busyKey, setBusyKey] = useState(null);
 
@@ -58,4 +60,25 @@ const TodayCard = () => {
   );
 };
 
-export default TodayCard;
+// Do not fall back to a report until the server confirms no goal plan exists.
+// A failed plan read must remain retryable, rather than showing another source.
+export default function TodayCard({ planModel }) {
+  const navigate = useNavigate();
+  if (planModel.loading) return <p role="status" className="mb-6 text-sm text-muted">Loading today's tasks…</p>;
+  if (planModel.error) return (
+    <div role="alert" className="mb-6 text-sm text-bad">
+      {planModel.error}
+      <button className="ml-3 min-h-[44px] text-brand" onClick={planModel.reload}>Retry study plan</button>
+    </div>
+  );
+  const { plan, today, finished } = planModel.data;
+  if (!plan) return <AnalyzerTodayCard />;
+  const view = finished ? { ...today, items: [], minutes: 0, startItem: null } : today;
+  function start(entry) {
+    const item = resolveStudyItem(plan, entry);
+    if (!item) return;
+    const query = new URLSearchParams({ item: item.id, mode: entry.type === 'review' ? 'review' : 'task' });
+    navigate('/my-plan/study?' + query.toString());
+  }
+  return <div className="mb-6"><StudyToday today={view} onStart={start} /></div>;
+}

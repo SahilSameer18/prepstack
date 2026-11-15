@@ -13,6 +13,7 @@ import RequirementRow from "../../components/analyzer/RequirementRow";
 import SkillGapCard from "../../components/analyzer/SkillGapCard";
 import PlanChecklist from "../../components/analyzer/PlanChecklist";
 import { countPlan, setItemDone } from "../../components/analyzer/planProgress";
+import ReportPlanImport from '../../components/plan/ReportPlanImport';
 
 const ORDER = { missing: 0, partial: 1, met: 2 };
 const card = "rounded-xl bg-card-hover border border-ink/[0.08] p-4";
@@ -124,6 +125,8 @@ const AnalyzerReport = () => {
           ))}
         </dl>
       </div>
+
+      <ReportPlanImport key={report._id} reportId={report._id} />
 
       {/* Start here */}
       {first && (

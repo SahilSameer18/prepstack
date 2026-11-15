@@ -178,6 +178,12 @@ describe('skip and move (decisions 23 and 26)', () => {
 });
 
 describe('carried over and the calm Today list (decisions 24, 27, 33)', () => {
+  it('keeps missed report and custom tasks visible, including report behavioral practice', () => {
+    const task = { key: 'report-task', source: 'analyzer:report', type: 'behavioral', title: 'Recall a story', day: '2026-11-19', plannedMinutes: 10 };
+    assert.equal(adj.carriedOver([task], '2026-11-20').length, 1);
+    assert.equal(adj.carriedOver([{ ...task, source: 'planner' }], '2026-11-20').length, 0);
+    assert.equal(adj.carriedOver([{ ...task, source: 'student', type: 'custom' }], '2026-11-20').length, 1);
+  });
   const stored = makeStored();
   it('carried over lists planned items from earlier days that are not done or skipped, oldest first, without mock blocks', () => {
     const early = stored.items.filter((i) => i.day < '2026-11-20' && i.type === 'dsa');

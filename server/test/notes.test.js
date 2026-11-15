@@ -34,6 +34,18 @@ describe('CS notes (public)', () => {
     assert.match(child.stderr, /simulated offline database/);
   });
 
+  it('importing seed data setup does not read an environment file or change DNS', () => {
+    const script = `
+      require('dotenv').config = () => { throw new Error('unexpected environment read'); };
+      require('node:dns').setServers = () => { throw new Error('unexpected DNS change'); };
+      if (typeof require('./src/seed/seedConfig') !== 'function') process.exit(1);
+    `;
+    const child = spawnSync(process.execPath, ['-e', script], {
+      cwd: require('node:path').join(__dirname, '..'), encoding: 'utf8', timeout: 10000,
+    });
+    assert.equal(child.status, 0, child.stderr);
+  });
+
   it('GET /api/notes lists every subject with its name, slug and counts, but no sections, no login needed', async () => {
     const res = await t.api.get('/api/notes');
     assert.equal(res.status, 200);

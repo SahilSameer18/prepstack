@@ -53,6 +53,11 @@ export default function StudySchedule({
           {plan.startDate} to {plan.deadline}.
         </p>
         <p>{today?.onTrack?.text}</p>
+        {!!plan.coverage?.importOverloads?.length && (
+          <p className="text-warn">
+            The last report import or rebuild showed {formatPlanMinutes(plan.coverage.importOverloads.reduce((sum, entry) => sum + entry.minutes, 0))} beyond daily budgets. Review your dates and hours before taking on more work.
+          </p>
+        )}
         {readOnly && (
           <p>
             This plan has finished. You can read it, but its tasks cannot be

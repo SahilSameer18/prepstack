@@ -13,6 +13,23 @@ async function start() {
   await Notes.create({ subject: data.subject, subjectSlug: 'os', sections: data.sections });
   const fixture = express();
   fixture.use(express.json());
+  fixture.post('/__test/report', async (req, res) => {
+    if (!t.mongoose.isValidObjectId(req.body.user)) return res.status(400).json({ message: 'Invalid fixture user' });
+    if (!await t.getModels().User.exists({ _id: req.body.user })) return res.status(404).json({ message: 'Fixture user not found' });
+    const Report = t.mongoose.model('InterviewReport');
+    const report = await Report.create({
+      user: req.body.user, title: 'Frontend role connection', jobDescription: 'Disposable browser fixture', days: 7, score: 60,
+      plan: [
+        { day: 1, items: [
+          { task: 'Practice arrays from this report', ref: 'dsa:blind-75:arrays-hashing' },
+          { task: 'Already finished report task', done: true, doneAt: new Date() },
+        ] },
+        { day: 2, items: [{ task: 'Explain a frontend tradeoff' }] },
+        { day: 3, items: [{ task: 'Build a small frontend', ref: 'roadmap:frontend' }] },
+      ],
+    });
+    res.json({ id: String(report._id) });
+  });
   // This wrapper exists only in the test process, never in the deployed app.
   fixture.post('/__test/scenario', async (req, res) => {
     if (!t.mongoose.isValidObjectId(req.body.user)) return res.status(400).json({ message: 'Invalid fixture user' });

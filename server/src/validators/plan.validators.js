@@ -77,6 +77,11 @@ const weeklyReviewQuerySchema = z.object({
   weekStart: date('weekStart').optional(),
 });
 
+const reportImportSchema = z.object({ mode: z.enum(['merge', 'replace']).default('merge') });
+const applyReportImportSchema = reportImportSchema.extend({
+  checksum: z.string().regex(/^[0-9a-f]{32}$/, 'Preview this report again before saving.'),
+});
+
 module.exports = {
   previewPlanSchema,
   createPlanSchema,
@@ -87,4 +92,6 @@ module.exports = {
   recordResultSchema,
   recordReviewSchema,
   weeklyReviewQuerySchema,
+  reportImportSchema,
+  applyReportImportSchema,
 };

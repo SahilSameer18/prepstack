@@ -21,6 +21,160 @@ const preview = (body, ip) => t.api.post('/api/plan/preview', { body, ip });
 const create = (acct, body) => t.api.post('/api/plan', { cookies: acct.cookies, body });
 const getPlan = (acct) => t.api.get('/api/plan', { cookies: acct.cookies });
 
+// Direct model fixtures avoid an AI request while exercising the real import API.
+async function importReport(acct) {
+  const Report = t.mongoose.model('InterviewReport');
+  const data = require('../src/services/planData').getPlanData();
+  return Report.create({
+    user: acct.id, title: 'Frontend role', jobDescription: 'Saved test role', days: 7, score: 50,
+    plan: [
+      { day: 1, items: [
+        { task: 'Practice arrays', ref: 'dsa:blind-75:arrays-hashing' },
+        { task: 'Read system design', ref: 'notes:hld:' + data.notes.hld[0].id },
+        { task: 'Explain a project decision' },
+      ] },
+      { day: 2, items: [{ task: 'Build a small frontend', ref: 'roadmap:frontend' }] },
+    ],
+  });
+}
+const importPreview = (acct, report, mode = 'merge') => t.api.post(`/api/plan/reports/${report._id}/preview`, { cookies: acct.cookies, body: { mode } });
+const importApply = (acct, report, preview) => t.api.post(`/api/plan/reports/${report._id}/apply`, {
+  cookies: acct.cookies, body: { mode: preview.mode, checksum: preview.checksum },
+});
+
+describe('Analyzer report connections', () => {
+  it('previews owned report tasks without writing, validates consent and hides other owners', async () => {
+    const acct = await t.register();
+    const other = await t.register();
+    const report = await importReport(acct);
+    const response = await importPreview(acct, report);
+    assert.equal(response.status, 200);
+    const preview = response.body.data;
+    assert.equal(preview.addedCount, 4);
+    assert.equal(preview.createsPlan, true);
+    assert.equal(preview.items[0].type, 'custom');
+    assert.equal(preview.items[0].plannedMinutes, 60);
+    assert.equal(preview.items.find((item) => item.type === 'roadmap').plannedMinutes, 120);
+    assert.equal(await Plan.countDocuments({ user: acct.id }), 0);
+    assert.equal((await importPreview(other, report)).status, 404);
+    for (const route of ['preview', 'apply']) {
+      assert.equal((await t.api.post(`/api/plan/reports/${report._id}/${route}`, { body: { mode: 'merge', checksum: preview.checksum } })).status, 401);
+      assert.equal((await t.api.post(`/api/plan/reports/not-an-id/${route}`, { cookies: acct.cookies, body: { mode: 'merge', checksum: preview.checksum } })).status, 404);
+    }
+    assert.equal((await t.api.post(`/api/plan/reports/${report._id}/preview`, { cookies: acct.cookies, body: { mode: 'bad' } })).status, 422);
+    assert.equal((await t.api.post(`/api/plan/reports/${report._id}/apply`, { cookies: acct.cookies, body: { mode: 'merge' } })).status, 422);
+    assert.equal((await importApply(acct, report, { ...preview, checksum: '0'.repeat(32) })).status, 409);
+  });
+
+  it('merges once, preserves completed and locked rows, and never solves a topic as a problem', async () => {
+    const acct = await t.register();
+    const report = await importReport(acct);
+    const made = await create(acct, form({ weeks: 4, restDay: null }));
+    const first = made.body.data.plan.items.find((item) => item.type === 'dsa' && !item.part);
+    await t.api.patch(`/api/plan/items/${first.id}`, { cookies: acct.cookies, body: { done: true, result: 'alone' } });
+    const doc = await Plan.findOne({ user: acct.id });
+    doc.items[1].locked = true;
+    await doc.save();
+    const before = doc.items.map((item) => item.toObject());
+    const progressBefore = await Progress.find({ user: acct.id }).lean();
+    const preview = (await importPreview(acct, report)).body.data;
+    const replies = await Promise.all([importApply(acct, report, preview), importApply(acct, report, preview)]);
+    assert.equal(replies.filter((reply) => reply.status === 200).length, 1);
+    assert.ok(replies.every((reply) => [200, 409, 422].includes(reply.status)));
+    const after = await Plan.findOne({ user: acct.id });
+    for (const item of before) assert.deepEqual(after.items.id(item._id).toObject(), item);
+    assert.equal(new Set(after.items.map((item) => item.key)).size, after.items.length);
+    assert.equal((await importPreview(acct, report)).status, 422);
+    const topic = after.items.find((item) => item.source === 'analyzer:' + report._id && item.ref.startsWith('dsa:'));
+    assert.equal((await t.api.patch(`/api/plan/items/${topic._id}`, { cookies: acct.cookies, body: { done: true } })).status, 200);
+    assert.deepEqual(await Progress.find({ user: acct.id }).lean(), progressBefore);
+  });
+
+  it('refuses a preview after either the plan or the source report changes', async () => {
+    const acct = await t.register();
+    const report = await importReport(acct);
+    const made = await create(acct, form({ weeks: 4, restDay: null }));
+    let preview = (await importPreview(acct, report)).body.data;
+    await t.api.patch(`/api/plan/items/${made.body.data.plan.items[0].id}/star`, { cookies: acct.cookies });
+    assert.equal((await importApply(acct, report, preview)).status, 409);
+    preview = (await importPreview(acct, report)).body.data;
+    await t.api.patch(`/api/analyzer/${report._id}/plan`, { cookies: acct.cookies, body: { day: 1, index: 0, done: true } });
+    assert.equal((await importApply(acct, report, preview)).status, 409);
+  });
+
+  it('reports overload and refuses an import beyond the item cap', async () => {
+    const acct = await t.register();
+    const report = await importReport(acct);
+    await create(acct, form({ weeks: 1, weekdayHours: 0.5, weekendHours: 0.5, restDay: null }));
+    const preview = await importPreview(acct, report);
+    assert.equal(preview.status, 200);
+    assert.ok(preview.body.data.overloadMinutes > 0);
+    const doc = await Plan.findOne({ user: acct.id });
+    doc.items = Array.from({ length: 600 }, (_, index) => ({ key: 'custom:' + index, title: 'Task', type: 'custom', source: 'student', plannedMinutes: 1, day: doc.startDate }));
+    await doc.save();
+    assert.equal((await importPreview(acct, report)).status, 422);
+    assert.equal((await Plan.findById(doc._id)).items.length, 600);
+  });
+
+  it('replaces an expired plan with report days, keeping its history and sheet progress', async () => {
+    const acct = await t.register();
+    const report = await importReport(acct);
+    await create(acct, form({ weeks: 1 }));
+    const old = await Plan.findOne({ user: acct.id });
+    old.deadline = '2020-01-01';
+    await old.save();
+    assert.equal((await importPreview(acct, report)).status, 409);
+    const preview = (await importPreview(acct, report, 'replace')).body.data;
+    const applied = await importApply(acct, report, preview);
+    assert.equal(applied.status, 200);
+    assert.notEqual(applied.body.data.plan.id, String(old._id));
+    assert.equal(dayNumber(applied.body.data.plan.deadline) - dayNumber(applied.body.data.plan.startDate), 6);
+    const history = await t.api.get(`/api/plan/history/${old._id}`, { cookies: acct.cookies });
+    assert.equal(history.status, 200);
+    assert.deepEqual((await Plan.findById(old._id)).items.toObject(), old.items.toObject());
+    assert.equal(await Progress.countDocuments({ user: acct.id }), 0);
+  });
+
+  it('restores the original active plan when saving a replacement fails', async () => {
+    const acct = await t.register();
+    const report = await importReport(acct);
+    const made = await create(acct, form({ weeks: 1 }));
+    const preview = (await importPreview(acct, report, 'replace')).body.data;
+    const insert = Plan.collection.insertOne;
+    Plan.collection.insertOne = async () => { throw new Error('simulated failed import save'); };
+    try {
+      assert.equal((await importApply(acct, report, preview)).status, 500);
+    } finally { Plan.collection.insertOne = insert; }
+    const active = await Plan.findOne({ user: acct.id, status: 'active' });
+    assert.equal(String(active._id), made.body.data.plan.id);
+    assert.equal(await Plan.countDocuments({ user: acct.id }), 1);
+  });
+
+  it('creates report-only plans that carry over and rebuild their own remaining tasks', async () => {
+    const acct = await t.register();
+    const report = await importReport(acct);
+    const preview = (await importPreview(acct, report)).body.data;
+    assert.equal((await importApply(acct, report, preview)).status, 200);
+    const doc = await Plan.findOne({ user: acct.id });
+    assert.equal(doc.originReport, String(report._id));
+    const task = doc.items.find((item) => item.type === 'custom');
+    planClock.now = () => new Date(ymdOf(dayNumber(doc.startDate) + 1) + 'T08:00:00Z');
+    const today = (await getPlan(acct)).body.data.today;
+    assert.ok(today.items.some((item) => item.id === String(task._id)), 'missed report tasks remain visible');
+    await t.api.patch(`/api/plan/items/${task._id}`, { cookies: acct.cookies, body: { done: true } });
+    const saved = (await Plan.findById(doc._id)).items.id(task._id).toObject();
+    const change = { type: 'hours', weekdayHours: 1, weekendHours: 2 };
+    const changedPreview = await t.api.post('/api/plan/changes/preview', { cookies: acct.cookies, body: change });
+    assert.equal(changedPreview.status, 200);
+    const applied = await t.api.post('/api/plan/changes/apply', { cookies: acct.cookies, body: { ...change, checksum: changedPreview.body.data.diff.checksum } });
+    assert.equal(applied.status, 200);
+    const after = await Plan.findById(doc._id);
+    assert.equal(after.items.length, doc.items.length);
+    assert.ok(after.items.every((item) => item.source === 'analyzer:' + report._id));
+    assert.deepEqual(after.items.id(task._id).toObject(), saved);
+  });
+});
+
 describe('Finished-plan history is private and read-only', () => {
   it('lists and reads owned snapshots after replacement, without later sheet overlays', async () => {
     const acct = await t.register();

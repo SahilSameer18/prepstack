@@ -45,6 +45,7 @@ const planSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true, maxlength: PLAN_TITLE_MAX },
   targetRole: { type: String, default: '', trim: true, maxlength: PLAN_TITLE_MAX },
   status: { type: String, enum: ['active', 'finished'], default: 'active' },
+  originReport: { type: String, default: null }, // report-only plans refit their own tasks on rebuild
   sheetSlug: { type: String, default: null },
   roadmapSlug: { type: String, default: null },
   subjects: { type: [String], default: [] },

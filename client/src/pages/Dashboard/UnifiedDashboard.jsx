@@ -15,18 +15,41 @@ import ReportsDash from "../../components/analyzer/ReportsDash";
 import TodayCard from "../../components/analyzer/TodayCard";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
 import { SectionLoader } from "../../components/ui/Skeletons";
+import { useStudyPlan } from '../../hooks/useStudyPlan';
+import { studyProgress } from '../../utils/studyPlan';
+import MyPlanStudy from '../MyPlanStudy';
 
-const TABS = ["dsa", "projects", "reports"];
+const TABS = ["plan", "dsa", "projects", "reports"];
 
 // ── UnifiedDashboard ───────────────────────────────────────────────────────
-// One overview strip (a number per area, each one opens its tab) and three tabs, so only one area shows at a time.
+// One overview strip and four tabs. The daily workspace shares its server state
+// with the overview; its quiet Today view keeps dashboard statistics out of the way.
 // The open tab lives in the address (?tab=projects), so a refresh, the back button and links all land on the right tab.
 const UnifiedDashboard = () => {
   const { user } = useAuth();
   const { getProjects, projects, projectsTotal } = useProject();
+  const planModel = useStudyPlan();
+  const plan = planModel.data?.plan;
+  const defaultTab = plan ? 'plan' : 'dsa';
+  const tabs = plan
+    ? [['plan', 'My plan'], ['dsa', 'DSA'], ['projects', 'Projects'], ['reports', 'Reports']]
+    : [['dsa', 'DSA'], ['plan', 'My plan'], ['projects', 'Projects'], ['reports', 'Reports']];
   const [searchParams, setSearchParams] = useSearchParams();
-  const tab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : "dsa";
-  const openTab = (t) => setSearchParams(t === "dsa" ? {} : { tab: t }, { replace: true });
+  const tab = TABS.includes(searchParams.get("tab")) ? searchParams.get("tab") : defaultTab;
+  const openTab = (t) => setSearchParams({ tab: t }, { replace: true });
+
+  // Keep ordinary tab keyboard behavior while the URL remains the source of truth.
+  function navigateTabs(event) {
+    const keys = ['ArrowLeft', 'ArrowRight', 'Home', 'End'];
+    if (!keys.includes(event.key)) return;
+    event.preventDefault();
+    const current = tabs.findIndex(([key]) => key === tab);
+    let next = event.key === 'ArrowRight' ? (current + 1) % tabs.length : (current + tabs.length - 1) % tabs.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = tabs.length - 1;
+    openTab(tabs[next][0]);
+    event.currentTarget.parentElement.querySelectorAll('[role="tab"]')[next].focus();
+  }
 
   // DSA & Stats state (from single server aggregator)
   const [dsaData, setDsaData] = useState([]);
@@ -93,7 +116,9 @@ const UnifiedDashboard = () => {
   };
 
   const best = reports?.length ? Math.max(...reports.map((r) => r.score)) : null;
+  const progress = studyProgress(plan?.items || []);
   const overview = [
+    { key: 'plan', label: 'Plan tasks', value: planModel.loading || planModel.error ? '-' : progress.done, sub: plan ? `of ${progress.total}` : 'Build your plan' },
     { key: "dsa", label: "DSA solved", value: loading ? "-" : stats.totalSolved, sub: loading ? "" : `of ${stats.totalQuestions}` },
     { key: "projects", label: "Project ideas", value: projects ? (projectsTotal ?? projects.length) : "-", sub: "" },
     { key: "reports", label: "Role reports", value: reports ? reportTotal : "-", sub: best !== null ? `best ${best}` : "" },
@@ -110,6 +135,8 @@ const UnifiedDashboard = () => {
   return (
     <div className="px-4 sm:px-6 py-8 max-w-7xl mx-auto page-enter text-fg text-left">
 
+      {/* Keep dashboard statistics away from the calm daily workspace. */}
+      {tab !== 'plan' && <>
       {/* ── Page Header ────────────────────────────────────────────────── */}
       <motion.div className="mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
         <div className="inline-flex items-center gap-2 text-xs font-ui text-muted mb-3">
@@ -120,12 +147,12 @@ const UnifiedDashboard = () => {
           Welcome back, <span className="text-fg">{user?.username || "Engineer"}</span>
         </h1>
         <p className="text-muted text-sm sm:text-base max-w-2xl leading-relaxed">
-          Your DSA progress, project ideas and role reports in one place.
+          Your study plan, DSA progress, project ideas and role reports in one place.
         </p>
       </motion.div>
 
       {/* ── Overview: one number per area, each opens its tab ─────────────── */}
-      <section className="grid grid-cols-3 gap-2 sm:gap-3 mb-6" aria-label="Overview">
+      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6" aria-label="Overview">
         {overview.map((o) => (
           <button
             key={o.key} type="button" onClick={() => openTab(o.key)}
@@ -137,13 +164,17 @@ const UnifiedDashboard = () => {
         ))}
       </section>
 
-      <TodayCard />
+      </>}
+
+      {tab !== 'plan' && <TodayCard planModel={planModel} />}
 
       {/* ── Tabs ──────────────────────────────────────────────────────────── */}
       <div role="tablist" aria-label="Dashboard sections" className="flex gap-1 border-b border-ink/[0.08] overflow-x-auto mb-6">
-        {[["dsa", "DSA"], ["projects", "Projects"], ["reports", "Reports"]].map(([key, label]) => (
+        {tabs.map(([key, label]) => (
           <button
-            key={key} role="tab" aria-selected={tab === key} onClick={() => openTab(key)}
+            key={key} id={`dashboard-tab-${key}`} role="tab" aria-selected={tab === key}
+            aria-controls="dashboard-panel" tabIndex={tab === key ? 0 : -1}
+            onKeyDown={navigateTabs} onClick={() => openTab(key)}
             className={`px-3 sm:px-4 py-3 min-h-[44px] text-sm whitespace-nowrap border-b-2 cursor-pointer transition-colors ${tab === key ? "border-brand text-fg font-semibold" : "border-transparent text-muted hover:text-fg-2"}`}
           >
             {label} <span className="text-xs text-muted font-normal">{counts[key]}</span>
@@ -151,7 +182,8 @@ const UnifiedDashboard = () => {
         ))}
       </div>
 
-      <div role="tabpanel">
+      <div id="dashboard-panel" role="tabpanel" aria-labelledby={`dashboard-tab-${tab}`}>
+        {tab === 'plan' && <MyPlanStudy embedded planModel={planModel} />}
         {tab === "dsa" && (
           dashboardError ? (
             <PageErrorState message={dashboardError} onRetry={fetchDashboard} backTo="/" backLabel="Go Home" />

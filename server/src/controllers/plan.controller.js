@@ -2,6 +2,8 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Plan = require('../models/plan.model');
 const Progress = require('../models/progress.model');
+const Report = require('../models/interviewReport.model');
+const { prepareReportImport } = require('../services/planReport');
 const AppError = require('../utils/AppError');
 const { sendSuccess } = require('../utils/responseFormatter');
 const gen = require('../services/planGenerator');
@@ -89,8 +91,8 @@ const presentView = (v, allItems) => {
 const toStored = (doc) => {
   const o = doc.toObject();
   return {
-    input: { goalType: o.goalType, style: o.style, startDate: o.startDate, weeks: o.weeks, hoursByWeekday: o.hoursByWeekday, restDay: o.restDay, sheetSlug: o.sheetSlug, roadmapSlug: o.roadmapSlug, subjects: o.subjects, knownTopics: o.knownTopics, solvedLinks: o.solvedLinks, lighterDays: o.lighterDays },
-    startDate: o.startDate, deadline: o.deadline, items: o.items,
+    input: { goalType: o.goalType, style: o.style, startDate: o.startDate, weeks: o.weeks, hoursByWeekday: o.hoursByWeekday, restDay: o.restDay, sheetSlug: o.sheetSlug, roadmapSlug: o.roadmapSlug, subjects: o.subjects, knownTopics: o.knownTopics, solvedLinks: o.solvedLinks, lighterDays: o.lighterDays, originReport: o.originReport },
+    startDate: o.startDate, deadline: o.deadline, items: o.items, coverage: o.coverage,
   };
 };
 
@@ -160,6 +162,92 @@ const createPlan = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+};
+
+// Load only an owned report and derive its changes on the server. The checksum
+// binds consent to the report, current plan, mode and India calendar day.
+async function reportImportContext(req) {
+  if (!mongoose.isObjectIdOrHexString(req.params.reportId)) throw new AppError(404, 'Report not found');
+  const [report, current] = await Promise.all([
+    Report.findOne({ _id: req.params.reportId, user: req.user._id }).lean(),
+    Plan.findOne({ user: req.user._id, status: 'active' }),
+  ]);
+  if (!report) throw new AppError(404, 'Report not found');
+  if (!Number.isInteger(report.days) || report.days < 1 || report.days > 364) throw new AppError(422, 'This report has no valid study period.');
+  const mode = req.body.mode;
+  const day = today();
+  if (current && current.deadline < day && mode === 'merge') {
+    throw new AppError(409, 'This plan has finished. Choose Replace to start a new report plan.');
+  }
+  const result = prepareReportImport(report, current?.toObject(), mode, day, getPlanData());
+  if (!result.added.length) throw new AppError(422, 'No new tasks to add. Completed or already scheduled material was left out.');
+  if (result.plan.items.length > PLAN_MAX_ITEMS) throw new AppError(422, `This would exceed ${PLAN_MAX_ITEMS} plan items. Remove tasks or replace the plan.`);
+  const checksum = crypto.createHash('sha256').update(JSON.stringify({
+    user: String(req.user._id), report, current: current?.toObject() || null, mode, day, result,
+  })).digest('hex').slice(0, 32);
+  return { current, result, checksum, mode };
+}
+
+const previewReportImport = async (req, res, next) => {
+  try {
+    const { current, result, checksum, mode } = await reportImportContext(req);
+    return sendSuccess(res, 200, 'Report import preview', {
+      checksum, mode, createsPlan: !current || mode === 'replace',
+      title: result.plan.title, startDate: result.plan.startDate, deadline: result.plan.deadline,
+      hoursByWeekday: result.plan.hoursByWeekday, restDay: result.plan.restDay,
+      addedCount: result.added.length, omittedCount: result.omitted,
+      doneProtected: current?.items.filter((item) => item.doneAt).length || 0,
+      overloadMinutes: result.overloads.reduce((sum, entry) => sum + entry.minutes, 0),
+      overloads: result.overloads, items: result.added.map((item) => presentItem(item)),
+    });
+  } catch (error) { return next(asAppError(error)); }
+};
+
+// Merge is one conditional document update. Replacement validates before
+// archiving and restores the old plan if saving its replacement fails.
+const applyReportImport = async (req, res, next) => {
+  try {
+    const { current, result, checksum, mode } = await reportImportContext(req);
+    if (checksum !== req.body.checksum) throw new AppError(409, 'The report or plan changed. Preview again before saving.');
+    let saved;
+    if (current && mode === 'merge') {
+      saved = await Plan.findOneAndUpdate(
+        { _id: current._id, user: req.user._id, status: 'active', updatedAt: current.updatedAt },
+        { $set: { items: result.plan.items, coverage: result.plan.coverage, notices: result.plan.notices } },
+        { returnDocument: 'after', runValidators: true },
+      );
+      if (!saved) throw new AppError(409, 'The plan changed. Preview again before saving.');
+    } else {
+      const candidate = new Plan({ ...result.plan, user: req.user._id, status: 'active' });
+      await candidate.validate();
+      let archived = null;
+      if (current) {
+        archived = await Plan.findOneAndUpdate(
+          { _id: current._id, user: req.user._id, status: 'active', updatedAt: current.updatedAt },
+          { $set: { status: 'finished' } }, { returnDocument: 'after' },
+        );
+        if (!archived) throw new AppError(409, 'The plan changed. Preview again before saving.');
+      }
+      try {
+        saved = await candidate.save();
+      } catch (error) {
+        if (archived) {
+          try {
+            await Plan.updateOne({ _id: archived._id, user: req.user._id, status: 'finished', updatedAt: archived.updatedAt }, { $set: { status: 'active' } });
+          } catch (restoreError) {
+            // Another request may already have created an active plan. The old
+            // snapshot remains readable; never overwrite that winning request.
+            if (restoreError.code !== 11000) throw restoreError;
+          }
+        }
+        if (error.code === 11000) throw new AppError(409, 'Another plan was saved. Refresh and preview again.');
+        throw error;
+      }
+      const old = await Plan.find({ user: req.user._id, status: 'finished' }).sort({ createdAt: -1 }).skip(PLAN_MAX_FINISHED).select('_id').lean();
+      if (old.length) await Plan.deleteMany({ user: req.user._id, _id: { $in: old.map((plan) => plan._id) } });
+    }
+    return sendSuccess(res, 200, 'Report added to My plan', { plan: presentPlan(saved) });
+  } catch (error) { return next(asAppError(error)); }
 };
 
 // DELETE /api/plan   Always allowed and really deletes. DELETE /api/plan/history deletes the finished plans too.
@@ -743,4 +831,6 @@ module.exports = {
   unskipItem,
   getWeeklyReview,
   syncDsaProgress,
+  previewReportImport,
+  applyReportImport,
 };

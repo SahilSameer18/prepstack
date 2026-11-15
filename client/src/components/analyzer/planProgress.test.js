@@ -11,10 +11,28 @@ import PlanChecklist from './PlanChecklist';
 import { AuthContext } from '../../context/AuthContext';
 import MyPlan from '../../pages/MyPlan';
 import SelectField from '../ui/SelectField';
+import TodayCard from './TodayCard';
+import ReportPlanImport from '../plan/ReportPlanImport';
 import StudyToday from '../plan/StudyToday';
 import { pullForwardItem, revisionRoundItems, resolveStudyItem, studyProgress, studyChecklistDays, studyWeeks } from '../../utils/studyPlan';
 
 describe('Daily study screens', () => {
+  it('uses goal-plan Today without report controls or a second Start button', () => {
+    const task = { id: 'one', key: 'one', title: 'Current arrays', plannedMinutes: 40 };
+    const model = { data: { plan: { items: [task] }, today: { items: [task], minutes: 40, isToday: true, startItem: task }, finished: false } };
+    const tree = createElement(MemoryRouter, null, createElement(TodayCard, { planModel: model }));
+    const markup = renderToStaticMarkup(tree);
+    expect(markup).toContain('Current arrays');
+    expect(markup.match(/<button\b/g)).toHaveLength(1);
+    expect(markup).not.toContain('Open report');
+    expect(markup).not.toContain('type="checkbox"');
+  });
+  it('opening a report offers an import action, without implicit confirmation', () => {
+    const tree = createElement(MemoryRouter, null, createElement(ReportPlanImport, { reportId: 'report' }));
+    const markup = renderToStaticMarkup(tree);
+    expect(markup).toContain('Add to My plan');
+    expect(markup).not.toContain('Confirm add to My plan');
+  });
   it('groups the partial first week separately from the following Monday', () => {
     const days = [{ day: '2026-11-15' }, { day: '2026-11-16' }, { day: '2026-11-22' }];
     expect(studyWeeks(days, '2026-11-15').map((week) => [week.number, week.days.length])).toEqual([[1, 1], [2, 2]]);
