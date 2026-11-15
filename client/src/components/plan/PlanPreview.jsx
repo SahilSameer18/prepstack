@@ -1,5 +1,6 @@
 import PlanChecklist from "../analyzer/PlanChecklist";
-import { planDays } from "../../utils/planBuilder";
+import { PACES, paceMinutes, planDays } from "../../utils/planBuilder";
+import PlanCoverage from "./PlanCoverage";
 
 // Format API estimates; no sample numbers are substituted while a request is loading.
 function hours(minutes) {
@@ -96,7 +97,7 @@ export default function PlanPreview({ builder }) {
       </p>
     );
 
-  const { coverage, week1, finishDate, deadline, notices } = preview.data;
+  const { coverage, week1, finishDate, deadline, notices, pace } = preview.data;
   return (
     <div className="space-y-6">
       <div aria-live="polite" className="border-b border-ink/[0.1] pb-5">
@@ -118,12 +119,21 @@ export default function PlanPreview({ builder }) {
         Planned for up to 85% of your available hours: 70% for new work and up
         to 15% for reviews. The rest stays free.
       </p>
+      <p className="text-sm leading-relaxed text-fg-3">
+        Planned at a {(PACES[pace] || PACES.standard).label.toLowerCase()} pace:
+        a Medium problem takes about {paceMinutes(pace)} min. You can change
+        this later.
+      </p>
       {coverage.leftOutCount > 0 && (
-        <p className="rounded-xl border border-warn-solid/25 bg-warn-solid/10 p-3 text-sm leading-relaxed text-warn">
-          {coverage.leftOutCount} syllabus items (
-          {hours(coverage.leftOutMinutes)}) could not fit. Core topics come
-          first; add time or choose a smaller syllabus.
-        </p>
+        <div className="space-y-3 rounded-xl border border-warn-solid/25 bg-warn-solid/10 p-3">
+          <p className="text-sm leading-relaxed text-warn">
+            {coverage.leftOutCount} syllabus items (
+            {hours(coverage.leftOutMinutes)}) could not fit. Every topic and
+            subject keeps a few items first; the rest is shared fairly. Add
+            time or choose a smaller syllabus to cover more.
+          </p>
+          <PlanCoverage byGroup={coverage.byGroup} />
+        </div>
       )}
       {notices.includes("early-finish") && (
         <p className="text-sm text-fg-3">

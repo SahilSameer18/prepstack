@@ -190,7 +190,7 @@ const isPlannedContent = (it) => it.source === 'planner' && CONTENT_TYPES.includ
 const lastDay = (items) => items.reduce((m, it) => (it.day > m ? it.day : m), '');
 const firstDayById = (items) => { const m = new Map(); for (const it of items) { const id = baseId(it); if (!m.has(id) || it.day < m.get(id)) m.set(id, it.day); } return m; };
 
-// change: { type: 'rebuild' } | { type: 'hours', hoursByWeekday, restDay? } | { type: 'lighter', lighterDays }; any of them may carry solvedLinks (what the
+// change: { type: 'rebuild' } | { type: 'hours', hoursByWeekday, restDay? } | { type: 'lighter', lighterDays } | { type: 'pace', pace }; any of them may carry solvedLinks (what the
 // sheet now says is solved). Returns the new plan and a diff; nothing is saved. The caller applies it only if the diff's checksum still matches.
 const previewChange = (stored, data, todayYmd, change) => {
   const t = Math.max(dayNumber(todayYmd), dayNumber(stored.startDate));
@@ -214,8 +214,10 @@ const previewChange = (stored, data, todayYmd, change) => {
     }
     if (errors.length) throw new gen.PlanInputError(errors);
     input.lighterDays = change.lighterDays;
+  } else if (change.type === 'pace') {
+    input.pace = change.pace;
   } else if (change.type !== 'rebuild') {
-    throw new gen.PlanInputError(['change type must be rebuild, hours or lighter']);
+    throw new gen.PlanInputError(['change type must be rebuild, hours, lighter or pace']);
   }
   if (change.solvedLinks) input.solvedLinks = change.solvedLinks;
   input.startDate = today;
@@ -268,7 +270,7 @@ const previewChange = (stored, data, todayYmd, change) => {
     reviewBacklogMinutes: backlogMinutes,
     checksum: crypto.createHash('sha256').update(JSON.stringify({ stored, input, requestedDeadline, today, items })).digest('hex').slice(0, 16),
   };
-  const plan = { ...stored, deadline: requestedDeadline, input: { ...stored.input, weeks: totalWeeks, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay ?? null, lighterDays: input.lighterDays || [], solvedLinks: input.solvedLinks || [] }, items, finishDate: finishAfter, coverage: generated.coverage, notices: generated.notices };
+  const plan = { ...stored, deadline: requestedDeadline, input: { ...stored.input, pace: input.pace || 'standard', weeks: totalWeeks, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay ?? null, lighterDays: input.lighterDays || [], solvedLinks: input.solvedLinks || [] }, items, finishDate: finishAfter, coverage: generated.coverage, notices: generated.notices };
   return { plan, diff };
 };
 

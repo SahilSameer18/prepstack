@@ -156,12 +156,12 @@ describe('fitting the days', () => {
 
 describe('core first when time is short (decisions 10 and 28)', () => {
   const data = makeData();
-  it('drops the extra topics first and says so', () => {
+  it('cuts the extra topics first, keeps their one-problem floor, and says so', () => {
     // content: early 230 + late 140 + os-a 35 + os-b 65 = 470 core, extra 140; one week of 3 hours a day = 5 x 126 = 630 minus gaps: ask for less
     const p = generatePlan({ ...base, weeks: 1, hoursByWeekday: [2, 2, 2, 2, 2, 0, 0], restDay: null }, data); // 84 new minutes a day = 420 a week
     assert.ok(p.notices.includes('core-first'));
     assert.ok(p.coverage.leftOut.some((l) => l.reason === 'extra' && l.topicTitle === 'Extra topic'));
-    assert.ok(!p.items.some((i) => i.topicId === 'extra-topic'));
+    assert.ok(p.items.filter((i) => i.topicId === 'extra-topic').length <= 1, 'an extra topic keeps at most its floor of one problem');
   });
   it('then leaves out the tail of the core, in order, and says even the core does not fit', () => {
     const p = generatePlan({ ...base, weeks: 1, hoursByWeekday: [1, 0, 0, 0, 0, 0, 0], restDay: null }, data);
@@ -271,7 +271,7 @@ describe('weeks, on track and the preview', () => {
   });
   it('the preview gives the numbers and week 1 only, never the other weeks', () => {
     const pv = previewPlan({ ...base, startDate: '2026-11-13', weeks: 4 }, makeData());
-    assert.deepEqual(Object.keys(pv).sort(), ['coverage', 'deadline', 'earlyDays', 'finishDate', 'notices', 'startDate', 'week1']);
+    assert.deepEqual(Object.keys(pv).sort(), ['coverage', 'deadline', 'earlyDays', 'finishDate', 'notices', 'pace', 'startDate', 'week1']);
     assert.equal(pv.week1.week, 1);
     assert.ok(pv.week1.items.every((i) => i.day <= '2026-11-15'));
     assert.ok(!JSON.stringify(pv).includes('2026-11-23'));
@@ -318,8 +318,10 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
   });
   // The planned minutes and the left-out count come from running the generator once; they were checked by hand: planned + left out = the syllabus (12,109),
   // planned is below the room for new items (weeks x 14 h), the first week (Friday 126 + Saturday 210 minutes of room) holds 330, and the mock and behavioral minutes are 90 and 10 each.
-  for (const [weeks, mocks, behavioral, planned, leftOut] of [[12, 9, 12, 8718, 56], [8, 5, 12, 5865, 103], [6, 3, 12, 4380, 125]]) {
-    it(`${weeks} weeks: core first, no day above 85 percent, ${mocks} mock blocks, ${behavioral} behavioral questions, nothing silently lost`, () => {
+  // Since 15 Nov 2026 a short plan shares its time (every topic and subject keeps a floor) instead of cutting the tail, so the planned minutes are a little lower
+  // than the old tail-cut plans (8718, 5865 and 4380) because the choice is made again until nothing is left over after the days are filled.
+  for (const [weeks, mocks, behavioral, planned, leftOut] of [[12, 9, 12, 8454, 47], [8, 5, 12, 5653, 90], [6, 3, 12, 4306, 111]]) {
+    it(`${weeks} weeks: fair share, no day above 85 percent, ${mocks} mock blocks, ${behavioral} behavioral questions, nothing silently lost`, () => {
       const plan = generatePlan({ ...input, weeks }, data);
       const c = plan.coverage;
       assert.ok(plan.notices.includes('core-first') && plan.notices.includes('core-does-not-fit'));
@@ -330,13 +332,18 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
       assert.equal(sum(plan.items.filter((i) => i.day <= '2026-11-15')), 330);
       assert.ok(c.plannedMinutes <= weeks * 14 * 60, 'new items never use more than 70 percent of the hours');
       assert.ok(c.plannedMinutes >= weeks * 14 * 60 * 0.8, 'days are filled close to their limit');
+      const sections = (s) => plan.items.filter((i) => i.type === 'notes' && i.ref.startsWith('notes:' + s + ':')).length;
+      for (const s of ['os', 'dbms', 'cn', 'oops']) assert.ok(sections(s) >= 3, s + ' keeps at least 3 sections');
+      const topicsAll = new Set(data.sheets['neetcode-150'].topics.map((t) => t.id));
+      const topicsPlanned = new Set(plan.items.filter((i) => i.type === 'dsa').map((i) => i.topicId));
+      assert.deepEqual([...topicsAll].filter((id) => !topicsPlanned.has(id)), [], 'every topic keeps at least one problem');
       for (const d of plan.days) assert.ok(sum(plan.items.filter((i) => i.day === d.date)) <= d.plannedCap, d.date);
       assert.equal(plan.items.filter((i) => i.type === 'mock').length, mocks);
       assert.equal(plan.items.filter((i) => i.type === 'behavioral').length, behavioral);
       assert.equal(plan.finishDate, plan.deadline);
       assert.ok(c.leftOut.some((l) => l.reason === 'extra' && l.topicTitle === 'Advanced Graphs'), 'the extra topic goes first');
-      const doneTopics = new Set(plan.items.filter((i) => i.type === 'dsa').map((i) => i.topicId));
-      assert.ok(doneTopics.has('arrays-hashing') && !doneTopics.has('advanced-graphs'));
+      assert.ok(plan.items.filter((i) => i.topicId === 'advanced-graphs').length <= 1, 'the extra topic keeps only its floor');
+      assert.ok(plan.items.filter((i) => i.topicId === 'arrays-hashing').length > 1, 'a core topic keeps more than its floor');
     });
   }
   it('more weeks plan more of the syllabus, and the 52-week plan fits everything with time to spare', () => {

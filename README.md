@@ -289,6 +289,8 @@ The planner is free to preview and needs a login to save. You pick a goal (big-t
 
 - **Plain code, no AI.** The schedule is made by deterministic code (`planGenerator.js`, `planAdjust.js`): about 85% of each day is planned, 70% of that for new items and 15% for reviews. Core topics come first, in dependency order. The same input always gives the same plan, and the numbers can be tested.
 - **Public preview.** `/my-plan` shows the totals and week 1 without an account. Saving, studying and syncing need a login.
+- **A fair share when time is short.** If the content is more than the days can hold, every DSA topic and every chosen CS subject keeps a few items (at least 1 problem per topic, 3 sections per subject) instead of the end of the list being cut. Hard problems are trimmed first. The plan and its preview name what is not included and what is only partly included.
+- **My pace.** Faster, Standard or Slower changes the minutes planned for each DSA problem. It can be changed later with a preview.
 - **Calm Today screen.** Only today's items, the time they need and one Start button. Graphs, history, reviews and settings live in other tabs.
 - **Review ladder.** Finishing a problem schedules reviews at fixed gaps that depend on how you solved it (alone, with hints, or with the solution). Overdue reviews never hide new work, and new work never hides waiting reviews.
 - **Sheet sync.** Ticking a problem in the plan ticks it on its DSA sheet, and a problem already solved on a sheet shows as done in the plan. A problem split over several days is solved on the sheet only when its last part is done.
@@ -441,6 +443,7 @@ erDiagram
         ObjectId _id PK
         ObjectId user FK
         string status "active, paused or finished (one active and one paused per user)"
+        string pace "faster, standard or slower (minutes per DSA problem)"
         string goalType
         string deadline "YYYY-MM-DD"
         array items "key, day, type, minutes, result, review ladder fields"
@@ -548,7 +551,7 @@ Everything except the preview and the options needs a login. Changes are two cal
 | `GET` | `/` | ✅ JWT | The active plan, Today, the study calendar and any paused plan |
 | `POST` | `/` | ✅ JWT | Saves a plan; `replace: true` keeps the old one as history _(10 saved an hour)_ |
 | `DELETE` | `/` | ✅ JWT | Deletes the active plan |
-| `POST` | `/changes/preview`, `/changes/apply` | ✅ JWT | Rebuild (optionally with a later deadline), new hours, lighter days _(20/min)_ |
+| `POST` | `/changes/preview`, `/changes/apply` | ✅ JWT | Rebuild (optionally with a later deadline), new hours, lighter days, a new pace _(20/min)_ |
 | `POST` | `/lifecycle/preview`, `/lifecycle/apply` | ✅ JWT | Study calendar, pause, resume, discard a paused plan, review catch-up |
 | `GET` | `/paused/:id` | ✅ JWT | Read-only snapshot of the paused plan |
 | `POST` | `/reports/:reportId/preview`, `/apply` | ✅ JWT | Merge or replace from a Role Analyzer report |
@@ -693,7 +696,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **924 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **964 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
 
 ```bash
 cd server
@@ -702,7 +705,7 @@ npm test
 
 They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **122 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh plus a Google conflict hook check (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, 2 for the resume checklist PDF (it must draw as one page), and the rest for the notes quiz scoring and diagram layout, the roadmap data rules and links, the Analyzer link builder, the study-plan checklist helpers, the problem-note import and merge helpers and the page titles. Eleven Playwright browser flows now cover the dashboard, report imports and daily study workspace at phone and desktop widths: task results, quizzes, plan controls, reviews, practice and read-only history. Run them with npm run test:browser from client; installed Chrome and both client/server dependencies are required. The harness uses fresh disposable servers on 3100 and 5175 and does not load the real server environment. Details, and what is not covered: [TESTING.md](TESTING.md).
 
-The client has 122 unit tests, and 11 browser specs for My plan (`cd client && npm run test:browser`; they start their own servers on ports 3100 and 5175 and need Chrome).
+The client has 134 unit tests, and 15 browser specs for My plan (`cd client && npm run test:browser`; they start their own servers on ports 3100 and 5175 and need Chrome).
 
 The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota).
 

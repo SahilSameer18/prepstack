@@ -485,3 +485,9 @@ Before the planner (B5) is built, the checklist and notes are shown to 3 to 5 st
 | Alien Dictionary | https://neetcode.io/problems/foreign-dictionary/question | Equivalent exercise resource; linked only, no copied prompt or solution |
 
 Other problem substitutions come from the existing sheet catalog and receive their own solve identity. Resource access and URLs can change; there is no claim of continuous external-link monitoring.
+
+## My plan pace multipliers (15 Nov 2026)
+
+| Number | Where | Status |
+|---|---|---|
+| Faster 0.6, Standard 1.0, Slower 1.4 times the minutes of a DSA problem | `server/src/services/planGenerator.js` (`PACES`), shown in the builder and Plan tab | Design choice; no external source. The base minutes (Basic 30, Easy 40, Medium 70, Hard 120) are unchanged. |

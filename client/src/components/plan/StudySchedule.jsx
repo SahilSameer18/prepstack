@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom";
 import PlanChecklist from "../analyzer/PlanChecklist";
 import { updatePlanItem } from "../../api/services/planService";
-import { dateInIndia } from "../../utils/planBuilder";
+import { PACES, dateInIndia, paceMinutes } from "../../utils/planBuilder";
+import PlanCoverage from "./PlanCoverage";
 import {
+  formatPlanDate,
   formatPlanMinutes,
   pullForwardItem,
   revisionRoundItems,
   studyChecklistDays,
   studyProgress,
   studyWeeks,
+  weekSummary,
 } from "../../utils/studyPlan";
 
 const BUTTON =
@@ -51,7 +54,12 @@ export default function StudySchedule({
           {formatPlanMinutes(progress.minutes)} completed.
         </p>
         <p>
-          {plan.startDate} to {plan.deadline}.
+          {formatPlanDate(plan.startDate, true)} to{" "}
+          {formatPlanDate(plan.deadline, true)}.
+        </p>
+        <p>
+          Pace: {(PACES[plan.pace] || PACES.standard).label} (a Medium problem
+          takes about {paceMinutes(plan.pace)} min).
         </p>
         <p>{today?.onTrack?.text}</p>
         {!!plan.coverage?.importOverloads?.length && (
@@ -68,8 +76,16 @@ export default function StudySchedule({
         {!!plan.coverage?.leftOut?.length && (
           <p className="text-warn">
             {plan.coverage.leftOut.length} syllabus items did not fit. Change
-            your hours or rebuild to review coverage.
+            your hours or pace, or rebuild with a later deadline, to cover more.
           </p>
+        )}
+        {!!plan.coverage?.leftOut?.length && !!plan.coverage?.byGroup?.length && (
+          <details className="rounded-xl border border-ink/[0.1] p-3">
+            <summary className="min-h-[44px] cursor-pointer text-sm font-semibold text-fg">
+              See what is not in your plan
+            </summary>
+            <PlanCoverage byGroup={plan.coverage.byGroup} className="pt-2" />
+          </details>
         )}
         {progress.complete && (
           <p role="status">
@@ -91,6 +107,9 @@ export default function StudySchedule({
             </button>
             <button className={BUTTON} onClick={() => onDialog("hours")}>
               Change hours
+            </button>
+            <button className={BUTTON} onClick={() => onDialog("pace")}>
+              Change pace
             </button>
             <button className={BUTTON} onClick={() => onDialog("lighter")}>
               Lighter days
@@ -131,6 +150,9 @@ export default function StudySchedule({
           <summary className="min-h-[44px] cursor-pointer text-sm font-semibold text-fg">
             Week {week.number} · {week.days[0].label} to{" "}
             {week.days.at(-1).label}
+            <span className="mt-1 block text-xs font-normal text-muted">
+              {weekSummary(week)}
+            </span>
           </summary>
           <PlanChecklist
             days={week.days}

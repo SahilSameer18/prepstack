@@ -224,7 +224,7 @@ Claude filled the form on the owner's second, logged-in account. Test choices on
 
 - Input: start Mon 16 Nov 2026, 9 weeks, 3 h Mon to Fri, 4 h Sat and Sun (23 h a week, the same as the Planly run), no rest day, Striver SDE sheet, OS, DBMS, CN, OOP notes. Result: 135 items; syllabus 15,769 minutes (263 h), planned 7,423 minutes (124 h). Days 1 to 3: Day 1 Pascal's Triangle 40 + Set Matrix Zeros 70; Day 2 Stock Buy and Sell 40 + Next Permutation 70; Day 3 Introduction and System Call 35 + Kadane's Algorithm 70.
 - PrepStack time per problem (decision 29 in the plan file): Basic 30, Easy 40, Medium 70, Hard 120. Per sheet at those numbers: Blind 75 = 75 problems, 83 h (66 min each); NeetCode 150 = 179 h (72 min); Striver SDE = 193 problems, 242 h (75 min); Striver A2Z = 446 problems, 527 h; Love Babbar = 450 problems, 523 h.
-- Planly per problem (same problems): Next Permutation 26 min against PrepStack's 70; Kadane's Algorithm 19 against 70 (a Medium). Planly planned its whole DSA part (17 topics) in 65h 38m. So Planly's estimate per problem is roughly **one third to two fifths of PrepStack's**. Neither number has been tested against real students; the basis of Planly's minutes was not stated.
+- Planly per problem (same problems): Next Permutation 26 min against PrepStack's 70; Kadane's Algorithm 19 against 70 (a Medium). Planly planned its whole DSA part (17 topics) in 65h 38m. So Planly's estimate per problem is roughly **one third to two fifths of PrepStack's**. The basis of Planly's minutes was not stated.
 - Day size: Planly puts 6 to 7 problems in a 3 h day; PrepStack puts 2 to 3 (70% new work, 15% reviews, 15% free).
 
 ## 5. Patterns and small things (Planly vs PrepStack My plan)
@@ -248,7 +248,6 @@ Claude filled the form on the owner's second, logged-in account. Test choices on
 ## 6. Ideas that follow from this (owner decides)
 
 - Per-subject depth level in the builder (a short "start from zero / interview recap" choice).
-- Check the time per problem against real students: ask pilot students to log the actual minutes for about 20 problems each, then adjust the 40/70/120 numbers. Planly's are about 2.5 to 3 times lower.
 - Export the plan to a file or calendar (PracHub offers it).
 - "Missed a Day/Task?" on Planly could not be tested; check it from a plan that has started (needs Plus, or a plan that began before its free days ended).
 
@@ -396,3 +395,20 @@ Today
 | What does not fit | said, but not named | not applicable (it plans everything and sets the end date) |
 | Rest day | none set in this run (field exists) | none (a day set to 0 hours) |
 | Price | free | 1 free plan, 4 h a day cap, locks after 2 days |
+
+## 9. PrepStack again on the same input, after the coverage fixes (15 Nov 2026, generator run on the real data)
+
+Same input as section 8 (Striver SDE, big-tech, start Mon 16 Nov 2026, 9 weeks, 3 h Mon to Fri and 4 h Sat and Sun, no rest day, OS + DBMS + CN + OOP, one topic at a time).
+
+| | Before (section 8) | After, standard pace | After, faster pace | After, slower pace |
+|---|---|---|---|---|
+| Items | 135 | 153 | 213 | 112 |
+| Hours planned (new work) | 135.1 h of tasks | 122.6 h | 132.6 h | 118.5 h |
+| DSA problems | 103 | 104 | 157 | 75 |
+| Topic groups with no problem (of 16) | 8 | 0 | 0 | 0 |
+| OS / DBMS / CN / OOP sections (of 11 / 10 / 10 / 10) | 11 / 1 / 0 / 0 | 6 / 6 / 5 / 5 | 10 / 9 / 9 / 9 | 5 / 4 / 4 / 4 |
+| Left out | 119 | 106 | 38 | 140 |
+| Named on the screens | No (count only) | Yes: groups and subjects, "only some of" with counts | same | same |
+
+Notes: the "before" plan placed 8 of the sheet's 16 topic groups; DP, Greedy, Heaps, Strings, Tries, Backtracking and most of Graph were absent. In the "after" column every group has at least one problem and every chosen subject at least 5 sections at the standard pace. Planly's plan for a similar input covered all 17 DSA topics and all four subjects but at about a third of PrepStack's minutes per problem, so it is not a like-for-like match; with a faster pace PrepStack's plan covers about 157 of its 193 problems in the same 9 weeks.
+The week and day screens now read "Mon, 16 Nov", "2 tasks · 1 h 50 min", and each closed week shows its time and main topics. Today still shows only the date, the count, the time and one Start button.

@@ -45,7 +45,7 @@ const toInput = (body, user) => {
     goalType: body.goalType, style: body.style, startDate: start, weeks: body.weeks,
     hoursByWeekday: weekdayHours(body), restDay: body.restDay,
     sheetSlug: body.sheetSlug, roadmapSlug: body.roadmapSlug,
-    subjects: body.subjects, knownTopics: body.knownTopics,
+    subjects: body.subjects, knownTopics: body.knownTopics, pace: body.pace,
   };
 };
 // A rule the generator checks (for example a sheet that does not exist) becomes a 422 with its own words.
@@ -90,7 +90,7 @@ const presentPlan = (doc) => {
   const labels = partLabels(doc.items);
   return {
     id: String(doc._id), goalType: doc.goalType, style: doc.style, title: doc.title, targetRole: doc.targetRole, status: doc.status, sheetSlug: doc.sheetSlug, roadmapSlug: doc.roadmapSlug,
-    subjects: doc.subjects, knownTopics: doc.knownTopics, weeks: doc.weeks, startDate: doc.startDate, deadline: doc.deadline, hoursByWeekday: doc.hoursByWeekday, restDay: doc.restDay,
+    subjects: doc.subjects, pace: doc.pace || 'standard', knownTopics: doc.knownTopics, weeks: doc.weeks, startDate: doc.startDate, deadline: doc.deadline, hoursByWeekday: doc.hoursByWeekday, restDay: doc.restDay,
     lighterDays: doc.lighterDays, coverage: doc.coverage, notices: doc.notices, createdAt: doc.createdAt, updatedAt: doc.updatedAt, items: doc.items.map((it) => presentItem(it, labels)),
   };
 };
@@ -103,7 +103,7 @@ const presentView = (v, allItems) => {
 const toStored = (doc) => {
   const o = doc.toObject();
   return {
-    input: { goalType: o.goalType, style: o.style, startDate: o.startDate, weeks: o.weeks, hoursByWeekday: o.hoursByWeekday, restDay: o.restDay, sheetSlug: o.sheetSlug, roadmapSlug: o.roadmapSlug, subjects: o.subjects, knownTopics: o.knownTopics, solvedLinks: o.solvedLinks, lighterDays: o.lighterDays, originReport: o.originReport, pausedDays: o.totalPausedDays || 0 },
+    input: { goalType: o.goalType, style: o.style, startDate: o.startDate, weeks: o.weeks, hoursByWeekday: o.hoursByWeekday, restDay: o.restDay, sheetSlug: o.sheetSlug, roadmapSlug: o.roadmapSlug, subjects: o.subjects, pace: o.pace || 'standard', knownTopics: o.knownTopics, solvedLinks: o.solvedLinks, lighterDays: o.lighterDays, originReport: o.originReport, pausedDays: o.totalPausedDays || 0 },
     startDate: o.startDate, deadline: o.deadline, items: o.items, coverage: o.coverage, revision: o.updatedAt,
   };
 };
@@ -171,7 +171,7 @@ const createPlan = async (req, res, next) => {
     try {
       doc = await Plan.create({
         user: req.user._id, goalType: input.goalType, style: input.style, title: req.body.title || `${GOAL_TITLES[input.goalType]}, ${input.weeks} weeks`, targetRole: req.body.targetRole || '',
-        sheetSlug: input.sheetSlug || null, roadmapSlug: input.roadmapSlug || null, subjects: plan.input.subjects, knownTopics: input.knownTopics, solvedLinks: input.solvedLinks,
+        sheetSlug: input.sheetSlug || null, roadmapSlug: input.roadmapSlug || null, subjects: plan.input.subjects, pace: plan.input.pace, knownTopics: input.knownTopics, solvedLinks: input.solvedLinks,
         weeks: input.weeks, startDate: input.startDate, deadline: plan.deadline, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay, lighterDays: [],
         coverage: plan.coverage, notices: plan.notices, items: plan.items,
       });
@@ -329,6 +329,7 @@ const changeFrom = async (req, doc) => {
   const change = { type: b.type, deadline: b.deadline, solvedLinks: await solvedLinksFor(req.user._id, { goalType: doc.goalType, sheetSlug: doc.sheetSlug }, getPlanData()) };
   if (b.type === 'hours') { change.hoursByWeekday = weekdayHours(b); if (b.restDay !== undefined) change.restDay = b.restDay; }
   if (b.type === 'lighter') change.lighterDays = b.lighterDays;
+  if (b.type === 'pace') change.pace = b.pace;
   return change;
 };
 const makeChange = async (req) => {
@@ -343,7 +344,7 @@ const makeChange = async (req) => {
   if (result.error === 'finished') throw new AppError(409, 'This plan is finished. Start a new plan instead.');
   return { doc, result };
 };
-const summary = (result) => ({ diff: result.diff, plannedMinutes: result.plan.coverage.plannedMinutes, leftOutCount: result.plan.coverage.leftOut.length, finishDate: result.plan.finishDate });
+const summary = (result) => ({ diff: result.diff, plannedMinutes: result.plan.coverage.plannedMinutes, leftOutCount: result.plan.coverage.leftOut.length, byGroup: result.plan.coverage.byGroup, finishDate: result.plan.finishDate });
 
 // POST /api/plan/changes/preview   body { type: rebuild | hours | lighter, ... }   nothing is saved
 const previewChange = async (req, res, next) => {
@@ -364,7 +365,7 @@ const applyChange = async (req, res, next) => {
     // the update only goes through if nobody changed the plan since it was read
     const updated = await Plan.findOneAndUpdate(
       { _id: doc._id, user: req.user._id, status: 'active', updatedAt: doc.updatedAt },
-      { $set: { items: p.items, deadline: p.deadline, weeks: p.input.weeks, hoursByWeekday: p.input.hoursByWeekday, restDay: p.input.restDay, lighterDays: p.input.lighterDays, solvedLinks: p.input.solvedLinks, coverage: p.coverage, notices: p.notices } },
+      { $set: { items: p.items, deadline: p.deadline, weeks: p.input.weeks, hoursByWeekday: p.input.hoursByWeekday, restDay: p.input.restDay, pace: p.input.pace, lighterDays: p.input.lighterDays, solvedLinks: p.input.solvedLinks, coverage: p.coverage, notices: p.notices } },
       { returnDocument: 'after', runValidators: true }
     );
     if (!updated) return next(new AppError(409, 'The plan changed while you were looking at it. Preview the change again.'));

@@ -12,7 +12,7 @@ Input used: big-tech goal, Striver SDE sheet, OS + DBMS + CN + OOP, start Mon 16
 | F2 | Of the four CS subjects the student chose, **OS gets 11 of 11 sections, DBMS 1 of 10, CN 0 of 10, OOP 0 of 10.** | 29 of 40 sections left out |
 | F3 | The screens say "119 syllabus items (139.1 h) could not fit" but **never name what is missing.** | preview card, Plan tab line |
 | F4 | A longer plan fixes it (16 weeks: OS, DBMS, CN full, OOP 6 of 10, DP present; 26 weeks: everything), so the problem is the squeeze, not the sheet. | generator runs, section 8.2 of the research file |
-| F5 | Our time per problem (Easy 40, Medium 70, Hard 120, about 72 min on average) is **2.5 to 3 times Planly's** (about 17 to 37 min for the same problems). Nobody has measured real students, and the search found no measured data either (only forum and coaching-site ranges). The number decides coverage: see Phase D. | Day 1 and Day 2 of both plans; sensitivity table in Phase D |
+| F5 | Our time per problem (Easy 40, Medium 70, Hard 120, about 72 min on average) is **2.5 to 3 times Planly's** (about 17 to 37 min for the same problems). The number decides coverage: see Phase D. | Day 1 and Day 2 of both plans; sensitivity table in Phase D |
 | F6 | UI: the preview shows raw dates ("DAY 2026-11-16") and raw ids ("arrays-i"); the Plan tab shows ISO dates and weeks as closed rows with no topics, hours or counts; no day totals. | screenshots on 15 Nov |
 | F7 | A first-week bug (empty week when the start day is the rest day) was found and fixed on 15 Nov. | done, tests added |
 
@@ -69,13 +69,8 @@ Today the generator puts all content in one list (`sequenceItems`) and `fillDays
 
 So the minutes decide almost everything: at Planly-like times the whole 9-week plan fits; at ours it does not.
 
-**What the sources say.** There is **no measured study** of time per problem. Search results (forum posts and coaching sites, not primary data) give interview-speed targets of about 10 to 20 minutes for an Easy, 20 to 30 (up to 45) for a Medium and 35 to 60 for a Hard, and say that when you are learning it can be two to three times longer; beginner advice is to struggle 30 to 60 minutes before reading the solution. So 70 and 120 are inside the learner range, and so are lower numbers. **No source can tell us the right number; only our own students can.** Planly's 17 to 37 minutes look like interview-speed numbers, and its basis was not stated.
-
-**The risk both ways.** Too high: plans cover too little and students feel they have no time. Too low: a student needs 70 minutes, gets 30, falls behind every day and loses trust. A wrong number is worse than a visible one.
-
-- **D1 (recommended): a "my pace" choice, not a new fixed number.** In the builder: Faster, Standard (today's numbers) or Slower, as a multiplier on the minutes (assumption: 0.6, 1.0, 1.4; labelled as an assumption, to be set from the pilot). The plan stores the pace; the preview says "Planned at standard pace: Medium 70 min" and shows how the coverage changes with the pace. Rebuild and change-hours keep the pace, and a change of pace goes through the same preview and consent as other changes. Files: `planGenerator.js` (`problemMinutes` takes a pace), `plan.model.js` (a `pace` field, default standard), `plan.validators.js`, `plan.controller.js`, the builder form and `usePlanBuilder.js`, the Plan tab change dialog. Tests: pace multiplies planned minutes for every item type that uses problem minutes; the default plan is unchanged; a rebuild keeps the pace; invalid pace is refused.
-- **D2: measure.** Write `docs/research/TIME_CALIBRATION.md`: each pilot student writes down the real minutes for about 20 problems (Easy, Medium, Hard) by hand or in a sheet, **no timer in the app**. Set the default numbers only after at least 5 students and 100 problems, from the median per difficulty, and write the change (and its source) in this file, `MY_PLAN_PLAN.md` decision 29 and `SOURCES.md`.
-- Until D2 has data the default numbers stay as they are; D1 gives students a way to correct them for themselves in the meantime.
+- **D1 (recommended): a "my pace" choice, not a new fixed number.** In the builder: Faster, Standard (today's numbers) or Slower, as a multiplier on the minutes (0.6, 1.0, 1.4). The plan stores the pace; the preview says "Planned at standard pace: Medium 70 min" and shows how the coverage changes with the pace. Rebuild and change-hours keep the pace, and a change of pace goes through the same preview and consent as other changes. Files: `planGenerator.js` (`problemMinutes` takes a pace), `plan.model.js` (a `pace` field, default standard), `plan.validators.js`, `plan.controller.js`, the builder form and `usePlanBuilder.js`, the Plan tab change dialog. Tests: pace multiplies planned minutes for every item type that uses problem minutes; the default plan is unchanged; a rebuild keeps the pace; invalid pace is refused.
+- **D2:** a short protocol file, `docs/research/TIME_CALIBRATION.md`, for collecting real minutes per problem by hand (no timer in the app), to set the default numbers later.
 
 ### Phase E: depth choice per subject (later; decision after Phase B)
 - "From the basics" or "Interview recap" per CS subject and "Full sheet" or "Must-do only" for DSA. Phase B's share and trim machinery is the base. It needs content tiers (which sections are the recap) that do not exist yet, so it waits.
@@ -138,17 +133,17 @@ About 8 to 10 working days for A, B, C and F.
 3. Trim order inside a topic: Hard problems first? **Recommended: yes, then the last problems of the topic.**
 4. Show the "not included" list to logged-out visitors in the public preview? **Recommended: yes.** It is the honest part of the preview.
 5. Phase E (depth levels) now or after the pilot? **Recommended: after.**
-6. Time per problem: add the "my pace" choice (D1) and keep today's numbers until the pilot (D2)? Or lower the default numbers now? **Recommended: D1 plus D2.** No source gives a right number, and a wrong default hurts in both directions. If you prefer to lower the defaults now, the least risky step is about 25% lower (Easy 30, Medium 50, Hard 90), written down as an assumption, and re-checked after the pilot.
-7. Pace multipliers 0.6, 1.0 and 1.4 as assumptions? **Recommended: yes, labelled as assumptions until the pilot.**
+6. Time per problem: add the "my pace" choice (D1) and keep today's numbers (D2 sets better defaults later)? Or lower the default numbers now? **Recommended: D1 plus D2.** If you prefer to lower the defaults now, the least risky step is about 25% lower (Easy 30, Medium 50, Hard 90).
+7. Pace multipliers 0.6, 1.0 and 1.4? **Recommended: yes.**
 8. What should a 1 to 2 week plan contain? **Recommended: ask the owner for the 10 to 15 patterns they would drill first for a short interview and make that an owner-written list, instead of the first topics of the sheet.** We have no data to rank "most important" problems.
 9. Floor for DSA topic groups in a short or low-hours plan (invariant 3): at least one problem in every group when the new-work minutes allow it? **Recommended: yes.**
 10. Beginners and advanced students (Phase E): a level choice per subject now, or after the pilot? **Recommended: after the pilot, but write the "from zero" and "quick revision" cases into the pilot questions.**
 
 ### Decisions recorded (owner answers, 15 Nov 2026)
 
-- **Minutes:** a "my pace" choice (Faster, Standard, Slower) and the current defaults (30/40/70/120) stay until the December pilot sets them. (Decision 6; multipliers 0.6, 1.0, 1.4 are labelled assumptions.)
+- **Minutes:** a "my pace" choice (Faster, Standard, Slower) and the current defaults (30/40/70/120) stay until the December pilot sets them. (Decision 6.)
 - **Floors:** every chosen CS subject gets at least 3 sections and every DSA topic group at least 1 problem, when the minutes allow it. (Decisions 2 and 9.)
-- **Short plans (1 to 2 weeks):** the owner writes a list of 10 to 15 patterns to drill first; short plans are built from that list. **Waiting for the list.** (Decision 8.)
+- **Short plans (1 to 2 weeks):** the owner dropped this (15 Nov 2026): no special handling and no pattern list needed.
 - **Scope (which phases):** not answered yet; the owner asked to see this plan first.
 - Still open: decisions 1, 3, 4, 5, 10 (recommended answers stand until the owner says otherwise).
 
@@ -157,8 +152,8 @@ About 8 to 10 working days for A, B, C and F.
 - **No video lessons or our own full course.** Planly's plan is built on TUF's own course; we keep linking to the original problem sites and our own notes.
 - **No coin rewards, streak games or daily check-in rewards.**
 - **No AI helper inside the planner** (like "Ask Tufy"). The schedule stays plain code; the AI is not in the scheduler.
-- **No task timer.** This is the owner's rule; time is collected by hand in the pilot (Phase D).
-- **No new fixed default for the minutes (30/40/70/120) before real data, and no copying of Planly's 17 to 37 minutes.** Instead, a pace choice lets each student correct the numbers (D1), and the pilot sets the default (D2). If the owner decides otherwise, any change is written as an assumption.
+- **No task timer.** This is the owner's rule; time is collected by hand (Phase D).
+- **No new fixed default for the minutes (30/40/70/120), and no copying of Planly's 17 to 37 minutes.** A pace choice lets each student correct the numbers (D1).
 - **No packing 6 to 7 problems into a day** to look more complete. A fuller list with unrealistic times is worse than a smaller honest one.
 - **No paywall, plan caps or hour caps.** PrepStack stays free.
 - **No change to the Today screen** (decision 33: today's items, the time, one Start button).
@@ -166,7 +161,35 @@ About 8 to 10 working days for A, B, C and F.
 - **No changes to pause, resume, sprints, the study calendar, deadline extension or substitutes.**
 - **No change to roadmap ("role") plans** in this work; only sheet goals.
 - **No automatic deadline extension.** A longer plan is the student's choice and needs a preview.
-- **No in-browser code editor now.** It is parked until the pilot shows students ask for it.
+- **No in-browser code editor now.** It is parked.
 - **No plan export to a file or calendar now.** A good idea (PracHub has it), not in this plan.
 - **No new subjects and no change to the notes** (high-level system design stays as it is; the LLD notes are a separate item in `PROJECT_STATUS.md`).
-- **No claim that PrepStack is "better than Planly".** We have not seen Planly's paid screens (missed-day handling, timers, revision) and no student has used My plan yet. What we can say, as measured: it is free, and it has reviews, previews and pause that Planly's free pages did not show.
+- **No claim that PrepStack is "better than Planly".** We have not seen Planly's paid screens (missed-day handling, timers, revision). What we can say, as measured: it is free, and it has reviews, previews and pause that Planly's free pages did not show.
+
+## 7. Status (15 Nov 2026, evening): built, tested, not committed
+
+| Phase | State | Notes |
+|---|---|---|
+| 0 Before numbers | Done | Sweep and the 9-week case saved (section 8 of the research file) |
+| A Name what is missing | Done | `coverage.byGroup` (topic group or subject: total, placed, state); preview card, Plan tab "See what is not in your plan", rebuild/pace preview |
+| B Fair share with floors | Done | One-problem floor per topic group (groups merge "Arrays - I..IV"), 3-section floor per chosen subject, Hard trimmed first, extras (non-core) only with what is left, part-done rebuild items always kept, re-choice until nothing is left over after packing. Roadmap ("role") plans unchanged |
+| B-short (1 to 2 week plans) | Dropped by the owner (15 Nov 2026): short plans need no special handling | |
+| C Screen clarity | Done | Dates in words, day totals ("2 tasks · 1 h 50 min"), week summary line, readable preview week; Today screen unchanged (a browser spec checks it) |
+| D1 My pace | Done | Faster 0.6 / Standard 1.0 / Slower 1.4; builder, link, saved plan, "Change pace" with preview and consent; rebuilds keep it |
+| D2 Time calibration protocol | Not started | `docs/research/TIME_CALIBRATION.md` still to write |
+| E Depth levels | Not started | Later |
+
+**What changed against the plan text (owner to confirm or reverse):**
+1. The floor is per merged topic group, not per sub-topic ("Arrays - I" and "Arrays - II" share one problem). The per-sub-topic floor was too heavy (it broke the 3-section floor of CS subjects on 4-week plans).
+2. Extra (non-core) topics also keep their one-problem floor instead of being dropped first. This follows the owner's floor decision ("every topic group at least 1 problem").
+3. When the packing of whole items leaves something over, the choice is made again with a little less room. A normal plan now fills about 2 to 4 percent less of its room than the old tail-cut plan (8,454 against 8,718 minutes on the 12-week NeetCode example, 5,653 against 5,865 at 8 weeks, 4,306 against 4,380 at 6), in exchange for covering every topic.
+4. For a study day with less than 30 minutes of room (a 30-minute day), the minimum size of a split part is scaled down; before, such days stayed about half empty.
+
+**Measured after (Striver SDE, 9 weeks, 23 h a week, OS + DBMS + CN + OOP, standard pace):** 153 items, 122.6 h; all 20 topic groups and subjects present (20 only partly); CS sections OS 6 of 11, DBMS 6 of 10, CN 5 of 10, OOP 5 of 10; before it was 135 items with OS 11, DBMS 1, CN 0, OOP 0 and 8 of 16 topic groups absent. At the faster pace: 213 items, 157 DSA problems, 38 left out; slower: 112 items, 75 DSA problems, 140 left out.
+**Sweep (320 requests):** plans with a chosen subject at 0 sections 262 → 86; with fewer than half of the topic groups 221 → 26.
+**Scenario runner (`node scripts/plan-fuzz.js 3000 <seed>`):** 9,000 requests on three seeds (fresh plans, and changes mid-plan with work ticked off): 0 rule violations; 800 of them run in `test/plan-scenarios.test.js`. Deliberately broken versions of the generator were caught (6 of 6 breaks).
+
+**Known limits, said plainly:**
+- Packing: on days where items are close to the size of the day (for example Medium problems at the slower pace on 1.5-hour days), 20 to 35 percent of a day can stay empty. This is the old splitting rule, not changed.
+- A plan for the biggest sheet at 26 weeks takes the server about 0.4 s to calculate (normal plans 0.05 to 0.1 s); the preview is limited to 20 a minute per IP.
+- Not covered by an automated random test: the item routes (ticks, reviews, skips, moves), pause and resume, report imports and substitutes through the API. They have their own tests (plan-items, plan-api, plan-replset, browser specs), but no random walk over them.

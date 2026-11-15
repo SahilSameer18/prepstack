@@ -260,7 +260,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
         />
       )}
 
-      {dialog && ["hours", "lighter", "rebuild"].includes(dialog.type) && (
+      {dialog && ["hours", "lighter", "rebuild", "pace"].includes(dialog.type) && (
         <StudyChangeDialog
           type={dialog.type}
           plan={plan}

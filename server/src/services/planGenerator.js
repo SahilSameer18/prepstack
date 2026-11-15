@@ -11,6 +11,13 @@ const { problemIdentity } = require('../utils/problemIdentity');
 
 const MINUTES_BY_DIFFICULTY = { Basic: 30, Easy: 40, Medium: 70, Hard: 120 }; // solve and check the solution (decision 29)
 const FALLBACK_DIFFICULTY = 'Medium';
+// "My pace": a multiplier on the minutes of a DSA problem. (docs/plans/MY_PLAN_COVERAGE_PLAN.md, phase D).
+const PACES = { faster: 0.6, standard: 1, slower: 1.4 };
+const DEFAULT_PACE = 'standard';
+// Floors when time is short (owner decision, 15 Nov 2026): a chosen CS subject keeps at least 3 sections and a DSA topic group at least 1 problem.
+const FLOOR_SECTIONS = 3;
+const FLOOR_PROBLEMS = 1;
+const SUBJECT_LABELS = { os: 'Operating Systems', dbms: 'DBMS', cn: 'Computer Networks', oops: 'OOP in Java', hld: 'System Design', lld: 'Low-level design' };
 const NOTES_READING_FACTOR = 3; // a notes section = 3 times its reading time ...
 const NOTES_QUIZ_MINUTES = 5; // ... plus the 5-question quiz (decisions 6 and 29)
 const ROADMAP_PROJECT_MINUTES = 120; // a roadmap step's project brief (decision 39: a roadmap ref counts 120)
@@ -98,13 +105,14 @@ const validateInput = (input, data) => {
     else if (i.goalType === 'bigtech' && !BIGTECH_SHEETS.includes(i.sheetSlug)) errors.push(`the big-tech goal uses ${BIGTECH_SHEETS.join(' or ')}`);
   }
   if (i.goalType === 'role' && !data.roadmapCatalog.find((r) => r.slug === i.roadmapSlug)) errors.push('roadmapSlug must name one of the roadmaps');
+  if (i.pace !== undefined && !Object.hasOwn(PACES, i.pace)) errors.push(`pace must be one of ${Object.keys(PACES).join(', ')}`);
   if (i.lighterDays !== undefined) errors.push(...lighterDaysErrors(i.lighterDays));
   if (i.subjects !== undefined && !(Array.isArray(i.subjects) && i.subjects.every((s) => data.notes[s]))) errors.push('subjects must be a list of notes subjects');
   return errors;
 };
 
 // ---------- content: items with their minutes (decision 29) ----------
-const problemMinutes = (difficulty) => MINUTES_BY_DIFFICULTY[difficulty] ?? MINUTES_BY_DIFFICULTY[FALLBACK_DIFFICULTY];
+const problemMinutes = (difficulty, pace = DEFAULT_PACE) => Math.round((MINUTES_BY_DIFFICULTY[difficulty] ?? MINUTES_BY_DIFFICULTY[FALLBACK_DIFFICULTY]) * PACES[pace]);
 const notesMinutes = (readMinutes) => NOTES_READING_FACTOR * readMinutes + NOTES_QUIZ_MINUTES;
 const orderedSubjects = (subjects, data) => DEFAULT_SUBJECTS.filter((s) => subjects.includes(s) && data.notes[s]).concat(subjects.filter((s) => !DEFAULT_SUBJECTS.includes(s) && data.notes[s]));
 
@@ -113,14 +121,14 @@ const notesUnit = (subject, section) => ({
   items: [{ type: 'notes', ref: `notes:${subject}:${section.id}`, title: section.title, plannedMinutes: notesMinutes(section.readMinutes), core: true, subject }],
 });
 
-const dsaItem = (sheetSlug, topic, problem, core) => ({
+const dsaItem = (sheetSlug, topic, problem, core, pace) => ({
   type: 'dsa', ref: `dsa:${sheetSlug}:${topic.id}`, link: problem.link, title: problem.title, difficulty: problem.difficulty || FALLBACK_DIFFICULTY,
-  plannedMinutes: problemMinutes(problem.difficulty), core, sheet: sheetSlug, topicId: topic.id, topicTitle: String(topic.title).trim(),
+  plannedMinutes: problemMinutes(problem.difficulty, pace), core, sheet: sheetSlug, topicId: topic.id, topicTitle: String(topic.title).trim(),
 });
 
 // The topics of a sheet in dependency order (the step of our DSA roadmap, then the sheet's own order), as units of items.
 // Solved problems and "already know" topics are not scheduled; a problem listed in two topics is scheduled once (decision 32).
-const dsaUnits = (sheetSlug, data, solved, known, seenLinks) => {
+const dsaUnits = (sheetSlug, data, solved, known, seenLinks, pace) => {
   const catalog = data.planCatalog.sheets[sheetSlug];
   const topics = data.sheets[sheetSlug].topics.map((t, index) => ({ t, index, entry: catalog[t.id] }));
   const missing = topics.filter((x) => !x.entry).map((x) => x.t.id);
@@ -135,7 +143,7 @@ const dsaUnits = (sheetSlug, data, solved, known, seenLinks) => {
       if (seenLinks.has(problemIdentity(p.link))) continue;
       seenLinks.add(problemIdentity(p.link));
       if (solved.has(problemIdentity(p.link))) { alreadySolved += 1; continue; }
-      items.push(dsaItem(sheetSlug, t, p, entry.core));
+      items.push(dsaItem(sheetSlug, t, p, entry.core, pace));
     }
     if (known.has(t.id)) { if (items.length) knownTopics.push({ topicId: t.id, title: String(t.title).trim(), problems: items.length }); continue; }
     if (items.length) units.push({ unitId: `topic:${sheetSlug}:${t.id}`, core: entry.core, items });
@@ -144,7 +152,7 @@ const dsaUnits = (sheetSlug, data, solved, known, seenLinks) => {
 };
 
 // Steps of a roadmap in order: the step's learning time (the middle of its range), its practice (notes and sheet topics), then its project.
-const roadmapUnits = (input, data, solved, known, seenLinks) => {
+const roadmapUnits = (input, data, solved, known, seenLinks, pace) => {
   const road = data.roadmapCatalog.find((r) => r.slug === input.roadmapSlug);
   const units = [];
   let alreadySolved = 0;
@@ -166,7 +174,7 @@ const roadmapUnits = (input, data, solved, known, seenLinks) => {
           if (seenLinks.has(problemIdentity(prob.link))) continue;
           seenLinks.add(problemIdentity(prob.link));
           if (solved.has(problemIdentity(prob.link))) { alreadySolved += 1; continue; }
-          items.push(dsaItem(sheetSlug, topic, prob, true));
+          items.push(dsaItem(sheetSlug, topic, prob, true, pace));
         }
       }
     }
@@ -244,10 +252,11 @@ const datedItems = (input, days, start, deadline, data, mockDays, context) => {
 };
 
 // ---------- filling the days (decisions 30 and 37) ----------
-const fillDays = (sequence, days, reserved, context) => {
+// The minutes of new work each day can take (decision 37), after dated items, kept items and an overdue review backlog.
+const dayCaps = (days, reserved, context) => {
   let backlog = context.backlogMinutes || 0; // overdue review minutes: while they are more than one day's review room, no new item is added
   const keptMinutes = context.keptMinutes || new Map(); // minutes already taken on a day by items a rebuild keeps (done, locked, added by the student)
-  const caps = days.map((d) => {
+  return days.map((d) => {
     const dated = (reserved.get(d.n) || []).reduce((s, it) => s + it.plannedMinutes, 0);
     const kept = keptMinutes.get(d.n) || 0;
     const reviewRoom = d.planned - d.fresh;
@@ -255,6 +264,10 @@ const fillDays = (sequence, days, reserved, context) => {
     backlog -= Math.min(backlog, reviewRoom);
     return blocked ? 0 : Math.max(0, Math.min(d.fresh - kept, d.planned - dated - kept));
   });
+};
+
+const fillDays = (sequence, days, reserved, context) => {
+  const caps = dayCaps(days, reserved, context);
   const used = new Array(sequence.length).fill(false);
   const placed = [];
   let head = 0;
@@ -282,7 +295,8 @@ const fillDays = (sequence, days, reserved, context) => {
       const item = sequence[head];
       if (item.plannedMinutes <= left) { place(item, days[di], item.plannedMinutes, null); used[head] = true; left -= item.plannedMinutes; continue; }
       if (item.plannedMinutes > caps[di]) { // longer than a whole day: split it, starting now unless the rest of today is too small to be worth a part
-        if (left < MIN_PART_MINUTES && left < caps[di]) break;
+        const partMin = caps[di] < MIN_SPLIT_LEFT ? Math.max(5, Math.floor(caps[di] / 2)) : MIN_PART_MINUTES; // a day of less than 30 minutes of room scales the minimum down
+        if (left < partMin && left < caps[di]) break;
         used[head] = true; startSplit(item); break;
       }
       // does not fit the rest of the day: a smaller item of the same topic that does, else the next one that does (decision 30)
@@ -297,8 +311,12 @@ const fillDays = (sequence, days, reserved, context) => {
       }
       if (found < 0) found = near;
       if (found >= 0) { place(sequence[found], days[di], sequence[found].plannedMinutes, null); used[found] = true; left -= sequence[found].plannedMinutes; continue; }
-      // nothing fits: split the item over two days when both parts are worth having, so the day is not left half empty
-      if (left >= MIN_SPLIT_LEFT && item.plannedMinutes - left >= MIN_SPLIT_REST) { used[head] = true; startSplit(item); }
+      // nothing fits: split the item over two days when both parts are worth having, so the day is not left half empty.
+      // A day of less than 30 minutes of room (a 30 minute study day) could never meet these minimums, so for such a day they are scaled down.
+      const tiny = caps[di] < MIN_SPLIT_LEFT;
+      const splitLeft = tiny ? Math.max(5, Math.floor(caps[di] / 2)) : MIN_SPLIT_LEFT;
+      const splitRest = tiny ? 3 : MIN_SPLIT_REST;
+      if (left >= splitLeft && item.plannedMinutes - left >= splitRest) { used[head] = true; startSplit(item); }
       break;
     }
   }
@@ -316,6 +334,76 @@ const sumMinutes = (items) => items.reduce((s, it) => s + it.plannedMinutes, 0);
 // The identity of an item whatever its day or part: its ref plus its problem link (or its roadmap step).
 const baseId = (it) => [it.ref, it.link ? problemIdentity(it.link) : it.stepId || ''].join('|');
 
+// ---------- choosing what fits: a fair share for every topic and subject (phase B of docs/plans/MY_PLAN_COVERAGE_PLAN.md) ----------
+// When the content is more than the days can hold, the old rule cut the tail of the list, so whole topics and subjects vanished.
+// Now: every DSA topic group and every chosen CS subject keeps a floor (1 problem, 3 sections); the rest of the time is shared so that each
+// group keeps about the same part of its own content, core topics and subjects first and extra (non-core) topics with what is left.
+// Inside a group Hard problems are trimmed first, then the last ones. The order of the list (dependency order, notes between topics) is never changed.
+// "Arrays - I", "Arrays - II" and so on are one group, as on the screens (the label is the topic title without its Roman numeral)
+const groupKey = (it) => (it.type === 'notes' ? `notes:${it.subject}` : `dsa:${it.sheet}:${String(it.topicTitle || it.unitId).replace(/ - [IVX]+$/, '')}`);
+const selectForCapacity = (sequence, capacity, keep) => {
+  if (sumMinutes(sequence) <= capacity) return { chosen: sequence, dropped: [], trimmed: [], spread: false };
+  const groups = new Map(); // first appearance order = the order of the list
+  for (const it of sequence) { const k = groupKey(it); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(it); }
+  const picked = new Set();
+  let left = capacity;
+  const take = (g, it) => { picked.add(it); left -= it.plannedMinutes; g.got += it.plannedMinutes; };
+  const state = [...groups.entries()].map(([key, items]) => {
+    const notes = items[0].type === 'notes';
+    const floor = notes ? items.slice(0, FLOOR_SECTIONS) : [items.find((it) => it.difficulty !== 'Hard') || items[0]].slice(0, FLOOR_PROBLEMS);
+    const keepOrder = notes ? items : [...items.filter((it) => it.difficulty !== 'Hard'), ...items.filter((it) => it.difficulty === 'Hard')];
+    return { key, notes, core: items.some((it) => it.core), items, floor, keepOrder, total: sumMinutes(items), got: 0, cursor: 0 };
+  });
+  // a part-done item of a rebuild always stays
+  for (const g of state) for (const it of g.items) if (keep.has(baseId(it)) && !picked.has(it)) take(g, it);
+  // floors: core topic groups, then extra topic groups, then the subjects, each in list order; a floor that does not fit is kept as far as it goes
+  const order = [...state.filter((g) => !g.notes && g.core), ...state.filter((g) => !g.notes && !g.core), ...state.filter((g) => g.notes)];
+  for (const g of order) for (const it of g.floor) if (!picked.has(it) && it.plannedMinutes <= left) take(g, it);
+  // the rest: always give the next item to the group that has the smallest part of its own content so far; core groups and subjects first, extras with what is left
+  const share = (pool) => {
+    for (;;) {
+      let best = null;
+      for (const g of pool) {
+        while (g.cursor < g.keepOrder.length && picked.has(g.keepOrder[g.cursor])) g.cursor += 1; // the first item not taken yet
+        let next = null;
+        for (let k = g.cursor; k < g.keepOrder.length; k += 1) { const it = g.keepOrder[k]; if (!picked.has(it) && it.plannedMinutes <= left) { next = it; break; } }
+        if (!next) continue;
+        if (!best || g.got / g.total < best.g.got / best.g.total) best = { g, next };
+      }
+      if (!best) return;
+      take(best.g, best.next);
+    }
+  };
+  share(state.filter((g) => g.core));
+  share(state.filter((g) => !g.core));
+  const rest = sequence.filter((it) => !picked.has(it));
+  return { chosen: sequence.filter((it) => picked.has(it)), dropped: rest.filter((it) => !it.core), trimmed: rest.filter((it) => it.core), spread: true };
+};
+
+// The coverage of every DSA topic group and chosen subject: what was asked for, what the plan holds. "Arrays - I" and "Arrays - II" count as one group.
+const groupLabel = (it) => (it.type === 'notes' ? SUBJECT_LABELS[it.subject] || it.subject : String(it.topicTitle || '').replace(/ - [IVX]+$/, ''));
+const coverageByGroup = (content, placed) => {
+  const map = new Map();
+  const kind = (it) => (it.type === 'notes' ? 'notes' : 'dsa');
+  for (const it of content) {
+    if (it.type !== 'notes' && it.type !== 'dsa') continue;
+    const key = kind(it) + ':' + groupLabel(it);
+    if (!map.has(key)) map.set(key, { label: groupLabel(it), kind: kind(it), total: 0, placed: 0, minutes: 0, placedMinutes: 0 });
+    const g = map.get(key);
+    g.total += 1; g.minutes += it.plannedMinutes;
+  }
+  const seen = new Set();
+  for (const it of placed) {
+    if (it.type !== 'notes' && it.type !== 'dsa') continue;
+    const id = baseId(it);
+    const g = map.get(kind(it) + ':' + groupLabel(it));
+    if (!g) continue;
+    g.placedMinutes += it.plannedMinutes;
+    if (!seen.has(id)) { seen.add(id); g.placed += 1; }
+  }
+  return [...map.values()].map((g) => ({ ...g, state: g.placed === 0 ? 'none' : g.placed >= g.total ? 'all' : 'part' }));
+};
+
 // ---------- the plan ----------
 const generatePlan = (input, data, context = {}) => {
   const errors = validateInput(input, data);
@@ -326,13 +414,14 @@ const generatePlan = (input, data, context = {}) => {
   const seenLinks = new Set();
   const subjects = orderedSubjects(input.subjects || (input.goalType === 'role' ? [] : DEFAULT_SUBJECTS), data);
   const { days, start, deadline } = buildDays(input, context);
+  const pace = input.pace || DEFAULT_PACE;
   const origin = context.weekOrigin ? dayNumber(context.weekOrigin) : start; // week numbers (for the mock blocks) count from the plan's own first day
 
   let units, alreadySolved = 0, knownTopics = [];
   if (input.goalType === 'role') {
-    ({ units, alreadySolved, knownTopics } = roadmapUnits(input, data, solved, known, seenLinks));
+    ({ units, alreadySolved, knownTopics } = roadmapUnits(input, data, solved, known, seenLinks, pace));
   } else {
-    const dsa = dsaUnits(input.sheetSlug, data, solved, known, seenLinks);
+    const dsa = dsaUnits(input.sheetSlug, data, solved, known, seenLinks, pace);
     ({ alreadySolved, knownTopics } = dsa);
     const notes = subjects.flatMap((s) => data.notes[s].map((section) => notesUnit(s, section)));
     units = sequenceItems(dsa.units, notes, input.style);
@@ -344,18 +433,29 @@ const generatePlan = (input, data, context = {}) => {
   const content = allContent.filter((it) => !exclude.has(baseId(it))).map((it) => (remaining.has(baseId(it)) ? { ...it, plannedMinutes: remaining.get(baseId(it)) } : it));
   const syllabusMinutes = sumMinutes(content);
 
-  // find the plan: fit, drop the last "extra" topic while things do not fit, and drop mock blocks that have no unsolved core problem after them
+  // find the plan: choose what fits (a fair share, see selectForCapacity), fill the days, and drop mock blocks that have no unsolved core problem after them.
+  // Packing is never perfect, so when something is left over after filling, the capacity is lowered a little and the choice is made again.
+  // A roadmap ("role") plan keeps the older rule: drop the last "extra" topic while things do not fit.
+  const keep = new Set([...remaining.keys()]);
   let sequence = content.slice();
-  const dropped = [];
+  let dropped = [];
+  let trimmed = [];
+  let spread = false;
+  let shrink = 0;
   let mockDays = new Set(days.filter((d) => d.weekday === SATURDAY).map((d) => d.n));
   let result;
   for (let guard = 0; guard < 2000; guard += 1) {
     const reserved = content.length ? datedItems(input, days, origin, deadline, data, mockDays, context) : new Map(); // mock blocks and questions mean nothing without content
+    if (input.goalType !== 'role') {
+      const capacity = Math.max(0, dayCaps(days, reserved, context).reduce((s, c) => s + c, 0) - shrink);
+      ({ chosen: sequence, dropped, trimmed, spread } = selectForCapacity(content, capacity, keep));
+    }
     result = fillDays(sequence, days, reserved, context);
     result.reserved = reserved;
     const useless = [...mockDays].filter((n) => reserved.has(n) && reserved.get(n).some((it) => it.type === 'mock') && result.placed.filter((p) => p.type === 'dsa' && p.core && dayNumber(p.day) > n).length < 2);
     if (useless.length) { for (const n of useless) mockDays.delete(n); continue; }
     if (result.leftover.length) {
+      if (input.goalType !== 'role') { shrink += Math.max(10, Math.floor(sumMinutes(result.leftover) / 2)); continue; } // lower the capacity a little and choose again
       const extras = [...new Set(sequence.filter((it) => !it.core).map((it) => it.unitId))];
       if (extras.length) {
         const last = extras[extras.length - 1];
@@ -381,7 +481,7 @@ const generatePlan = (input, data, context = {}) => {
   const placedMinutes = sumMinutes(content2);
   const leftOut = [
     ...dropped.map((it) => ({ ref: it.ref, link: it.link || null, title: it.title, plannedMinutes: it.plannedMinutes, core: false, reason: 'extra', topicTitle: it.topicTitle || null })),
-    ...result.leftover.map((it) => ({ ref: it.ref, link: it.link || null, title: it.title, plannedMinutes: it.plannedMinutes, core: it.core, reason: 'no-room', topicTitle: it.topicTitle || null })),
+    ...[...trimmed, ...result.leftover].map((it) => ({ ref: it.ref, link: it.link || null, title: it.title, plannedMinutes: it.plannedMinutes, core: it.core, reason: 'no-room', topicTitle: it.topicTitle || null })),
   ];
   const lastDay = content2.reduce((m, it) => Math.max(m, dayNumber(it.day)), -1);
   const finishDate = lastDay >= 0 ? ymdOf(lastDay) : null;
@@ -389,9 +489,10 @@ const generatePlan = (input, data, context = {}) => {
 
   const notices = ['planned-85'];
   if (dropped.length) notices.push('core-first');
-  if (result.leftover.length) notices.push('core-does-not-fit');
+  if (trimmed.length || result.leftover.length) notices.push('core-does-not-fit');
+  if (spread) notices.push('spread');
   if (!content.length) notices.push('nothing-to-plan');
-  if (!result.leftover.length && earlyDays >= 7) notices.push('early-finish');
+  if (!trimmed.length && !result.leftover.length && earlyDays >= 7) notices.push('early-finish');
 
   // each day sorted shortest first (decision 27), dated items at the end of their day
   const byDay = new Map();
@@ -404,7 +505,7 @@ const generatePlan = (input, data, context = {}) => {
   }
 
   return {
-    input: { lighterDays: input.lighterDays || [], goalType: input.goalType, style: input.style, startDate: input.startDate, weeks: input.weeks, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay ?? null, sheetSlug: input.sheetSlug || null, roadmapSlug: input.roadmapSlug || null, subjects, knownTopics: input.knownTopics || [], solvedLinks: input.solvedLinks || [] },
+    input: { lighterDays: input.lighterDays || [], goalType: input.goalType, style: input.style, startDate: input.startDate, weeks: input.weeks, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay ?? null, sheetSlug: input.sheetSlug || null, roadmapSlug: input.roadmapSlug || null, subjects, knownTopics: input.knownTopics || [], solvedLinks: input.solvedLinks || [], pace },
     startDate: input.startDate,
     deadline: ymdOf(deadline),
     finishDate,
@@ -417,6 +518,7 @@ const generatePlan = (input, data, context = {}) => {
     coverage: {
       syllabusMinutes, plannedMinutes: placedMinutes, extraMinutes: sumMinutes(finalItems) - placedMinutes,
       syllabusItems: content.length, plannedItems: content2.length, alreadySolved, knownTopics, leftOut,
+      byGroup: coverageByGroup(content, finalItems),
     },
     notices,
   };
@@ -459,12 +561,13 @@ const previewPlan = (input, data) => {
     week: 1, from: plan.startDate, to: plan.startDate, items: [], minutes: 0 };
   return {
     startDate: plan.startDate, deadline: plan.deadline, finishDate: plan.finishDate, earlyDays: plan.earlyDays, notices: plan.notices,
-    coverage: { syllabusMinutes: plan.coverage.syllabusMinutes, plannedMinutes: plan.coverage.plannedMinutes, extraMinutes: plan.coverage.extraMinutes, leftOutCount: plan.coverage.leftOut.length, leftOutMinutes: sumMinutes(plan.coverage.leftOut), alreadySolved: plan.coverage.alreadySolved },
+    pace: plan.input.pace,
+    coverage: { syllabusMinutes: plan.coverage.syllabusMinutes, plannedMinutes: plan.coverage.plannedMinutes, extraMinutes: plan.coverage.extraMinutes, leftOutCount: plan.coverage.leftOut.length, leftOutMinutes: sumMinutes(plan.coverage.leftOut), alreadySolved: plan.coverage.alreadySolved, byGroup: plan.coverage.byGroup },
     week1,
   };
 };
 
 module.exports = {
   generatePlan, previewPlan, groupByWeek, onTrack, isComplete, validateInput, lighterDaysErrors, baseId, dayBudget, todayIst, dayNumber, ymdOf, weekdayOf, PlanInputError,
-  MINUTES_BY_DIFFICULTY, MOCK_MINUTES, BEHAVIORAL_MINUTES, GOALS, STYLES, DEFAULT_SUBJECTS, notesMinutes, problemMinutes,
+  MINUTES_BY_DIFFICULTY, PACES, DEFAULT_PACE, FLOOR_SECTIONS, FLOOR_PROBLEMS, MOCK_MINUTES, BEHAVIORAL_MINUTES, GOALS, STYLES, DEFAULT_SUBJECTS, notesMinutes, problemMinutes,
 };

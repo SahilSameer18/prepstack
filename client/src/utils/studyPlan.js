@@ -1,5 +1,8 @@
 import { dateInIndia, planDays } from "./planBuilder";
+import { formatPlanDate, formatPlanMinutes } from "./planFormat";
 import { refLink } from "./reportLinks";
+
+export { formatPlanDate, formatPlanMinutes };
 
 // Completion on a sheet counts here even when the stored plan has no completion timestamp.
 export function isPlanItemDone(item) {
@@ -11,22 +14,6 @@ export function addPlanDays(day, count) {
   const date = new Date(day + "T00:00:00Z");
   date.setUTCDate(date.getUTCDate() + count);
   return date.toISOString().slice(0, 10);
-}
-
-export function formatPlanDate(day) {
-  return new Date(day + "T00:00:00Z").toLocaleDateString("en-IN", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    timeZone: "UTC",
-  });
-}
-
-export function formatPlanMinutes(minutes) {
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-  if (!hours) return rest + " min";
-  return hours + " h" + (rest ? " " + rest + " min" : "");
 }
 
 // Never use a virtual review's missing ID as a mutation target.
@@ -67,7 +54,6 @@ export function studyChecklistDays(items) {
   const days = planDays(items);
   for (const day of days) {
     const original = items.filter((item) => item.day === day.day);
-    day.label = formatPlanDate(day.day);
     day.items = day.items.map((entry, index) => ({
       ...entry,
       id: original[index].id,
@@ -75,6 +61,18 @@ export function studyChecklistDays(items) {
     }));
   }
   return days;
+}
+
+// One line for a week that is still closed: the time and the first topics in it (from the checklist days, whose items carry minutes and a group).
+export function weekSummary(week) {
+  const items = week.days.flatMap((day) => day.items);
+  const total = items.reduce((sum, item) => sum + (item.minutes || 0), 0);
+  const byGroup = new Map();
+  for (const item of items) if (item.group) byGroup.set(item.group, (byGroup.get(item.group) || 0) + (item.minutes || 0));
+  const groups = [...byGroup.entries()].sort((x, y) => y[1] - x[1]).map(([group]) => group); // the topics with the most time first
+  const shown = groups.slice(0, 3).join(", ");
+  const more = groups.length > 3 ? " and " + (groups.length - 3) + " more" : "";
+  return formatPlanMinutes(total) + (shown ? " · " + shown + more : "");
 }
 
 // Calendar weeks start on Monday, matching previews and the server's weekly review.

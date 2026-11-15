@@ -1,5 +1,7 @@
 # PrepStack: status and build order
 
+**Coverage and clarity fixes built, 15 Nov 2026 (not committed):** after comparing My plan with Planly and others, plans that do not fit now give every DSA topic group at least 1 problem and every chosen CS subject at least 3 sections (a fair share instead of cutting the tail), name what is not included, show dates, day totals and week summaries in plain words, and have a "my pace" choice (Faster, Standard, Slower). Server 964, client 134, 15 browser flows, build and lint pass; 9,000 random scenarios found no rule violations. **Still open:** depth levels per subject. Details, deviations from the plan text and known limits: `docs/plans/MY_PLAN_COVERAGE_PLAN.md` section 7; evidence: `docs/research/COMPETITOR_PLANNERS.md`.
+
 **Recovery follow-up complete, 15 Nov 2026:** both owner-approved phases are implemented. Phase 1 adds provider-aware problem identity, deadline extension and equivalent resources/distinct substitutes. Phase 2 adds account timezone/rollover, pause/resume with shifted tasks and reviews, review catch-up, and one paused main plan alongside one active sprint. Today keeps one Start button. Final verification: server 924 / 170 suites, client 122 / 13 files, 11 browser flows, build, lint and SEO pass; three recovery mutations caught and restored. Deployment and human validation remain.
 
 **The one place to see what is done and what is left.** Last updated 15 Nov 2026 (My plan implementation complete through Phase 7). Update this file whenever an item changes state (rule at the bottom). Details live in `IMPROVEMENT_PLAN.md` and `docs/plans/`; this file only tracks status and order. It replaces the old `ORDER.md` (deleted; its text is in git history).
@@ -27,7 +29,7 @@
 | Live database seeding | OS, OOP, and System Design notes (`npm run seed:notes`) and all DSA sheets (`npm run seed:all`) seeded on live database by owner | Live MongoDB instance |
 | Password reset, login lock, account deletion | built | `README.md` |
 | My plan (B5) | Phases 0–7 implemented: builder, daily workspace, dashboard, report imports, reviews and read-only history; Phase 8 real-user validation remains | `docs/plans/MY_PLAN_PLAN.md` |
-| Tests | server 923, client 122, 11 browser flows; build, lint and SEO pass; ownership/consent mutations caught | `TESTING.md` |
+| Tests | server 964, client 134, 15 browser flows; build, lint and SEO pass; ownership/consent mutations caught; 800 plan scenarios in a test, 9,000 run by script with 0 rule violations | `TESTING.md` |
 
 ## Left, in build order
 
@@ -41,7 +43,7 @@
 **Parked (not in the order):** DebugLab (`docs/plans/DEBUGLAB_PLAN.md`), the LeetCode extension (`docs/plans/EXTENSION.md`), Analyzer Part 2 (starts only if students say yes), growth ideas (`docs/research/GROWTH_IDEAS.md`), a college dashboard.
 
 ## Open items (small, no fixed slot)
-- **Proposed, waiting for the owner:** coverage and clarity fixes for My plan after the Planly comparison (name what is missing, spread the squeeze across topics and subjects, screen clarity, a time-calibration protocol for the pilot): `docs/plans/MY_PLAN_COVERAGE_PLAN.md`. Not started; the owner decides whether and in what order.
+- **My plan coverage fixes:** built 15 Nov 2026 (see the top of this file); still to do: depth levels per subject: `docs/plans/MY_PLAN_COVERAGE_PLAN.md`.
 - The three Role Analyzer changes the owner set aside (12 Nov).
 - A browser check of the Behavioral page and of the real notes pages (both need a login).
 - The Cassandra example in System Design was read, not run; the System Design claim table in `docs/content/SOURCES.md` has only the heaviest claims.

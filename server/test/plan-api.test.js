@@ -479,7 +479,7 @@ describe('POST /api/plan/preview (public)', () => {
     const res = await preview(form({ restDay: null }));
     assert.equal(res.status, 200);
     const d = res.body.data;
-    assert.deepEqual(Object.keys(d).sort(), ['coverage', 'deadline', 'earlyDays', 'finishDate', 'notices', 'startDate', 'week1']);
+    assert.deepEqual(Object.keys(d).sort(), ['coverage', 'deadline', 'earlyDays', 'finishDate', 'notices', 'pace', 'startDate', 'week1']);
     assert.ok(d.coverage.syllabusMinutes > 0 && d.coverage.plannedMinutes > 0);
     assert.equal(d.startDate, todayIst());
     assert.equal(d.week1.week, 1);
@@ -758,5 +758,78 @@ describe('changes with a preview', () => {
     const { acct } = await make({ weeks: 1 });
     for (let i = 0; i < 20; i += 1) assert.equal((await changePreview(acct, { type: 'rebuild' })).status, 200, `change ${i + 1}`);
     assert.equal((await changePreview(acct, { type: 'rebuild' })).status, 429);
+  });
+});
+
+describe('my pace (phase D1): the plan keeps it and it can be changed with a preview', () => {
+  const slowerForm = form({ weeks: 6, pace: 'slower' });
+  const firstProblem = (plan) => plan.items.find((i) => i.type === 'dsa' && !i.part);
+  it('a plan made at a slower pace stores it, shows it, and plans longer minutes for the same problem', async () => {
+    const standard = await t.register();
+    const std = (await create(standard, form({ weeks: 6 }))).body.data.plan;
+    assert.equal(std.pace, 'standard', 'no pace means standard');
+    const acct = await t.register();
+    const res = await create(acct, slowerForm);
+    assert.equal(res.status, 201, JSON.stringify(res.body));
+    const plan = res.body.data.plan;
+    assert.equal(plan.pace, 'slower');
+    assert.equal((await Plan.findOne({ user: acct.id }).lean()).pace, 'slower');
+    assert.equal((await getPlan(acct)).body.data.plan.pace, 'slower');
+    const a = firstProblem(std);
+    const b = plan.items.find((i) => i.link === a.link && !i.part);
+    assert.ok(a && b);
+    assert.equal(b.plannedMinutes, Math.round(a.plannedMinutes * 1.4));
+  });
+  it('refuses a pace that does not exist, in the preview, the save and a change', async () => {
+    const acct = await t.register();
+    assert.equal((await preview(form({ pace: 'turbo' }))).status, 422);
+    assert.equal((await create(acct, form({ pace: 'turbo' }))).status, 422);
+    await create(acct, form({ weeks: 6 }));
+    assert.equal((await changePreview(acct, { type: 'pace', pace: 'turbo' })).status, 422);
+    assert.equal((await changePreview(acct, { type: 'pace' })).status, 422, 'a pace change needs a pace');
+    assert.equal((await changePreview(acct, { type: 'rebuild', pace: 'faster' })).status, 422, 'the pace is changed through a pace change only');
+    assert.equal((await changePreview(acct, { type: 'hours', weekdayHours: 2, weekendHours: 2, pace: 'faster' })).status, 422);
+  });
+  it('the public preview reports the pace and the coverage groups', async () => {
+    const res = await preview(form({ weeks: 4, pace: 'faster' }));
+    assert.equal(res.status, 200);
+    assert.equal(res.body.data.pace, 'faster');
+    assert.ok(res.body.data.coverage.byGroup.length > 0 && res.body.data.coverage.byGroup.every((g) => ['dsa', 'notes'].includes(g.kind)));
+  });
+  it('a pace change is previewed, saves nothing until applied, keeps done work, and later changes keep the new pace', async () => {
+    const acct = await t.register();
+    const made = (await create(acct, form({ weeks: 6 }))).body.data.plan;
+    const doneItem = firstProblem(made);
+    assert.equal((await t.api.post(`/api/plan/items/${doneItem.id}/result`, { cookies: acct.cookies, body: { result: 'alone' } })).status, 200);
+    planClock.now = () => new Date(`${addDays(3)}T06:00:00Z`);
+    const before = await Plan.findOne({ user: acct.id }).lean();
+    const pv = await changePreview(acct, { type: 'pace', pace: 'slower' });
+    assert.equal(pv.status, 200, JSON.stringify(pv.body));
+    assert.equal(pv.body.data.diff.checksum.length, 16);
+    assert.deepEqual(await Plan.findOne({ user: acct.id }).lean(), before, 'a preview writes nothing');
+    assert.equal((await changeApply(acct, { type: 'rebuild', checksum: pv.body.data.diff.checksum })).status, 409, 'the checksum belongs to the pace change');
+    const applied = await changeApply(acct, { type: 'pace', pace: 'slower', checksum: pv.body.data.diff.checksum });
+    assert.equal(applied.status, 200, JSON.stringify(applied.body));
+    const doc = await Plan.findOne({ user: acct.id }).lean();
+    assert.equal(doc.pace, 'slower');
+    const kept = doc.items.find((i) => String(i._id) === doneItem.id);
+    assert.ok(kept.doneAt && kept.plannedMinutes === doneItem.plannedMinutes, 'done work stays exactly as it was');
+    const futureProblem = doc.items.find((i) => i.type === 'dsa' && !i.doneAt && !i.part && i.day >= addDays(3));
+    const original = before.items.find((i) => i.link === futureProblem.link && !i.part);
+    if (original) assert.equal(futureProblem.plannedMinutes, Math.round(original.plannedMinutes * 1.4));
+    const hours = await changePreview(acct, { type: 'hours', weekdayHours: 3, weekendHours: 4 });
+    assert.equal(hours.status, 200);
+    assert.equal((await changeApply(acct, { type: 'hours', weekdayHours: 3, weekendHours: 4, checksum: hours.body.data.diff.checksum })).status, 200);
+    assert.equal((await Plan.findOne({ user: acct.id }).lean()).pace, 'slower', 'a change of hours keeps the pace');
+    const rebuild = await changePreview(acct, { type: 'rebuild' });
+    assert.equal((await changeApply(acct, { type: 'rebuild', checksum: rebuild.body.data.diff.checksum })).status, 200);
+    assert.equal((await Plan.findOne({ user: acct.id }).lean()).pace, 'slower', 'a rebuild keeps the pace');
+  });
+  it('another user cannot change the pace of a plan that is not theirs, and a user with no plan gets a clean refusal', async () => {
+    const owner = await t.register();
+    await create(owner, form({ weeks: 6 }));
+    const other = await t.register();
+    assert.equal((await changePreview(other, { type: 'pace', pace: 'faster' })).status, 404);
+    assert.equal((await Plan.findOne({ user: owner.id }).lean()).pace, 'standard');
   });
 });

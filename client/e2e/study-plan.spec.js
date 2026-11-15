@@ -511,3 +511,63 @@ test("expired plans expose no task edits and history errors can be retried", asy
     page.getByRole("button", { name: "Read saved plan" }),
   ).toBeVisible();
 });
+
+test('Coverage: a tight plan names what is not in it, and the pace choice changes the Medium time', async ({ page }) => {
+  await page.goto('/my-plan?goalType=placements&weeks=2&weekdayHours=1&weekendHours=1&restDay=none&style=one-topic&sheetSlug=striver-a2z&subjects=os,dbms,cn');
+  await expect(page.getByText('Planned at a standard pace: a Medium problem takes about 70 min.')).toBeVisible();
+  await expect(page.getByText('Not in your plan:')).toBeVisible();
+  await expect(page.getByText(/Only some of:/)).toBeVisible();
+  // the first week reads in plain words: a weekday and date, and the day's total
+  await expect(page.getByText(/^\w{3}, \d{1,2} \w{3}$/).first()).toBeVisible();
+  await expect(page.getByText(/^\d+ tasks? · /).first()).toBeVisible();
+  await page.getByRole('combobox', { name: 'How fast do you solve problems?' }).click();
+  await page.getByRole('option', { name: /^Slower/ }).click();
+  await expect(page).toHaveURL(/pace=slower/);
+  await expect(page.getByText('Planned at a slower pace: a Medium problem takes about 98 min.')).toBeVisible();
+  await assertFits(page);
+});
+
+test('Coverage and pace on a saved plan: week summaries, the not-included list, and a pace change that needs a preview', async ({ page }) => {
+  const { plan } = await createPlan(page, { weeks: 2, weekdayHours: 1, weekendHours: 1, sheetSlug: 'striver-a2z', subjects: ['os', 'dbms', 'cn'] });
+  expect(plan.pace).toBe('standard');
+  expect(plan.coverage.byGroup.some((group) => group.state === 'none')).toBe(true);
+  await page.goto('/my-plan/study?tab=plan');
+  await expect(page.getByText(/^Pace: Standard \(a Medium problem takes about 70 min\)\.$/)).toBeVisible();
+  await expect(page.getByText(/\d+ syllabus items did not fit\./)).toBeVisible();
+  await page.getByText('See what is not in your plan').click();
+  await expect(page.getByText('Not in your plan:')).toBeVisible();
+  await expect(page.locator('summary', { hasText: /^Week 1/ })).toContainText(/\d+ h|\d+ min/);
+  await page.getByRole('button', { name: 'Change pace' }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('How fast do you solve problems?').selectOption('slower');
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await expect(dialog).toContainText('syllabus items will not fit');
+  await expect(dialog).toContainText('Not in your plan:');
+  expect((await savedPlan(page)).pace).toBe('standard');
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  expect((await savedPlan(page)).pace).toBe('slower');
+  await expect(page.getByText(/^Pace: Slower \(a Medium problem takes about 98 min\)\.$/)).toBeVisible();
+  await assertFits(page);
+});
+
+test('The Today screen stays small after the coverage changes: date, count, time, one Start button', async ({ page }) => {
+  await createPlan(page, { weeks: 2, weekdayHours: 1, weekendHours: 1, sheetSlug: 'striver-a2z', subjects: ['os', 'dbms', 'cn'] });
+  await page.goto('/my-plan/study?tab=today');
+  await expect(page.getByRole('button', { name: 'Start', exact: true })).toHaveCount(1);
+  await expect(page.getByText(/Not in your plan|Only some of|Change pace|Pace:/)).toHaveCount(0);
+});
+
+test('Coverage screens fit a phone: the builder preview, the Plan tab and the pace dialog', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 800 });
+  await page.goto('/my-plan?goalType=placements&weeks=2&weekdayHours=1&weekendHours=1&restDay=none&style=one-topic&sheetSlug=striver-a2z&subjects=os,dbms,cn');
+  await expect(page.getByText('Not in your plan:')).toBeVisible();
+  await assertFits(page);
+  await createPlan(page, { weeks: 2, weekdayHours: 1, weekendHours: 1, sheetSlug: 'striver-a2z', subjects: ['os', 'dbms', 'cn'] });
+  await page.goto('/my-plan/study?tab=plan');
+  await page.getByText('See what is not in your plan').click();
+  await assertFits(page);
+  await page.getByRole('button', { name: 'Change pace' }).click();
+  await assertFits(page);
+  await expect(page.getByRole('dialog')).toBeVisible();
+});

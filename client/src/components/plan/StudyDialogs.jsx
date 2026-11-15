@@ -9,7 +9,8 @@ import {
   starPlanItem,
   updatePlanItem,
 } from "../../api/services/planService";
-import { dateInIndia } from "../../utils/planBuilder";
+import { PACES, dateInIndia, paceMinutes } from "../../utils/planBuilder";
+import PlanCoverage from "./PlanCoverage";
 import { isPlanItemDone } from "../../utils/studyPlan";
 import ProblemSubstitute from './ProblemSubstitute';
 
@@ -31,6 +32,7 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
   );
   const [hours, setHours] = useState(1);
   const [deadline, setDeadline] = useState(plan.deadline);
+  const [pace, setPace] = useState(plan.pace || "standard");
   const [preview, setPreview] = useState(null);
   const [previewing, setPreviewing] = useState(false);
   const [error, setError] = useState("");
@@ -39,7 +41,9 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
       ? "Change study hours"
       : type === "lighter"
         ? "Plan lighter days"
-        : "Rebuild from today";
+        : type === "pace"
+          ? "Change pace"
+          : "Rebuild from today";
 
   async function requestPreview(event, clearLighterDays = false) {
     event.preventDefault();
@@ -48,6 +52,7 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
     const body = { type };
     if (type === 'rebuild') body.deadline = deadline;
     if (type === "hours") Object.assign(body, { weekdayHours, weekendHours });
+    if (type === "pace") body.pace = pace;
     if (type === "lighter")
       body.lighterDays = clearLighterDays
         ? []
@@ -79,6 +84,9 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
             {preview.summary.diff.doneProtected} completed items stay protected.
           </p>
           <p>{preview.summary.leftOutCount} syllabus items will not fit.</p>
+          {preview.summary.leftOutCount > 0 && (
+            <PlanCoverage byGroup={preview.summary.byGroup} />
+          )}
           <button
             type="button"
             disabled={model.busy}
@@ -107,6 +115,26 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
               Deadline (keep it or choose a later date)
               <input className={INPUT} type="date" min={plan.deadline} value={deadline} required onChange={(event) => setDeadline(event.target.value)} />
               <span className="block text-xs text-muted">A later date gives more room; the preview shows what fits. Completed tasks remain saved.</span>
+            </label>
+          )}
+          {type === "pace" && (
+            <label className="block space-y-2 text-sm">
+              How fast do you solve problems?
+              <select
+                className={INPUT}
+                value={pace}
+                onChange={(event) => setPace(event.target.value)}
+              >
+                {Object.entries(PACES).map(([value, entry]) => (
+                  <option key={value} value={value}>
+                    {entry.label}: a Medium problem takes about {paceMinutes(value)} min
+                  </option>
+                ))}
+              </select>
+              <span className="block text-xs text-muted">
+                A slower pace plans fewer problems in the same time; a faster
+                pace plans more. Tasks you already finished do not change.
+              </span>
             </label>
           )}
           {type === "hours" && (

@@ -3,7 +3,7 @@
 Written 14 Nov 2026 by the agent that did the work so far (Claude), for the next agent. Read this file, then `PROJECT_STATUS.md` (what is done and left), then `CLAUDE.md` (the rules). Everything the previous agent knew that matters is in the repository; nothing important lives only in a chat or in an agent's memory.
 
 ## Recovery phases handoff, 15 Nov 2026
-- Both recovery phases are complete. Current checks: server 923 / 170 suites, client 122 / 13 files, 11 browser flows, build/lint/SEO pass. Three mutations caught; see TESTING.md for actual reruns and limits.
+- Both recovery phases are complete. Current checks: server 964, client 134 / 14 files, 15 browser flows, build/lint/SEO pass. Three mutations caught; see TESTING.md for actual reruns and limits.
 - New authenticated routes: POST /api/plan/lifecycle/preview and /apply, plus GET /api/plan/paused/:id (owned read-only snapshot). Lifecycle bodies use type calendar | pause | resume | recover | discard. Calendar takes timeZone (IANA) and dayStartHour (integer 0–6); resume/discard take planId; recover takes recoveryDays (1–28, default 7). Apply also requires the 32-hex preview checksum. Resume extends the deadline by default; the UI uses that default. A fixed deadline requested directly is rejected if shifted work cannot fit. No client-supplied task replacement is accepted.
 - GET /api/plan also returns calendar { timeZone, dayStartHour, today, nextRollover } and pausedPlans summaries. Use calendar.today for controls, not the projected Today task date (which may be tomorrow). useStudyPlan refreshes at nextRollover and visibility return. StudyRecovery lives only in Plan; shared native dialogs provide focus handling. The public builder can send calendar in preview, while private saves always use the fresh account preferences from auth middleware.
 - studyCalendar handles local cutoffs, including skipped/repeated DST hours. Historical completion/streak days use saved metadata; old rows keep their India date. Review timestamps plus old-window boundaries prevent timezone changes from submitting twice. Pause records capture their own calendar; resume shifts task/planned dates and review anchors while preserving actual results. One partial unique index permits one paused plan per user alongside the existing one-active index; ensure indexes are built on deployment. History pruning must continue filtering finished/expired-active only.
@@ -34,7 +34,7 @@ Written 14 Nov 2026 by the agent that did the work so far (Claude), for the next
 ## 1. Where things are
 - **My plan code is complete through Phase 7.** Next is owner deployment and Phase 8 real-user validation; other implementation work follows `PROJECT_STATUS.md`.
 - **Other open work**, in order: seed and deploy (owner), LLD notes (new notes subject; a plan must be written first), student check, stage 6 (quizzes, DSA problems plan, Redis, light theme, public profile, CI). See `PROJECT_STATUS.md`.
-- **Tests now:** server 923, client 122, 11 browser flows, build, lint and SEO passed on 15 Nov 2026.
+- **Tests now:** server 964, client 134, 15 browser flows, build, lint and SEO passed on 15 Nov 2026.
 
 ## 2. Rules that cost the owner time when broken
 - **Git:** never stage, commit or push. Give the `git add` and a one-line `git commit -m "..."` (no trailer, no Co-Authored-By). Never touch `server/.env`. Never use ports 3000 or 5173 for throwaway servers (use 3100 for the server and 5175 for the client; start the client with `VITE_API_URL=http://localhost:3100`).

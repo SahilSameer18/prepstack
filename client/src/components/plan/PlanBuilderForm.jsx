@@ -1,5 +1,5 @@
 import SelectField from "../ui/SelectField";
-import { DEFAULT_SUBJECTS, planTopics } from "../../utils/planBuilder";
+import { DEFAULT_SUBJECTS, PACES, paceMinutes, planTopics } from "../../utils/planBuilder";
 
 const INPUT =
   "w-full min-h-[44px] rounded-xl border border-ink/[0.15] bg-card-hover px-3 py-2.5 text-sm text-fg focus:border-brand";
@@ -23,6 +23,10 @@ const STYLE_CHOICES = [
   { value: "one-topic", label: "One topic at a time" },
   { value: "mixed", label: "Mix topics from the start" },
 ];
+const PACE_CHOICES = Object.entries(PACES).map(([value, pace]) => ({
+  value,
+  label: `${pace.label}: a Medium problem takes about ${paceMinutes(value)} min`,
+}));
 const REST_DAY_CHOICES = [
   { value: "none", label: "No fixed rest day" },
   ...WEEKDAYS.map((label, value) => ({ label, value: String(value) })),
@@ -237,6 +241,19 @@ export default function PlanBuilderForm({
               value={settings.style}
               onValueChange={(value) => onChange({ style: value })}
               options={STYLE_CHOICES}
+            />
+          </Field>
+          <Field
+            name="pace"
+            label="How fast do you solve problems?"
+            error={errors.pace}
+          >
+            <SelectField
+              {...fieldAttributes("pace")}
+              disabled={disabled}
+              value={settings.pace}
+              onValueChange={(value) => onChange({ pace: value })}
+              options={PACE_CHOICES}
             />
           </Field>
         </div>

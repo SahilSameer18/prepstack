@@ -1,6 +1,23 @@
+import { formatPlanDate, formatPlanMinutes } from './planFormat';
 // The address holds settings only. A save request after login needs a separate, one-use tab intent.
 export const PLAN_INTENT_KEY = 'prepstack_plan_intent';
 export const DEFAULT_SUBJECTS = ['os', 'dbms', 'cn', 'oops'];
+// "My pace" multiplies the minutes of a DSA problem (server: PACES).
+export const PACES = {
+  faster: { label: 'Faster', factor: 0.6 },
+  standard: { label: 'Standard', factor: 1 },
+  slower: { label: 'Slower', factor: 1.4 },
+};
+export const MEDIUM_MINUTES = 70; // the standard time of a Medium problem
+export const paceMinutes = (pace) => Math.round(MEDIUM_MINUTES * (PACES[pace] || PACES.standard).factor);
+const SUBJECT_LABELS = { os: 'Operating Systems', dbms: 'DBMS', cn: 'Computer Networks', oops: 'OOP in Java', hld: 'System Design', lld: 'Low-level design' };
+// The group a task belongs to on the screens: its DSA topic ("Arrays - I" counts as "Arrays") or its CS subject.
+export function itemGroup(item) {
+  if (item.type === 'notes') return SUBJECT_LABELS[item.subject] || 'CS notes';
+  if (item.type === 'mock') return 'Mock interview';
+  if (item.type === 'behavioral') return 'Behavioral questions';
+  return String(item.topicTitle || item.title || '').replace(/ - [IVX]+$/, '');
+}
 const DAY_MS = 86400000;
 const INTENT_LIFETIME_MS = 15 * 60 * 1000;
 
@@ -17,7 +34,7 @@ export function defaultSettings() {
     goalType: 'placements', weeks: 12, weekdayHours: 3, weekendHours: 5,
     restDay: 6, style: 'one-topic', startDate: dateInIndia(),
     sheetSlug: 'blind-75', roadmapSlug: 'frontend',
-    subjects: [...DEFAULT_SUBJECTS], knownTopics: [],
+    subjects: [...DEFAULT_SUBJECTS], knownTopics: [], pace: 'standard',
   };
 }
 
@@ -26,7 +43,7 @@ export function defaultSettings() {
 export function readPlanSettings(search) {
   const params = new URLSearchParams(search);
   const settings = defaultSettings();
-  const textFields = ['goalType', 'style', 'sheetSlug', 'roadmapSlug', 'startDate'];
+  const textFields = ['goalType', 'style', 'sheetSlug', 'roadmapSlug', 'startDate', 'pace'];
   const numberFields = ['weeks', 'weekdayHours', 'weekendHours'];
 
   for (const field of textFields) {
@@ -54,7 +71,7 @@ export function readPlanSettings(search) {
 // An explicit empty subjects list means "no CS subjects", rather than "use the defaults".
 export function writePlanSettings(settings) {
   const params = new URLSearchParams();
-  for (const field of ['goalType', 'weeks', 'weekdayHours', 'weekendHours', 'style', 'startDate']) {
+  for (const field of ['goalType', 'weeks', 'weekdayHours', 'weekendHours', 'style', 'startDate', 'pace']) {
     params.set(field, String(settings[field]));
   }
   params.set('restDay', settings.restDay === null ? 'none' : String(settings.restDay));
@@ -112,6 +129,7 @@ export function planFormErrors(settings, options, today = dateInIndia()) {
   }).some(Boolean);
   if (!hasStudyDay) errors.weekdayHours = 'Allow study time on at least one day each week.';
   if (!['one-topic', 'mixed'].includes(settings.style)) errors.style = 'Choose a study style.';
+  if (!Object.hasOwn(PACES, settings.pace)) errors.pace = 'Choose how fast you solve problems.';
   if (!validStartDate(settings.startDate, today)) {
     errors.startDate = 'Start from yesterday to 60 days from today (India time).';
   }
@@ -141,8 +159,8 @@ export function planFormErrors(settings, options, today = dateInIndia()) {
 
 // Build the API payload: role plans use a roadmap; placement/big-tech plans use a sheet and subjects.
 export function planBody(settings) {
-  const { goalType, weeks, weekdayHours, weekendHours, restDay, style, startDate, knownTopics } = settings;
-  const common = { goalType, weeks, weekdayHours, weekendHours, restDay, style, startDate, knownTopics };
+  const { goalType, weeks, weekdayHours, weekendHours, restDay, style, startDate, knownTopics, pace } = settings;
+  const common = { goalType, weeks, weekdayHours, weekendHours, restDay, style, startDate, knownTopics, pace };
   if (goalType === 'role') return { ...common, roadmapSlug: settings.roadmapSlug };
   return { ...common, sheetSlug: settings.sheetSlug, subjects: settings.subjects };
 }
@@ -185,12 +203,17 @@ export function consumePlanIntent(storage, token, settingsKey, now = Date.now())
 export function planDays(items) {
   const days = new Map();
   for (const item of items) {
-    if (!days.has(item.day)) days.set(item.day, { day: item.day, focus: 'Study tasks', items: [] });
+    if (!days.has(item.day)) days.set(item.day, { day: item.day, label: formatPlanDate(item.day), minutes: 0, items: [] });
     const part = item.part ? ` (part ${item.part.n} of ${item.part.of})` : '';
-    days.get(item.day).items.push({
+    const day = days.get(item.day);
+    day.minutes += item.plannedMinutes;
+    day.items.push({
       task: `${item.title}${part} · ${item.plannedMinutes} min`, ref: item.ref,
       done: !!(item.doneAt || item.solvedOnSheet), doneAt: item.doneAt,
+      minutes: item.plannedMinutes, group: itemGroup(item),
     });
   }
+  // the day's line: how many tasks and how long they take together
+  for (const day of days.values()) day.focus = `${day.items.length} ${day.items.length === 1 ? 'task' : 'tasks'} · ${formatPlanMinutes(day.minutes)}`;
   return [...days.values()].sort((a, b) => a.day.localeCompare(b.day));
 }
