@@ -42,6 +42,31 @@ describe('Plan ticks on a replica set (transaction path)', () => {
   const tick = (acct, id, body) => t.api.patch(`/api/plan/items/${id}`, { cookies: acct.cookies, body });
   const solved = async (acct, item) => (await Progress.findOne({ user: acct.id, sheetSlug: item.sheet }))?.solvedProblems.some((p) => p.link === item.link) ?? false;
 
+  it('rolls back sprint archiving when resuming the main plan fails in a transaction', async () => {
+    const { acct } = await make();
+    const main = await Plan.findOne({ user: acct.id });
+    async function apply(body) {
+      const preview = await t.api.post('/api/plan/lifecycle/preview', { cookies: acct.cookies, body });
+      assert.equal(preview.status, 200);
+      return t.api.post('/api/plan/lifecycle/apply', { cookies: acct.cookies, body: { ...body, checksum: preview.body.data.checksum } });
+    }
+    assert.equal((await apply({ type: 'pause' })).status, 200);
+    const sprint = await Plan.create({ ...main.toObject(), _id: undefined, title: 'Sprint', status: 'active', items: [] });
+    const update = Plan.updateOne;
+    Plan.updateOne = function(filter, ...args) {
+      if (String(filter._id) === String(main._id) && filter.status === 'paused') throw new Error('Resume failed');
+      return update.call(this, filter, ...args);
+    };
+    try {
+      assert.equal((await apply({ type: 'resume', planId: String(main._id) })).status, 500);
+    } finally { Plan.updateOne = update; }
+    assert.equal((await Plan.findById(sprint._id)).status, 'active');
+    assert.equal((await Plan.findById(main._id)).status, 'paused');
+    assert.equal((await apply({ type: 'resume', planId: String(main._id) })).status, 200);
+    assert.equal((await Plan.findById(sprint._id)).status, 'finished');
+    assert.equal((await Plan.findById(main._id)).status, 'active');
+  });
+
   it('a tick writes the plan and the sheet together, and an untick removes the problem from the sheet', async () => {
     const { acct, item } = await make();
     assert.equal((await tick(acct, item.id, { done: true, result: 'hints' })).status, 200);
@@ -53,11 +78,11 @@ describe('Plan ticks on a replica set (transaction path)', () => {
 
   it('if the sheet write fails, the plan write is rolled back (nothing is half done)', async () => {
     const { acct, item } = await make();
-    const original = Progress.updateOne;
-    Progress.updateOne = async () => { throw new Error('the database went away'); };
+    const original = Progress.collection.findOneAndUpdate;
+    Progress.collection.findOneAndUpdate = async () => { throw new Error('the database went away'); };
     try {
       assert.equal((await tick(acct, item.id, { done: true, result: 'alone' })).status, 500);
-    } finally { Progress.updateOne = original; }
+    } finally { Progress.collection.findOneAndUpdate = original; }
     assert.equal((await Plan.findOne({ user: acct.id })).items.id(item.id).doneAt, null, 'the plan was rolled back');
     assert.equal(await solved(acct, item), false);
   });

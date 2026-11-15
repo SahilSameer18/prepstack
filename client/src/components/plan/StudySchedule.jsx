@@ -26,7 +26,8 @@ export default function StudySchedule({
   const progress = studyProgress(plan.items);
   const days = studyChecklistDays(plan.items.filter((item) => !item.skipped));
   const weeks = studyWeeks(days, plan.startDate);
-  const pull = !readOnly && pullForwardItem(plan, today);
+  const currentDay = model.data.calendar?.today || dateInIndia();
+  const pull = !readOnly && pullForwardItem(plan, today, currentDay);
   const round = revisionRoundItems(plan.items);
   const skipped = plan.items.filter((item) => item.skipped);
   const titles = Object.fromEntries(
@@ -78,6 +79,7 @@ export default function StudySchedule({
         )}
       </div>
       <div className="flex flex-wrap gap-3">
+        {readOnly && <button className={BUTTON} disabled={model.busy} onClick={() => onDialog('rebuild')}>Extend deadline</button>}
         {!readOnly && (
           <>
             <button
@@ -123,7 +125,7 @@ export default function StudySchedule({
       {weeks.map((week) => (
         <details
           key={week.number}
-          open={week.days.some((day) => day.day <= dateInIndia())}
+          open={week.days.some((day) => day.day <= currentDay)}
           className="rounded-xl border border-ink/[0.1] p-3"
         >
           <summary className="min-h-[44px] cursor-pointer text-sm font-semibold text-fg">
@@ -132,7 +134,7 @@ export default function StudySchedule({
           </summary>
           <PlanChecklist
             days={week.days}
-            todayDay={dateInIndia()}
+            todayDay={currentDay}
             refTitles={titles}
             readOnly={readOnly}
             onToggle={toggle}

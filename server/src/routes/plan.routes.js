@@ -22,8 +22,11 @@ const {
   getWeeklyReview,
   previewReportImport,
   applyReportImport,
+  getSubstitutes,
+  substituteItem,
 } = require('../controllers/plan.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
+const { previewRecovery, applyRecovery, getPausedPlan } = require('../controllers/planRecovery.controller');
 const validate = require('../middlewares/validate.middleware');
 const {
   planPreviewLimiter,
@@ -43,6 +46,9 @@ const {
   weeklyReviewQuerySchema,
   reportImportSchema,
   applyReportImportSchema,
+  substituteSchema,
+  lifecyclePreviewSchema,
+  lifecycleApplySchema,
 } = require('../validators/plan.validators');
 
 // The one public route: the form's preview (numbers and week 1 only, no database write).
@@ -51,6 +57,9 @@ router.post('/preview', planPreviewLimiter, validate(previewPlanSchema), preview
 
 // Everything else needs login.
 router.get('/', authMiddleware, getPlan);
+router.post('/lifecycle/preview', authMiddleware, planChangeLimiter, validate(lifecyclePreviewSchema), previewRecovery);
+router.post('/lifecycle/apply', authMiddleware, planChangeLimiter, validate(lifecycleApplySchema), applyRecovery);
+router.get('/paused/:id', authMiddleware, getPausedPlan);
 router.post('/', authMiddleware, planGenerateLimiter, validate(createPlanSchema), createPlan);
 router.delete('/', authMiddleware, deletePlan);
 router.delete('/history', authMiddleware, deleteHistory);
@@ -66,6 +75,8 @@ router.get('/review', authMiddleware, validate(weeklyReviewQuerySchema, 'query')
 
 // Items API
 router.post('/items', authMiddleware, planChangeLimiter, validate(addItemSchema), addItem);
+router.get('/items/:id/substitutes', authMiddleware, getSubstitutes);
+router.post('/items/:id/substitute', authMiddleware, planChangeLimiter, validate(substituteSchema), substituteItem);
 router.patch('/items/:id', authMiddleware, planTickLimiter, validate(updateItemSchema), updateItem);
 router.delete('/items/:id', authMiddleware, planChangeLimiter, removeItem);
 router.patch('/items/:id/star', authMiddleware, planTickLimiter, starItem);

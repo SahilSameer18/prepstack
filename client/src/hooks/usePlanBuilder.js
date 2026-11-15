@@ -17,7 +17,13 @@ export function usePlanBuilder() {
   const userId = user?.id || user?._id;
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
-  const settings = useMemo(() => readPlanSettings(params), [params]);
+  const [currentPlan, setCurrentPlan] = useState(null);
+  const calendar = userId && currentPlan?.owner === userId ? currentPlan.calendar : null;
+  const settings = useMemo(() => {
+    const values = readPlanSettings(params);
+    if (!params.has('startDate') && calendar) values.startDate = calendar.today;
+    return values;
+  }, [params, calendar]);
   const latestSettings = useRef(settings);
   const settingsKey = writePlanSettings(settings);
 
@@ -25,7 +31,6 @@ export function usePlanBuilder() {
   const [optionsError, setOptionsError] = useState('');
   const [retryCount, setRetryCount] = useState(0);
   const [preview, setPreview] = useState(null);
-  const [currentPlan, setCurrentPlan] = useState(null);
   const [saved, setSaved] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
@@ -33,9 +38,10 @@ export function usePlanBuilder() {
   const lastPreviewAt = useRef(0);
   const saveInProgress = useRef(false);
 
-  const errors = useMemo(() => planFormErrors(settings, options), [settings, options]);
+  const errors = useMemo(() => planFormErrors(settings, options, calendar?.today), [settings, options, calendar]);
   const valid = options !== null && Object.keys(errors).length === 0;
-  const previewReady = valid && preview?.key === settingsKey && preview?.retry === retryCount && !!preview.data;
+  const previewKey = settingsKey + JSON.stringify(calendar || null);
+  const previewReady = valid && preview?.key === previewKey && preview?.retry === retryCount && !!preview.data;
   const accountReady = !!userId && currentPlan?.owner === userId;
   const activePlan = accountReady ? currentPlan.plan : null;
   const savedPlan = userId && saved?.owner === userId ? saved.plan : null;
@@ -77,11 +83,13 @@ export function usePlanBuilder() {
     const timer = setTimeout(async () => {
       lastPreviewAt.current = Date.now();
       try {
-        const data = await previewPlan(planBody(settings), controller.signal);
-        if (!controller.signal.aborted) setPreview({ key: settingsKey, retry: retryCount, data });
+        const body = planBody(settings);
+        if (calendar) body.calendar = { timeZone: calendar.timeZone, dayStartHour: calendar.dayStartHour };
+        const data = await previewPlan(body, controller.signal);
+        if (!controller.signal.aborted) setPreview({ key: previewKey, retry: retryCount, data });
       } catch (error) {
         if (!controller.signal.aborted) {
-          setPreview({ key: settingsKey, retry: retryCount, error: extractError(error) });
+          setPreview({ key: previewKey, retry: retryCount, error: extractError(error) });
         }
       }
     }, delay);
@@ -89,7 +97,7 @@ export function usePlanBuilder() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [settings, settingsKey, valid, retryCount]);
+  }, [settings, previewKey, calendar, valid, retryCount]);
 
   // Check for an existing plan before saving or resuming a login request.
   useEffect(() => {
@@ -99,7 +107,7 @@ export function usePlanBuilder() {
       try {
         const result = await getPlan(controller.signal);
         if (!controller.signal.aborted) {
-          setCurrentPlan({ owner: userId, plan: result.plan, finished: result.finished });
+          setCurrentPlan({ owner: userId, plan: result.plan, finished: result.finished, calendar: result.calendar });
         }
       } catch (error) {
         if (!controller.signal.aborted) {
@@ -128,7 +136,7 @@ export function usePlanBuilder() {
     try {
       const result = await createPlan({ ...planBody(settings), replace });
       setSaved({ owner: userId, plan: result.plan });
-      setCurrentPlan({ owner: userId, plan: result.plan, finished: false });
+      setCurrentPlan({ owner: userId, plan: result.plan, finished: false, calendar });
       setReplacePlanId(null);
     } catch (error) {
       setSaveError(extractError(error, 'Could not save your plan. Please try again.'));
@@ -136,7 +144,7 @@ export function usePlanBuilder() {
       saveInProgress.current = false;
       setSaving(false);
     }
-  }, [userId, previewReady, settings]);
+  }, [userId, previewReady, settings, calendar]);
 
   // Only a matching, one-use intent from this browser tab can save automatically after login.
   const resumeToken = params.get('resume');
@@ -186,13 +194,14 @@ export function usePlanBuilder() {
 
   function resetSettings() {
     const defaults = defaultSettings();
+    if (calendar) defaults.startDate = calendar.today;
     latestSettings.current = defaults;
     setParams(writePlanSettings(defaults), { replace: true });
   }
 
   return {
     settings, settingsKey, options, optionsError, errors, valid, previewReady, canGenerate,
-    preview: preview?.key === settingsKey && preview.retry === retryCount ? preview : null,
+    preview: preview?.key === previewKey && preview.retry === retryCount ? preview : null,
     activePlan, savedPlan, accountReady, accountError: accountReady ? currentPlan.error : '',
     finished: accountReady && currentPlan.finished, userId, checkingSession,
     saving, saveError, replacing: replacePlanId === activePlan?.id,

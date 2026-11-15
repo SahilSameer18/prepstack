@@ -21,6 +21,175 @@ const preview = (body, ip) => t.api.post('/api/plan/preview', { body, ip });
 const create = (acct, body) => t.api.post('/api/plan', { cookies: acct.cookies, body });
 const getPlan = (acct) => t.api.get('/api/plan', { cookies: acct.cookies });
 
+const lifecyclePreview = (acct, body) => t.api.post('/api/plan/lifecycle/preview', { cookies: acct.cookies, body });
+async function lifecycleApply(acct, body) {
+  const preview = await lifecyclePreview(acct, body);
+  assert.equal(preview.status, 200, JSON.stringify(preview.body));
+  return t.api.post('/api/plan/lifecycle/apply', { cookies: acct.cookies, body: { ...body, checksum: preview.body.data.checksum } });
+}
+
+describe('study calendar, freeze and short sprint recovery', () => {
+  it('concurrent resume applies once and account deletion includes a paused main plan', async () => {
+    planClock.now = () => new Date('2026-11-16T12:00:00Z');
+    const acct = await t.register();
+    const made = (await create(acct, form({ restDay: null }))).body.data.plan;
+    assert.equal((await lifecycleApply(acct, { type: 'pause' })).status, 200);
+    planClock.now = () => new Date('2026-11-30T12:00:00Z');
+    const body = { type: 'resume', planId: made.id };
+    const preview = await lifecyclePreview(acct, body);
+    const confirmed = { ...body, checksum: preview.body.data.checksum };
+    const responses = await Promise.all([1, 2].map(() => t.api.post('/api/plan/lifecycle/apply', { cookies: acct.cookies, body: confirmed })));
+    assert.equal(responses.filter((response) => response.status === 200).length, 1);
+    assert.ok(responses.every((response) => [200, 404, 409].includes(response.status)));
+    assert.equal((await Plan.findById(made.id)).deadline, ymdOf(dayNumber(made.deadline) + 14));
+    assert.equal((await lifecycleApply(acct, { type: 'pause' })).status, 200);
+    const removed = await t.api.del('/api/user/account', { cookies: acct.cookies, body: { password: acct.password } });
+    assert.equal(removed.status, 200, JSON.stringify(removed.body));
+    assert.equal(await Plan.countDocuments({ user: acct.id }), 0);
+  });
+
+  it('keeps legacy same-day review protection when calendar settings move the day forward', async () => {
+    planClock.now = () => new Date('2026-11-16T19:00:00Z');
+    const acct = await t.register();
+    assert.equal((await lifecycleApply(acct, { type: 'calendar', timeZone: 'America/Los_Angeles', dayStartHour: 4 })).status, 200);
+    const made = (await create(acct, form({ restDay: null }))).body.data.plan;
+    const doc = await Plan.findById(made.id);
+    const item = doc.items.find((entry) => entry.type === 'dsa' && !entry.part);
+    Object.assign(item, { doneAt: planClock.now(), reviewStage: 0, reviewLadder: 'solution', nextReviewDay: '2026-11-16', reviewBaseDay: '2026-11-01', lastReviewDay: '2026-11-16' });
+    await doc.save();
+    assert.equal((await lifecycleApply(acct, { type: 'calendar', timeZone: 'Asia/Kolkata', dayStartHour: 0 })).status, 200);
+    const response = await t.api.post(`/api/plan/items/${item._id}/review`, { cookies: acct.cookies, body: { passed: true } });
+    assert.equal(response.status, 422);
+    assert.equal((await Plan.findById(made.id)).items.id(item._id).reviewStage, 0);
+  });
+  it('pauses safely, resumes after 14 days, archives a sprint and protects completed work', async () => {
+    planClock.now = () => new Date('2026-11-16T12:00:00Z');
+    const acct = await t.register();
+    const made = (await create(acct, form({ weeks: 8, restDay: null }))).body.data.plan;
+    const item = made.items.find((entry) => entry.type === 'dsa' && !entry.part);
+    assert.equal((await t.api.post(`/api/plan/items/${item.id}/result`, { cookies: acct.cookies, body: { result: 'hints' } })).status, 200);
+    const original = await Plan.findById(made.id).lean();
+    const completed = original.items.find((entry) => String(entry._id) === item.id);
+    const pending = original.items.find((entry) => !entry.doneAt);
+    assert.equal(completed.completedStudyDay, '2026-11-16');
+    const beforePreview = await lifecyclePreview(acct, { type: 'pause' });
+    assert.equal(beforePreview.status, 200);
+    assert.equal((await Plan.findById(made.id)).status, 'active');
+    assert.equal((await lifecycleApply(acct, { type: 'pause' })).status, 200);
+    assert.equal((await getPlan(acct)).body.data.plan, null);
+    assert.equal((await getPlan(acct)).body.data.pausedPlans.length, 1);
+    assert.equal((await t.api.patch(`/api/plan/items/${item.id}`, { cookies: acct.cookies, body: { done: false } })).status, 404);
+    planClock.now = () => new Date('2026-11-30T12:00:00Z');
+    const sprint = (await create(acct, form({ weeks: 1, restDay: null, title: 'Interview sprint' }))).body.data.plan;
+    assert.ok(sprint);
+    assert.equal((await lifecyclePreview(acct, { type: 'pause' })).status, 409, 'one paused main plan only');
+    const body = { type: 'resume', planId: made.id };
+    const preview = await lifecyclePreview(acct, body);
+    assert.equal(preview.status, 200);
+    assert.equal(preview.body.data.shiftDays, 14);
+    assert.equal(preview.body.data.archiveActive.title, 'Interview sprint');
+    const confirm = { ...body, checksum: preview.body.data.checksum };
+    assert.equal((await t.api.post('/api/plan/lifecycle/apply', { cookies: acct.cookies, body: confirm })).status, 200);
+    const resumed = await Plan.findById(made.id).lean();
+    const after = resumed.items.find((entry) => String(entry._id) === item.id);
+    assert.equal(resumed.deadline, ymdOf(dayNumber(original.deadline) + 14));
+    assert.equal(after.doneAt.toISOString(), completed.doneAt.toISOString());
+    assert.equal(after.day, completed.day);
+    assert.equal(after.completedStudyDay, completed.completedStudyDay);
+    assert.equal(after.nextReviewDay, ymdOf(dayNumber(completed.nextReviewDay) + 14));
+    assert.equal(after.reviewBaseDay, ymdOf(dayNumber(completed.reviewBaseDay) + 14));
+    assert.equal(after.reviewStage, completed.reviewStage);
+    assert.equal(resumed.items.find((entry) => String(entry._id) === String(pending._id)).day, ymdOf(dayNumber(pending.day) + 14));
+    assert.equal((await Plan.findById(sprint.id)).status, 'finished');
+    assert.equal((await t.api.post('/api/plan/lifecycle/apply', { cookies: acct.cookies, body: confirm })).status, 404);
+    assert.equal((await Plan.findById(made.id)).deadline, resumed.deadline, 'repeat resume never shifts twice');
+    assert.equal((await lifecycleApply(acct, { type: 'pause' })).status, 200);
+    await t.api.del('/api/plan/history', { cookies: acct.cookies });
+    assert.equal((await Plan.findById(made.id)).status, 'paused', 'history cleanup excludes paused plans');
+    assert.equal((await lifecycleApply(acct, { type: 'discard', planId: made.id })).status, 200);
+    assert.equal(await Plan.findById(made.id), null);
+    assert.ok(await Progress.findOne({ user: acct.id }), 'sheet solves survive deletion');
+  });
+
+  it('rejects unowned, stale and invalid lifecycle changes and restores a sprint after failed resume', async () => {
+    planClock.now = () => new Date('2026-11-16T12:00:00Z');
+    const acct = await t.register();
+    const outsider = await t.register();
+    const made = (await create(acct, form({ restDay: null }))).body.data.plan;
+    assert.equal((await lifecycleApply(acct, { type: 'pause' })).status, 200);
+    assert.equal((await t.api.get(`/api/plan/paused/${made.id}`, { cookies: outsider.cookies })).status, 404);
+    assert.equal((await lifecyclePreview(outsider, { type: 'resume', planId: made.id })).status, 404);
+    assert.equal((await lifecyclePreview(acct, { type: 'calendar', timeZone: 'Fake/Zone', dayStartHour: 4 })).status, 422);
+    assert.equal((await lifecyclePreview(acct, { type: 'calendar', timeZone: 'UTC', dayStartHour: 24 })).status, 422);
+    const sprint = (await create(acct, form({ weeks: 1, restDay: null }))).body.data.plan;
+    const body = { type: 'resume', planId: made.id };
+    const preview = await lifecyclePreview(acct, body);
+    await Plan.updateOne({ _id: made.id }, { $set: { title: 'Changed after preview' } });
+    assert.equal((await t.api.post('/api/plan/lifecycle/apply', { cookies: acct.cookies, body: { ...body, checksum: preview.body.data.checksum } })).status, 409);
+    const fresh = await lifecyclePreview(acct, body);
+    const originalUpdate = Plan.updateOne;
+    Plan.updateOne = function(filter, ...args) {
+      if (String(filter._id) === made.id && filter.status === 'paused') throw new Error('Injected resume failure');
+      return originalUpdate.call(this, filter, ...args);
+    };
+    try {
+      assert.equal((await t.api.post('/api/plan/lifecycle/apply', { cookies: acct.cookies, body: { ...body, checksum: fresh.body.data.checksum } })).status, 500);
+    } finally { Plan.updateOne = originalUpdate; }
+    assert.equal((await Plan.findById(sprint.id)).status, 'active');
+    assert.equal((await Plan.findById(made.id)).status, 'paused');
+  });
+
+  it('uses a saved night-owl clock and prevents repeat reviews across timezone changes', async () => {
+    planClock.now = () => new Date('2026-11-16T19:00:00Z');
+    const acct = await t.register();
+    assert.equal((await lifecycleApply(acct, { type: 'calendar', timeZone: 'Asia/Kolkata', dayStartHour: 4 })).status, 200);
+    let state = (await getPlan(acct)).body.data;
+    assert.equal(state.calendar.today, '2026-11-16');
+    assert.equal(state.calendar.nextRollover, '2026-11-16T22:30:00.000Z');
+    const made = (await create(acct, form({ restDay: null }))).body.data.plan;
+    assert.equal(made.startDate, '2026-11-16');
+    const item = made.items.find((entry) => entry.type === 'dsa' && !entry.part);
+    await t.api.post(`/api/plan/items/${item.id}/result`, { cookies: acct.cookies, body: { result: 'solution' } });
+    await Plan.updateOne({ _id: made.id, 'items._id': item.id }, { $set: { 'items.$.nextReviewDay': '2026-11-16', 'items.$.reviewBaseDay': '2026-10-01' } });
+    const review = () => t.api.post(`/api/plan/items/${item.id}/review`, { cookies: acct.cookies, body: { passed: true } });
+    assert.equal((await review()).status, 200);
+    assert.equal((await lifecycleApply(acct, { type: 'calendar', timeZone: 'Asia/Kolkata', dayStartHour: 0 })).status, 200);
+    state = (await getPlan(acct)).body.data;
+    assert.equal(state.calendar.today, '2026-11-17');
+    assert.equal((await review()).status, 422, 'old study-day window still applies');
+    assert.equal((await Plan.findById(made.id)).items.id(item.id).completedStudyDay, '2026-11-16');
+    planClock.now = () => new Date('2026-11-17T19:00:00Z');
+    assert.equal((await review()).status, 200);
+  });
+
+  it('reschedules overdue reviews only after fresh confirmation without changing solve credit', async () => {
+    planClock.now = () => new Date('2026-11-16T12:00:00Z');
+    const acct = await t.register();
+    const made = (await create(acct, form({ restDay: null }))).body.data.plan;
+    const doc = await Plan.findById(made.id);
+    const items = doc.items.filter((entry) => entry.type === 'dsa' && !entry.part).slice(0, 12);
+    for (const item of items) Object.assign(item, { doneAt: planClock.now(), completedStudyDay: '2026-11-16', reviewLadder: 'solution', reviewStage: 0, reviewBaseDay: '2026-11-01', nextReviewDay: '2026-11-02' });
+    doc.hoursByWeekday = Array(7).fill(0.5);
+    await doc.save();
+    assert.equal((await lifecyclePreview(acct, { type: 'recover', recoveryDays: 1 })).status, 422);
+    const progressBefore = await Progress.find({ user: acct.id }).lean();
+    const body = { type: 'recover', recoveryDays: 14 };
+    const preview = await lifecyclePreview(acct, body);
+    assert.equal(preview.status, 200);
+    assert.equal(preview.body.data.reviewCount, 12);
+    assert.equal((await Plan.findById(made.id)).items.id(items[0]._id).nextReviewDay, '2026-11-02');
+    assert.equal((await lifecycleApply(acct, body)).status, 200);
+    const after = await Plan.findById(made.id);
+    for (const item of items) {
+      const next = after.items.id(item._id);
+      assert.equal(next.reviewStage, 0);
+      assert.equal(next.doneAt.toISOString(), item.doneAt.toISOString());
+      assert.ok(next.nextReviewDay >= '2026-11-16' && next.nextReviewDay <= '2026-11-29');
+    }
+    assert.deepEqual(await Progress.find({ user: acct.id }).lean(), progressBefore);
+  });
+});
+
 // Direct model fixtures avoid an AI request while exercising the real import API.
 async function importReport(acct) {
   const Report = t.mongoose.model('InterviewReport');
@@ -43,6 +212,69 @@ const importApply = (acct, report, preview) => t.api.post(`/api/plan/reports/${r
 });
 
 describe('Analyzer report connections', () => {
+  it('extends a deadline only through its confirmed preview and preserves completed work', async () => {
+    const acct = await t.register();
+    const made = (await create(acct, form({ weeks: 4, restDay: null }))).body.data.plan;
+    const item = made.items.find((entry) => entry.type === 'dsa' && !entry.part);
+    await t.api.post(`/api/plan/items/${item.id}/result`, { cookies: acct.cookies, body: { result: 'alone' } });
+    const before = (await Plan.findById(made.id)).items.id(item.id).toObject();
+    const change = { type: 'rebuild', deadline: ymdOf(dayNumber(made.deadline) + 14) };
+    const preview = await t.api.post('/api/plan/changes/preview', { cookies: acct.cookies, body: change });
+    assert.equal(preview.status, 200);
+    assert.equal((await Plan.findById(made.id)).deadline, made.deadline, 'preview writes nothing');
+    const tampered = { ...change, deadline: ymdOf(dayNumber(change.deadline) + 7), checksum: preview.body.data.diff.checksum };
+    assert.equal((await t.api.post('/api/plan/changes/apply', { cookies: acct.cookies, body: tampered })).status, 409);
+    const applied = await t.api.post('/api/plan/changes/apply', { cookies: acct.cookies, body: { ...change, checksum: preview.body.data.diff.checksum } });
+    assert.equal(applied.status, 200);
+    const after = await Plan.findById(made.id);
+    assert.equal(after.deadline, change.deadline);
+    assert.equal(after.weeks, 6);
+    assert.deepEqual(after.items.id(item.id).toObject(), before);
+    assert.equal((await t.api.post('/api/plan/changes/preview', { cookies: acct.cookies, body: { type: 'rebuild', deadline: made.startDate } })).status, 422);
+  });
+
+  it('recognizes legacy URL aliases without rewriting solve dates or double-counting progress', async () => {
+    const acct = await t.register();
+    const made = (await create(acct, form({ weeks: 4, restDay: null }))).body.data.plan;
+    const item = made.items.find((entry) => entry.type === 'dsa' && !entry.part);
+    const date = new Date('2026-11-01T08:00:00Z');
+    const sheet = t.sheetSeedData().find((entry) => entry.slug === item.sheet);
+    await t.getModels().DSASheet.updateOne({ slug: item.sheet }, { $set: sheet }, { upsert: true });
+    await Progress.create({ user: acct.id, sheetSlug: item.sheet, solvedProblems: [
+      { link: item.link.replace(/\/$/, ''), solvedAt: date },
+      { link: item.link, solvedAt: new Date('2026-11-02T08:00:00Z') },
+    ] });
+    const view = (await getPlan(acct)).body.data.plan.items.find((entry) => entry.id === item.id);
+    assert.equal(view.solvedOnSheet, true);
+    const progress = await t.api.get(`/api/sheets/${item.sheet}/progress`, { cookies: acct.cookies });
+    assert.deepEqual(progress.body.data.solvedProblems, [item.link]);
+    const toggled = await t.api.post(`/api/sheets/${item.sheet}/progress`, { cookies: acct.cookies, body: { problemLink: item.link.replace(/\/$/, '') } });
+    assert.equal(toggled.status, 200);
+    assert.deepEqual(toggled.body.data.solvedProblems, []);
+    assert.equal((await Plan.findById(made.id)).items.id(item.id).doneAt, null);
+  });
+
+  it('substitutes a separate problem with fresh consent and never solves the original', async () => {
+    const acct = await t.register();
+    const made = (await create(acct, form({ goalType: 'placements', sheetSlug: 'blind-75', weeks: 1, restDay: null, subjects: [] }))).body.data.plan;
+    const original = made.items.find((entry) => entry.type === 'dsa');
+    const options = await t.api.get(`/api/plan/items/${original.id}/substitutes`, { cookies: acct.cookies });
+    assert.equal(options.status, 200);
+    const choice = options.body.data.substitutes[0];
+    assert.ok(choice, 'another sheet supplies an unscheduled problem in this topic');
+    const body = { sheetSlug: choice.sheetSlug, link: choice.link, checksum: choice.checksum };
+    assert.equal((await t.api.post(`/api/plan/items/${original.id}/substitute`, { cookies: acct.cookies, body: { ...body, checksum: '0'.repeat(32) } })).status, 409);
+    const reply = await t.api.post(`/api/plan/items/${original.id}/substitute`, { cookies: acct.cookies, body });
+    assert.equal(reply.status, 200);
+    const next = reply.body.data.plan.items.find((entry) => entry.replacesKey === original.key);
+    assert.ok(next);
+    assert.equal(reply.body.data.plan.items.find((entry) => entry.id === original.id).skipped, true);
+    assert.equal((await t.api.post(`/api/plan/items/${next.id}/result`, { cookies: acct.cookies, body: { result: 'alone' } })).status, 200);
+    const links = (await Progress.find({ user: acct.id }).lean()).flatMap((row) => row.solvedProblems.map((entry) => entry.link));
+    assert.ok(links.includes(next.link));
+    assert.ok(!links.includes(original.link));
+    assert.equal((await t.api.get(`/api/plan/items/${next.id}/substitutes`, { cookies: acct.cookies })).status, 422);
+  });
   it('previews owned report tasks without writing, validates consent and hides other owners', async () => {
     const acct = await t.register();
     const other = await t.register();
@@ -330,7 +562,11 @@ describe('creating, reading and deleting a plan', () => {
     const acct = await t.register();
     const res = await getPlan(acct);
     assert.equal(res.status, 200);
-    assert.deepEqual(res.body.data, { plan: null, today: null, finished: false });
+    assert.equal(res.body.data.plan, null);
+    assert.equal(res.body.data.today, null);
+    assert.equal(res.body.data.finished, false);
+    assert.deepEqual(res.body.data.pausedPlans, []);
+    assert.equal(res.body.data.calendar.today, todayIst());
   });
   it('leaves out problems the user has already solved, and keeps what it left out in the plan', async () => {
     const acct = await t.register();

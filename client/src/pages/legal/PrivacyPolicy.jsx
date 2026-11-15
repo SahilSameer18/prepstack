@@ -99,7 +99,7 @@ const PrivacyPolicy = () => {
             <li>To authenticate your sessions and manage secure token renewal across up to 10 concurrent devices.</li>
             <li>To persist and display your DSA problem progress and completion statistics.</li>
             <li>To save the notes you write on DSA problems to your account, so you can read them on any device.</li>
-            <li>To save your study-plan settings, tasks, results, quiz scores and review dates. Replacing a plan keeps up to five older snapshots; an expired current plan also stays readable. You can delete the current plan or its history separately, and deleting your account removes all of them.</li>
+            <li>To save your study-plan settings, timezone, study-day start hour, tasks, results, quiz scores and review dates. You can keep one main plan paused while using another plan. Replacing a plan keeps up to five older snapshots; an expired current plan also stays readable. You can delete the current plan, paused plan or history separately, and deleting your account removes all of them.</li>
             <li>To generate AI project ideas: the options you enter on the AI Projects page (tech stack, complexity, domain and any extra notes) are sent to Google's Gemini API and, if Gemini is busy or unavailable, to Groq's API. Please do not put personal information in the extra notes.</li>
             <li>To write a Role Analyzer report: the job description you paste and the text of your resume (with email addresses, phone numbers and links removed first) are sent to Google's Gemini API and, if Gemini is busy or unavailable, to Groq's API. We do not keep your resume or the PDF. We keep only the job description and the report, so you can open it again, and you can delete any report or your whole account at any time.</li>
             <li>To detect abuse, enforce rate limits, and protect user accounts from credential stuffing attacks.</li>
@@ -175,7 +175,7 @@ const PrivacyPolicy = () => {
             You have full ownership of your data under GDPR Article 17 (Right to Erasure). You can permanently and irreversibly delete your account, solved DSA problem history, problem notes, Role Analyzer reports and generated projects at any moment directly from your <strong className="text-fg">Profile &gt; Delete Account</strong> dashboard.
           </p>
           <p className="text-xs text-muted">
-            Upon confirmation, our backend deletes your account record, solved-problem history, problem notes, saved AI project ideas, Role Analyzer reports (with their study-plan ticks), all current and historical study plans and all session records from our database in one operation, and clears your authentication cookies.
+            Upon confirmation, our backend deletes your account record, solved-problem history, problem notes, saved AI project ideas, Role Analyzer reports (with their study-plan ticks), all current, paused and historical study plans and all session records from our database in one operation, and clears your authentication cookies.
           </p>
           <p className="text-xs text-muted">
             Notes that were never moved to your account (for example, you did not sign in again after this change) are still only in your browser, and account deletion cannot remove them. Clear your browser&apos;s site data to remove them.

@@ -1,5 +1,35 @@
 import api from "../axios";
 
+// Preview lifecycle changes against the latest owned plans before confirmation.
+export async function previewPlanRecovery(body) {
+  const response = await api.post('/api/plan/lifecycle/preview', body);
+  return response.data.data;
+}
+
+export async function applyPlanRecovery(body) {
+  const response = await api.post('/api/plan/lifecycle/apply', body);
+  return response.data.data;
+}
+
+// A paused snapshot is read-only until the learner explicitly resumes it.
+export async function getPausedPlan(id) {
+  const response = await api.get('/api/plan/paused/' + encodeURIComponent(id));
+  return response.data.data;
+}
+
+// A substitute is its own problem and never grants solve credit to the original.
+export async function getProblemSubstitutes(id) {
+  const response = await api.get(itemPath(id) + '/substitutes');
+  return response.data.data;
+}
+
+export async function substitutePlanProblem(id, choice) {
+  const response = await api.post(itemPath(id) + '/substitute', {
+    sheetSlug: choice.sheetSlug, link: choice.link, checksum: choice.checksum,
+  });
+  return response.data.data;
+}
+
 // Axios gives us the server response in response.data; its data field contains the actual payload.
 
 // Load the sheets, roadmaps and topics offered by the public builder.

@@ -45,7 +45,7 @@ const markDone = (items, key, info) => {
   if (item.doneAt) return { error: 'already-done', items };
   if (item.skipped) return { error: 'skipped', items };
   const next = items.map((it) => ({ ...it }));
-  next[at] = { ...item, doneAt: info.doneAt };
+  next[at] = { ...item, doneAt: info.doneAt, completedStudyDay: info.doneDay };
   const parts = next.filter((it) => baseId(it) === baseId(item));
   if (parts.some((p) => !p.doneAt)) return { items: next, started: false };
   if (!isReviewable(item)) return { items: next, started: false };
@@ -78,13 +78,13 @@ const recordReview = (items, key, passed, day) => {
     changes = { reviewStage: 0, reviewBaseDay: day, nextReviewDay: addDays(day, ladder[0]), lastFailedDay: day };
   }
   const next = items.slice();
-  next[at] = { ...item, ...changes, lastReviewDay: day };
+  next[at] = { ...item, ...changes, lastReviewDay: day, reviewNeedsPractice: !passed };
   return { items: next, retired: changes.nextReviewDay == null, offerRecode: !passed && item.type === 'dsa' };
 };
 
 const reviewView = (it, day) => ({
   type: 'review', ref: it.ref, link: it.link || null, title: `Review: ${it.title}`, plannedMinutes: REVIEW_MINUTES, originalKey: it.key,
-  dueDay: it.nextReviewDay, overdueDays: dayNumber(day) - dayNumber(it.nextReviewDay), failed: !!it.lastFailedDay && it.reviewStage === 0 && it.reviewBaseDay === it.lastFailedDay, starred: !!it.starred,
+  dueDay: it.nextReviewDay, overdueDays: dayNumber(day) - dayNumber(it.nextReviewDay), failed: it.reviewNeedsPractice ?? (!!it.lastFailedDay && it.reviewStage === 0 && it.reviewBaseDay === it.lastFailedDay), starred: !!it.starred,
 });
 // Everything due on or before a day: failed first, then starred, then the oldest (decision 22).
 const dueReviews = (items, day) => items
@@ -194,7 +194,12 @@ const firstDayById = (items) => { const m = new Map(); for (const it of items) {
 // sheet now says is solved). Returns the new plan and a diff; nothing is saved. The caller applies it only if the diff's checksum still matches.
 const previewChange = (stored, data, todayYmd, change) => {
   const t = Math.max(dayNumber(todayYmd), dayNumber(stored.startDate));
-  const deadline = dayNumber(stored.deadline);
+  const requestedDeadline = change.deadline || stored.deadline;
+  const deadline = dayNumber(requestedDeadline);
+  if (Number.isNaN(deadline) || deadline < dayNumber(stored.deadline)
+    || deadline - dayNumber(stored.startDate) - (stored.input.pausedDays || 0) >= 52 * 7) {
+    throw new gen.PlanInputError(['The new deadline must extend the current deadline and stay within 52 weeks of the start.']);
+  }
   if (t > deadline) return { error: 'finished' };
   const today = ymdOf(t);
 
@@ -216,7 +221,8 @@ const previewChange = (stored, data, todayYmd, change) => {
   input.startDate = today;
   input.weeks = Math.min(52, Math.max(1, Math.ceil((deadline - t + 1) / 7)));
 
-  if (input.originReport) return previewReportChange(stored, input, today);
+  const totalWeeks = Math.max(1, Math.ceil((deadline - dayNumber(stored.startDate) + 1 - (stored.input.pausedDays || 0)) / 7));
+  if (input.originReport) return previewReportChange({ ...stored, deadline: requestedDeadline }, { ...input, weeks: totalWeeks }, today);
 
   // what a rebuild keeps: everything done, skipped, locked or added by the student (and mock or behavioral items already done); the rest is planned again
   const groups = new Map();
@@ -239,7 +245,7 @@ const previewChange = (stored, data, todayYmd, change) => {
   const behavioralDone = new Set(stored.items.filter((it) => it.type === 'behavioral' && it.doneAt).map((it) => Number(it.ref.split(':')[1])));
   const backlogMinutes = sum(dueReviews(stored.items, today));
 
-  const generated = gen.generatePlan(input, data, { deadline: stored.deadline, weekOrigin: stored.startDate, planWeeks: stored.input.weeks, exclude, remaining, partOffset, keptMinutes, behavioralDone, backlogMinutes });
+  const generated = gen.generatePlan(input, data, { deadline: requestedDeadline, weekOrigin: stored.startDate, planWeeks: totalWeeks, exclude, remaining, partOffset, keptMinutes, behavioralDone, backlogMinutes });
   const items = [...kept, ...generated.items].sort((a, b) => a.day.localeCompare(b.day));
 
   const before = stored.items.filter((it) => isPlannedContent(it) && !it.doneAt && !it.skipped);
@@ -260,9 +266,9 @@ const previewChange = (stored, data, todayYmd, change) => {
     doneProtected: stored.items.filter((it) => it.doneAt).length,
     lockedKept: kept.filter((it) => it.locked).length,
     reviewBacklogMinutes: backlogMinutes,
-    checksum: itemsChecksum(items),
+    checksum: crypto.createHash('sha256').update(JSON.stringify({ stored, input, requestedDeadline, today, items })).digest('hex').slice(0, 16),
   };
-  const plan = { ...stored, input: { ...stored.input, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay ?? null, lighterDays: input.lighterDays || [], solvedLinks: input.solvedLinks || [] }, items, finishDate: finishAfter, coverage: generated.coverage, notices: generated.notices };
+  const plan = { ...stored, deadline: requestedDeadline, input: { ...stored.input, weeks: totalWeeks, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay ?? null, lighterDays: input.lighterDays || [], solvedLinks: input.solvedLinks || [] }, items, finishDate: finishAfter, coverage: generated.coverage, notices: generated.notices };
   return { plan, diff };
 };
 

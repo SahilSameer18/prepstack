@@ -2,6 +2,82 @@ import { test, expect } from "@playwright/test";
 
 const API = "http://localhost:3100";
 
+test.beforeEach(async ({ page }) => {
+  await page.request.post(API + '/__test/clock', { data: {} });
+});
+
+test('Recovery phase 2: personal clock, a two-week pause and returning from a sprint', async ({ page }) => {
+  await page.request.post(API + '/__test/clock', { data: { now: '2026-11-16T19:00:00Z' } });
+  const { plan, body } = await createPlan(page);
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/my-plan/study?tab=plan');
+  await page.getByRole('button', { name: 'Study day settings', exact: true }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Study day starts at', { exact: false }).fill('4');
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await expect(dialog).toContainText('Study day changes from 2026-11-17 to 2026-11-16');
+  await assertFits(page);
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  const state = await page.request.get(API + '/api/plan');
+  expect((await state.json()).data.calendar.today).toBe('2026-11-16');
+  await page.goto('/my-plan');
+  await expect(page.getByLabel('Start date', { exact: true })).toHaveValue('2026-11-16');
+  await page.goto('/my-plan/study?tab=plan');
+  await page.getByRole('button', { name: 'Pause plan', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  expect((await savedPlan(page)).id).toBe(plan.id);
+  await page.screenshot({ path: '../.tmp/recovery-mobile.png', fullPage: true });
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  expect(await savedPlan(page)).toBeNull();
+  await expect(page.getByRole('button', { name: 'Resume plan', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Read paused plan', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Load saved snapshot' }).click();
+  await expect(dialog).toContainText('Paused snapshot');
+  await expect(dialog.getByRole('checkbox')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await page.request.post(API + '/__test/clock', { data: { now: '2026-11-30T19:00:00Z' } });
+  const sprint = await page.request.post(API + '/api/plan', { data: { ...body, weeks: 1, title: 'Frontend sprint' } });
+  expect(sprint.status()).toBe(201);
+  const sprintId = (await sprint.json()).data.plan.id;
+  await page.reload();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('button', { name: 'Resume plan', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await expect(dialog).toContainText('by 14 days');
+  await expect(dialog).toContainText('Frontend sprint');
+  await expect(dialog).toContainText('read-only History');
+  await assertFits(page);
+  await page.screenshot({ path: '../.tmp/recovery-desktop.png', fullPage: true });
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  expect((await savedPlan(page)).id).toBe(plan.id);
+  const history = await page.request.get(API + '/api/plan/history');
+  expect((await history.json()).data.plans.some((entry) => entry.id === sprintId)).toBe(true);
+  await page.getByRole('button', { name: 'Today', exact: true }).click();
+  await expect(page.getByRole('region', { name: 'Today', exact: true }).getByRole('button')).toHaveCount(1);
+});
+
+test('Recovery phase 2: review catch-up requires confirmation and handles a rejected save', async ({ page }) => {
+  const { user } = await createPlan(page);
+  await page.request.post(API + '/__test/scenario', { data: { user, complete: true } });
+  await page.goto('/my-plan/study?tab=plan');
+  await page.getByRole('button', { name: 'Spread due reviews', exact: true }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByLabel('Spread reviews over calendar days', { exact: false }).fill('7');
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await expect(dialog).toContainText('Spread 1 due reviews');
+  await page.route('**/api/plan/lifecycle/apply', (route) => route.fulfill({ status: 503, json: { message: 'Recovery temporarily unavailable' } }));
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog.getByRole('alert')).toContainText('Recovery temporarily unavailable');
+  await page.unroute('**/api/plan/lifecycle/apply');
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  expect((await savedPlan(page)).items[0].reviewStage).toBe(0);
+});
+
 // Every test uses its own account in the disposable database and the real HTTP API.
 async function createPlan(page, overrides = {}) {
   const suffix = String(Date.now());
@@ -49,6 +125,37 @@ async function createReport(page, user) {
   expect(response.ok()).toBe(true);
   return (await response.json()).id;
 }
+
+test('Recovery phase 1: extend the deadline and complete a distinct substitute', async ({ page }) => {
+  const { plan } = await createPlan(page);
+  await page.goto('/my-plan/study?tab=plan');
+  await page.getByRole('button', { name: 'Rebuild from today' }).click();
+  const dialog = page.getByRole('dialog');
+  const deadline = new Date(plan.deadline + 'T00:00:00Z');
+  deadline.setUTCDate(deadline.getUTCDate() + 14);
+  await dialog.getByLabel('Deadline (keep it or choose a later date)').fill(deadline.toISOString().slice(0, 10));
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await expect(dialog).toContainText('Plan deadline:');
+  expect((await savedPlan(page)).deadline).toBe(plan.deadline);
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  expect((await savedPlan(page)).deadline).toBe(deadline.toISOString().slice(0, 10));
+  const current = await savedPlan(page);
+  const original = current.items.find((item) => item.type === 'dsa' && item.title === 'Two Sum');
+  await page.getByRole('button', { name: /^Options: Two Sum/ }).first().click();
+  await dialog.getByRole('button', { name: 'Find a different problem' }).click();
+  await dialog.getByRole('radio').first().check();
+  await dialog.getByRole('button', { name: 'Confirm different problem' }).click();
+  await expect(dialog).toHaveCount(0);
+  const replacement = (await savedPlan(page)).items.find((item) => item.replacesKey === original.key);
+  expect(replacement).toBeTruthy();
+  await page.goto('/my-plan/study?tab=plan&item=' + replacement.id);
+  await page.getByRole('button', { name: 'Solved alone', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Add a task', exact: true })).toBeVisible();
+  const after = await savedPlan(page);
+  expect(after.items.find((item) => item.id === replacement.id).doneAt).toBeTruthy();
+  expect(after.items.find((item) => item.id === original.id)).toMatchObject({ skipped: true, doneAt: null });
+});
 
 test('Phase 7: dashboard uses one calm goal-plan Today and preserves nested navigation', async ({ page }) => {
   const { user } = await createPlan(page);

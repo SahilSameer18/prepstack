@@ -1,5 +1,9 @@
 const DSASheet = require('../models/sheets.model');
 const Progress = require('../models/progress.model');
+const { problemIdentity, normalizedSolves } = require('../utils/problemIdentity');
+const { writeProblemProgress } = require('../services/problemProgress');
+const { planClock } = require('../services/planData');
+const { calendarSettings, studyDay } = require('../utils/studyCalendar');
 const AppError = require('../utils/AppError');
 const { sendSuccess } = require('../utils/responseFormatter');
 
@@ -15,7 +19,7 @@ exports.getSheets = async (req, res, next) => {
 
       (sheet.topics || []).forEach(t => {
         (t.problems || []).forEach(p => {
-          if (p.link) linkSet.add(p.link);
+          if (p.link) linkSet.add(problemIdentity(p.link));
           if (p.difficulty) {
             const d = p.difficulty.toLowerCase();
             if (d === 'easy') hasEasy = true;
@@ -56,7 +60,9 @@ exports.getSheetBySlug = async (req, res, next) => {
     if (!sheet) {
       return next(new AppError(404, 'DSA Sheet not found'));
     }
-    sendSuccess(res, 200, 'DSA sheet fetched successfully', sheet);
+    const plain = sheet.toObject();
+    for (const topic of plain.topics || []) for (const problem of topic.problems || []) problem.link = problemIdentity(problem.link);
+    sendSuccess(res, 200, 'DSA sheet fetched successfully', plain);
   } catch (error) {
     next(error);
   }
@@ -65,7 +71,7 @@ exports.getSheetBySlug = async (req, res, next) => {
 // The API still sends solvedProblems as a plain list of links; the dates stay on the server (the dashboard gets them as a streak).
 const withLinks = (progress) => {
   const plain = typeof progress.toObject === 'function' ? progress.toObject() : progress;
-  return { ...plain, solvedProblems: (plain.solvedProblems || []).map((entry) => entry.link) };
+  return { ...plain, solvedProblems: normalizedSolves(plain.solvedProblems || []).map((entry) => entry.link) };
 };
 
 // get user progress for a sheet (read-only: never writes)
@@ -95,60 +101,20 @@ exports.toggleProblemCompletion = async (req, res, next) => {
     const { problemLink } = req.body;
     const userId = req.user._id;
 
-    if (!(await DSASheet.exists({ slug }))) {
-      return next(new AppError(404, 'DSA Sheet not found'));
-    }
-
-    const filter = { user: userId, sheetSlug: slug };
-
-    // Only links that belong to this sheet can be added, which also caps the list at the sheet's size.
-    // A stale link the user already has (removed from the sheet by a later re-seed) can still be removed.
-    const inSheet = await DSASheet.exists({ slug, 'topics.problems.link': problemLink });
+    const sheet = await DSASheet.findOne({ slug }).select('topics.problems.link').lean();
+    if (!sheet) return next(new AppError(404, 'DSA Sheet not found'));
+    const link = problemIdentity(problemLink);
+    const inSheet = sheet.topics.some((topic) => topic.problems.some((problem) => problemIdentity(problem.link) === link));
     if (!inSheet) {
-      const removed = await Progress.findOneAndUpdate(
-        { ...filter, 'solvedProblems.link': problemLink },
-        { $pull: { solvedProblems: { link: problemLink } } },
-        { returnDocument: 'after' }
-      );
-      if (!removed) {
+      const old = await Progress.findOne({ user: userId, sheetSlug: slug }).lean();
+      if (!normalizedSolves(old?.solvedProblems).some((entry) => entry.link === link)) {
         return next(new AppError(400, 'This problem is not part of this sheet'));
       }
-      return sendSuccess(res, 200, 'Problem completion toggled successfully', withLinks(removed));
     }
+    const completedDay = studyDay(planClock.now(), calendarSettings(req.user));
+    const result = await writeProblemProgress({ user: userId, sheetSlug: slug, link, mode: inSheet ? 'toggle' : 'undone', studyDay: completedDay });
+    sendSuccess(res, 200, 'Problem completion toggled successfully', withLinks(result.progress));
 
-    // Add-or-remove in ONE atomic update, so a double click or two tabs can never read a stale state.
-    // $literal keeps the link a plain string (a value starting with "$" would be read as a field path).
-    const link = { $literal: problemLink };
-    const toggle = [{
-      $set: {
-        solvedProblems: {
-          $let: {
-            vars: { list: { $ifNull: ['$solvedProblems', []] } },
-            in: {
-              $cond: [
-                { $in: [link, { $map: { input: '$$list', in: '$$this.link' } }] },
-                { $filter: { input: '$$list', cond: { $ne: ['$$this.link', link] } } },
-                { $concatArrays: ['$$list', [{ link, solvedAt: '$$NOW' }]] }
-              ]
-            }
-          }
-        },
-        // mongoose adds updatedAt to pipeline updates by itself, but not createdAt
-        createdAt: { $ifNull: ['$createdAt', '$$NOW'] }
-      }
-    }];
-    const options = { returnDocument: 'after', upsert: true, updatePipeline: true };
-
-    let progress;
-    try {
-      progress = await Progress.findOneAndUpdate(filter, toggle, options);
-    } catch (err) {
-      if (err.code !== 11000) throw err;
-      // Two first-ever toggles raced on the unique (user, sheet) index. The record exists now, so retry once.
-      progress = await Progress.findOneAndUpdate(filter, toggle, options);
-    }
-
-    sendSuccess(res, 200, 'Problem completion toggled successfully', withLinks(progress));
   } catch (error) {
     next(error);
   }

@@ -1,5 +1,7 @@
 # PrepStack: status and build order
 
+**Recovery follow-up complete, 15 Nov 2026:** both owner-approved phases are implemented. Phase 1 adds provider-aware problem identity, deadline extension and equivalent resources/distinct substitutes. Phase 2 adds account timezone/rollover, pause/resume with shifted tasks and reviews, review catch-up, and one paused main plan alongside one active sprint. Today keeps one Start button. Final verification: server 923 / 170 suites, client 122 / 13 files, 11 browser flows, build, lint and SEO pass; three recovery mutations caught and restored. Deployment and human validation remain.
+
 **The one place to see what is done and what is left.** Last updated 15 Nov 2026 (My plan implementation complete through Phase 7). Update this file whenever an item changes state (rule at the bottom). Details live in `IMPROVEMENT_PLAN.md` and `docs/plans/`; this file only tracks status and order. It replaces the old `ORDER.md` (deleted; its text is in git history).
 
 **Phase 7 complete, 15 Nov 2026:** dashboard My plan tab reuses the daily workspace and its state, comes first when a plan exists, and keeps dashboard statistics outside Today. Other tabs use goal-plan Today or the Analyzer fallback only after confirming no goal plan exists. The overview includes plan progress. Reports have explicit merge/replace previews with ownership, duplicate, stale-consent, capacity and failed-save protection; report-only plans rebuild their own tasks. Topic practice never solves individual sheet problems. Privacy and account-deletion copy include current/history plans, and seed-data imports no longer load environment files or change DNS. Final server 910 / 168 suites, client 121 / 13 files, eight browser flows, build, lint and SEO pass (37 pages, 7 indexable); two security mutations caught. The outside-link sweep had one transient GNU timeout (targeted retry 200) and one bot-blocked LabEx URL. Phase 8 real-user validation and deployment remain; see `TESTING.md`.
@@ -25,7 +27,7 @@
 | Live database seeding | OS, OOP, and System Design notes (`npm run seed:notes`) and all DSA sheets (`npm run seed:all`) seeded on live database by owner | Live MongoDB instance |
 | Password reset, login lock, account deletion | built | `README.md` |
 | My plan (B5) | Phases 0–7 implemented: builder, daily workspace, dashboard, report imports, reviews and read-only history; Phase 8 real-user validation remains | `docs/plans/MY_PLAN_PLAN.md` |
-| Tests | server 910, client 121, eight browser flows; build, lint and SEO pass; ownership/consent mutations caught | `TESTING.md` |
+| Tests | server 923, client 122, 11 browser flows; build, lint and SEO pass; ownership/consent mutations caught | `TESTING.md` |
 
 ## Left, in build order
 

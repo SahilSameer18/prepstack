@@ -129,7 +129,7 @@ function previewReportChange(stored, input, today) {
   const finishAfter = fitted.items.map((item) => item.day).sort().at(-1) || null;
   const finishChangeDays = finishBefore && finishAfter ? dayNumber(finishAfter) - dayNumber(finishBefore) : 0;
   const plan = {
-    ...stored, input: { ...stored.input, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay, lighterDays: input.lighterDays || [] },
+    ...stored, input: { ...stored.input, weeks: input.weeks, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay, lighterDays: input.lighterDays || [] },
     items, finishDate: finishAfter,
     coverage: { ...stored.coverage, importOverloads: fitted.overloads }, notices: ['report-import'],
   };

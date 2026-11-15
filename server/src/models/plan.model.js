@@ -3,7 +3,7 @@ const { PLAN_MAX_ITEMS, PLAN_TITLE_MAX } = require('../config/limits');
 
 // A student's goal plan ("My plan"). The rules for what goes in it are in docs/plans/MY_PLAN_PLAN.md and src/services/planGenerator.js.
 // The `user` reference means the "delete my account" cascade wipes plans automatically (see user.controller.js).
-// Dates are plain "YYYY-MM-DD" strings (Indian time), like the generator uses.
+// Dates are plain "YYYY-MM-DD" strings in the account study calendar, like the generator uses.
 const itemSchema = new mongoose.Schema({
   key: { type: String, required: true, maxlength: 600 }, // the generator's identity of the item (its ref, link or step, and part)
   type: { type: String, required: true, enum: ['dsa', 'notes', 'roadmap', 'review', 'mock', 'behavioral', 'custom'] },
@@ -23,6 +23,7 @@ const itemSchema = new mongoose.Schema({
   stepId: { type: String, default: null },
   difficulty: { type: String, default: null },
   unitId: { type: String, default: null },
+  replacesKey: { type: String, default: null },
   order: { type: Number, default: 0 },
   starred: { type: Boolean, default: false },
   locked: { type: Boolean, default: false },
@@ -36,6 +37,10 @@ const itemSchema = new mongoose.Schema({
   lastFailedDay: { type: String, default: null },
   lastReviewDay: { type: String, default: null },
   doneAt: { type: Date, default: null },
+  completedStudyDay: { type: String, default: null },
+  lastReviewAt: { type: Date, default: null },
+  reviewWindowEndsAt: { type: Date, default: null },
+  reviewNeedsPractice: { type: Boolean, default: undefined },
 });
 
 const planSchema = new mongoose.Schema({
@@ -44,7 +49,11 @@ const planSchema = new mongoose.Schema({
   style: { type: String, required: true, enum: ['one-topic', 'mixed'] },
   title: { type: String, required: true, trim: true, maxlength: PLAN_TITLE_MAX },
   targetRole: { type: String, default: '', trim: true, maxlength: PLAN_TITLE_MAX },
-  status: { type: String, enum: ['active', 'finished'], default: 'active' },
+  status: { type: String, enum: ['active', 'paused', 'finished'], default: 'active' },
+  pausedAt: { type: Date, default: null },
+  pausedAtDay: { type: String, default: null },
+  pauseCalendar: { type: { timeZone: String, dayStartHour: Number }, default: null, _id: false },
+  totalPausedDays: { type: Number, default: 0 },
   originReport: { type: String, default: null }, // report-only plans refit their own tasks on rebuild
   sheetSlug: { type: String, default: null },
   roadmapSlug: { type: String, default: null },
@@ -65,5 +74,10 @@ const planSchema = new mongoose.Schema({
 // One active plan per user; finished plans are kept as history (at most a few, see the controller).
 planSchema.index({ user: 1 }, { unique: true, partialFilterExpression: { status: 'active' } });
 planSchema.index({ user: 1, status: 1, createdAt: -1 });
+
+// One paused main plan can coexist with one active interview sprint.
+planSchema.index({ user: 1, status: 1 }, {
+  unique: true, partialFilterExpression: { status: 'paused' }, name: 'one_paused_plan_per_user',
+});
 
 module.exports = mongoose.model('Plan', planSchema);

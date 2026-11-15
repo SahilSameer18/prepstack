@@ -11,6 +11,7 @@ import {
 } from "../../api/services/planService";
 import { dateInIndia } from "../../utils/planBuilder";
 import { isPlanItemDone } from "../../utils/studyPlan";
+import ProblemSubstitute from './ProblemSubstitute';
 
 const INPUT =
   "min-h-[44px] w-full rounded-xl border border-ink/[0.2] bg-card-hover px-3 py-2 text-fg";
@@ -19,15 +20,17 @@ const BUTTON =
 
 // A preview freezes its payload. Editing requires going back and requesting a new preview.
 export function StudyChangeDialog({ type, plan, model, onClose }) {
+  const currentDay = model.data.calendar?.today || dateInIndia();
   const [weekdayHours, setWeekdayHours] = useState(plan.hoursByWeekday[0]);
   const [weekendHours, setWeekendHours] = useState(plan.hoursByWeekday[5]);
   const [from, setFrom] = useState(
-    plan.startDate > dateInIndia() ? plan.startDate : dateInIndia(),
+    plan.startDate > currentDay ? plan.startDate : currentDay,
   );
   const [to, setTo] = useState(
-    plan.startDate > dateInIndia() ? plan.startDate : dateInIndia(),
+    plan.startDate > currentDay ? plan.startDate : currentDay,
   );
   const [hours, setHours] = useState(1);
+  const [deadline, setDeadline] = useState(plan.deadline);
   const [preview, setPreview] = useState(null);
   const [previewing, setPreviewing] = useState(false);
   const [error, setError] = useState("");
@@ -43,6 +46,7 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
     setError("");
     setPreviewing(true);
     const body = { type };
+    if (type === 'rebuild') body.deadline = deadline;
     if (type === "hours") Object.assign(body, { weekdayHours, weekendHours });
     if (type === "lighter")
       body.lighterDays = clearLighterDays
@@ -69,6 +73,7 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
       {preview ? (
         <div className="space-y-4 text-sm text-fg-3">
           <p>Finish date {preview.summary.diff.finishText}.</p>
+          {preview.body.deadline && <p>Plan deadline: {preview.body.deadline}.</p>}
           <p>
             {preview.summary.diff.movedItems} items move.{" "}
             {preview.summary.diff.doneProtected} completed items stay protected.
@@ -97,6 +102,13 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
             Nothing changes until you review and confirm the preview. Completed
             and locked work stays protected.
           </p>
+          {type === 'rebuild' && (
+            <label className="block space-y-2 text-sm">
+              Deadline (keep it or choose a later date)
+              <input className={INPUT} type="date" min={plan.deadline} value={deadline} required onChange={(event) => setDeadline(event.target.value)} />
+              <span className="block text-xs text-muted">A later date gives more room; the preview shows what fits. Completed tasks remain saved.</span>
+            </label>
+          )}
           {type === "hours" && (
             <>
               <label className="block space-y-2 text-sm">
@@ -212,7 +224,7 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
 // One task editor keeps action buttons out of every checklist row.
 export function StudyTaskDialog({ item, plan, model, onClose }) {
   const [title, setTitle] = useState("");
-  const [day, setDay] = useState(item?.day || dateInIndia());
+  const [day, setDay] = useState(item?.day || model.data.calendar?.today || dateInIndia());
   const [minutes, setMinutes] = useState(item?.plannedMinutes || 30);
   const [notice, setNotice] = useState("");
   const [confirmRemove, setConfirmRemove] = useState(false);
@@ -347,6 +359,7 @@ export function StudyTaskDialog({ item, plan, model, onClose }) {
             )}
           </div>
         )}
+        {item?.type === 'dsa' && editable && <ProblemSubstitute item={item} model={model} onClose={onClose} />}
         {notice && (
           <p role="status" className="text-sm text-warn">
             {notice}

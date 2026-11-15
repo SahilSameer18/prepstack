@@ -475,3 +475,13 @@ Before the planner (B5) is built, the checklist and notes are shown to 3 to 5 st
 | Who | Student or job switcher | Contact | Asked on | Agreed? | Seen the checklist on | What they said |
 |---|---|---|---|---|---|---|
 | | | | | | | |
+
+
+## My plan equivalent problem resources (15 Nov 2026)
+
+| Original exercise | Primary resource read | Scope |
+|---|---|---|
+| Meeting Rooms II | https://neetcode.io/problems/meeting-schedule-ii/question | Equivalent exercise resource; linked only, no copied prompt or solution |
+| Alien Dictionary | https://neetcode.io/problems/foreign-dictionary/question | Equivalent exercise resource; linked only, no copied prompt or solution |
+
+Other problem substitutions come from the existing sheet catalog and receive their own solve identity. Resource access and URLs can change; there is no claim of continuous external-link monitoring.

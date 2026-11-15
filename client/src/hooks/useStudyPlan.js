@@ -54,6 +54,24 @@ export function useStudyPlan(enabled = true) {
   }
 
   const current = state?.owner === owner ? state : null;
+  const rollover = current?.data?.calendar?.nextRollover;
+
+  // Refresh at the server's next study-day boundary and when a sleeping tab
+  // becomes visible again. Avoid interrupting a write already in progress.
+  useEffect(() => {
+    if (!enabled || !rollover) return;
+    function refresh() {
+      if (!writing.current && document.visibilityState === 'visible') reload();
+    }
+    const delay = Math.max(1000, new Date(rollover).getTime() - Date.now());
+    const timer = setTimeout(refresh, delay);
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+  }, [enabled, rollover, reload]);
+
   return {
     data: current?.data,
     error: current?.error,

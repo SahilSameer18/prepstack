@@ -1,4 +1,5 @@
 const { z } = require('zod');
+const { validTimeZone } = require('../utils/studyCalendar');
 const { GOALS, STYLES, dayNumber } = require('../services/planGenerator');
 const { SUBJECTS } = require('../services/planData');
 const { PLAN_MIN_WEEKS, PLAN_MAX_WEEKS, PLAN_MIN_DAILY_HOURS, PLAN_MAX_DAILY_HOURS, PLAN_TITLE_MAX, PLAN_CUSTOM_ITEM_MAX } = require('../config/limits');
@@ -9,6 +10,7 @@ const hours = (what) => z.number({ error: `${what} must be a number of hours` })
 const slug = (what) => z.string({ error: `${what} must be text` }).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, `${what} is not valid`).max(40, `${what} is not valid`);
 
 const formShape = {
+  calendar: z.object({ timeZone: z.string().refine(validTimeZone, 'Choose a valid timezone.'), dayStartHour: z.number().int().min(0).max(6) }).optional(),
   goalType: z.enum(GOALS, { error: `goalType must be one of ${GOALS.join(', ')}` }),
   style: z.enum(STYLES, { error: `style must be one of ${STYLES.join(', ')}` }).default('one-topic'),
   startDate: date('Start date').optional(),
@@ -37,10 +39,12 @@ const changeShape = {
   weekendHours: hours('Weekend hours').optional(),
   restDay: formShape.restDay.optional(),
   lighterDays: z.array(z.object({ from: date('From'), to: date('To'), hours: hours('Hours') })).max(10, 'Too many lighter stretches').optional(),
+  deadline: date('New deadline').optional(),
 };
 const checkChange = (c, ctx) => {
   if (c.type === 'hours' && (c.weekdayHours === undefined || c.weekendHours === undefined)) ctx.addIssue({ code: 'custom', message: 'New hours need weekdayHours and weekendHours', path: ['weekdayHours'] });
   if (c.type === 'lighter' && !c.lighterDays) ctx.addIssue({ code: 'custom', message: 'lighterDays is required', path: ['lighterDays'] });
+  if (c.deadline && c.type !== 'rebuild') ctx.addIssue({ code: 'custom', message: 'Change the deadline through a rebuild preview.', path: ['deadline'] });
 };
 const previewChangeSchema = z.object(changeShape).superRefine(checkChange);
 const applyChangeSchema = z.object({ ...changeShape, checksum: z.string({ error: 'checksum is required' }).regex(/^[0-9a-f]{16}$/, 'checksum is not valid') }).superRefine(checkChange);
@@ -81,6 +85,25 @@ const reportImportSchema = z.object({ mode: z.enum(['merge', 'replace']).default
 const applyReportImportSchema = reportImportSchema.extend({
   checksum: z.string().regex(/^[0-9a-f]{32}$/, 'Preview this report again before saving.'),
 });
+const substituteSchema = z.object({
+  sheetSlug: slug('Sheet'), link: z.string().url().max(500),
+  checksum: z.string().regex(/^[0-9a-f]{32}$/),
+});
+
+const lifecycleShape = {
+  type: z.enum(['pause', 'resume', 'recover', 'calendar', 'discard']),
+  planId: z.string().regex(/^[a-f0-9]{24}$/i).optional(),
+  extendDeadline: z.boolean().default(true),
+  recoveryDays: z.number().int().min(1).max(28).default(7),
+  timeZone: z.string().refine(validTimeZone, 'Choose a valid timezone.').optional(),
+  dayStartHour: z.number().int().min(0).max(6).optional(),
+};
+function checkLifecycle(value, context) {
+  if (['resume', 'discard'].includes(value.type) && !value.planId) context.addIssue({ code: 'custom', path: ['planId'], message: 'Choose a paused plan.' });
+  if (value.type === 'calendar' && (!value.timeZone || value.dayStartHour === undefined)) context.addIssue({ code: 'custom', path: ['timeZone'], message: 'Choose the timezone and study-day start.' });
+}
+const lifecyclePreviewSchema = z.object(lifecycleShape).superRefine(checkLifecycle);
+const lifecycleApplySchema = z.object({ ...lifecycleShape, checksum: z.string().regex(/^[a-f0-9]{32}$/) }).superRefine(checkLifecycle);
 
 module.exports = {
   previewPlanSchema,
@@ -94,4 +117,7 @@ module.exports = {
   weeklyReviewQuerySchema,
   reportImportSchema,
   applyReportImportSchema,
+  substituteSchema,
+  lifecyclePreviewSchema,
+  lifecycleApplySchema,
 };

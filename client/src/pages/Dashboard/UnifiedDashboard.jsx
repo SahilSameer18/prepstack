@@ -30,7 +30,7 @@ const UnifiedDashboard = () => {
   const { getProjects, projects, projectsTotal } = useProject();
   const planModel = useStudyPlan();
   const plan = planModel.data?.plan;
-  const defaultTab = plan ? 'plan' : 'dsa';
+  const defaultTab = plan || planModel.data?.pausedPlans?.length ? 'plan' : 'dsa';
   const tabs = plan
     ? [['plan', 'My plan'], ['dsa', 'DSA'], ['projects', 'Projects'], ['reports', 'Reports']]
     : [['dsa', 'DSA'], ['plan', 'My plan'], ['projects', 'Projects'], ['reports', 'Reports']];

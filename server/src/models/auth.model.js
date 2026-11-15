@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const { USERNAME_COLLATION } = require('../utils/usernameHelper');
 
 const userSchema = new mongoose.Schema({
+  // Defaults preserve existing users' India-midnight calendar.
+  studyTimeZone: { type: String, default: 'Asia/Kolkata' },
+  studyDayStart: { type: Number, default: 0, min: 0, max: 6 },
 
   username: {
     type: String,

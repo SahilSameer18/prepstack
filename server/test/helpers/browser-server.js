@@ -13,6 +13,13 @@ async function start() {
   await Notes.create({ subject: data.subject, subjectSlug: 'os', sections: data.sections });
   const fixture = express();
   fixture.use(express.json());
+  const { planClock } = require('../../src/services/planData');
+  fixture.post('/__test/clock', (req, res) => {
+    const instant = req.body.now ? new Date(req.body.now) : null;
+    if (instant && Number.isNaN(instant.getTime())) return res.status(400).json({ message: 'Invalid fixture date' });
+    planClock.now = instant ? () => new Date(instant) : () => new Date();
+    res.json({ now: planClock.now().toISOString() });
+  });
   fixture.post('/__test/report', async (req, res) => {
     if (!t.mongoose.isValidObjectId(req.body.user)) return res.status(400).json({ message: 'Invalid fixture user' });
     if (!await t.getModels().User.exists({ _id: req.body.user })) return res.status(404).json({ message: 'Fixture user not found' });
@@ -37,12 +44,14 @@ async function start() {
     const doc = await Plan.findOne({ user: req.body.user });
     if (!doc) return res.status(404).json({ message: 'Fixture plan not found' });
     const item = doc.items.find((entry) => entry.type === 'dsa' && !entry.part);
-    item.doneAt = new Date();
+    item.doneAt = planClock.now();
     item.result = 'solution';
     item.reviewStage = 0;
     item.reviewLadder = 'solution';
-    item.reviewBaseDay = require('../../src/services/planGenerator').todayIst();
-    item.nextReviewDay = require('../../src/services/planGenerator').todayIst();
+    const user = await t.getModels().User.findById(req.body.user).lean();
+    const { studyDay, calendarSettings } = require('../../src/utils/studyCalendar');
+    item.reviewBaseDay = studyDay(planClock.now(), calendarSettings(user));
+    item.nextReviewDay = item.reviewBaseDay;
     if (req.body.complete) doc.items = [item];
     if (req.body.expired) doc.deadline = '2020-01-01';
     await doc.save();

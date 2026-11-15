@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 import Quiz from "../notes/Quiz";
 import { notesService } from "../../api/services/notesService";
 import { extractError } from "../../utils/extractError";
@@ -99,6 +100,12 @@ export default function StudyStart({
           {material.label} (new tab)
         </a>
       )}
+      {item.type === 'dsa' && <details className="space-y-3 text-sm text-muted">
+        <summary className="min-h-[44px] cursor-pointer text-brand">Can’t access this problem?</summary>
+        {(item.alternatives || []).map((resource) => <p key={resource.url}><a className="text-brand underline" href={resource.url} target="_blank" rel="noopener noreferrer">{resource.title} (new tab)</a></p>)}
+        {!!item.alternatives?.length && <p>These cover the same exercise. You can record your original result after practising there.</p>}
+        <Link className="inline-flex min-h-[44px] items-center text-brand" to="/my-plan/study?tab=plan">Choose a different exercise from the original task’s Plan options</Link>
+      </details>}
       {item.type === "mock" && (
         <div className="space-y-3 text-sm text-fg-3">
           <p>

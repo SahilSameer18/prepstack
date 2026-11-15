@@ -60,8 +60,8 @@ export function StudyItemList({
 }
 
 // Weekly totals come from the server so sheet completion overlays agree with the plan.
-export default function StudyReview({ plan, readOnly, onStart, onRebuild }) {
-  const [week, setWeek] = useState(dateInIndia());
+export default function StudyReview({ plan, readOnly, onStart, onRebuild, currentDay = dateInIndia() }) {
+  const [week, setWeek] = useState(currentDay);
   const [reply, setReply] = useState(null);
   const [retry, setRetry] = useState(0);
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function StudyReview({ plan, readOnly, onStart, onRebuild }) {
     (item) =>
       !item.skipped &&
       item.nextReviewDay &&
-      item.nextReviewDay <= dateInIndia(),
+      item.nextReviewDay <= currentDay,
   );
 
   return (

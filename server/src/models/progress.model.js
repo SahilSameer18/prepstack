@@ -16,7 +16,8 @@ const progressSchema = new mongoose.Schema({
   solvedProblems: [{
     _id: false,
     link: { type: String, trim: true, required: true },
-    solvedAt: { type: Date, default: null }
+    solvedAt: { type: Date, default: null },
+    studyDay: { type: String, default: null }
   }]
 }, {
   timestamps: true

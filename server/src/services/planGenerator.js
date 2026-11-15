@@ -7,6 +7,7 @@
 //
 // Dates are plain "YYYY-MM-DD" strings (Indian time is decided by the caller: todayIst below). Weekdays are numbered Monday = 0 ... Sunday = 6.
 const limits = require('../config/limits');
+const { problemIdentity } = require('../utils/problemIdentity');
 
 const MINUTES_BY_DIFFICULTY = { Basic: 30, Easy: 40, Medium: 70, Hard: 120 }; // solve and check the solution (decision 29)
 const FALLBACK_DIFFICULTY = 'Medium';
@@ -131,9 +132,9 @@ const dsaUnits = (sheetSlug, data, solved, known, seenLinks) => {
   for (const { t, entry } of topics) {
     const items = [];
     for (const p of t.problems) {
-      if (seenLinks.has(p.link)) continue;
-      seenLinks.add(p.link);
-      if (solved.has(p.link)) { alreadySolved += 1; continue; }
+      if (seenLinks.has(problemIdentity(p.link))) continue;
+      seenLinks.add(problemIdentity(p.link));
+      if (solved.has(problemIdentity(p.link))) { alreadySolved += 1; continue; }
       items.push(dsaItem(sheetSlug, t, p, entry.core));
     }
     if (known.has(t.id)) { if (items.length) knownTopics.push({ topicId: t.id, title: String(t.title).trim(), problems: items.length }); continue; }
@@ -162,9 +163,9 @@ const roadmapUnits = (input, data, solved, known, seenLinks) => {
         if (!topic) continue;
         if (known.has(topicId)) { knownTopics.push({ topicId, title: String(topic.title).trim() }); continue; }
         for (const prob of topic.problems) {
-          if (seenLinks.has(prob.link)) continue;
-          seenLinks.add(prob.link);
-          if (solved.has(prob.link)) { alreadySolved += 1; continue; }
+          if (seenLinks.has(problemIdentity(prob.link))) continue;
+          seenLinks.add(problemIdentity(prob.link));
+          if (solved.has(problemIdentity(prob.link))) { alreadySolved += 1; continue; }
           items.push(dsaItem(sheetSlug, topic, prob, true));
         }
       }
@@ -313,14 +314,14 @@ const fillDays = (sequence, days, reserved, context) => {
 
 const sumMinutes = (items) => items.reduce((s, it) => s + it.plannedMinutes, 0);
 // The identity of an item whatever its day or part: its ref plus its problem link (or its roadmap step).
-const baseId = (it) => [it.ref, it.link || it.stepId || ''].join('|');
+const baseId = (it) => [it.ref, it.link ? problemIdentity(it.link) : it.stepId || ''].join('|');
 
 // ---------- the plan ----------
 const generatePlan = (input, data, context = {}) => {
   const errors = validateInput(input, data);
   if (errors.length) throw new PlanInputError(errors);
 
-  const solved = new Set(input.solvedLinks || []);
+  const solved = new Set((input.solvedLinks || []).map(problemIdentity));
   const known = new Set(input.knownTopics || []);
   const seenLinks = new Set();
   const subjects = orderedSubjects(input.subjects || (input.goalType === 'role' ? [] : DEFAULT_SUBJECTS), data);

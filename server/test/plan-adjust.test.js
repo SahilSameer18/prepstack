@@ -4,6 +4,52 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const gen = require('../src/services/planGenerator');
 const adj = require('../src/services/planAdjust');
+const calendar = require('../src/utils/studyCalendar');
+const recovery = require('../src/services/planRecovery');
+
+describe('personal study calendar and review recovery', () => {
+  it('keeps night study in yesterday and handles both daylight-saving transitions', () => {
+    const india = { timeZone: 'Asia/Kolkata', dayStartHour: 4 };
+    assert.equal(calendar.studyDay(new Date('2026-11-16T19:00:00Z'), india), '2026-11-16');
+    assert.equal(calendar.nextStudyBoundary(new Date('2026-11-16T19:00:00Z'), india).toISOString(), '2026-11-16T22:30:00.000Z');
+    const la = { timeZone: 'America/Los_Angeles', dayStartHour: 4 };
+    assert.equal(calendar.studyDay(new Date('2026-11-18T04:00:00Z'), la), '2026-11-17');
+    assert.equal(calendar.boundaryFor('2026-03-08', { ...la, dayStartHour: 2 }).toISOString(), '2026-03-08T10:00:00.000Z');
+    assert.equal(calendar.boundaryFor('2026-11-01', { ...la, dayStartHour: 1 }).toISOString(), '2026-11-01T09:00:00.000Z');
+    assert.equal(calendar.studyDay(new Date('2026-11-01T08:30:00Z'), { ...la, dayStartHour: 1 }), '2026-10-31');
+    assert.equal(calendar.studyDay(new Date('2026-11-01T09:30:00Z'), { ...la, dayStartHour: 1 }), '2026-11-01');
+    assert.equal(calendar.validTimeZone('Not/AZone'), false);
+  });
+
+  it('keeps recorded streak days stable after changing timezone', () => {
+    const entries = [{ studyDay: '2026-11-16', solvedAt: '2026-11-17T02:00:00Z' }, { studyDay: '2026-11-15' }];
+    const now = new Date('2026-11-17T04:00:00Z');
+    assert.equal(calendar.studyStreak(entries, now, { timeZone: 'America/Los_Angeles', dayStartHour: 4 }), 2);
+  });
+
+  it('spreads all reviews within budgets and preserves stages, timestamps and failure priority', () => {
+    const items = Array.from({ length: 12 }, (_, index) => ({
+      key: 'review-' + index, type: 'dsa', day: '2026-11-01', plannedMinutes: 30,
+      doneAt: '2026-11-01T12:00:00Z', nextReviewDay: '2026-11-02', reviewBaseDay: '2026-11-01',
+      reviewStage: 0, reviewLadder: 'solution', lastFailedDay: index === 11 ? '2026-11-01' : null,
+    }));
+    const plan = { items, hoursByWeekday: Array(7).fill(0.5), restDay: null, lighterDays: [], deadline: '2026-11-30' };
+    const now = new Date('2026-11-16T12:00:00Z');
+    assert.throws(() => recovery.recoverReviews(plan, {}, now, 1), gen.PlanInputError);
+    const result = recovery.recoverReviews(plan, {}, now, 12);
+    assert.equal(result.reviewCount, 12);
+    for (const [index, item] of result.items.entries()) {
+      assert.equal(item.reviewStage, items[index].reviewStage);
+      assert.equal(item.doneAt, items[index].doneAt);
+      assert.ok(item.nextReviewDay >= '2026-11-16' && item.nextReviewDay <= '2026-11-27');
+      assert.equal(result.items.filter((entry) => entry.nextReviewDay === item.nextReviewDay).length, 1);
+    }
+    assert.equal(result.items[11].nextReviewDay, '2026-11-16');
+    assert.equal(adj.dueReviews(result.items, '2026-11-16')[0].failed, true);
+    assert.deepEqual(plan.items, items, 'the pure preview changes no input');
+    assert.throws(() => recovery.recoverReviews({ ...plan, deadline: '2026-11-16' }, {}, now, 28), gen.PlanInputError);
+  });
+});
 
 const { generatePlan, dayNumber, ymdOf } = gen;
 const sum = (items) => items.reduce((s, it) => s + it.plannedMinutes, 0);
@@ -277,7 +323,8 @@ describe('changes with a preview (decisions 16, 25, 42)', () => {
     assert.equal(JSON.stringify(store2), copy);
     const other = adj.previewChange(store2, data, today, { type: 'hours', hoursByWeekday: [2, 2, 2, 2, 2, 4, 0] });
     assert.notEqual(other.diff.checksum, rebuilt.diff.checksum);
-    assert.equal(adj.itemsChecksum(rebuilt.plan.items), rebuilt.diff.checksum);
+    const extended = adj.previewChange(store2, data, today, { type: 'rebuild', deadline: gen.ymdOf(gen.dayNumber(store2.deadline) + 7) });
+    assert.notEqual(extended.diff.checksum, rebuilt.diff.checksum, 'consent includes the deadline');
   });
   it('a rebuild keeps locked items where the student put them (and their room), skipped items on the skipped list, and items the student added', () => {
     const open = dsaItems(stored.items).filter((i) => i.day === '2026-12-02');

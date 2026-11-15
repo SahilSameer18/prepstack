@@ -366,12 +366,12 @@ describe('Phase 4: Plan Items API', () => {
     it('if the sheet cannot be written the plan is not changed either, and the user sees an error', async () => {
       const acct = await t.register();
       const item = (await createPlan(acct)).body.data.plan.items.find((it) => it.type === 'dsa');
-      const original = Progress.updateOne;
-      Progress.updateOne = async () => { throw new Error('the database went away'); };
+      const original = Progress.collection.findOneAndUpdate;
+      Progress.collection.findOneAndUpdate = async () => { throw new Error('the database went away'); };
       try {
         const res = await patchItem(acct, item.id, { done: true, result: 'alone' });
         assert.equal(res.status, 500);
-      } finally { Progress.updateOne = original; }
+      } finally { Progress.collection.findOneAndUpdate = original; }
       assert.equal((await Plan.findOne({ user: acct.id })).items.id(item.id).doneAt, null);
       assert.equal(await Progress.countDocuments({ user: acct.id }), 0);
     });

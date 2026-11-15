@@ -1,7 +1,11 @@
 const crypto = require('crypto');
+const { calendarSettings, studyDay, nextStudyBoundary } = require('../utils/studyCalendar');
 const mongoose = require('mongoose');
 const Plan = require('../models/plan.model');
 const Progress = require('../models/progress.model');
+const { problemIdentity, normalizedSolves } = require('../utils/problemIdentity');
+const { writeProblemProgress } = require('../services/problemProgress');
+const { alternativeResources, substituteOptions } = require('../services/problemResources');
 const Report = require('../models/interviewReport.model');
 const { prepareReportImport } = require('../services/planReport');
 const AppError = require('../utils/AppError');
@@ -23,18 +27,25 @@ const getPlanOptions = (req, res, next) => {
   }
 };
 
-const today = () => gen.todayIst(planClock.now());
+const today = (req) => studyDay(planClock.now(), calendarSettings(req?.user));
 const weekdayHours = (b) => [b.weekdayHours, b.weekdayHours, b.weekdayHours, b.weekdayHours, b.weekdayHours, b.weekendHours, b.weekendHours];
 
-// The form's answers as the generator's input. The start date defaults to today in India; it may be from yesterday (the clocks differ) to 60 days ahead.
-const toInput = (body) => {
-  const t = gen.dayNumber(today());
-  const start = body.startDate ?? today();
+// Private saves use the account's study clock; public previews can supply the
+// same calendar without exposing or modifying any account preferences.
+const toInput = (body, user) => {
+  const calendar = user ? calendarSettings(user) : body.calendar || calendarSettings();
+  const currentDay = studyDay(planClock.now(), calendar);
+  const t = gen.dayNumber(currentDay);
+  const start = body.startDate ?? currentDay;
   const s = gen.dayNumber(start);
-  if (s < t - 1 || s > t + PLAN_MAX_START_DAYS_AHEAD) throw new AppError(422, `The start date must be from yesterday to ${PLAN_MAX_START_DAYS_AHEAD} days from today`);
+  if (s < t - 1 || s > t + PLAN_MAX_START_DAYS_AHEAD) {
+    throw new AppError(422, `The start date must be from yesterday to ${PLAN_MAX_START_DAYS_AHEAD} days from today`);
+  }
   return {
-    goalType: body.goalType, style: body.style, startDate: start, weeks: body.weeks, hoursByWeekday: weekdayHours(body), restDay: body.restDay,
-    sheetSlug: body.sheetSlug, roadmapSlug: body.roadmapSlug, subjects: body.subjects, knownTopics: body.knownTopics,
+    goalType: body.goalType, style: body.style, startDate: start, weeks: body.weeks,
+    hoursByWeekday: weekdayHours(body), restDay: body.restDay,
+    sheetSlug: body.sheetSlug, roadmapSlug: body.roadmapSlug,
+    subjects: body.subjects, knownTopics: body.knownTopics,
   };
 };
 // A rule the generator checks (for example a sheet that does not exist) becomes a 422 with its own words.
@@ -43,9 +54,9 @@ const asAppError = (e) => (e instanceof gen.PlanInputError ? new AppError(422, e
 // What the user has already solved, limited to the sheets this plan uses, so a plan does not schedule it again.
 const solvedLinksFor = async (userId, input, data) => {
   const docs = await Progress.find({ user: userId }).select('solvedProblems.link').lean();
-  const solved = new Set(docs.flatMap((d) => (d.solvedProblems || []).map((p) => p.link)));
+  const solved = new Set(docs.flatMap((d) => (d.solvedProblems || []).map((p) => problemIdentity(p.link))));
   const sheets = input.goalType === 'role' ? Object.values(data.sheets) : [data.sheets[input.sheetSlug]].filter(Boolean);
-  const inPlan = new Set(sheets.flatMap((s) => s.topics.flatMap((t) => t.problems.map((p) => p.link))));
+  const inPlan = new Set(sheets.flatMap((s) => s.topics.flatMap((t) => t.problems.map((p) => problemIdentity(p.link)))));
   return [...solved].filter((l) => inPlan.has(l)).slice(0, MAX_SOLVED_LINKS);
 };
 
@@ -69,9 +80,10 @@ const partLabels = (items) => {
 const presentItem = (it, labels) => ({
   id: it._id ? String(it._id) : null, key: it.key ?? null, originalKey: it.originalKey ?? null, type: it.type, ref: it.ref ?? null, link: it.link ?? null, title: it.title,
   plannedMinutes: it.plannedMinutes, day: it.day ?? null, plannedDay: it.plannedDay ?? it.day ?? null, stepId: it.stepId ?? null,
+  alternatives: alternativeResources(it.link), replacesKey: it.replacesKey ?? null,
   part: labels?.get(it.key) ?? it.part ?? null, source: it.source ?? 'planner', core: it.core ?? true, sheet: it.sheet ?? null,
   topicId: it.topicId ?? null, topicTitle: it.topicTitle ?? null, subject: it.subject ?? null, difficulty: it.difficulty ?? null,
-  starred: !!it.starred, locked: !!it.locked, skipped: !!it.skipped, result: it.result ?? null, quizScore: it.quizScore ?? null, doneAt: it.doneAt ?? null,
+  starred: !!it.starred, locked: !!it.locked, skipped: !!it.skipped, result: it.result ?? null, quizScore: it.quizScore ?? null, doneAt: it.doneAt ?? null, completedStudyDay: it.completedStudyDay ?? null,
   reviewStage: it.reviewStage ?? null, nextReviewDay: it.nextReviewDay ?? null, dueDay: it.dueDay ?? null, failed: it.failed ?? undefined, solvedOnSheet: !!it.solvedOnSheet,
 });
 const presentPlan = (doc) => {
@@ -91,8 +103,8 @@ const presentView = (v, allItems) => {
 const toStored = (doc) => {
   const o = doc.toObject();
   return {
-    input: { goalType: o.goalType, style: o.style, startDate: o.startDate, weeks: o.weeks, hoursByWeekday: o.hoursByWeekday, restDay: o.restDay, sheetSlug: o.sheetSlug, roadmapSlug: o.roadmapSlug, subjects: o.subjects, knownTopics: o.knownTopics, solvedLinks: o.solvedLinks, lighterDays: o.lighterDays, originReport: o.originReport },
-    startDate: o.startDate, deadline: o.deadline, items: o.items, coverage: o.coverage,
+    input: { goalType: o.goalType, style: o.style, startDate: o.startDate, weeks: o.weeks, hoursByWeekday: o.hoursByWeekday, restDay: o.restDay, sheetSlug: o.sheetSlug, roadmapSlug: o.roadmapSlug, subjects: o.subjects, knownTopics: o.knownTopics, solvedLinks: o.solvedLinks, lighterDays: o.lighterDays, originReport: o.originReport, pausedDays: o.totalPausedDays || 0 },
+    startDate: o.startDate, deadline: o.deadline, items: o.items, coverage: o.coverage, revision: o.updatedAt,
   };
 };
 
@@ -109,15 +121,20 @@ const previewPlan = (req, res, next) => {
 // GET /api/plan
 const getPlan = async (req, res, next) => {
   try {
+    const settings = calendarSettings(req.user);
+    const now = planClock.now();
+    const calendar = { ...settings, today: studyDay(now, settings), nextRollover: nextStudyBoundary(now, settings) };
+    const paused = await Plan.find({ user: req.user._id, status: 'paused' }).select('title deadline pausedAtDay').lean();
+    const pausedPlans = paused.map((plan) => ({ id: String(plan._id), title: plan.title, deadline: plan.deadline, pausedAtDay: plan.pausedAtDay }));
     const doc = await Plan.findOne({ user: req.user._id, status: 'active' });
-    if (!doc) return sendSuccess(res, 200, 'No active plan', { plan: null, today: null, finished: false });
+    if (!doc) return sendSuccess(res, 200, 'No active plan', { plan: null, today: null, finished: false, calendar, pausedPlans });
     // a problem solved on its sheet (not through the plan) counts as done here: it leaves Today and the on-track numbers, and the page can show it done
     const solved = await solvedOnSheets(req.user._id, doc);
     const stored = toStored(doc);
     stored.items = withSheetSolves(stored.items, solved);
     const plan = presentPlan(doc);
-    plan.items = plan.items.map((it) => ({ ...it, solvedOnSheet: it.type === 'dsa' && !it.doneAt && solved.has(it.link) }));
-    return sendSuccess(res, 200, 'Plan fetched successfully', { plan, today: presentView(adj.todayView(stored, today()), stored.items), finished: doc.deadline < today() });
+    plan.items = plan.items.map((it) => ({ ...it, solvedOnSheet: it.type === 'dsa' && !it.doneAt && solved.has(problemIdentity(it.link)) }));
+    return sendSuccess(res, 200, 'Plan fetched successfully', { plan, today: presentView(adj.todayView(stored, today(req)), stored.items), calendar, pausedPlans, finished: doc.deadline < today(req) });
   } catch (error) {
     return next(error);
   }
@@ -128,9 +145,9 @@ const getPlan = async (req, res, next) => {
 const createPlan = async (req, res, next) => {
   try {
     const data = getPlanData();
-    const input = toInput(req.body);
+    const input = toInput(req.body, req.user);
     const existing = await Plan.findOne({ user: req.user._id, status: 'active' });
-    if (existing && existing.deadline >= today() && !req.body.replace) return next(new AppError(409, 'You already have an active plan. Replace it or delete it first.'));
+    if (existing && existing.deadline >= today(req) && !req.body.replace) return next(new AppError(409, 'You already have an active plan. Replace it or delete it first.'));
 
     input.solvedLinks = await solvedLinksFor(req.user._id, input, data);
     let plan;
@@ -142,7 +159,14 @@ const createPlan = async (req, res, next) => {
     if (plan.items.length > PLAN_MAX_ITEMS) return next(new AppError(422, `This plan would have ${plan.items.length} items and the most is ${PLAN_MAX_ITEMS}. Choose fewer weeks, fewer subjects or a smaller sheet.`));
     if (!plan.coverage.syllabusItems) return next(new AppError(422, 'There is nothing to plan: every problem on this sheet is already solved or marked as known.'));
 
-    if (existing) await Plan.updateOne({ _id: existing._id }, { $set: { status: 'finished' } });
+    let archived = null;
+    if (existing) {
+      archived = await Plan.findOneAndUpdate(
+        { _id: existing._id, user: req.user._id, status: 'active', updatedAt: existing.updatedAt },
+        { $set: { status: 'finished' } }, { returnDocument: 'after' },
+      );
+      if (!archived) throw new AppError(409, 'Your plan changed. Refresh before replacing it.');
+    }
     let doc;
     try {
       doc = await Plan.create({
@@ -152,20 +176,28 @@ const createPlan = async (req, res, next) => {
         coverage: plan.coverage, notices: plan.notices, items: plan.items,
       });
     } catch (error) {
-      if (existing) await Plan.updateOne({ _id: existing._id }, { $set: { status: 'active' } }); // the old plan stays as it was
+      // Restore only the snapshot this request archived. A concurrent pause or
+      // replacement must never be overwritten by failure compensation.
+      if (archived) {
+        try {
+          await Plan.updateOne({ _id: archived._id, user: req.user._id, status: 'finished', updatedAt: archived.updatedAt }, { $set: { status: 'active' } });
+        } catch (restoreError) {
+          if (restoreError.code !== 11000) throw restoreError;
+        }
+      }
       if (error.code === 11000) return next(new AppError(409, 'You already have an active plan. Replace it or delete it first.'));
       throw error;
     }
     const old = await Plan.find({ user: req.user._id, status: 'finished' }).sort({ createdAt: -1 }).skip(PLAN_MAX_FINISHED).select('_id').lean();
     if (old.length) await Plan.deleteMany({ _id: { $in: old.map((p) => p._id) }, user: req.user._id });
-    return sendSuccess(res, 201, 'Plan created successfully', { plan: presentPlan(doc), today: presentView(adj.todayView(toStored(doc), today()), doc.items) });
+    return sendSuccess(res, 201, 'Plan created successfully', { plan: presentPlan(doc), today: presentView(adj.todayView(toStored(doc), today(req)), doc.items) });
   } catch (error) {
     return next(error);
   }
 };
 
 // Load only an owned report and derive its changes on the server. The checksum
-// binds consent to the report, current plan, mode and India calendar day.
+// binds consent to the report, current plan, mode and account study day.
 async function reportImportContext(req) {
   if (!mongoose.isObjectIdOrHexString(req.params.reportId)) throw new AppError(404, 'Report not found');
   const [report, current] = await Promise.all([
@@ -175,7 +207,7 @@ async function reportImportContext(req) {
   if (!report) throw new AppError(404, 'Report not found');
   if (!Number.isInteger(report.days) || report.days < 1 || report.days > 364) throw new AppError(422, 'This report has no valid study period.');
   const mode = req.body.mode;
-  const day = today();
+  const day = today(req);
   if (current && current.deadline < day && mode === 'merge') {
     throw new AppError(409, 'This plan has finished. Choose Replace to start a new report plan.');
   }
@@ -261,7 +293,7 @@ const deletePlan = async (req, res, next) => {
 };
 const deleteHistory = async (req, res, next) => {
   try {
-    const { deletedCount } = await Plan.deleteMany(historyFilter(req.user._id));
+    const { deletedCount } = await Plan.deleteMany(historyFilter(req.user));
     return sendSuccess(res, 200, 'Plan history deleted successfully', { deleted: deletedCount });
   } catch (error) {
     return next(error);
@@ -269,17 +301,23 @@ const deleteHistory = async (req, res, next) => {
 };
 
 // Finished plans are snapshots: reading history never overlays later sheet progress.
-const historyFilter = (user) => ({ user, $or: [{ status: 'finished' }, { deadline: { $lt: today() } }] });
+const historyFilter = (user) => ({
+  user: user._id,
+  $or: [
+    { status: 'finished' },
+    { status: 'active', deadline: { $lt: studyDay(planClock.now(), calendarSettings(user)) } },
+  ],
+});
 const getHistory = async (req, res, next) => {
   try {
-    const docs = await Plan.find(historyFilter(req.user._id)).sort({ createdAt: -1, _id: -1 }).select('title goalType startDate deadline createdAt');
+    const docs = await Plan.find(historyFilter(req.user)).sort({ createdAt: -1, _id: -1 }).select('title goalType startDate deadline createdAt');
     return sendSuccess(res, 200, 'Plan history fetched', { plans: docs.map((doc) => ({ id: String(doc._id), title: doc.title, goalType: doc.goalType, startDate: doc.startDate, deadline: doc.deadline, createdAt: doc.createdAt, readOnly: true })) });
   } catch (error) { return next(error); }
 };
 const getHistoryPlan = async (req, res, next) => {
   try {
     if (!mongoose.isObjectIdOrHexString(req.params.id)) throw new AppError(404, 'Plan not found');
-    const doc = await Plan.findOne({ ...historyFilter(req.user._id), _id: req.params.id });
+    const doc = await Plan.findOne({ ...historyFilter(req.user), _id: req.params.id });
     if (!doc) throw new AppError(404, 'Plan not found');
     return sendSuccess(res, 200, 'Finished plan fetched', { plan: { ...presentPlan(doc), status: 'finished' }, readOnly: true });
   } catch (error) { return next(error); }
@@ -288,7 +326,7 @@ const getHistoryPlan = async (req, res, next) => {
 // The change a request describes, in the adjust module's words, with the current solved list so a rebuild does not bring solved problems back.
 const changeFrom = async (req, doc) => {
   const b = req.body;
-  const change = { type: b.type, solvedLinks: await solvedLinksFor(req.user._id, { goalType: doc.goalType, sheetSlug: doc.sheetSlug }, getPlanData()) };
+  const change = { type: b.type, deadline: b.deadline, solvedLinks: await solvedLinksFor(req.user._id, { goalType: doc.goalType, sheetSlug: doc.sheetSlug }, getPlanData()) };
   if (b.type === 'hours') { change.hoursByWeekday = weekdayHours(b); if (b.restDay !== undefined) change.restDay = b.restDay; }
   if (b.type === 'lighter') change.lighterDays = b.lighterDays;
   return change;
@@ -298,7 +336,7 @@ const makeChange = async (req) => {
   if (!doc) throw new AppError(404, 'You have no active plan');
   let result;
   try {
-    result = adj.previewChange(toStored(doc), getPlanData(), today(), await changeFrom(req, doc));
+    result = adj.previewChange(toStored(doc), getPlanData(), today(req), await changeFrom(req, doc));
   } catch (error) {
     throw asAppError(error);
   }
@@ -326,11 +364,11 @@ const applyChange = async (req, res, next) => {
     // the update only goes through if nobody changed the plan since it was read
     const updated = await Plan.findOneAndUpdate(
       { _id: doc._id, user: req.user._id, status: 'active', updatedAt: doc.updatedAt },
-      { $set: { items: p.items, hoursByWeekday: p.input.hoursByWeekday, restDay: p.input.restDay, lighterDays: p.input.lighterDays, solvedLinks: p.input.solvedLinks, coverage: p.coverage, notices: p.notices } },
+      { $set: { items: p.items, deadline: p.deadline, weeks: p.input.weeks, hoursByWeekday: p.input.hoursByWeekday, restDay: p.input.restDay, lighterDays: p.input.lighterDays, solvedLinks: p.input.solvedLinks, coverage: p.coverage, notices: p.notices } },
       { returnDocument: 'after', runValidators: true }
     );
     if (!updated) return next(new AppError(409, 'The plan changed while you were looking at it. Preview the change again.'));
-    return sendSuccess(res, 200, 'Change applied', { plan: presentPlan(updated), today: presentView(adj.todayView(toStored(updated), today()), updated.items) });
+    return sendSuccess(res, 200, 'Change applied', { plan: presentPlan(updated), today: presentView(adj.todayView(toStored(updated), today(req)), updated.items) });
   } catch (error) {
     return next(error);
   }
@@ -338,16 +376,23 @@ const applyChange = async (req, res, next) => {
 
 // ── Phase 4: Items API, DSA sync, and Weekly Review ──────────────────────────
 
-const findActivePlan = async (userId, editable = true) => {
-  const doc = await Plan.findOne({ user: userId, status: 'active' });
+const findActivePlan = async (user, editable = true) => {
+  const doc = await Plan.findOne({ user: user._id, status: 'active' });
   if (!doc) throw new AppError(404, 'You have no active plan');
-  if (editable && doc.deadline < today()) throw new AppError(409, 'This plan is finished. Its history is read-only.');
+  const day = studyDay(planClock.now(), calendarSettings(user));
+  if (editable && doc.deadline < day) throw new AppError(409, 'This plan is finished. Its history is read-only.');
   return doc;
 };
-
-// All the parts of one item (an item longer than a day is split into parts that share a problem or a step).
 const partsOf = (doc, item) => doc.items.filter((it) => gen.baseId(it) === gen.baseId(item));
-const clearLadder = (it) => { it.reviewLadder = null; it.reviewStage = null; it.reviewBaseDay = null; it.nextReviewDay = null; it.lastFailedDay = null; it.lastReviewDay = null; };
+// Undoing a completion also removes its review schedule and daily review guard.
+const clearLadder = (item) => {
+  Object.assign(item, {
+    completedStudyDay: null, lastReviewAt: null, reviewWindowEndsAt: null,
+    reviewLadder: null, reviewStage: null, reviewBaseDay: null,
+    nextReviewDay: null, lastFailedDay: null, lastReviewDay: null,
+    reviewNeedsPractice: undefined,
+  });
+};
 
 const findItemInPlan = (doc, id) => {
   const item = doc.items.find((it) => String(it._id) === id || it.key === id);
@@ -380,27 +425,9 @@ const withTransaction = async (fn) => {
 
 // Ticking a DSA item in the plan marks the problem solved on its sheet, unticking removes it. Returns what it changed
 // ({ changed, previous: the earlier solvedAt }) so the caller can undo it if the plan cannot be saved.
-const syncDsaProgress = async (userId, sheetSlug, link, isDone, session = null) => {
+const syncDsaProgress = async (userId, sheetSlug, link, isDone, session = null, completedDay = null) => {
   if (!sheetSlug || !link) return { changed: false, previous: null };
-  const filter = { user: userId, sheetSlug };
-  const opts = session ? { session } : {};
-  if (isDone) {
-    const now = new Date();
-    const push = { $push: { solvedProblems: { link, solvedAt: now } } };
-    const matches = { ...filter, 'solvedProblems.link': { $ne: link } };
-    let result;
-    try {
-      result = await Progress.updateOne(matches, { ...push, $setOnInsert: { createdAt: now } }, { upsert: true, ...opts });
-    } catch (err) {
-      if (err.code !== 11000) throw err;
-      result = await Progress.updateOne(matches, push, opts); // two first ticks at once: the other one created the document
-    }
-    return { changed: (result.modifiedCount || 0) + (result.upsertedCount || 0) > 0, previous: null };
-  }
-  const before = await Progress.findOne(filter, { solvedProblems: { $elemMatch: { link } } }, opts).lean();
-  const previous = before?.solvedProblems?.[0]?.solvedAt ?? null;
-  const result = await Progress.updateOne(filter, { $pull: { solvedProblems: { link } } }, opts);
-  return { changed: (result.modifiedCount || 0) > 0, previous };
+  return writeProblemProgress({ user: userId, sheetSlug, link, mode: isDone ? 'done' : 'undone', session, studyDay: completedDay });
 };
 
 // Saves the plan and the sheet progress as one operation. On a replica set that is a transaction. On a single MongoDB server (no
@@ -408,16 +435,16 @@ const syncDsaProgress = async (userId, sheetSlug, link, isDone, session = null) 
 const persistWithSync = (doc, sync) => withTransaction(async (session) => {
   if (session) {
     await doc.save({ session });
-    if (sync) await syncDsaProgress(doc.user, sync.sheet, sync.link, sync.isDone, session);
+    if (sync) await syncDsaProgress(doc.user, sync.sheet, sync.link, sync.isDone, session, sync.studyDay);
     return;
   }
-  const info = sync ? await syncDsaProgress(doc.user, sync.sheet, sync.link, sync.isDone) : null;
+  const info = sync ? await syncDsaProgress(doc.user, sync.sheet, sync.link, sync.isDone, null, sync.studyDay) : null;
   try {
     await doc.save();
   } catch (error) {
     if (info?.changed) {
       if (sync.isDone) await syncDsaProgress(doc.user, sync.sheet, sync.link, false);
-      else await Progress.updateOne({ user: doc.user, sheetSlug: sync.sheet }, { $push: { solvedProblems: { link: sync.link, solvedAt: info.previous } } });
+      else await Progress.updateOne({ user: doc.user, sheetSlug: sync.sheet }, { $push: { solvedProblems: { link: sync.link, solvedAt: info.previous, studyDay: info.previousStudyDay } } });
     }
     throw error;
   }
@@ -426,22 +453,27 @@ const persistWithSync = (doc, sync) => withTransaction(async (session) => {
 // What the user has marked solved on the sheets for the plan's open DSA items (decision 2: a problem solved on the sheet shows done in the plan).
 // Returns link -> the date it was solved (or null for old ticks with no date).
 const solvedOnSheets = async (userId, doc) => {
-  const open = new Set(doc.items.filter((it) => it.type === 'dsa' && it.link && !it.doneAt).map((it) => it.link));
+  const open = new Set(doc.items.filter((it) => it.type === 'dsa' && it.link && !it.doneAt).map((it) => problemIdentity(it.link)));
   if (!open.size) return new Map();
   const docs = await Progress.find({ user: userId }).select('solvedProblems').lean();
   const solved = new Map();
-  for (const d of docs) for (const p of d.solvedProblems || []) if (open.has(p.link) && !solved.has(p.link)) solved.set(p.link, p.solvedAt ?? null);
+  solved.studyDays = new Map();
+  for (const p of normalizedSolves(docs.flatMap((doc) => doc.solvedProblems || []))) {
+    if (open.has(problemIdentity(p.link))) solved.set(problemIdentity(p.link), p.solvedAt ?? null);
+    solved.studyDays.set(problemIdentity(p.link), p.studyDay || (p.solvedAt ? gen.todayIst(p.solvedAt) : null));
+  }
   return solved;
 };
 // An open DSA item whose problem is solved on its sheet counts as done, with the date it was solved there. Used by the plan, Today and the weekly review,
 // so they all agree. An unknown date stays unknown and earns no dated weekly credit. Nothing is written.
-const withSheetSolves = (items, solved) => items.map((it) => (it.type === 'dsa' && !it.doneAt && solved.has(it.link) ? { ...it, doneAt: solved.get(it.link) ?? null, solvedOnSheet: true } : it));
+const withSheetSolves = (items, solved) => items.map((it) => (it.type === 'dsa' && !it.doneAt && solved.has(problemIdentity(it.link)) ? { ...it, doneAt: solved.get(problemIdentity(it.link)) ?? null, completedStudyDay: solved.studyDays?.get(problemIdentity(it.link)) ?? null, solvedOnSheet: true } : it));
 
 const applyItemsUpdate = (doc, updatedList) => {
   for (const updated of updatedList) {
     const target = doc.items.find((it) => it.key === updated.key);
     if (target) {
       if ('doneAt' in updated) target.doneAt = updated.doneAt ?? null;
+      if ('completedStudyDay' in updated) target.completedStudyDay = updated.completedStudyDay ?? null;
       if ('result' in updated) target.result = updated.result ?? null;
       if ('quizScore' in updated) target.quizScore = updated.quizScore ?? null;
       if ('reviewLadder' in updated) target.reviewLadder = updated.reviewLadder ?? null;
@@ -460,7 +492,7 @@ const applyItemsUpdate = (doc, updatedList) => {
 // PATCH /api/plan/items/:id   body: { done?, result?, quizScore?, day?, plannedMinutes? }
 const updateItem = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id);
+    const doc = await findActivePlan(req.user);
     const item = findItemInPlan(doc, req.params.id);
     const body = req.body;
     let dsaSync = null;
@@ -500,7 +532,7 @@ const updateItem = async (req, res, next) => {
             for (const p of partsOf(doc, item)) { p.result = null; p.quizScore = null; clearLadder(p); }
             if (item.type === 'dsa' && item.link) {
               dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: false };
-              doc.solvedLinks = doc.solvedLinks.filter((l) => l !== item.link);
+              doc.solvedLinks = doc.solvedLinks.filter((link) => problemIdentity(link) !== problemIdentity(item.link));
             }
           }
         }
@@ -508,8 +540,8 @@ const updateItem = async (req, res, next) => {
         if (!item.doneAt) {
           if (item.skipped) return next(new AppError(422, 'Cannot mark a skipped item as done'));
           const info = {
-            doneAt: new Date(),
-            doneDay: today(),
+            doneAt: planClock.now(),
+            doneDay: today(req),
             result: body.result || (item.type === 'dsa' ? 'alone' : undefined),
             quizScore: body.quizScore,
           };
@@ -525,7 +557,7 @@ const updateItem = async (req, res, next) => {
           }
           applyItemsUpdate(doc, markRes.items);
           if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt)) { // the sheet is ticked when the last part is done
-            dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true };
+            dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true, studyDay: today(req) };
             if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);
           }
         }
@@ -544,7 +576,7 @@ const updateItem = async (req, res, next) => {
 // POST /api/plan/items   body: { title, plannedMinutes, day }
 const addItem = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id);
+    const doc = await findActivePlan(req.user);
     if (doc.items.length >= PLAN_MAX_ITEMS) {
       return next(new AppError(422, `This plan already has ${PLAN_MAX_ITEMS} items`));
     }
@@ -580,7 +612,7 @@ const addItem = async (req, res, next) => {
 // a removed one would come back at the next rebuild, and removing an item must never un-solve a problem on its sheet.
 const removeItem = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id);
+    const doc = await findActivePlan(req.user);
     const item = findItemInPlan(doc, req.params.id);
     if (item.source === 'planner') return next(new AppError(422, 'This item came from your plan. Skip it instead of removing it.'));
     doc.items.pull(item._id);
@@ -595,7 +627,7 @@ const removeItem = async (req, res, next) => {
 // PATCH /api/plan/items/:id/star
 const starItem = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id);
+    const doc = await findActivePlan(req.user);
     const item = findItemInPlan(doc, req.params.id);
     item.starred = !item.starred;
     await doc.save();
@@ -608,14 +640,14 @@ const starItem = async (req, res, next) => {
 // POST /api/plan/items/:id/result   body: { result?, quizScore? }
 const recordResult = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id);
+    const doc = await findActivePlan(req.user);
     const item = findItemInPlan(doc, req.params.id);
     if (item.doneAt) return next(new AppError(422, 'Item is already completed'));
     if (item.skipped) return next(new AppError(422, 'Cannot record result for a skipped item'));
 
     const info = {
-      doneAt: new Date(),
-      doneDay: today(),
+      doneAt: planClock.now(),
+      doneDay: today(req),
       result: req.body.result,
       quizScore: req.body.quizScore,
     };
@@ -633,7 +665,7 @@ const recordResult = async (req, res, next) => {
 
     let dsaSync = null;
     if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt)) {
-      dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true };
+      dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true, studyDay: today(req) };
       if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);
     }
 
@@ -649,18 +681,28 @@ const recordResult = async (req, res, next) => {
 // POST /api/plan/items/:id/review   body: { passed }
 const recordReview = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id);
+    const doc = await findActivePlan(req.user);
     const item = findItemInPlan(doc, req.params.id);
-    const reviewRes = adj.recordReview(toStored(doc).items, item.key, req.body.passed, today());
+    const now = planClock.now();
+    const settings = calendarSettings(req.user);
+    const reviewedThisDay = item.lastReviewAt && studyDay(new Date(item.lastReviewAt), settings) === today(req);
+    if (reviewedThisDay || (item.reviewWindowEndsAt && now < item.reviewWindowEndsAt)) {
+      throw new AppError(422, 'You have already reviewed this item in the current study-day window.');
+    }
+    const reviewRes = adj.recordReview(toStored(doc).items, item.key, req.body.passed, today(req));
     if (reviewRes.error) {
       if (reviewRes.error === 'no-review-due') return next(new AppError(422, 'No review is due for this item'));
       if (reviewRes.error === 'already-reviewed-today') return next(new AppError(422, 'You have already reviewed this item today.'));
       return next(new AppError(422, reviewRes.error));
     }
+    const reviewed = reviewRes.items.find((entry) => entry.key === item.key);
+    reviewed.lastReviewAt = now;
+    reviewed.reviewWindowEndsAt = nextStudyBoundary(now, settings);
+    reviewed.reviewNeedsPractice = !req.body.passed;
     // Two simultaneous replies must not advance the same overdue ladder twice.
     const saved = await Plan.findOneAndUpdate(
       { _id: doc._id, user: req.user._id, status: 'active', updatedAt: doc.updatedAt,
-        items: { $elemMatch: { _id: item._id, reviewStage: item.reviewStage, nextReviewDay: item.nextReviewDay, lastReviewDay: { $ne: today() } } } },
+        items: { $elemMatch: { _id: item._id, reviewStage: item.reviewStage, nextReviewDay: item.nextReviewDay, lastReviewDay: { $ne: today(req) } } } },
       { $set: { items: reviewRes.items } }, { returnDocument: 'after', runValidators: true }
     );
     if (!saved) throw new AppError(409, 'The plan changed. Refresh it before reviewing again.');
@@ -678,7 +720,7 @@ const recordReview = async (req, res, next) => {
 // POST /api/plan/items/:id/skip
 const skipItem = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id);
+    const doc = await findActivePlan(req.user);
     const item = findItemInPlan(doc, req.params.id);
     if (item.doneAt) return next(new AppError(422, 'Completed items cannot be skipped'));
 
@@ -696,7 +738,7 @@ const skipItem = async (req, res, next) => {
 // POST /api/plan/items/:id/unskip
 const unskipItem = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id);
+    const doc = await findActivePlan(req.user);
     const item = findItemInPlan(doc, req.params.id);
     const unskipRes = adj.unskipItem(toStored(doc).items, item.key);
     applyItemsUpdate(doc, unskipRes.items);
@@ -711,9 +753,9 @@ const unskipItem = async (req, res, next) => {
 // GET /api/plan/review?weekStart=YYYY-MM-DD
 const getWeeklyReview = async (req, res, next) => {
   try {
-    const doc = await findActivePlan(req.user._id, false);
+    const doc = await findActivePlan(req.user, false);
     const queryStart = req.query?.weekStart;
-    const n = queryStart ? gen.dayNumber(queryStart) : gen.dayNumber(today());
+    const n = queryStart ? gen.dayNumber(queryStart) : gen.dayNumber(today(req));
     const monday = gen.ymdOf(n - gen.weekdayOf(n));
     const sunday = gen.ymdOf(gen.dayNumber(monday) + 6);
     const startNum = gen.dayNumber(doc.startDate);
@@ -726,7 +768,7 @@ const getWeeklyReview = async (req, res, next) => {
 
     const completedItems = items.filter((it) => {
       if (!it.doneAt) return false;
-      const doneDay = gen.todayIst(it.doneAt);
+      const doneDay = (it.completedStudyDay || gen.todayIst(it.doneAt));
       return doneDay >= monday && doneDay <= sunday;
     });
     const completedMinutes = completedItems.reduce((s, it) => s + it.plannedMinutes, 0);
@@ -736,7 +778,7 @@ const getWeeklyReview = async (req, res, next) => {
     const weakTopics = [];
     const seenWeak = new Set();
     for (const it of items) {
-      const wasDoneInWeek = it.doneAt && gen.todayIst(it.doneAt) >= monday && gen.todayIst(it.doneAt) <= sunday;
+      const wasDoneInWeek = it.doneAt && (it.completedStudyDay || gen.todayIst(it.doneAt)) >= monday && (it.completedStudyDay || gen.todayIst(it.doneAt)) <= sunday;
       const wasScheduledInWeek = it.day >= monday && it.day <= sunday;
       const failedInWeek = it.lastFailedDay && it.lastFailedDay >= monday && it.lastFailedDay <= sunday;
       if (!wasDoneInWeek && !wasScheduledInWeek && !failedInWeek) continue;
@@ -785,7 +827,7 @@ const getWeeklyReview = async (req, res, next) => {
       }
     }
 
-    const track = gen.onTrack(items, today());
+    const track = gen.onTrack(items, today(req));
 
     return sendSuccess(res, 200, 'Weekly review computed', {
       week: {
@@ -810,7 +852,42 @@ const getWeeklyReview = async (req, res, next) => {
   }
 };
 
+async function availableSubstitutes(req, doc, item) {
+  if (item.type !== 'dsa' || partsOf(doc, item).some((part) => part.doneAt) || (await solvedOnSheets(req.user._id, doc)).has(problemIdentity(item.link))) {
+    throw new AppError(422, 'Only an unfinished problem can be substituted. Completed parts stay protected.');
+  }
+  const progress = await Progress.find({ user: req.user._id }).select('solvedProblems').lean();
+  const solved = new Set(normalizedSolves(progress.flatMap((row) => row.solvedProblems)).map((entry) => entry.link));
+  return substituteOptions(doc, item, getPlanData(), solved);
+}
+
+const getSubstitutes = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user);
+    const item = findItemInPlan(doc, req.params.id);
+    return sendSuccess(res, 200, 'Available alternatives', { alternatives: alternativeResources(item.link), substitutes: await availableSubstitutes(req, doc, item) });
+  } catch (error) { return next(error); }
+};
+
+const substituteItem = async (req, res, next) => {
+  try {
+    const doc = await findActivePlan(req.user);
+    const item = findItemInPlan(doc, req.params.id);
+    const option = (await availableSubstitutes(req, doc, item)).find((entry) => entry.sheetSlug === req.body.sheetSlug && problemIdentity(entry.link) === problemIdentity(req.body.link));
+    if (!option || option.checksum !== req.body.checksum) throw new AppError(409, 'The available problems changed. Preview again.');
+    if (doc.items.length >= PLAN_MAX_ITEMS) throw new AppError(422, 'This plan has reached its item limit.');
+    const group = new Set(partsOf(doc, item).map((part) => part.key));
+    const items = doc.items.map((part) => ({ ...part.toObject(), skipped: group.has(part.key) ? true : part.skipped }));
+    items.push({ key: 'substitute:' + new mongoose.Types.ObjectId(), type: 'dsa', title: option.title, ref: `dsa:${option.sheetSlug}:${option.topicId}`, sheet: option.sheetSlug, topicId: option.topicId, topicTitle: option.topicTitle, difficulty: option.difficulty, link: option.link, plannedMinutes: option.plannedMinutes, day: item.day, plannedDay: item.day, source: 'student', core: item.core, replacesKey: item.key });
+    const saved = await Plan.findOneAndUpdate({ _id: doc._id, user: req.user._id, status: 'active', updatedAt: doc.updatedAt }, { $set: { items } }, { returnDocument: 'after', runValidators: true });
+    if (!saved) throw new AppError(409, 'The plan changed. Preview again.');
+    return sendSuccess(res, 200, 'Substitute added; original problem remains unsolved', { plan: presentPlan(saved) });
+  } catch (error) { return next(error); }
+};
+
 module.exports = {
+  presentPlan,
+  withTransaction,
   getPlanOptions,
   previewPlan,
   getPlan,
@@ -833,4 +910,6 @@ module.exports = {
   syncDsaProgress,
   previewReportImport,
   applyReportImport,
+  getSubstitutes,
+  substituteItem,
 };

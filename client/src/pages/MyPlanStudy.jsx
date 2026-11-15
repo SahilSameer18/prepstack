@@ -4,6 +4,7 @@ import { useStudyPlan } from "../hooks/useStudyPlan";
 import StudyToday from "../components/plan/StudyToday";
 import StudyStart from "../components/plan/StudyStart";
 import StudySchedule from "../components/plan/StudySchedule";
+import StudyRecovery from "../components/plan/StudyRecovery";
 import StudyReview, { StudyItemList } from "../components/plan/StudyReview";
 import StudyHistory from "../components/plan/StudyHistory";
 import {
@@ -39,7 +40,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
   const [historyVersion, setHistoryVersion] = useState(0);
   const plan = model.data?.plan;
   const readOnly = !!model.data?.finished;
-  const requestedTab = params.get(embedded ? "view" : "tab") || (readOnly ? "plan" : "today");
+  const requestedTab = params.get(embedded ? "view" : "tab") || (readOnly || (!plan && model.data?.pausedPlans?.length) ? "plan" : "today");
   const tab = TABS.some((name) => name.toLowerCase() === requestedTab)
     ? requestedTab
     : "today";
@@ -135,7 +136,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
   const practiceItems = plan ? revisionRoundItems(plan.items) : [];
   const today = model.data.today || {
     isToday: true,
-    date: dateInIndia(),
+    date: model.data.calendar?.today || dateInIndia(),
     items: [],
     minutes: 0,
     startItem: null,
@@ -164,6 +165,8 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
           </button>
         ))}
       </nav>
+
+      {tab === 'plan' && !item && !round && <StudyRecovery model={model} />}
 
       {round && !roundItem ? (
         <section className="space-y-4 text-fg-3">
@@ -227,6 +230,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
             </div>
           )}
           <StudyReview
+            currentDay={model.data.calendar?.today}
             plan={plan}
             readOnly={readOnly}
             onStart={start}
@@ -302,7 +306,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
           onClose={() => setDialog(null)}
           onConfirm={() =>
             confirmAction(() =>
-              updatePlanItem(dialogItem.id, { day: dateInIndia() }),
+              updatePlanItem(dialogItem.id, { day: model.data.calendar?.today || dateInIndia() }),
             )
           }
         />

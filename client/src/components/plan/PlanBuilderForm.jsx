@@ -149,7 +149,7 @@ export default function PlanBuilderForm({
           </Field>
           <Field
             name="startDate"
-            label="Start date (India time)"
+            label="Start date"
             error={errors.startDate}
           >
             <input

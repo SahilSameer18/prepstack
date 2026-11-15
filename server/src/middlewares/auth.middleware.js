@@ -22,16 +22,19 @@ const authMiddleware = async (req, res, next) => {
     // A token without a session id (issued before this check existed) gets the same 401, so the
     // client simply refreshes once and carries on with a new token.
     const { id, sid } = decodedToken;
-    const active = mongoose.isValidObjectId(id) && mongoose.isValidObjectId(sid) && await userModel.exists({
+    const active = mongoose.isValidObjectId(id) && mongoose.isValidObjectId(sid) && await userModel.findOne({
       _id: id,
       refreshTokens: { $elemMatch: { _id: sid, expiresAt: { $gt: new Date() } } },
-    });
+    }).select('studyTimeZone studyDayStart').lean();
     if (!active) {
       return unauthorized(res, 'Session expired');
     }
 
     req.user = decodedToken;
     req.user._id = decodedToken.id; // normalize: JWT uses 'id', controllers use '_id'
+    // Read current preferences from the account, never from a stale JWT.
+    req.user.studyTimeZone = active.studyTimeZone || 'Asia/Kolkata';
+    req.user.studyDayStart = active.studyDayStart ?? 0;
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {

@@ -14,9 +14,24 @@ import SelectField from '../ui/SelectField';
 import TodayCard from './TodayCard';
 import ReportPlanImport from '../plan/ReportPlanImport';
 import StudyToday from '../plan/StudyToday';
+import StudyRecovery from '../plan/StudyRecovery';
 import { pullForwardItem, revisionRoundItems, resolveStudyItem, studyProgress, studyChecklistDays, studyWeeks } from '../../utils/studyPlan';
 
 describe('Daily study screens', () => {
+  it('offers a paused main plan alongside the active sprint without a second pause action', () => {
+    const data = {
+      plan: { items: [] }, finished: false,
+      calendar: { timeZone: 'America/Los_Angeles', dayStartHour: 4, today: '2026-11-16' },
+      pausedPlans: [{ id: 'main', title: 'Placement main', pausedAtDay: '2026-11-01' }],
+    };
+    const tree = createElement(MemoryRouter, null, createElement(StudyRecovery, { model: { data } }));
+    const markup = renderToStaticMarkup(tree);
+    expect(markup).toContain('America/Los_Angeles');
+    expect(markup).toContain('Placement main');
+    expect(markup).toContain('Resume plan');
+    expect(markup).toContain('Read paused plan');
+    expect(markup).not.toContain('>Pause plan<');
+  });
   it('uses goal-plan Today without report controls or a second Start button', () => {
     const task = { id: 'one', key: 'one', title: 'Current arrays', plannedMinutes: 40 };
     const model = { data: { plan: { items: [task] }, today: { items: [task], minutes: 40, isToday: true, startItem: task }, finished: false } };

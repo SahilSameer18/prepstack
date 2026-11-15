@@ -9,12 +9,14 @@ const { findUserByUsername } = require('../utils/usernameHelper');
 const bcrypt = require('bcrypt');
 const { formatUserResponse } = require('../utils/userResponse');
 const { sendSuccess } = require('../utils/responseFormatter');
-const { currentStreak } = require('../utils/istDay');
+const { calendarSettings, studyStreak } = require('../utils/studyCalendar');
+const { planClock } = require('../services/planData');
+const { problemIdentity, normalizedSolves } = require('../utils/problemIdentity');
 
 // The ONE place that decides how many problems a user has solved: only links that still exist in a sheet,
 // each counted once (a link repeated in two topics is one problem). Used by both stats endpoints so they agree.
-// Also works out, from the dates on the ticks, when each sheet was last worked on and the current streak in IST.
-const summarizeProgress = (sheets, userProgress, now = new Date()) => {
+// Also works out, from the dates on the ticks, when each sheet was last worked on and the streak in the account's study calendar.
+const summarizeProgress = (sheets, userProgress, now = planClock.now(), calendar = calendarSettings()) => {
   const progressMap = new Map(userProgress.map((p) => [p.sheetSlug, p.solvedProblems || []]));
   const solveDates = [];
 
@@ -27,15 +29,15 @@ const summarizeProgress = (sheets, userProgress, now = new Date()) => {
     const linkSet = new Set();
     (sheet.topics || []).forEach((t) => {
       (t.problems || []).forEach((p) => {
-        if (p.link) linkSet.add(p.link);
+        if (p.link) linkSet.add(problemIdentity(p.link));
       });
     });
 
     const total = linkSet.size;
-    const entries = (progressMap.get(sheet.slug) || []).filter((entry) => linkSet.has(entry.link));
+    const entries = normalizedSolves(progressMap.get(sheet.slug) || []).filter((entry) => linkSet.has(entry.link));
     const solved = new Set(entries.map((entry) => entry.link)).size;
     const dates = entries.map((entry) => entry.solvedAt).filter(Boolean);
-    solveDates.push(...dates);
+    solveDates.push(...entries);
     const lastSolvedAt = dates.length ? new Date(Math.max(...dates.map((d) => new Date(d).getTime()))) : null;
 
     totalSolved += solved;
@@ -55,7 +57,7 @@ const summarizeProgress = (sheets, userProgress, now = new Date()) => {
     };
   });
 
-  return { totalSolved, totalQuestions, sheetsInProgress, sheetsCompleted, dsaSheets, streak: currentStreak(solveDates, now) };
+  return { totalSolved, totalQuestions, sheetsInProgress, sheetsCompleted, dsaSheets, streak: studyStreak(solveDates, now, calendar) };
 };
 
 // Parallel server queries: all DSA sheets, the user's progress records, and the project count
@@ -72,7 +74,7 @@ const getUserStats = async (req, res, next) => {
     const userId = req.user._id;
 
     const [sheets, userProgress, generatedProjectsCount] = await loadProgressData(userId);
-    const { totalSolved } = summarizeProgress(sheets, userProgress);
+    const { totalSolved } = summarizeProgress(sheets, userProgress, planClock.now(), calendarSettings(req.user));
 
     const stats = {
       generatedProjectsCount,
@@ -93,7 +95,7 @@ const getDashboardSummary = async (req, res, next) => {
 
     const [sheets, userProgress, generatedProjectsCount] = await loadProgressData(userId);
     const { totalSolved, totalQuestions, sheetsInProgress, sheetsCompleted, dsaSheets, streak } =
-      summarizeProgress(sheets, userProgress);
+      summarizeProgress(sheets, userProgress, planClock.now(), calendarSettings(req.user));
 
     const overallPct =
       totalQuestions === 0
