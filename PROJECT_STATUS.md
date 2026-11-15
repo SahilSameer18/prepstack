@@ -41,6 +41,7 @@
 **Parked (not in the order):** DebugLab (`docs/plans/DEBUGLAB_PLAN.md`), the LeetCode extension (`docs/plans/EXTENSION.md`), Analyzer Part 2 (starts only if students say yes), growth ideas (`docs/research/GROWTH_IDEAS.md`), a college dashboard.
 
 ## Open items (small, no fixed slot)
+- **Proposed, waiting for the owner:** coverage and clarity fixes for My plan after the Planly comparison (name what is missing, spread the squeeze across topics and subjects, screen clarity, a time-calibration protocol for the pilot): `docs/plans/MY_PLAN_COVERAGE_PLAN.md`. Not started; the owner decides whether and in what order.
 - The three Role Analyzer changes the owner set aside (12 Nov).
 - A browser check of the Behavioral page and of the real notes pages (both need a login).
 - The Cassandra example in System Design was read, not run; the System Design claim table in `docs/content/SOURCES.md` has only the heaviest claims.
