@@ -33,16 +33,13 @@
 
 ## Left, in build order
 
-| # | What | Who | Size | Notes |
-|---|---|---|---|---|
-| 1 | **LLD notes** (the owner started My plan Phase 0 first, so LLD can run before or after My plan Phase 1; the owner decides): new subject `lld`, one section per classic problem (parking lot, LRU cache, elevator and so on) in Java, every program run. `awesome-low-level-design` is GPL: use problem titles only, never its code. Write the plan first (`docs/plans/LLD_NOTES_PLAN.md`), then drafts, reviews, publish, wiring (same list as System Design: `server/src/data/notes/<slug>.js`, seed, test subject lists and counts, skill catalog, Notes page card, SEO page, report-link names, docs) | Claude | about a third of the System Design effort; use few agents (cost) | build order set by the owner 13 Nov 2026 |
-| 2 | **Deploy to production:** Deploy server and client; open one System Design page live (now live-seeded with real data) | owner | about 15 min | deploy order in `IMPROVEMENT_PLAN.md` |
-| 3 | **Student check on the working My plan:** 3 to 5 students and 2 to 3 job switchers; start finding them now, people take weeks. Also find one outside reader per notes subject and per roadmap (none yet) | owner | weeks of waiting | `docs/content/SOURCES.md` tables; if they say no, stop at the checklist (B4) |
-| 4 | **Stage 6 (later):** B7 quizzes (the quiz data already exists in every section), the DSA problems plan (one problem file for many sheets), Redis and background jobs (an evening learning track; the DSA cache is built there), B12 light theme, B8 public profile, CI | Claude | after My plan | `IMPROVEMENT_PLAN.md` stage 6, `docs/plans/DSA_PROBLEMS_PLAN.md`, `docs/plans/REDIS_PLAN.md` |
+The order of work, with a tick box for every feature, is in **`BUILD_CHECKLIST.md`** (root). Tick it when a feature is finished. It replaces the old table that was here (LLD notes, deploy, student check, stage 6), which is now covered there in the same order with the new work added.
 
-**Parked (not in the order):** DebugLab (`docs/plans/DEBUGLAB_PLAN.md`), the LeetCode extension (`docs/plans/EXTENSION.md`), Analyzer Part 2 (starts only if students say yes), growth ideas (`docs/research/GROWTH_IDEAS.md`), a college dashboard.
+Everything else that is planned, including the parked plans, is listed in `BUILD_CHECKLIST.md` sections 9 to 16.
 
 ## Open items (small, no fixed slot)
+- **DSA pattern lessons (decided, not started):** 34 lessons in 13 steps in the notes format, a new `dsa` subject, Java examples run by scripts, three waves, about 6 to 7 weeks: `docs/plans/DSA_LESSONS_PLAN.md`.
+- **Depth levels per subject (decided, not started):** a level for each CS subject (quick recap, full, deep dive with 26 advanced sections to write) and for DSA (from the basics, standard, quick revision): `docs/plans/MY_PLAN_DEPTH_LEVELS_PLAN.md`, about 12 to 14 days.
 - **My plan coverage fixes:** built 15 Nov 2026 (see the top of this file); still to do: depth levels per subject: `docs/plans/MY_PLAN_COVERAGE_PLAN.md`.
 - The three Role Analyzer changes the owner set aside (12 Nov).
 - A browser check of the Behavioral page and of the real notes pages (both need a login).

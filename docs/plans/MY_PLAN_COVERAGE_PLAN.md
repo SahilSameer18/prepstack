@@ -177,7 +177,7 @@ About 8 to 10 working days for A, B, C and F.
 | C Screen clarity | Done | Dates in words, day totals ("2 tasks · 1 h 50 min"), week summary line, readable preview week; Today screen unchanged (a browser spec checks it) |
 | D1 My pace | Done | Faster 0.6 / Standard 1.0 / Slower 1.4; builder, link, saved plan, "Change pace" with preview and consent; rebuilds keep it |
 | D2 Time calibration protocol | Not started | `docs/research/TIME_CALIBRATION.md` still to write |
-| E Depth levels | Not started | Later |
+| E Depth levels | Decided, not started | Planned in detail in `docs/plans/MY_PLAN_DEPTH_LEVELS_PLAN.md` |
 
 **What changed against the plan text (owner to confirm or reverse):**
 1. The floor is per merged topic group, not per sub-topic ("Arrays - I" and "Arrays - II" share one problem). The per-sub-topic floor was too heavy (it broke the 3-section floor of CS subjects on 4-week plans).

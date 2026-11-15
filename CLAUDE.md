@@ -1,7 +1,7 @@
 # Instructions for AI agents working on PrepStack
 
 0. **Starting fresh or switching agents?** Read `docs/HANDOFF.md` first (also in `AGENTS.md`).
-1. **Read `PROJECT_STATUS.md` first.** It says what is done, what is left and the build order. Work on the next item unless the owner says otherwise. When you finish, start or drop an item, update `PROJECT_STATUS.md` (move the row, change the date) and the work's own plan file under `docs/plans/`.
+1. **Read `PROJECT_STATUS.md` and `BUILD_CHECKLIST.md` first.** The checklist is the order of work: take the first unticked item unless the owner says otherwise, and tick it (`[x]`) when it is finished and tested. It says what is done, what is left and the build order. Work on the next item unless the owner says otherwise. When you finish, start or drop an item, update `PROJECT_STATUS.md` (move the row, change the date) and the work's own plan file under `docs/plans/`.
 2. **The owner decides; you recommend.** Give a recommendation, then ask. Never record your own pick as decided. The owner started My plan Phase 0 on 13 Nov 2026; the LLD notes are still planned (see `PROJECT_STATUS.md` for the current order).
 3. **Git:** never stage, commit or push. Give the `git add` and one-line `git commit -m` commands instead. No `Co-Authored-By` or other trailers. Never touch `server/.env`. Never use ports 3000 or 5173 for throwaway checks (use 3100 and 5175).
 4. **Content rules** (full rules: `docs/content/NOTES_TEMPLATE.md`, `REVIEW_CHECKLIST.md`, `IMPROVEMENT_PLAN.md` section 6):

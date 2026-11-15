@@ -4,7 +4,7 @@ This file is for agents that look for `AGENTS.md`. The full rules are in `CLAUDE
 
 Start here, in this order:
 1. `docs/HANDOFF.md`: where the project stands, the API a client can call, how the client is built, practical notes.
-2. `PROJECT_STATUS.md`: what is done, what is left, the build order. The next job is My plan Phase 5 (the public builder page).
+2. `PROJECT_STATUS.md`: what is done and the current state. `BUILD_CHECKLIST.md`: the order of work with tick boxes; the next job is its first unticked item.
 3. `CLAUDE.md`: the rules (never commit; one-line commit messages without trailers; easy words for learners; sources for every fact; the Today screen is sacred; tests and mutation checks; keep cost low).
 4. `docs/plans/MY_PLAN_PLAN.md`: the full plan and a dated log of every phase.
 
