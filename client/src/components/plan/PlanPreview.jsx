@@ -143,7 +143,7 @@ export default function PlanPreview({ builder }) {
           <PlanChecklist readOnly days={planDays(week1.items)} />
         ) : (
           <p className="text-sm text-muted">
-            No tasks fit in this calendar week. Adjust your hours or start date.
+            No tasks fit with these hours. Adjust your hours or start date.
           </p>
         )}
       </div>

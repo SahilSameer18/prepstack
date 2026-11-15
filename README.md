@@ -283,6 +283,24 @@ Paste a job description and add your resume (PDF or pasted text). You get a repo
 - **9 Learning Tracks:** **Frontend**, **Backend**, **Full Stack MERN**, **Android Development**, **Data Analytics**, **Machine Learning**, **DSA & Problem Solving**, **Java & Spring Boot** and **DevOps & Cloud**. Every step has a goal, topics, a time range, practice links into PrepStack, a checkpoint, a mini-project and 2 to 3 free official resources, all in plain words.
 - **Actionable Steps & Milestones:** Breaks down complex subjects into step-by-step milestones with estimated completion times, difficulty tiers, and curated free resources.
 
+### 🗓️ My Plan (goal-based study planner)
+
+The planner is free to preview and needs a login to save. You pick a goal (big-tech SDE, placements, a role roadmap), a sheet, the weeks you have and the hours you can study, and the server builds a day-by-day plan.
+
+- **Plain code, no AI.** The schedule is made by deterministic code (`planGenerator.js`, `planAdjust.js`): about 85% of each day is planned, 70% of that for new items and 15% for reviews. Core topics come first, in dependency order. The same input always gives the same plan, and the numbers can be tested.
+- **Public preview.** `/my-plan` shows the totals and week 1 without an account. Saving, studying and syncing need a login.
+- **Calm Today screen.** Only today's items, the time they need and one Start button. Graphs, history, reviews and settings live in other tabs.
+- **Review ladder.** Finishing a problem schedules reviews at fixed gaps that depend on how you solved it (alone, with hints, or with the solution). Overdue reviews never hide new work, and new work never hides waiting reviews.
+- **Sheet sync.** Ticking a problem in the plan ticks it on its DSA sheet, and a problem already solved on a sheet shows as done in the plan. A problem split over several days is solved on the sheet only when its last part is done.
+- **Safe changes.** Rebuild from today (optionally with a later deadline), new hours and lighter days always show a preview with a diff first. Nothing is saved until you confirm, and a stale preview is refused.
+- **Life happens.** A study calendar (your timezone and the hour the day starts, for night owls), pause and resume (the whole calendar and all review dates move forward together), review catch-up that spreads overdue reviews over several days, one paused main plan next to a short interview sprint, and a substitute for a problem whose link is dead or paywalled (the original stays unsolved).
+- **From the Role Analyzer.** A report's study plan can be merged into the plan, or replace it, after a preview. History of replaced and finished plans is read-only.
+- **Privacy.** Plans belong to the account and are deleted with it.
+
+Design and decisions: [docs/plans/MY_PLAN_PLAN.md](docs/plans/MY_PLAN_PLAN.md).
+
+---
+
 ### 👤 Unified Profile & Security Hub
 
 - **Dual-Identity Management:** Seamlessly link Google OAuth and Email/Password authentications, including the ability for OAuth-only users to establish a permanent password directly from their profile page.
@@ -419,7 +437,22 @@ erDiagram
         date updatedAt
     }
 
+    PLAN {
+        ObjectId _id PK
+        ObjectId user FK
+        string status "active, paused or finished (one active and one paused per user)"
+        string goalType
+        string deadline "YYYY-MM-DD"
+        array items "key, day, type, minutes, result, review ladder fields"
+        array lighterDays
+        string pausedAtDay
+        number totalPausedDays
+        date createdAt
+    }
+
     USER ||--o{ PROJECT : "owns"
+    USER ||--o{ PLAN : "owns (deleted with the account)"
+
     USER ||--o{ INTERVIEWREPORT : "owns (resume is never stored)"
     USER ||--o{ PROGRESS : "tracks"
     USER ||--o{ PASSWORDRESET : "asks for"
@@ -503,6 +536,29 @@ Your notes on DSA problems (pattern, time and space complexity, up to 5,000 char
 | `PUT`    | `/`       | ✅ JWT | Saves one whole note `{ problemLink, pattern, timeComplexity, spaceComplexity, approach }`; the link must belong to a sheet _(120/min)_ |
 | `DELETE` | `/?problemLink=` | ✅ JWT | Deletes a note (also for a link no longer in any sheet) _(120/min)_ |
 | `POST`   | `/import` | ✅ JWT | One-time move of the notes kept in the browser, at most 15 per request. It only adds: a note the account already has is never overwritten _(120/min)_ |
+
+### Study plan: `/api/plan`
+
+Everything except the preview and the options needs a login. Changes are two calls: a preview that returns a checksum, then an apply that must send it back.
+
+| Method | Endpoint | Auth | Description |
+| ------ | -------- | ---- | ----------- |
+| `GET` | `/options` | Public | Goals, sheets, roadmaps and limits for the builder |
+| `POST` | `/preview` | Public | Totals and week 1 for a form; writes nothing _(20/min per IP)_ |
+| `GET` | `/` | ✅ JWT | The active plan, Today, the study calendar and any paused plan |
+| `POST` | `/` | ✅ JWT | Saves a plan; `replace: true` keeps the old one as history _(10 saved an hour)_ |
+| `DELETE` | `/` | ✅ JWT | Deletes the active plan |
+| `POST` | `/changes/preview`, `/changes/apply` | ✅ JWT | Rebuild (optionally with a later deadline), new hours, lighter days _(20/min)_ |
+| `POST` | `/lifecycle/preview`, `/lifecycle/apply` | ✅ JWT | Study calendar, pause, resume, discard a paused plan, review catch-up |
+| `GET` | `/paused/:id` | ✅ JWT | Read-only snapshot of the paused plan |
+| `POST` | `/reports/:reportId/preview`, `/apply` | ✅ JWT | Merge or replace from a Role Analyzer report |
+| `GET` | `/review` | ✅ JWT | Weekly review: done, moved, on-track and weak topics |
+| `GET`, `DELETE` | `/history`, `/history/:id` | ✅ JWT | Read-only finished plans; clear history |
+| `POST` | `/items` | ✅ JWT | Adds your own task |
+| `PATCH` | `/items/:id` | ✅ JWT | Ticks or unticks an item (and its sheet problem when the last part is done) |
+| `POST` | `/items/:id/result`, `/review`, `/skip`, `/unskip` | ✅ JWT | Result (alone, hints, solution), a review, skip, unskip |
+| `PATCH` | `/items/:id/star` | ✅ JWT | Stars an item |
+| `GET`, `POST` | `/items/:id/substitutes`, `/substitute` | ✅ JWT | Suggests and adds a replacement for an unfinished problem |
 
 ### CS Notes: `/api/notes`
 
@@ -637,7 +693,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **923 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **924 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
 
 ```bash
 cd server
@@ -645,6 +701,8 @@ npm test
 ```
 
 They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **122 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh plus a Google conflict hook check (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, 2 for the resume checklist PDF (it must draw as one page), and the rest for the notes quiz scoring and diagram layout, the roadmap data rules and links, the Analyzer link builder, the study-plan checklist helpers, the problem-note import and merge helpers and the page titles. Eleven Playwright browser flows now cover the dashboard, report imports and daily study workspace at phone and desktop widths: task results, quizzes, plan controls, reviews, practice and read-only history. Run them with npm run test:browser from client; installed Chrome and both client/server dependencies are required. The harness uses fresh disposable servers on 3100 and 5175 and does not load the real server environment. Details, and what is not covered: [TESTING.md](TESTING.md).
+
+The client has 122 unit tests, and 11 browser specs for My plan (`cd client && npm run test:browser`; they start their own servers on ports 3100 and 5175 and need Chrome).
 
 The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota).
 
@@ -654,7 +712,7 @@ The Role Analyzer was also checked against the real AI with hand-run scripts in 
 
 - **Rate limits live in the server's memory.** They reset on restart and are not shared between servers, so run one instance, or move them to a shared store such as Redis before scaling out.
 - **The AI runs on free tiers** (Gemini, then Groq). A quota or an outage can make generation fail for a while; the user then gets a clear message and the attempt is not counted. Reports and ideas can differ from run to run.
-- **Progress dates start on 9 Nov 2026.** Problems ticked before that have no date, so they do not count toward the streak or the last solved date. The streak is counted in IST (Indian time). The "used / allowed today" numbers on the forms count the last 24 hours; the hourly limit is not shown because it lives in server memory.
+- **Progress dates start on 9 Nov 2026.** Problems ticked before that have no date, so they do not count toward the streak or the last solved date. Streak days follow your study calendar (India time and midnight by default; ticks made before 15 Nov 2026 keep their India date). The "used / allowed today" numbers on the forms count the last 24 hours; the hourly limit is not shown because it lives in server memory.
 - **77 of the 120 skills in the Role Analyzer's catalog point at PrepStack lessons (notes, DSA topics or a roadmap); the other 43 link only to official documentation.** Four soft skills point at the Behavioral page.
 - **Resume PDFs must contain text.** Scanned (image-only) PDFs are rejected, and the PDF export uses standard fonts, so characters outside basic Latin may not draw.
 - **Password reset emails go out through Brevo's free plan (300 a day) from a free Gmail address.** They reached the inbox in the owner's test, but other mail providers may put them in spam. A domain you own, authenticated in Brevo, is the proper fix.

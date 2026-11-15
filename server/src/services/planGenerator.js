@@ -455,7 +455,8 @@ const onTrack = (items, todayYmd) => {
 // ---------- what a logged-out visitor may see (decision 9): the numbers and week 1 only ----------
 const previewPlan = (input, data) => {
   const plan = generatePlan(input, data);
-  const week1 = groupByWeek(plan).find((w) => w.week === 1) || { week: 1, from: plan.startDate, to: plan.startDate, items: [], minutes: 0 };
+  const week1 = groupByWeek(plan)[0] || { // the first calendar week with tasks: a start on the rest day must not show an empty week
+    week: 1, from: plan.startDate, to: plan.startDate, items: [], minutes: 0 };
   return {
     startDate: plan.startDate, deadline: plan.deadline, finishDate: plan.finishDate, earlyDays: plan.earlyDays, notices: plan.notices,
     coverage: { syllabusMinutes: plan.coverage.syllabusMinutes, plannedMinutes: plan.coverage.plannedMinutes, extraMinutes: plan.coverage.extraMinutes, leftOutCount: plan.coverage.leftOut.length, leftOutMinutes: sumMinutes(plan.coverage.leftOut), alreadySolved: plan.coverage.alreadySolved },

@@ -88,7 +88,9 @@ export function studyWeeks(days, startDate) {
     if (!weeks.has(number)) weeks.set(number, { number, days: [] });
     weeks.get(number).days.push(day);
   }
-  return [...weeks.values()];
+  const list = [...weeks.values()];
+  const skipped = list.length ? list[0].number - 1 : 0; // a start on the rest day leaves week 1 empty: count from the first week with tasks
+  return list.map((week) => ({ ...week, number: week.number - skipped }));
 }
 
 // Deduplicate split problems so a practice round never treats every part as a new problem.

@@ -360,6 +360,11 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
       assert.equal(new Set(keys).size, keys.length);
     }
   });
+  it('a start on the rest day still shows the first week that has tasks, not an empty one', () => {
+    const pv = previewPlan({ ...input, startDate: '2026-11-15', restDay: 6, weeks: 8 }, data); // 15 Nov 2026 is a Sunday
+    assert.ok(pv.week1.items.length > 0, 'the preview week has tasks');
+    assert.ok(pv.week1.week >= 1);
+  });
   it('the other goals and styles run on the real data: placements on Striver A2Z, a role on every roadmap, mixed style', () => {
     const a2z = generatePlan({ ...input, goalType: 'placements', sheetSlug: 'striver-a2z', weeks: 20, subjects: ['os'] }, data);
     assert.ok(a2z.items.length > 0 && a2z.coverage.leftOut.some((l) => l.reason === 'extra'));

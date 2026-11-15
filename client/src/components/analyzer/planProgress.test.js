@@ -51,6 +51,8 @@ describe('Daily study screens', () => {
   it('groups the partial first week separately from the following Monday', () => {
     const days = [{ day: '2026-11-15' }, { day: '2026-11-16' }, { day: '2026-11-22' }];
     expect(studyWeeks(days, '2026-11-15').map((week) => [week.number, week.days.length])).toEqual([[1, 1], [2, 2]]);
+    // a plan that starts on a rest day has no tasks in its first calendar week: the numbering starts at the first week with tasks
+    expect(studyWeeks(days.slice(1), '2026-11-15').map((week) => week.number)).toEqual([1]);
   });
   it('keeps Today to its exact allowed text, one button and the task list', () => {
     const items = [{ key: 'carry', title: 'Arrays', plannedMinutes: 40 }, { key: 'review', title: 'Recall processes', plannedMinutes: 10 }];

@@ -91,7 +91,6 @@ const Register = () => {
   const strength = passwordStrength();
 
   const perks   = ["Track your DSA progress", "Access AI project generator", "Save custom projects", "Interview Oriented CS notes"];
-  const avatars = ["S", "A", "R", "P"];
 
   return (
     <div className="min-h-screen bg-canvas flex selection:bg-brand/25 selection:text-fg">
@@ -144,9 +143,9 @@ const Register = () => {
           <motion.div variants={formItem}>
             <p className="mb-5 font-ui text-sm font-semibold text-ok">Free forever</p>
             <h2 className="text-3xl xl:text-4xl font-bold text-fg leading-snug mb-3">
-              Join thousands of<br />
-              students <span className="text-brand">getting hired</span><br />
-              at top companies.
+              Prepare for<br />
+              your interviews <span className="text-brand">your way</span>,<br />
+              free.
             </h2>
             <p className="text-muted text-sm leading-relaxed max-w-sm">
               Create your free account and get instant access to everything PrepStack has to offer.
@@ -163,25 +162,6 @@ const Register = () => {
                 <span className="text-fg-3 text-sm">{perk}</span>
               </div>
             ))}
-          </motion.div>
-
-          {/* Social proof */}
-          <motion.div className="bg-ink/[0.03] rounded-2xl p-4" variants={formItem}>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="flex -space-x-2">
-                {avatars.map((l, i) => (
-                  <div
-                    key={i}
-                    className="w-7 h-7 rounded-full border-2 border-card flex items-center justify-center text-xs font-bold text-fg"
-                    style={{ background: `hsl(${i * 40 + 20}, 70%, 45%)` }}
-                  >
-                    {l}
-                  </div>
-                ))}
-              </div>
-              <span className="text-fg-3 text-sm">Many students joined</span>
-            </div>
-            <p className="text-muted text-xs italic">&ldquo;PrepStack helped me prepare systematically and land my first SDE internship!&rdquo;</p>
           </motion.div>
         </motion.div>
 
