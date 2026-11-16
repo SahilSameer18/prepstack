@@ -12,6 +12,12 @@ describe("pageFor", () => {
     expect(pageFor('/my-plan/study').title).toBe('My study plan | PrepStack');
     expect(indexablePages.map((item) => item.path)).not.toContain('/my-plan/study');
   });
+  it("sheets, notes, roadmaps and the behavioral guide are open to read, so they are indexable; the resume guide stays private", () => {
+    const paths = indexablePages.map((item) => item.path);
+    for (const open of ['/dsa/neetcode-150', '/notes/os', '/roadmaps/backend', '/behavioral']) expect(paths).toContain(open);
+    expect(paths).not.toContain('/resume');
+    expect(pageFor('/resume').noindex).toBe(true);
+  });
   it("gives a notes section the title of its subject, kept private (noindex)", () => {
     const subject = pageFor("/notes/os");
     const section = pageFor("/notes/os/os-deadlocks");

@@ -44,12 +44,10 @@ export const router = createBrowserRouter([
         path: "/dsa",
         element: <Sheets />
       },
+      // Reading is open to everyone; only saving progress needs an account (the pages ask when someone tries to save).
       {
         path: "/dsa/:slug",
-        element:
-          <ProtectedRoute>
-            <SheetsDetail />
-          </ProtectedRoute>
+        element: <SheetsDetail />
       },
       {
         path: "/notes",
@@ -57,17 +55,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/notes/:subject",
-        element:
-          <ProtectedRoute>
-            <NotesDetail />
-          </ProtectedRoute>
+        element: <NotesDetail />
       },
       {
         path: "/notes/:subject/:sectionId",
-        element:
-          <ProtectedRoute>
-            <NotesDetail />
-          </ProtectedRoute>
+        element: <NotesDetail />
       },
 
       {
@@ -76,10 +68,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/roadmaps/:slug",
-        element:
-          <ProtectedRoute>
-            <RoadmapDetail />
-          </ProtectedRoute>
+        element: <RoadmapDetail />
       },
       {
         path: "/ai-projects",
@@ -132,10 +121,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/behavioral",
-        element:
-          <ProtectedRoute>
-            <Behavioral />
-          </ProtectedRoute>
+        element: <Behavioral />
       },
       {
         path: "/privacy",

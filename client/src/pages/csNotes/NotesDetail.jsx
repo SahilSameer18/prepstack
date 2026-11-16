@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight, FiMenu, FiX, FiInfo, FiAlertTriangle, FiCheckCircle, FiMessageSquare, FiClock, FiFlag, FiCheck } from 'react-icons/fi';
 import { useNotes } from '../../hooks/useNotes';
+import { useAuth } from '../../hooks/useAuth';
+import SignInNotice from '../../components/auth/SignInNotice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SkeletonNotesDetail } from '../../components/ui/Skeletons';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
@@ -106,7 +108,10 @@ const relatedLinks = (links) => [
   ...links.roadmapSteps.map((target) => { const [slug, step] = target.split(':'); return { key: target, path: `/roadmaps/${slug}#${step}`, label: `Roadmap: ${slug.replace(/-/g, ' ')}` }; }),
 ];
 
-const ReviewedSection = ({ section }) => (
+const ReviewedSection = ({ section }) => {
+  const { user, loading: authLoading } = useAuth();
+  const [quizDone, setQuizDone] = useState(false);
+  return (
   <div className="space-y-12">
     <div className="space-y-2 text-fg-2 text-[15px] md:text-base leading-[1.75] text-left">
       {section.overview.map((line, i) => <p key={i}>{line}</p>)}
@@ -149,7 +154,12 @@ const ReviewedSection = ({ section }) => (
 
     <div>
       <Heading>Check yourself</Heading>
-      <Quiz quiz={section.quiz} />
+      <Quiz quiz={section.quiz} onComplete={(correct) => setQuizDone(correct !== null)} />
+      {quizDone && !user && !authLoading && (
+        <div className="mt-4">
+          <SignInNotice text="This score is not saved. Sign in to keep track of your progress in My plan." />
+        </div>
+      )}
     </div>
 
     <div>
@@ -166,7 +176,8 @@ const ReviewedSection = ({ section }) => (
       </ul>
     </div>
   </div>
-);
+  );
+};
 
 export default function NotesDetail() {
   const { subject, sectionId } = useParams();

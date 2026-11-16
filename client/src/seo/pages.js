@@ -143,7 +143,8 @@ const pages = [
 ];
 
 // These routes sit behind login (ProtectedRoute in app.routes.jsx), so a crawler only ever sees the login redirect: keep them out of search.
-const LOGIN_GATED = (p) => p.kind === 'detail' || p.path === '/resume' || p.path === '/behavioral';
+// Sheets, notes, roadmaps and the behavioral guide are open to read, so they are indexable.
+const LOGIN_GATED = (p) => p.path === '/resume';
 export const allPages = pages.map((p) => (LOGIN_GATED(p) ? { ...p, noindex: true } : p));
 export const indexablePages = allPages.filter((p) => !p.noindex);
 
@@ -155,9 +156,9 @@ const byPath = new Map(allPages.map((p) => [p.path, p]));
 export const pageFor = (pathname) => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
   if (clean.startsWith('/analyzer/')) return { ...byPath.get('/analyzer'), path: clean, title: 'Your role report | PrepStack' }; // private report pages: noindex like /analyzer
-  // a notes section (/notes/os/os-deadlocks) is a private page of its subject: same title, noindex
+  // a notes section (/notes/os/os-deadlocks) reuses the title of its subject page, so it stays out of search (the subject page is the indexable one)
   const section = clean.match(new RegExp('^/notes/([^/]+)/[^/]+$'));
-  if (section && byPath.has(`/notes/${section[1]}`)) return { ...byPath.get(`/notes/${section[1]}`), path: clean };
+  if (section && byPath.has(`/notes/${section[1]}`)) return { ...byPath.get(`/notes/${section[1]}`), path: clean, noindex: true };
   return byPath.get(clean) || { ...NOT_FOUND, path: clean };
 };
 

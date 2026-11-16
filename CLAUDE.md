@@ -10,6 +10,6 @@
    - Every number in an example comes from a script in `docs/content/checks/` (output saved beside it) or from arithmetic shown in the text. Label made-up inputs "assumption".
    - Add claims to `docs/content/SOURCES.md`. Run the strict draft check before publishing. Reviewers re-fetch sources and re-run numbers. Publish only on the owner's word.
 5. **My plan's "Today" screen is sacred** (owner rule, decision 33 of `docs/plans/MY_PLAN_PLAN.md`): only today's items, the time needed and one big Start button. Never add anything to it; graphs, reviews and menus belong in the tabs.
-6. **PrepStack is free** (no payment). Logging in is the gate for generating plans and saving progress.
+6. **PrepStack is free** (no payment). Logging in is the gate for generating plans and saving progress. Reading is open: DSA sheets, notes, roadmaps and the behavioral guide need no account, and a signed-out page never calls a personal API (it shows "Sign in to save your progress" when someone tries to save). The analyzer, AI projects, resume guide, dashboard, profile and the study workspace need a login.
 7. **Cost matters.** Prefer scripts and short reports over many agents; agents write findings to files and reply with counts only. No extra review rounds after the editors unless the owner asks.
 8. **Before reporting done:** run the server and client tests, the build and lint (`cd client && npm run build && npm run lint`), and say what was not checked.

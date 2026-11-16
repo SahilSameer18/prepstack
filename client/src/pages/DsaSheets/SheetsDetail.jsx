@@ -8,6 +8,8 @@ import { PageErrorState } from '../../components/ui/ErrorComponents';
 import { SkeletonSheetDetail } from '../../components/ui/Skeletons';
 import { getSheetMeta } from '../../data/sheetMeta';
 import { useProblemNotes } from '../../hooks/useProblemNotes';
+import { useAuth } from '../../hooks/useAuth';
+import SignInNotice from '../../components/auth/SignInNotice';
 import SheetHeader from './components/SheetHeader';
 import ProblemRow from './components/ProblemRow';
 
@@ -21,23 +23,24 @@ const SheetsDetail = () => {
   const [openTopics, setOpenTopics] = useState(new Set());
   const { notesMap, updateNote, clearNote, saveStatus } = useProblemNotes();
   const [activeNoteLink, setActiveNoteLink] = useState(null);
+  const { user, loading: authLoading } = useAuth();
+  const [showSignIn, setShowSignIn] = useState(false);
 
   const toggleNoteDrawer = (link) => {
+    // Notes are saved to an account: a signed-out visitor is asked to sign in instead of typing into a box that saves nothing
+    if (!user) { setShowSignIn(true); return; }
     setActiveNoteLink((prev) => (prev === link ? null : link));
   };
 
   const meta = getSheetMeta(slug);
 
+  // The sheet is public. Only the visitor's own progress needs an account, so it is never requested without one.
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setFetchError(null);
-      const [sheetRes, progressRes] = await Promise.all([
-        getSheetBySlug(slug),
-        getSheetProgress(slug).catch(() => ({ data: { solvedProblems: [] } }))
-      ]);
+      const sheetRes = await getSheetBySlug(slug);
       if (sheetRes.success && sheetRes.data) setSheet(sheetRes.data);
-      if (progressRes.success || progressRes.data) setSolved(progressRes.data?.solvedProblems || []);
     } catch (err) {
       console.error('Error fetching sheet data:', err);
       setFetchError(
@@ -53,6 +56,17 @@ const SheetsDetail = () => {
     fetchData();
   }, [fetchData]);
 
+  const userId = user?._id || user?.id;
+  useEffect(() => {
+    if (authLoading) return undefined;
+    if (!userId) { setSolved([]); return undefined; }
+    let live = true;
+    getSheetProgress(slug)
+      .then((res) => { if (live) setSolved(res.data?.solvedProblems || []); })
+      .catch(() => {}); // a failed progress load shows an unticked sheet, as before
+    return () => { live = false; };
+  }, [slug, userId, authLoading]);
+
   const toggleTopic = (index) => {
     const newOpen = new Set(openTopics);
     if (newOpen.has(index)) newOpen.delete(index);
@@ -62,6 +76,7 @@ const SheetsDetail = () => {
 
   const handleToggleProblem = async (e, link) => {
     e.stopPropagation();
+    if (!user) { setShowSignIn(true); return; }
     if (typeof window !== 'undefined' && typeof navigator?.vibrate === 'function') {
       try {
         navigator.vibrate(10);
@@ -204,6 +219,8 @@ const SheetsDetail = () => {
           );
         })}
       </div>
+
+      {showSignIn && !user && <SignInNotice floating onClose={() => setShowSignIn(false)} />}
     </div>
   );
 };

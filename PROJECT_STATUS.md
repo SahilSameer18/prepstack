@@ -33,7 +33,7 @@
 | Live database seeding | OS, OOP, and System Design notes (`npm run seed:notes`) and all DSA sheets (`npm run seed:all`) seeded on live database by owner | Live MongoDB instance |
 | Password reset, login lock, account deletion | built | `README.md` |
 | My plan (B5) | Phases 0–7 implemented: builder, daily workspace, dashboard, report imports, reviews and read-only history; Phase 8 real-user validation remains | `docs/plans/MY_PLAN_PLAN.md` |
-| Tests | Server 982, client 134 and 17 browser flows passed (16 Nov). Build, lint and SEO passed. 5,000 generated scenarios, 53 named scenarios (about 12,250 independent checks) and 900 simulated student lives found zero rule violations; no role plan is empty across 486 combinations. Eight mixed API journeys and 28 resume combinations passed. | `TESTING.md` |
+| Tests | Server 982, client 135 and 23 browser flows passed (16 Nov). Build, lint and SEO passed (27 indexable pages). 5,000 generated scenarios, 53 named scenarios (about 12,250 independent checks) and 900 simulated student lives found zero rule violations; no role plan is empty across 486 combinations. Eight mixed API journeys and 28 resume combinations passed. | `TESTING.md` |
 
 ## Left, in build order
 
@@ -46,7 +46,7 @@ Everything else that is planned, including the parked plans, is listed in `BUILD
 - **Depth levels per subject (decided, not started):** a level for each CS subject (quick recap, full, deep dive with 26 advanced sections to write) and for DSA (from the basics, standard, quick revision): `docs/plans/MY_PLAN_DEPTH_LEVELS_PLAN.md`, about 12 to 14 days.
 - **My Plan verification:** confirm the deployed revision and do the live smoke test, extend the API checks with randomized action sequences, then run the Phase 8 pilot and calibrate time estimates. The checklist already records the planned order. Dedicated short-interview scheduling remains out of scope per the 15 Nov decision.
 - The three Role Analyzer changes the owner set aside (12 Nov).
-- A browser check of the Behavioral page and of the real notes pages (both need a login).
+- A browser check of the Behavioral page and of the real notes pages on the live site (they are open to read since 16 Nov; the signed-out flow is covered by `client/e2e/logged-out.spec.js`).
 - The Cassandra example in System Design was read, not run; the System Design claim table in `docs/content/SOURCES.md` has only the heaviest claims.
 - About half of the 120 catalog skills have no PrepStack lessons yet (the System Design and LLD notes cover some).
 - No outside reader has read any notes subject, roadmap or the behavioral guide: the notes say "checked by the author and AI reviewers".
