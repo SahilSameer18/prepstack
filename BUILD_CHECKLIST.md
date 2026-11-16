@@ -13,6 +13,7 @@ Items marked **optional** are the owner's call: whether and when. Sections 1 to 
 - [x] Competitor research written down (`docs/research/COMPETITOR_PLANNERS.md`)
 - [x] Docs cleanup; plans written for depth levels and DSA lessons
 - [x] Review fixes (16 Nov): no empty plan saved, the Generate button is off when no task fits, pace is refused on report plans, substitutes follow the pace, honest coverage copy
+- [x] First-time experience (16 Nov): the dashboard shows a "Build your study plan" card and a "Welcome" message for a new user, a hint on the empty DSA tab, clearer no-plan wording; the home page leads with My plan (two hero buttons) and has a My plan section. Still open: where a user lands right after sign-up (the owner decides), and empty states on the analyzer, resume guide, AI projects and plan reviews pages
 - [x] Search optimisation (16 Nov): every notes section is its own indexable page (64 more pages, 91 in the sitemap) with its own title, description and structured data; real text in the page HTML for sections, sheets, roadmaps and the behavioral guide; the home page leads with the study plan; the Striver A2Z claim corrected from "450+" to "440+" problems
 - [x] Open reading: DSA sheets, notes, roadmaps and the behavioral guide need no login; signed out, they never call a personal API and say "Sign in to save your progress" on a tick, a note or a finished quiz; the pages are now indexable (16 Nov)
 - [x] Finish-date comparison in the builder preview: "when would the whole syllabus be done at these hours?" (16 Nov)
@@ -97,7 +98,7 @@ Learning track:
 - [ ] 10.6 L5 BullMQ (4 days)
 - [ ] 10.7 L6 Running it for real (2 days)
 
-Production steps (each comes right after its learning modules):
+Production steps (each comes right after its learning modules). **Interview-practice order, set 16 Nov 2026** (`REDIS_PLAN.md` section 3c): R0, then the cache steps (10.12 and 10.16), then the limiters and locks (10.9), the session cache (10.11), the AI budget (10.10), and last the queue (10.14). Each step leaves a before-and-after measurement, tests and a short note (section 10 of the plan):
 
 - [ ] 10.8 R0 Choose the free host and connect (about 1 day; after L2)
 - [ ] 10.9 R1 Shared limits and locks (about 3 days; after L3)
@@ -107,6 +108,7 @@ Production steps (each comes right after its learning modules):
 - [ ] 10.13 R5 Absorb failed-login traffic (optional, after an attack)
 - [ ] 10.14 R6 Background job queue for the AI features (about 1 week; after L5 and L6)
 - [ ] 10.15 R7 Planned features that need Redis
+- [ ] 10.16 R8 My plan: cache the public preview (not the saved plan), part of the cache steps
 
 ## 11. My plan, later ideas
 

@@ -29,16 +29,16 @@ const HeroSection = () => {
 
           {/* Authoritative Subtitle */}
           <p className="text-sm sm:text-base text-muted leading-relaxed font-normal max-w-lg">
-            One place for interview prep: curated DSA sheets, CS notes, roadmaps and AI project ideas, instead of 15 scattered tabs.
+            Set your goal and weekly hours and get a day-by-day study plan, with curated DSA sheets, CS notes and roadmaps in one place instead of 15 scattered tabs.
           </p>
 
           {/* Action Strip with Hardware Physics */}
           <div className="flex flex-wrap items-center gap-3.5 pt-2">
             <Link
-              to="/dsa"
+              to="/my-plan"
               className="amber-specular-button inline-flex items-center gap-2 font-bold px-6 py-3.5 rounded-xl text-xs sm:text-sm font-display tracking-tight cursor-pointer select-none group"
             >
-              Launch Workspace{" "}
+              Build my study plan{" "}
               <FaArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-1" />
             </Link>
 

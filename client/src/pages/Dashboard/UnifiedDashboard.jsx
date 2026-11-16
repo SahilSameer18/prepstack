@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiActivity, FiTrendingUp } from "react-icons/fi";
 import { FaCheckCircle, FaFire } from "react-icons/fa";
@@ -18,6 +18,7 @@ import { SectionLoader } from "../../components/ui/Skeletons";
 import { useStudyPlan } from '../../hooks/useStudyPlan';
 import { studyProgress } from '../../utils/studyPlan';
 import MyPlanStudy from '../MyPlanStudy';
+import FirstStepCard from "../../components/plan/FirstStepCard";
 
 const TABS = ["plan", "dsa", "projects", "reports"];
 
@@ -123,6 +124,9 @@ const UnifiedDashboard = () => {
     { key: "projects", label: "Project ideas", value: projects ? (projectsTotal ?? projects.length) : "-", sub: "" },
     { key: "reports", label: "Role reports", value: reports ? reportTotal : "-", sub: best !== null ? `best ${best}` : "" },
   ];
+  // No plan yet: say what to do first. "New" also needs every area loaded and empty, so a returning user never sees "Welcome".
+  const noPlan = !planModel.loading && !planModel.error && !!planModel.data && !plan && !planModel.data.pausedPlans?.length;
+  const isNew = noPlan && !loading && !dashboardError && stats.totalSolved === 0 && !!projects && (projectsTotal ?? projects.length) === 0 && !!reports && reportTotal === 0;
   const counts = { dsa: dsaData.length ? `${dsaData.length} sheets` : "", projects: projectsTotal ?? projects?.length ?? "", reports: reports ? reportTotal : "" };
 
   const dsaStats = [
@@ -144,10 +148,10 @@ const UnifiedDashboard = () => {
           <span className="tracking-wider font-semibold text-fg-3">Your dashboard</span>
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-fg tracking-[-0.035em] mb-2.5">
-          Welcome back, <span className="text-fg">{user?.username || "Engineer"}</span>
+          {isNew ? "Welcome" : "Welcome back"}, <span className="text-fg">{user?.username || "Engineer"}</span>
         </h1>
         <p className="text-muted text-sm sm:text-base max-w-2xl leading-relaxed">
-          Your study plan, DSA progress, project ideas and role reports in one place.
+          {isNew ? "Start by building a study plan, then practise on the DSA sheets." : "Your study plan, DSA progress, project ideas and role reports in one place."}
         </p>
       </motion.div>
 
@@ -166,6 +170,7 @@ const UnifiedDashboard = () => {
 
       </>}
 
+      {tab !== 'plan' && noPlan && <FirstStepCard />}
       {tab !== 'plan' && <TodayCard planModel={planModel} />}
 
       {/* ── Tabs ──────────────────────────────────────────────────────────── */}
@@ -189,6 +194,11 @@ const UnifiedDashboard = () => {
             <PageErrorState message={dashboardError} onRetry={fetchDashboard} backTo="/" backLabel="Go Home" />
           ) : (
             <>
+              {!loading && stats.totalSolved === 0 && (
+                <p data-testid="dsa-empty-hint" className="mb-6 rounded-xl border border-ink/[0.08] bg-card px-4 py-3 text-sm text-fg-3">
+                  You have not solved anything yet. <Link to="/dsa" className="font-semibold text-brand">Start with a DSA sheet</Link>, or <Link to="/my-plan" className="font-semibold text-brand">let My plan choose your order</Link>.
+                </p>
+              )}
               <section className="mb-10">
                 <div className="titanium-card rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
                   <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />

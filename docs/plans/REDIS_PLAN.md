@@ -2,6 +2,8 @@
 
 Written 9 Nov 2026. Status: **planned, nothing built.** This replaces the old analysis in the old analysis (file removed 15 Nov 2026). Do not copy code from that file: it was written against code that no longer exists, and its login limiter counts the wrong requests (it skips failed attempts, so wrong passwords would never be limited).
 
+**Goal updated 16 Nov 2026 (confirmed by the owner): mastering Redis for SDE interviews, by building it in PrepStack.** Section 3c gives the build order and the interview topic of each step; section 10 lists what each step must leave behind (numbers, tests, a note) and the questions you should be able to answer. The older rule "no step starts without a measured reason" now applies to **going live**. A local build for learning starts when you decide, but it needs a before-and-after measurement, and the app must keep working with Redis switched off (`REDIS_URL` optional).
+
 **Two goals, one path.**
 1. **Learn** Redis, BullMQ and background jobs from the basics, by building small things that work.
 2. **Use** what you learned in PrepStack, for growth: many users, several servers, busy periods such as placement season.
@@ -187,8 +189,33 @@ Each pattern is a small script plus a test that proves it.
 - Needs a host that passes the acceptance check in section 3b: Redis 6.2 or newer (or a compatible Valkey), `noeviction`, and persistence.
 - **Done when:** 50 simultaneous requests queue without errors, a killed worker's job is retried, and nothing with personal text is in Redis.
 
+### R8. My plan: cache the public preview, not the saved plan (16 Nov 2026)
+- **Preview (`POST /api/plan/preview`): cache it.** The result depends only on the inputs and holds no user data. It runs the generator, and the finish-date line can run it a second time. Key: a hash of the validated inputs (and the day, because the start date defaults to today). Short TTL, with jitter. Part of R4's cache-aside work; a small in-process cache is enough on one instance, Redis when instances share it.
+- **Saved plan, Today, dashboard: do not cache.** They change with every tick, and a stale Today screen is a visible bug. MongoDB reads there are small.
+- The plan catalogs (sheets, notes, roadmaps) are already loaded once into server memory.
+- **Done when:** a repeated preview is answered from the cache with the same body, a different input or day misses, and a measurement shows the drop in generator runs.
+
 ### R7. Planned features
 - Streaks, "today" and the planner need cheap daily counters; a leaderboard (only if ever added) uses sorted sets. MongoDB stays the source of truth. Planned in the step when the feature is built.
+
+---
+
+## 3c. Build order and interview map (16 Nov 2026, confirmed by the owner)
+
+Build for interview practice in this order. Each step is built locally first (WSL Redis), with a before-and-after measurement from a load test against two server instances.
+
+| Order | Step | What you build | Interview topic |
+|---|---|---|---|
+| 1 | R0 | Connect; the app works with and without Redis | Graceful degradation, fail open or closed |
+| 2 | R4 and R8 | Cache-aside for sheets, notes endpoints and the plan preview: TTL with jitter, clear on seed, a lock so one request refills a missing entry | Cache-aside versus write-through, invalidation, stampede, penetration, avalanche |
+| 3 | R1 (limiters) | Move the 10 in-memory limiters: fixed window, then a sliding window with a sorted set, then an atomic Lua script | "Design a rate limiter", algorithms, atomicity |
+| 4 | R1 (locks) | Replace the "being generated now" sets: `SET NX PX` with a token, release only if still yours (Lua) | Distributed locks, expiry, what Redlock does not guarantee |
+| 5 | R3 | Session-check cache, at most 30 seconds, deleted on every revoke path | Consistency against speed, revoking cached state |
+| 6 | R2 | App-wide AI budget as an atomic counter with a daily expiry | Atomic counters, shared quotas |
+| 7 | R6 | BullMQ queue for project ideas | Queues, at-least-once, idempotency, retries, backpressure |
+| Optional | R7 | Activity bitmap or sorted set for streaks and the heatmap | Bitmaps, sorted sets (MongoDB stays the source of truth) |
+
+The cache comes before the limiters (the earlier order built shared limits first): it is the safest step and the one interviewers ask about most. R5 stays optional and measured.
 
 ---
 
@@ -290,7 +317,27 @@ Answered by you on 9 Nov 2026. A decision is recorded only after you answered.
 3. **Redis host: Aiven for Valkey (free plan), confirmed by you.** It is the only host, for limits, locks and the queue, and only after it passes the host acceptance check in section 3b. No paid plan. If it fails the check, the queue is a MongoDB job collection and there is no Redis host.
 4. **The analyzer in a queue: decide later.** Until then it stays inside the request and only project ideas are planned for the queue.
 5. **Fail open** for the sign-up and reset-email limits during an outage: **yes**, confirmed by you.
+7. **Goal changed 16 Nov 2026: master Redis for SDE interviews by building it in PrepStack, in the order of section 3c.** Confirmed by the owner. Going live still needs the host acceptance check in section 3b.
 6. **When to learn it: alongside the app work, in the evenings.** A little each week next to stages 0 to 3 of `IMPROVEMENT_PLAN.md`. No live Redis until the first Redis step (R0/R1), which starts after B3 and B4.
+
+---
+
+## 10. Interview practice: what each step must leave behind
+
+For every step keep a short note (in `learning/` or a doc) with:
+1. The problem it solves, in one line.
+2. The design you chose and one alternative you rejected.
+3. What happens when Redis is down, and why (open or closed).
+4. **A before-and-after measurement** from a local load test with two instances (latency, database reads, generator runs).
+5. Tests: two instances sharing one limit, a counter surviving a restart, a revoked session failing at once.
+6. What would change at 10 times the scale: replicas, Redis Cluster, hot keys, persistence.
+7. One mistake you made and fixed.
+
+**Be exact in interviews.** Say what you built, tested with two instances and measured locally. Do not claim user counts or production scale: PrepStack runs on Render's free plan, one instance.
+
+**Questions you should be able to answer after the steps:** why Redis is fast although single-threaded; RDB versus AOF; eviction policies; cache stampede, penetration and avalanche; cache-aside versus write-through; why a lock needs a token and an expiry; fixed versus sliding window; at-least-once delivery and idempotency; Redis versus Memcached; replication, sharding and Redis Cluster; pub/sub versus Streams; big keys and hot keys.
+
+You type the practice code and I review (decision 1 stays: it is the only way to be able to explain it).
 
 ---
 

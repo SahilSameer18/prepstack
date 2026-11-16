@@ -202,7 +202,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
         />
       ) : !plan ? (
         <div className="space-y-4 text-sm text-muted">
-          <p>You have no current plan. Older plans are available in History.</p>
+          <p>You have no current plan. Choose your goal, your weeks and your daily hours, and see the plan before you save it.</p>
           <Link
             className="inline-flex min-h-[44px] items-center text-brand"
             to="/my-plan"

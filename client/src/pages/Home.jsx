@@ -1,6 +1,7 @@
 import React from "react";
 import HeroSection from "../components/homePage/HeroSection";
 import MetricsStrip from "../components/homePage/MetricsStrip";
+import PlanSection from "../components/homePage/PlanSection";
 import EngineeringContrast from "../components/homePage/EngineeringContrast";
 import BentoGrid from "../components/homePage/BentoGrid";
 import FAQ from "../components/homePage/FAQ";
@@ -24,6 +25,7 @@ const Home = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-36 relative z-10 space-y-28 sm:space-y-36">
         <HeroSection />
         <MetricsStrip />
+        <PlanSection />
         <EngineeringContrast />
         <BentoGrid />
         <FAQ />
