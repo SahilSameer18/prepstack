@@ -204,7 +204,11 @@ export function planDays(items) {
   const days = new Map();
   for (const item of items) {
     if (!days.has(item.day)) days.set(item.day, { day: item.day, label: formatPlanDate(item.day), minutes: 0, items: [] });
-    const part = item.part ? ` (part ${item.part.n} of ${item.part.of})` : '';
+    const progress = item.partialProgress;
+    let part = item.part ? ` (part ${item.part.n} of ${item.part.of})` : '';
+    if (progress && !item.solvedOnSheet) {
+      part = ` (partially completed: ${progress.completedMinutes} of ${progress.totalMinutes} min, ${progress.unscheduledMinutes} min unscheduled)`;
+    }
     const day = days.get(item.day);
     day.minutes += item.plannedMinutes;
     day.items.push({

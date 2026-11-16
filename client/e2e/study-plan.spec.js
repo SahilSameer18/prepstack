@@ -45,7 +45,7 @@ test('Recovery phase 2: personal clock, a two-week pause and returning from a sp
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.getByRole('button', { name: 'Resume plan', exact: true }).click();
   await dialog.getByRole('button', { name: 'Preview change' }).click();
-  await expect(dialog).toContainText('by 14 days');
+  await expect(dialog).toContainText('after 14 days away');
   await expect(dialog).toContainText('Frontend sprint');
   await expect(dialog).toContainText('read-only History');
   await assertFits(page);
@@ -230,6 +230,7 @@ test('Phase 7: report merge and replacement require a fresh preview and preserve
   await page.getByRole('button', { name: 'Add to My plan', exact: true }).click();
   await page.getByRole('button', { name: 'Preview changes', exact: true }).click();
   await page.getByRole('button', { name: 'Confirm add to My plan' }).click();
+  await expect(page.getByRole('link', { name: 'Open My plan', exact: true })).toBeVisible();
   const replacement = await savedPlan(page);
   expect(replacement.id).not.toBe(plan.id);
   const history = await page.request.get(API + '/api/plan/history/' + plan.id);
@@ -579,4 +580,53 @@ test('The builder will not generate a plan when no task fits, and says why', asy
   await page.goto('/my-plan?goalType=bigtech&weeks=4&weekdayHours=2&weekendHours=3&restDay=6&style=one-topic&sheetSlug=neetcode-150&subjects=');
   await expect(page.getByText('No task fits these days and hours.')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Generate my plan' })).toBeEnabled();
+});
+
+test('Realistic recovery: partial work, missed days, a five-day pause and a longer deadline', async ({ page }) => {
+  const clock = (now) => page.request.post(API + '/__test/clock', { data: { now } });
+  await clock('2026-11-16T07:00:00Z');
+  const { plan } = await createPlan(page, { weekdayHours: 0.5, weekendHours: 1, restDay: 6, subjects: [] });
+  const first = plan.items.find((item) => item.title === 'Two Sum' && item.part?.n === 1);
+  expect(first).toBeTruthy();
+  await page.goto('/my-plan/study?tab=plan&item=' + first.id);
+  await page.getByRole('button', { name: 'Solved alone', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Add a task', exact: true })).toBeVisible();
+  const doneAt = (await savedPlan(page)).items.find((item) => item.id === first.id).doneAt;
+  expect(doneAt).toBeTruthy();
+  await clock('2026-11-24T07:00:00Z');
+  await page.goto('/my-plan/study?tab=today');
+  const today = page.getByRole('region', { name: 'Today', exact: true });
+  await expect(today.getByRole('button')).toHaveCount(1);
+  const read = await page.request.get(API + '/api/plan');
+  expect((await read.json()).data.today.minutes).toBeLessThanOrEqual(30);
+  await page.getByRole('button', { name: 'Plan', exact: true }).click();
+  await expect(page.getByText(/overdue tasks remain/)).toBeVisible();
+  const dialog = page.getByRole('dialog');
+  await page.getByRole('button', { name: 'Pause plan', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  await clock('2026-11-29T07:00:00Z');
+  await page.reload();
+  await page.getByRole('button', { name: 'Resume plan', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await expect(dialog).toContainText('after 5 days away');
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  const resumed = await savedPlan(page);
+  expect(resumed.items.filter((item) => !item.doneAt && !item.skipped)
+    .every((item) => new Date(item.day + 'T00:00:00Z').getUTCDay() !== 0)).toBe(true);
+  const deadline = new Date(resumed.deadline + 'T00:00:00Z');
+  deadline.setUTCDate(deadline.getUTCDate() + 7);
+  const newDeadline = deadline.toISOString().slice(0, 10);
+  await page.getByRole('button', { name: 'Rebuild from today', exact: true }).click();
+  await dialog.getByLabel('Deadline (keep it or choose a later date)').fill(newDeadline);
+  await dialog.getByRole('button', { name: 'Preview change' }).click();
+  await dialog.getByRole('button', { name: 'Confirm change' }).click();
+  await expect(dialog).toHaveCount(0);
+  const rebuilt = await savedPlan(page);
+  expect(rebuilt.deadline).toBe(newDeadline);
+  expect(rebuilt.items.find((item) => item.id === first.id)).toMatchObject({ doneAt, nextReviewDay: null });
+  expect(rebuilt.items.filter((item) => item.link === first.link && !item.doneAt)
+    .reduce((minutes, item) => minutes + item.plannedMinutes, 0)).toBe(19);
 });

@@ -45,7 +45,8 @@ export function studyProgress(items) {
     total: live.length,
     done: done.length,
     minutes: done.reduce((sum, item) => sum + item.plannedMinutes, 0),
-    complete: live.length > 0 && done.length === live.length,
+    complete: live.length > 0 && done.length === live.length &&
+      !live.some((item) => item.partialProgress && !item.solvedOnSheet),
   };
 }
 

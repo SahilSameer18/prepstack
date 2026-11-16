@@ -45,6 +45,7 @@ const itemSchema = new mongoose.Schema({
   lastFailedDay: { type: String, default: null },
   lastReviewDay: { type: String, default: null },
   doneAt: { type: Date, default: null },
+  unscheduledMinutes: { type: Number, min: 1 }, // unfinished minutes that could not fit a rebuild
   completedStudyDay: { type: String, default: null },
   lastReviewAt: { type: Date, default: null },
   reviewWindowEndsAt: { type: Date, default: null },

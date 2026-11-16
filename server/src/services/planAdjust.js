@@ -26,6 +26,30 @@ const addDays = (ymd, n) => ymdOf(dayNumber(ymd) + n);
 const isReviewable = (it) => it.type === 'dsa' || it.type === 'notes';
 const byKey = (items, key) => items.findIndex((it) => it.key === key);
 
+// Older rebuilds recorded the missing part only in coverage. Recover it when
+// the saved split has no pending part or result and the omission still matches.
+function restorePartialRemainders(items, leftOut = []) {
+  if (!leftOut.length) return items;
+  const groups = new Map();
+  for (const item of items) {
+    if (!item.part) continue;
+    const id = baseId(item);
+    if (!groups.has(id)) groups.set(id, []);
+    groups.get(id).push(item);
+  }
+  const remainders = new Map();
+  for (const parts of groups.values()) {
+    if (!parts.every((item) => item.doneAt && !item.result && !item.reviewLadder && !item.unscheduledMinutes)) continue;
+    if (!parts.some((item) => item.part.of > parts.length)) continue;
+    const first = parts[0];
+    const omitted = leftOut.find((item) => item.ref === first.ref && (item.link || null) === (first.link || null));
+    if (omitted?.plannedMinutes > 0) remainders.set(first.key, omitted.plannedMinutes);
+  }
+  return items.map((item) => remainders.has(item.key)
+    ? { ...(item.toObject?.() || item), unscheduledMinutes: remainders.get(item.key) }
+    : item);
+}
+
 // ---------- hours of a day, and the room for reviews (15 percent: 85 percent planned minus 70 percent for new items) ----------
 const hoursOn = (input, ymd) => {
   const n = dayNumber(ymd);
@@ -47,7 +71,7 @@ const markDone = (items, key, info) => {
   const next = items.map((it) => ({ ...it }));
   next[at] = { ...item, doneAt: info.doneAt, completedStudyDay: info.doneDay };
   const parts = next.filter((it) => baseId(it) === baseId(item));
-  if (parts.some((p) => !p.doneAt)) return { items: next, started: false };
+  if (parts.some((p) => !p.doneAt || p.unscheduledMinutes)) return { items: next, started: false };
   if (!isReviewable(item)) return { items: next, started: false };
   let name;
   if (item.type === 'notes') {
@@ -171,11 +195,39 @@ const todayView = (stored, today) => {
   const open = live.filter((it) => !gen.isComplete(it));
   // waiting work always shows: items carried over from earlier days, today's own items, and the reviews due today that fit the day's room
   const carried = carriedOver(live, today);
-  const reviews = reviewsForDay(live, today, reviewRoom(hoursOn(stored.input, today))).shown;
+  const hours = hoursOn(stored.input, today);
+  const reviewLimit = reviewRoom(hours);
+  const reviews = reviewsForDay(live, today, reviewLimit).shown;
   const ids = new Set(carried.map((c) => c.key));
+  const fresh = open.filter((it) => it.day === today && !ids.has(it.key));
   let date = today;
-  let list = [...carried, ...open.filter((it) => it.day === today && !ids.has(it.key)), ...reviews];
-  if (!list.length) { // nothing at all today: show the next day that has items, labelled with its date (decision 7)
+  const workRoom = Math.max(0, Math.floor(hours * 60) - sum(reviews));
+  const chosen = new Set();
+  let room = workRoom;
+  function take(items, limit = room) {
+    for (const item of items) {
+      if (chosen.has(item.key) || item.plannedMinutes > Math.min(room, limit)) continue;
+      chosen.add(item.key);
+      room -= item.plannedMinutes;
+      limit -= item.plannedMinutes;
+    }
+  }
+  // Give overdue work a share, then fit current tasks before using spare time
+  // on the rest of the backlog. If only one can fit, alternate which gets
+  // first choice so that a full schedule cannot starve overdue work.
+  const currentTask = fresh.find((item) => item.plannedMinutes <= workRoom);
+  if (currentTask) {
+    const carryRoom = Math.min(Math.floor(workRoom / 2), workRoom - currentTask.plannedMinutes);
+    take(carried, carryRoom);
+    if (!chosen.size && dayNumber(today) % 2 === 0) {
+      const overdueTask = carried.find((item) => item.plannedMinutes <= workRoom);
+      if (overdueTask) take([overdueTask]);
+    }
+  }
+  take(fresh);
+  take(carried);
+  let list = [...carried, ...fresh].filter((item) => chosen.has(item.key)).concat(reviews);
+  if (!list.length && !carried.length && !fresh.length && !dueReviews(live, today).length) {
     const later = open.filter((it) => it.day > today).map((it) => it.day).sort()[0];
     if (later) { date = later; list = open.filter((it) => it.day === later); }
   }
@@ -228,8 +280,9 @@ const previewChange = (stored, data, todayYmd, change) => {
   if (input.originReport) return previewReportChange({ ...stored, deadline: requestedDeadline }, { ...input, weeks: totalWeeks }, today);
 
   // what a rebuild keeps: everything done, skipped, locked or added by the student (and mock or behavioral items already done); the rest is planned again
+  const originalItems = restorePartialRemainders(stored.items, stored.coverage?.leftOut);
   const groups = new Map();
-  for (const it of stored.items) if (isPlannedContent(it)) { const id = baseId(it); if (!groups.has(id)) groups.set(id, []); groups.get(id).push(it); }
+  for (const it of originalItems) if (isPlannedContent(it)) { const id = baseId(it); if (!groups.has(id)) groups.set(id, []); groups.get(id).push(it); }
   const kept = [];
   const exclude = new Set();
   const remaining = new Map();
@@ -240,8 +293,17 @@ const previewChange = (stored, data, todayYmd, change) => {
   for (const [id, parts] of groups) {
     if (parts.some((p) => p.skipped || p.locked)) { exclude.add(id); kept.push(...parts); continue; }
     const done = parts.filter((p) => p.doneAt);
-    if (done.length === parts.length) { exclude.add(id); kept.push(...parts); continue; }
-    if (done.length) { kept.push(...done); remaining.set(id, sum(parts.filter((p) => !p.doneAt))); partOffset.set(id, Math.max(...parts.map((p) => p.part?.n ?? 0))); }
+    const unscheduled = parts.reduce((minutes, part) => minutes + (part.unscheduledMinutes || 0), 0);
+    if (done.length === parts.length && !unscheduled) { exclude.add(id); kept.push(...parts); continue; }
+    if (done.length) {
+      for (const part of done) {
+        const preserved = { ...part };
+        delete preserved.unscheduledMinutes;
+        kept.push(preserved);
+      }
+      remaining.set(id, sum(parts.filter((p) => !p.doneAt)) + unscheduled);
+      partOffset.set(id, Math.max(...parts.map((p) => p.part?.n ?? 0)));
+    }
   }
   const keptMinutes = new Map();
   for (const it of kept) if (dayNumber(it.day) >= t) keptMinutes.set(dayNumber(it.day), (keptMinutes.get(dayNumber(it.day)) || 0) + it.plannedMinutes);
@@ -249,6 +311,15 @@ const previewChange = (stored, data, todayYmd, change) => {
   const backlogMinutes = sum(dueReviews(stored.items, today));
 
   const generated = gen.generatePlan(input, data, { deadline: requestedDeadline, weekOrigin: stored.startDate, planWeeks: totalWeeks, exclude, remaining, partOffset, keptMinutes, behavioralDone, backlogMinutes });
+  const scheduled = new Set(generated.items.map(baseId));
+  const marked = new Set();
+  // Keep one durable remainder per exercise if its unfinished work cannot fit.
+  for (const item of kept) {
+    const id = baseId(item);
+    if (!remaining.has(id) || scheduled.has(id) || marked.has(id)) continue;
+    item.unscheduledMinutes = remaining.get(id);
+    marked.add(id);
+  }
   const items = [...kept, ...generated.items].sort((a, b) => a.day.localeCompare(b.day));
 
   const before = stored.items.filter((it) => isPlannedContent(it) && !it.doneAt && !it.skipped);
@@ -277,5 +348,5 @@ const previewChange = (stored, data, todayYmd, change) => {
 
 module.exports = {
   LADDERS, REVIEW_MINUTES, MAX_MOVE_DAYS, hoursOn, reviewRoom, markDone, recordReview, dueReviews, reviewsForDay, reviewBacklog, revisionList,
-  carriedOver, skipItem, unskipItem, moveItem, todayView, previewChange, itemsChecksum,
+  carriedOver, skipItem, unskipItem, moveItem, todayView, previewChange, itemsChecksum, restorePartialRemainders,
 };

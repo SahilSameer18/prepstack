@@ -30,6 +30,7 @@ export default function StudySchedule({
   const days = studyChecklistDays(plan.items.filter((item) => !item.skipped));
   const weeks = studyWeeks(days, plan.startDate);
   const currentDay = model.data.calendar?.today || dateInIndia();
+  const overdue = plan.items.filter((item) => !item.doneAt && !item.solvedOnSheet && !item.skipped && item.day < currentDay);
   const pull = !readOnly && pullForwardItem(plan, today, currentDay);
   const round = revisionRoundItems(plan.items);
   const skipped = plan.items.filter((item) => item.skipped);
@@ -64,6 +65,12 @@ export default function StudySchedule({
           </p>
         )}
         <p>{today?.onTrack?.text}</p>
+        {!readOnly && overdue.length > 0 && (
+          <p>
+            {overdue.length} overdue {overdue.length === 1 ? 'task' : 'tasks'} remain in the schedule.
+            Open a task’s options to move it or rebuild to fit the remaining work.
+          </p>
+        )}
         {!!plan.coverage?.importOverloads?.length && (
           <p className="text-warn">
             The last report import or rebuild showed {formatPlanMinutes(plan.coverage.importOverloads.reduce((sum, entry) => sum + entry.minutes, 0))} beyond daily budgets. Review your dates and hours before taking on more work.

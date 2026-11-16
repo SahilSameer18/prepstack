@@ -53,6 +53,9 @@ async function recoveryContext(req) {
       summary.shiftDays = resumed.shiftDays;
       summary.movedItems = resumed.movedItems;
       summary.reviews = resumed.reviews;
+      summary.refitted = resumed.refitted;
+      summary.movedLocked = resumed.movedLocked;
+      summary.extraDays = resumed.extraDays;
       summary.deadlineAfter = patch.deadline;
       summary.archiveActive = active ? { title: active.title, unfinished: active.items.filter((item) => !item.doneAt && !item.skipped).length } : null;
     }

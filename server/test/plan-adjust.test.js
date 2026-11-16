@@ -8,6 +8,46 @@ const calendar = require('../src/utils/studyCalendar');
 const recovery = require('../src/services/planRecovery');
 
 describe('personal study calendar and review recovery', () => {
+  it('resumes across uneven weeks, lighter stretches and short or long breaks without losing work', () => {
+    const calendars = [
+      { hoursByWeekday: [1, 2, 1, 2, 1, 3, 0], restDay: 6 },
+      { hoursByWeekday: [0, 1, 0, 1, 0, 3, 0], restDay: 2 },
+      { hoursByWeekday: [0.5, 0.5, 0.5, 0.5, 0.5, 1, 0.5], restDay: 0 },
+      { hoursByWeekday: [3, 0, 0, 0, 0, 0, 0], restDay: null },
+    ];
+    for (const schedule of calendars) {
+      for (const shift of [0, 1, 3, 5, 7, 14, 23]) {
+        const now = new Date(calendar.addStudyDays('2026-11-16', shift) + 'T08:00:00Z');
+        const plan = {
+          ...schedule, startDate: '2026-11-16', deadline: '2026-12-13',
+          pausedAtDay: '2026-11-16', pauseCalendar: { timeZone: 'Asia/Kolkata', dayStartHour: 0 },
+          lighterDays: [{ from: '2026-11-17', to: '2026-11-20', hours: 0 }],
+          items: [
+            { key: 'done', type: 'dsa', day: '2026-11-16', plannedMinutes: 20, doneAt: '2026-11-16T06:00:00Z', reviewBaseDay: '2026-11-16', nextReviewDay: '2026-11-19', reviewStage: 1 },
+            { key: 'arrays', type: 'dsa', ref: 'dsa:demo:arrays', link: 'https://example.test/arrays', day: '2026-11-17', plannedMinutes: 45, locked: true },
+            { key: 'project', type: 'custom', title: 'Finish the project', day: '2026-11-20', plannedMinutes: 210, locked: true },
+            { key: 'notes', type: 'notes', ref: 'notes:os:test', day: '2026-11-23', plannedMinutes: 35 },
+          ],
+        };
+        const { patch } = recovery.resumePlan(plan, { studyTimeZone: 'America/Los_Angeles', studyDayStart: 4 }, now, true);
+        const finished = patch.items.find((item) => item.key === 'done');
+        assert.equal(finished.doneAt, plan.items[0].doneAt);
+        assert.equal(finished.reviewStage, 1);
+        assert.equal(finished.nextReviewDay, calendar.addStudyDays('2026-11-19', shift));
+        assert.equal(sum(patch.items), sum(plan.items));
+        assert.equal(new Set(patch.items.map((item) => item.key)).size, patch.items.length);
+        const totals = new Map();
+        for (const item of patch.items.filter((item) => !item.doneAt)) {
+          assert.ok(item.day <= patch.deadline);
+          totals.set(item.day, (totals.get(item.day) || 0) + item.plannedMinutes);
+        }
+        const input = { ...schedule, lighterDays: patch.lighterDays };
+        for (const [day, minutes] of totals) {
+          assert.ok(minutes <= gen.dayBudget(adj.hoursOn(input, day)).planned, day);
+        }
+      }
+    }
+  });
   it('keeps night study in yesterday and handles both daylight-saving transitions', () => {
     const india = { timeZone: 'Asia/Kolkata', dayStartHour: 4 };
     assert.equal(calendar.studyDay(new Date('2026-11-16T19:00:00Z'), india), '2026-11-16');
@@ -265,11 +305,13 @@ describe('carried over and the calm Today list (decisions 24, 27, 33)', () => {
     assert.equal(before.isToday, false);
     assert.ok(before.items.length > 0 && before.items.every((i) => i.day === '2026-11-16'));
   });
-  it('Today never hides waiting work: on a rest day the carried over items stay, and with nothing planned for today the reviews due today stay', () => {
+  it('keeps the rest day free and does not hide a due review behind a future schedule', () => {
     const rest = adj.todayView(stored, '2026-11-22'); // the rest day, with unfinished items from earlier days
     assert.equal(rest.date, '2026-11-22');
     assert.equal(rest.isToday, true);
-    assert.ok(rest.items.length > 0 && rest.items.every((i) => i.day < '2026-11-22'), 'the carried over items');
+    assert.deepEqual(rest.items, []);
+    assert.equal(rest.startItem, null);
+    assert.ok(adj.carriedOver(stored.items, '2026-11-22').length > 0, 'resting does not erase waiting work');
     // everything up to and including Friday 20 Nov is done, and a review is due that day: Today shows the review, not the next day's items
     const first = dsaItems(stored.items)[0];
     const doneUpToFriday = stored.items.map((i) => (i.day <= '2026-11-20' ? { ...i, doneAt: 'x' } : i));
@@ -278,6 +320,34 @@ describe('carried over and the calm Today list (decisions 24, 27, 33)', () => {
     assert.equal(view.isToday, true);
     assert.equal(view.items.length, 1);
     assert.deepEqual([view.items[0].type, view.items[0].originalKey], ['review', first.key]);
+  });
+  it('balances overdue and current tasks within a short day, with due reviews protected', () => {
+    const day = '2026-11-20';
+    const tasks = [
+      { key: 'large', day: '2026-11-19', plannedMinutes: 75 },
+      { key: 'carry', day: '2026-11-19', plannedMinutes: 12 },
+      { key: 'current', day, plannedMinutes: 40 },
+      { key: 'review-source', day: '2026-11-18', plannedMinutes: 30, doneAt: 'completed', nextReviewDay: day },
+    ];
+    const calendar = { ...stored.input, hoursByWeekday: Array(7).fill(1) };
+    const view = adj.todayView({ ...stored, input: calendar, items: tasks }, day);
+    assert.equal(view.minutes, 55);
+    assert.deepEqual(view.items.map((item) => item.originalKey || item.key), ['carry', 'current', 'review-source']);
+    assert.ok(adj.carriedOver(tasks, day).some((item) => item.key === 'large'));
+  });
+  it('alternates overdue and new work when a one-hour day cannot fit both', () => {
+    const calendar = { ...stored.input, hoursByWeekday: Array(7).fill(1), restDay: null };
+    const selected = [];
+    for (const day of ['2026-11-19', '2026-11-20']) {
+      const items = [
+        { key: 'overdue', day: '2026-11-17', plannedMinutes: 40 },
+        { key: 'current', day, plannedMinutes: 40 },
+      ];
+      const view = adj.todayView({ ...stored, input: calendar, items }, day);
+      assert.equal(view.minutes, 40);
+      selected.push(view.startItem.key);
+    }
+    assert.deepEqual(selected.sort(), ['current', 'overdue']);
   });
 });
 

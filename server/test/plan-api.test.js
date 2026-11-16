@@ -29,6 +29,82 @@ async function lifecycleApply(acct, body) {
 }
 
 describe('study calendar, freeze and short sprint recovery', () => {
+  it('refits a five-day break around rest days and retains every unfinished minute', async () => {
+    const { hoursOn } = require('../src/services/planAdjust');
+    const { dayBudget } = require('../src/services/planGenerator');
+    planClock.now = () => new Date('2026-11-16T07:00:00Z');
+    const acct = await t.register();
+    const made = (await create(acct, form({
+      goalType: 'placements', sheetSlug: 'blind-75', subjects: ['os', 'dbms'],
+      weeks: 4, weekdayHours: 1, weekendHours: 3, restDay: 6,
+    }))).body.data.plan;
+    const task = made.items.find((item) => item.type === 'dsa' && !item.part);
+    const result = await t.api.post(`/api/plan/items/${task.id}/result`, { cookies: acct.cookies, body: { result: 'hints' } });
+    assert.equal(result.status, 200);
+    const before = (await getPlan(acct)).body.data.plan;
+    await lifecycleApply(acct, { type: 'pause' });
+    planClock.now = () => new Date('2026-11-21T07:00:00Z');
+    const body = { type: 'resume', planId: made.id };
+    const preview = await lifecyclePreview(acct, body);
+    assert.equal(preview.status, 200);
+    assert.equal(preview.body.data.shiftDays, 5);
+    assert.ok(preview.body.data.refitted > 0);
+    assert.ok(preview.body.data.extraDays > 0);
+    assert.equal((await lifecyclePreview(acct, { ...body, extendDeadline: false })).status, 422);
+    assert.equal((await getPlan(acct)).body.data.plan, null, 'preview does not resume the plan');
+    assert.equal((await lifecycleApply(acct, body)).status, 200);
+    const after = (await getPlan(acct)).body.data.plan;
+    assert.equal(after.deadline, preview.body.data.deadlineAfter);
+    assert.deepEqual(after.items.map((item) => item.key).sort(), before.items.map((item) => item.key).sort());
+    const completed = after.items.find((item) => item.id === task.id);
+    assert.equal(completed.doneAt, result.body.data.item.doneAt);
+    assert.equal(completed.nextReviewDay, '2026-11-24');
+    const totals = new Map();
+    for (const item of after.items.filter((item) => !item.doneAt)) {
+      assert.ok(item.day >= '2026-11-21' && item.day <= after.deadline);
+      totals.set(item.day, (totals.get(item.day) || 0) + item.plannedMinutes);
+    }
+    for (const [day, minutes] of totals) assert.ok(minutes <= dayBudget(hoursOn(after, day)).planned, day);
+  });
+
+  it('restores a missing split remainder after a second rebuild and credits it only when finished', async () => {
+    planClock.now = () => new Date('2026-11-16T07:00:00Z');
+    const acct = await t.register();
+    const made = (await create(acct, form({
+      goalType: 'placements', sheetSlug: 'blind-75', subjects: [],
+      weeks: 4, weekdayHours: 0.5, weekendHours: 0.5, restDay: 6,
+    }))).body.data.plan;
+    const first = made.items.find((item) => item.title === 'Two Sum' && item.part?.n === 1);
+    const result = () => t.api.post(`/api/plan/items/${first.id}/result`, { cookies: acct.cookies, body: { result: 'hints' } });
+    assert.equal((await result()).body.data.started, false);
+    planClock.now = () => new Date(made.deadline + 'T07:00:00Z');
+    async function rebuild(change) {
+      const preview = await changePreview(acct, change);
+      assert.equal(preview.status, 200, JSON.stringify(preview.body));
+      const saved = await t.api.post('/api/plan/changes/apply', {
+        cookies: acct.cookies, body: { ...change, checksum: preview.body.data.diff.checksum },
+      });
+      assert.equal(saved.status, 200, JSON.stringify(saved.body));
+      return saved.body.data.plan;
+    }
+    const saved = await rebuild({ type: 'rebuild' });
+    const partial = saved.items.find((item) => item.id === first.id);
+    assert.deepEqual(partial.partialProgress, { completedMinutes: 21, totalMinutes: 40, unscheduledMinutes: 19 });
+    assert.equal(partial.part.of, 2);
+    assert.equal(await Progress.countDocuments({ user: acct.id }), 0);
+    // Read and rebuild an older record that stored the remainder only in coverage.
+    await Plan.updateOne({ _id: made.id, 'items._id': first.id }, { $unset: { 'items.$.unscheduledMinutes': 1 } });
+    assert.deepEqual((await getPlan(acct)).body.data.plan.items.find((item) => item.id === first.id).partialProgress, partial.partialProgress);
+    const extended = await rebuild({ type: 'rebuild', deadline: ymdOf(dayNumber(made.deadline) + 14) });
+    const outstanding = extended.items.filter((item) => item.link === first.link && !item.doneAt);
+    assert.equal(outstanding.reduce((sum, item) => sum + item.plannedMinutes, 0), 19);
+    assert.equal(extended.items.find((item) => item.id === first.id).doneAt, partial.doneAt);
+    assert.ok(!extended.items.find((item) => item.id === first.id).partialProgress);
+    const last = await t.api.post(`/api/plan/items/${outstanding.at(-1).id}/result`, { cookies: acct.cookies, body: { result: 'alone' } });
+    assert.equal(last.body.data.started, true);
+    assert.equal(await Progress.countDocuments({ user: acct.id }), 1);
+  });
+
   it('concurrent resume applies once and account deletion includes a paused main plan', async () => {
     planClock.now = () => new Date('2026-11-16T12:00:00Z');
     const acct = await t.register();

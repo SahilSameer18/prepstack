@@ -52,7 +52,7 @@ export default function StudyRecovery({ model }) {
             <strong>{paused.title}</strong> · Paused since {paused.pausedAtDay}.
           </p>
           <p>
-            Its tasks and reviews will shift by the break length when you resume.
+            Resuming fits unfinished tasks into your available days and shifts review dates.
             You can run one short plan while it waits.
           </p>
           <div className="flex flex-wrap gap-3">
@@ -192,14 +192,14 @@ function RecoveryDialog({ request, model, onClose }) {
             )}
             {request.type === 'pause' && (
               <p>
-                Stop this plan until you return. Resuming shifts unfinished tasks and
-                review dates by the length of your break and extends the deadline.
+                Stop this plan until you return. Resuming refits unfinished tasks,
+                shifts review dates and previews the new deadline.
                 Completed work stays saved.
               </p>
             )}
             {request.type === 'resume' && (
               <p>
-                Preview the shifted schedule and extended deadline. If a short plan
+                Preview your new schedule and deadline. If a short plan
                 is active, it moves to read-only History after confirmation.
               </p>
             )}
@@ -241,9 +241,19 @@ function RecoverySummary({ result }) {
       {result.type === 'resume' && (
         <>
           <p>
-            Resume {result.title}: shift {result.movedItems} unfinished tasks
-            and {result.reviews} review dates by {result.shiftDays} days.
+            Resume {result.title} after {result.shiftDays} days away. The plan
+            shifts {result.reviews} review dates and fits unfinished tasks into
+            your available study days.
           </p>
+          {result.refitted > 0 && (
+            <p>{result.refitted} tasks need different dates to respect your study hours and rest days.</p>
+          )}
+          {result.movedLocked > 0 && (
+            <p>{result.movedLocked} tasks you moved by hand need new dates.</p>
+          )}
+          {result.extraDays > 0 && (
+            <p>The deadline needs {result.extraDays} extra days beyond the break to keep all scheduled work.</p>
+          )}
           <p>
             Deadline: {result.deadlineBefore} → {result.deadlineAfter}.
             Completed work and review stages stay saved.

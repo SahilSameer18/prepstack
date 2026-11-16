@@ -60,8 +60,8 @@ const solvedLinksFor = async (userId, input, data) => {
   return [...solved].filter((l) => inPlan.has(l)).slice(0, MAX_SOLVED_LINKS);
 };
 
-// Storage ordinals keep occurrence keys unique through rebuilds. Display ordinals describe only
-// surviving parts, without changing saved completions or using a Today subset as the total.
+// Contiguous display labels include an unscheduled remainder without changing
+// stored keys or counting only the parts visible in a Today subset.
 const partLabels = (items) => {
   const groups = new Map();
   for (const it of items) {
@@ -73,7 +73,18 @@ const partLabels = (items) => {
   const labels = new Map();
   for (const parts of groups.values()) {
     parts.sort((a, b) => a.part.n - b.part.n);
-    parts.forEach((it, i) => labels.set(it.key, { n: i + 1, of: parts.length }));
+    const unscheduled = parts.find((item) => item.unscheduledMinutes);
+    parts.forEach((it, i) => labels.set(it.key, {
+      n: i + 1, of: parts.length + Number(!!unscheduled),
+    }));
+    if (unscheduled) {
+      const completedMinutes = parts.filter((item) => item.doneAt).reduce((sum, item) => sum + item.plannedMinutes, 0);
+      const scheduledMinutes = parts.reduce((sum, item) => sum + item.plannedMinutes, 0);
+      labels.get(unscheduled.key).progress = {
+        completedMinutes, totalMinutes: scheduledMinutes + unscheduled.unscheduledMinutes,
+        unscheduledMinutes: unscheduled.unscheduledMinutes,
+      };
+    }
   }
   return labels;
 };
@@ -81,13 +92,15 @@ const presentItem = (it, labels) => ({
   id: it._id ? String(it._id) : null, key: it.key ?? null, originalKey: it.originalKey ?? null, type: it.type, ref: it.ref ?? null, link: it.link ?? null, title: it.title,
   plannedMinutes: it.plannedMinutes, day: it.day ?? null, plannedDay: it.plannedDay ?? it.day ?? null, stepId: it.stepId ?? null,
   alternatives: alternativeResources(it.link), replacesKey: it.replacesKey ?? null,
-  part: labels?.get(it.key) ?? it.part ?? null, source: it.source ?? 'planner', core: it.core ?? true, sheet: it.sheet ?? null,
+  part: labels?.has(it.key) ? { n: labels.get(it.key).n, of: labels.get(it.key).of } : it.part ?? null,
+  partialProgress: labels?.get(it.key)?.progress,
+  source: it.source ?? 'planner', core: it.core ?? true, sheet: it.sheet ?? null,
   topicId: it.topicId ?? null, topicTitle: it.topicTitle ?? null, subject: it.subject ?? null, difficulty: it.difficulty ?? null,
   starred: !!it.starred, locked: !!it.locked, skipped: !!it.skipped, result: it.result ?? null, quizScore: it.quizScore ?? null, doneAt: it.doneAt ?? null, completedStudyDay: it.completedStudyDay ?? null,
   reviewStage: it.reviewStage ?? null, nextReviewDay: it.nextReviewDay ?? null, dueDay: it.dueDay ?? null, failed: it.failed ?? undefined, solvedOnSheet: !!it.solvedOnSheet,
 });
 const presentPlan = (doc) => {
-  const labels = partLabels(doc.items);
+  const labels = partLabels(adj.restorePartialRemainders(doc.items, doc.coverage?.leftOut));
   return {
     id: String(doc._id), goalType: doc.goalType, style: doc.style, title: doc.title, targetRole: doc.targetRole, status: doc.status, sheetSlug: doc.sheetSlug, roadmapSlug: doc.roadmapSlug,
     subjects: doc.subjects, pace: doc.pace || 'standard', fromReport: !!doc.originReport, knownTopics: doc.knownTopics, weeks: doc.weeks, startDate: doc.startDate, deadline: doc.deadline, hoursByWeekday: doc.hoursByWeekday, restDay: doc.restDay,
@@ -133,7 +146,9 @@ const getPlan = async (req, res, next) => {
     const stored = toStored(doc);
     stored.items = withSheetSolves(stored.items, solved);
     const plan = presentPlan(doc);
-    plan.items = plan.items.map((it) => ({ ...it, solvedOnSheet: it.type === 'dsa' && !it.doneAt && solved.has(problemIdentity(it.link)) }));
+    plan.items = plan.items.map((it) => ({
+      ...it, solvedOnSheet: it.type === 'dsa' && (!it.doneAt || it.partialProgress) && solved.has(problemIdentity(it.link)),
+    }));
     return sendSuccess(res, 200, 'Plan fetched successfully', { plan, today: presentView(adj.todayView(stored, today(req)), stored.items), calendar, pausedPlans, finished: doc.deadline < today(req) });
   } catch (error) {
     return next(error);
@@ -455,7 +470,8 @@ const persistWithSync = (doc, sync) => withTransaction(async (session) => {
 // What the user has marked solved on the sheets for the plan's open DSA items (decision 2: a problem solved on the sheet shows done in the plan).
 // Returns link -> the date it was solved (or null for old ticks with no date).
 const solvedOnSheets = async (userId, doc) => {
-  const open = new Set(doc.items.filter((it) => it.type === 'dsa' && it.link && !it.doneAt).map((it) => problemIdentity(it.link)));
+  const items = adj.restorePartialRemainders(doc.items, doc.coverage?.leftOut);
+  const open = new Set(items.filter((it) => it.type === 'dsa' && it.link && (!it.doneAt || it.unscheduledMinutes)).map((it) => problemIdentity(it.link)));
   if (!open.size) return new Map();
   const docs = await Progress.find({ user: userId }).select('solvedProblems').lean();
   const solved = new Map();
@@ -525,7 +541,10 @@ const updateItem = async (req, res, next) => {
     if (body.done !== undefined) {
       if (body.done === false) {
         if (item.doneAt) {
-          const wasFull = partsOf(doc, item).every((p) => p.doneAt);
+          const storedParts = adj.restorePartialRemainders(partsOf(doc, item), doc.coverage?.leftOut);
+          const incomplete = storedParts.find((part) => part.unscheduledMinutes);
+          if (incomplete) doc.items.find((part) => part.key === incomplete.key).unscheduledMinutes = incomplete.unscheduledMinutes;
+          const wasFull = partsOf(doc, item).every((p) => p.doneAt && !p.unscheduledMinutes);
           item.doneAt = null;
           item.result = null;
           item.quizScore = null;
@@ -558,7 +577,7 @@ const updateItem = async (req, res, next) => {
             return next(new AppError(422, errorMessages[markRes.error] || markRes.error));
           }
           applyItemsUpdate(doc, markRes.items);
-          if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt)) { // the sheet is ticked when the last part is done
+          if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt && !p.unscheduledMinutes)) { // the sheet is ticked when the last part is done
             dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true, studyDay: today(req) };
             if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);
           }
@@ -666,7 +685,7 @@ const recordResult = async (req, res, next) => {
     applyItemsUpdate(doc, markRes.items);
 
     let dsaSync = null;
-    if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt)) {
+    if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt && !p.unscheduledMinutes)) {
       dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true, studyDay: today(req) };
       if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);
     }

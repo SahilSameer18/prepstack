@@ -1,4 +1,10 @@
-What exists today (updated 2026-11-15)
+What exists today (updated 2026-11-16)
+
+**Planner realism follow-up, 16 Nov 2026.** The final full server run passed all 973 tests in 182 suites. All 134 client tests passed. All 17 browser flows passed across the full and targeted runs. The report replacement test initially read the plan before the save completed. It now waits for the success link and passed on a targeted rerun. The production build, lint and SEO checks passed (37 pages, 7 indexable).
+
+The generator passed 1,200 scenarios with a fresh seed (20261117), including 849 fresh plans and 351 mid-plan changes. A separate 320-case matrix covered sheets, plan lengths, hours and styles with no generation errors. Eight mixed API journeys passed with 148 requests across timezones, pause lengths, different rest days, pace settings, review catch-up, deadline extension and sprint switching. A regression checks 28 additional resume combinations with uneven weeks, zero-hour stretches and oversized tasks. Three in-memory mutations were caught by checks for rest-day capacity, the Today cap and missing split minutes.
+
+The original one-hour Today case went from 640 minutes in the daily list to 40, with all unfinished tasks still in Plan. The five-day pause left Sundays free, kept pending minutes and showed one extra deadline day. The Two Sum test preserved 21 completed minutes, restored the other 19 after a deadline extension and awarded solve credit only on completion. Verification used disposable local data. Actual student solve and reading times, along with the production smoke test, remain to be checked.
 
 **Recovery phases 1 and 2 final verification, 15 Nov 2026:** server **968 tests**, client **134 tests / 14 files**, **16 Chrome browser flows**, production build, lint and SEO pass (37 pages, 7 indexable, zero SEO warnings). The server full suite ran once after Phase 2 integration. The first client full run caught a logged-out builder initialization bug; after fixing it, the focused 28-test file and final complete 122-test client run passed. The final build/lint include that correction and privacy copy. The existing lazy PDF chunk-size warning remains.
 
