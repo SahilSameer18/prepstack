@@ -289,7 +289,7 @@ The planner is free to preview and needs a login to save. You pick a goal (big-t
 
 - **Plain code, no AI.** The schedule is made by deterministic code (`planGenerator.js`, `planAdjust.js`): about 85% of each day is planned, 70% of that for new items and 15% for reviews. Core topics come first, in dependency order. The same input always gives the same plan, and the numbers can be tested.
 - **Public preview.** `/my-plan` shows the totals and week 1 without an account. Saving, studying and syncing need a login.
-- **A fair share when time is short.** If the content is more than the days can hold, every DSA topic and every chosen CS subject keeps a few items (at least 1 problem per topic, 3 sections per subject) instead of the end of the list being cut. Hard problems are trimmed first. The plan and its preview name what is not included and what is only partly included.
+- **A fair share when time is short.** If the content is more than the days can hold, time is shared across DSA topics and chosen CS subjects (when the time allows, at least 1 problem per topic and 3 sections per subject) instead of the end of the list being cut. Hard problems are trimmed first. The plan and its preview name what is not included and what is only partly included.
 - **My pace.** Faster, Standard or Slower changes the minutes planned for each DSA problem. It can be changed later with a preview.
 - **Calm Today screen.** Only today's items, the time they need and one Start button. Graphs, history, reviews and settings live in other tabs.
 - **Review ladder.** Finishing a problem schedules reviews at fixed gaps that depend on how you solved it (alone, with hints, or with the solution). Overdue reviews never hide new work, and new work never hides waiting reviews.

@@ -317,7 +317,7 @@ describe('Analyzer report connections', () => {
     for (const item of before) assert.deepEqual(after.items.id(item._id).toObject(), item);
     assert.equal(new Set(after.items.map((item) => item.key)).size, after.items.length);
     assert.equal((await importPreview(acct, report)).status, 422);
-    const topic = after.items.find((item) => item.source === 'analyzer:' + report._id && item.ref.startsWith('dsa:'));
+    const topic = after.items.find((item) => item.source === 'analyzer:' + report._id && item.ref?.startsWith('dsa:'));
     assert.equal((await t.api.patch(`/api/plan/items/${topic._id}`, { cookies: acct.cookies, body: { done: true } })).status, 200);
     assert.deepEqual(await Progress.find({ user: acct.id }).lean(), progressBefore);
   });
@@ -831,5 +831,47 @@ describe('my pace (phase D1): the plan keeps it and it can be changed with a pre
     const other = await t.register();
     assert.equal((await changePreview(other, { type: 'pace', pace: 'faster' })).status, 404);
     assert.equal((await Plan.findOne({ user: owner.id }).lean()).pace, 'standard');
+  });
+});
+
+describe('review fixes: no empty plan, pace on report plans, substitutes at the plan pace', () => {
+  it('a plan with no task that fits is refused (422) and nothing is saved; a normal plan still saves', async () => {
+    const acct = await t.register();
+    const tight = form({ weeks: 1, weekdayHours: 0, weekendHours: 0.5, restDay: 6, subjects: [], sheetSlug: 'neetcode-150' }); // only Saturday, 21 minutes of room
+    const res = await create(acct, tight);
+    assert.equal(res.status, 422, JSON.stringify(res.body));
+    assert.match(res.body.message, /No task fits/);
+    assert.equal(await Plan.countDocuments({ user: acct.id }), 0);
+    assert.equal((await create(acct, form({ weeks: 4 }))).status, 201);
+  });
+  it('a plan made from a report says so, and a pace change on it is refused cleanly', async () => {
+    const acct = await t.register();
+    const normal = (await create(acct, form({ weeks: 6 }))).body.data.plan;
+    assert.equal(normal.fromReport, false);
+    await t.api.del('/api/plan', { cookies: acct.cookies });
+    const report = await importReport(acct);
+    const preview = (await importPreview(acct, report)).body.data;
+    assert.equal((await importApply(acct, report, preview)).status, 200);
+    assert.equal((await getPlan(acct)).body.data.plan.fromReport, true);
+    const before = await Plan.findOne({ user: acct.id }).lean();
+    const res = await changePreview(acct, { type: 'pace', pace: 'faster' });
+    assert.equal(res.status, 422, JSON.stringify(res.body));
+    assert.match(res.body.message, /pace does not apply/);
+    assert.deepEqual(await Plan.findOne({ user: acct.id }).lean(), before);
+  });
+  it('substitute problems are estimated at the plan pace', async () => {
+    const BASE = { Basic: 30, Easy: 40, Medium: 70, Hard: 120 };
+    for (const [pace, factor] of [['faster', 0.6], ['slower', 1.4]]) {
+      const acct = await t.register();
+      const made = (await create(acct, form({ goalType: 'placements', sheetSlug: 'blind-75', weeks: 1, restDay: null, subjects: [], pace }))).body.data.plan;
+      const original = made.items.find((entry) => entry.type === 'dsa');
+      const options = (await t.api.get(`/api/plan/items/${original.id}/substitutes`, { cookies: acct.cookies })).body.data.substitutes;
+      assert.ok(options.length > 0);
+      for (const option of options) assert.equal(option.plannedMinutes, Math.round(BASE[option.difficulty] * factor), `${pace}: ${option.title}`);
+      const choice = options[0];
+      const reply = await t.api.post(`/api/plan/items/${original.id}/substitute`, { cookies: acct.cookies, body: { sheetSlug: choice.sheetSlug, link: choice.link, checksum: choice.checksum } });
+      assert.equal(reply.status, 200);
+      assert.equal(reply.body.data.plan.items.find((entry) => entry.replacesKey === original.key).plannedMinutes, choice.plannedMinutes);
+    }
   });
 });

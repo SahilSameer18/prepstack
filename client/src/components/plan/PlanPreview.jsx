@@ -128,9 +128,9 @@ export default function PlanPreview({ builder }) {
         <div className="space-y-3 rounded-xl border border-warn-solid/25 bg-warn-solid/10 p-3">
           <p className="text-sm leading-relaxed text-warn">
             {coverage.leftOutCount} syllabus items (
-            {hours(coverage.leftOutMinutes)}) could not fit. Every topic and
-            subject keeps a few items first; the rest is shared fairly. Add
-            time or choose a smaller syllabus to cover more.
+            {hours(coverage.leftOutMinutes)}) could not fit. Time is shared
+            across topics and subjects when it can be. Add time or choose a
+            smaller syllabus to cover more; the lists below name what is left out.
           </p>
           <PlanCoverage byGroup={coverage.byGroup} />
         </div>

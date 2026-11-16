@@ -215,6 +215,7 @@ const previewChange = (stored, data, todayYmd, change) => {
     if (errors.length) throw new gen.PlanInputError(errors);
     input.lighterDays = change.lighterDays;
   } else if (change.type === 'pace') {
+    if (stored.input.originReport) throw new gen.PlanInputError(['A plan made from a report has fixed task times, so pace does not apply to it.']);
     input.pace = change.pace;
   } else if (change.type !== 'rebuild') {
     throw new gen.PlanInputError(['change type must be rebuild, hours, lighter or pace']);

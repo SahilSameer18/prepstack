@@ -57,10 +57,12 @@ export default function StudySchedule({
           {formatPlanDate(plan.startDate, true)} to{" "}
           {formatPlanDate(plan.deadline, true)}.
         </p>
-        <p>
-          Pace: {(PACES[plan.pace] || PACES.standard).label} (a Medium problem
-          takes about {paceMinutes(plan.pace)} min).
-        </p>
+        {!plan.fromReport && (
+          <p>
+            Pace: {(PACES[plan.pace] || PACES.standard).label} (a Medium problem
+            takes about {paceMinutes(plan.pace)} min).
+          </p>
+        )}
         <p>{today?.onTrack?.text}</p>
         {!!plan.coverage?.importOverloads?.length && (
           <p className="text-warn">
@@ -108,9 +110,11 @@ export default function StudySchedule({
             <button className={BUTTON} onClick={() => onDialog("hours")}>
               Change hours
             </button>
-            <button className={BUTTON} onClick={() => onDialog("pace")}>
-              Change pace
-            </button>
+            {!plan.fromReport && (
+              <button className={BUTTON} onClick={() => onDialog("pace")}>
+                Change pace
+              </button>
+            )}
             <button className={BUTTON} onClick={() => onDialog("lighter")}>
               Lighter days
             </button>

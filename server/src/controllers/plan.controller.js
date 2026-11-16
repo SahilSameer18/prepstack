@@ -90,7 +90,7 @@ const presentPlan = (doc) => {
   const labels = partLabels(doc.items);
   return {
     id: String(doc._id), goalType: doc.goalType, style: doc.style, title: doc.title, targetRole: doc.targetRole, status: doc.status, sheetSlug: doc.sheetSlug, roadmapSlug: doc.roadmapSlug,
-    subjects: doc.subjects, pace: doc.pace || 'standard', knownTopics: doc.knownTopics, weeks: doc.weeks, startDate: doc.startDate, deadline: doc.deadline, hoursByWeekday: doc.hoursByWeekday, restDay: doc.restDay,
+    subjects: doc.subjects, pace: doc.pace || 'standard', fromReport: !!doc.originReport, knownTopics: doc.knownTopics, weeks: doc.weeks, startDate: doc.startDate, deadline: doc.deadline, hoursByWeekday: doc.hoursByWeekday, restDay: doc.restDay,
     lighterDays: doc.lighterDays, coverage: doc.coverage, notices: doc.notices, createdAt: doc.createdAt, updatedAt: doc.updatedAt, items: doc.items.map((it) => presentItem(it, labels)),
   };
 };
@@ -158,6 +158,7 @@ const createPlan = async (req, res, next) => {
     }
     if (plan.items.length > PLAN_MAX_ITEMS) return next(new AppError(422, `This plan would have ${plan.items.length} items and the most is ${PLAN_MAX_ITEMS}. Choose fewer weeks, fewer subjects or a smaller sheet.`));
     if (!plan.coverage.syllabusItems) return next(new AppError(422, 'There is nothing to plan: every problem on this sheet is already solved or marked as known.'));
+    if (!plan.coverage.plannedItems) return next(new AppError(422, 'No task fits these days and hours. Add study time or weeks, then try again.')); // an empty plan is never saved
 
     let archived = null;
     if (existing) {

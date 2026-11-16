@@ -31,7 +31,7 @@ function substituteOptions(plan, original, data, solved) {
         const link = problemIdentity(problem.link);
         if (seen.has(link) || solved.has(link)) continue;
         seen.add(link);
-        const option = { sheetSlug, link: problem.link, title: problem.title, difficulty: problem.difficulty, topicId: topic.id, topicTitle: topic.title, plannedMinutes: problemMinutes(problem.difficulty) };
+        const option = { sheetSlug, link: problem.link, title: problem.title, difficulty: problem.difficulty, topicId: topic.id, topicTitle: topic.title, plannedMinutes: problemMinutes(problem.difficulty, plan.pace) };
         option.checksum = crypto.createHash('sha256').update(JSON.stringify({ revision: plan.updatedAt, original: original.key, option })).digest('hex').slice(0, 32);
         options.push(option);
       }
