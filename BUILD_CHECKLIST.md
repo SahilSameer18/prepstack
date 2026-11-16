@@ -13,6 +13,7 @@ Items marked **optional** are the owner's call: whether and when. Sections 1 to 
 - [x] Competitor research written down (`docs/research/COMPETITOR_PLANNERS.md`)
 - [x] Docs cleanup; plans written for depth levels and DSA lessons
 - [x] Review fixes (16 Nov): no empty plan saved, the Generate button is off when no task fits, pace is refused on report plans, substitutes follow the pace, honest coverage copy
+- [x] Finish-date comparison in the builder preview: "when would the whole syllabus be done at these hours?" (16 Nov)
 - [x] Role plans never empty (a long roadmap step is planned in parts), Today never empty while work waits on a study day, `plannedItems` counts tasks (16 Nov)
 
 ## 1. Launch the work so far

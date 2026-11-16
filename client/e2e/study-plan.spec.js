@@ -518,6 +518,7 @@ test('Coverage: a tight plan names what is not in it, and the pace choice change
   await expect(page.getByText('Planned at a standard pace: a Medium problem takes about 70 min.')).toBeVisible();
   await expect(page.getByText('Not in your plan:')).toBeVisible();
   await expect(page.getByText(/Only some of:/)).toBeVisible();
+  await expect(page.getByTestId('finish-all')).toContainText(/At these hours, the whole syllabus (would be done by|would take more than)/);
   // the first week reads in plain words: a weekday and date, and the day's total
   await expect(page.getByText(/^\w{3}, \d{1,2} \w{3}$/).first()).toBeVisible();
   await expect(page.getByText(/^\d+ tasks? · /).first()).toBeVisible();

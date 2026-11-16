@@ -289,7 +289,7 @@ The planner is free to preview and needs a login to save. You pick a goal (big-t
 
 - **Plain code, no AI.** The schedule is made by deterministic code (`planGenerator.js`, `planAdjust.js`): about 85% of each day is planned, 70% of that for new items and 15% for reviews. Core topics come first, in dependency order. The same input always gives the same plan, and the numbers can be tested.
 - **Public preview.** `/my-plan` shows the totals and week 1 without an account. Saving, studying and syncing need a login.
-- **A fair share when time is short.** Sheet plans target at least one problem per DSA topic and three sections per chosen CS subject when time allows. Hard problems are trimmed first. The plan and its preview explain what only partly fits and what was left out. The current role-planner draft can schedule part of a long roadmap step and report the time that did not fit.
+- **A fair share when time is short.** Sheet plans target at least one problem per DSA topic and three sections per chosen CS subject when time allows. Hard problems are trimmed first. The plan and its preview explain what only partly fits and what was left out. A roadmap step longer than the whole plan is planned in parts and the rest is reported as not included, so a role plan is never empty while there are study hours. When something does not fit, the preview also says when the whole syllabus would be finished at the same hours (found by planning the same request over the longest plan allowed, 52 weeks; "more than a year" beyond that).
 - **My pace.** Faster, Standard or Slower changes the minutes planned for each DSA problem. It can be changed later with a preview.
 - **Calm Today screen.** Only today's items, the time they need and one Start button. Graphs, history, reviews and settings live in other tabs.
 - **Review ladder.** Finishing a problem schedules reviews at fixed gaps that depend on how you solved it (alone, with hints, or with the solution). Today shows due reviews within its review allowance. The Reviews tab shows the full due list.
@@ -696,7 +696,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **979 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **982 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
 
 ```bash
 cd server

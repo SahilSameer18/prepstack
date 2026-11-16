@@ -132,6 +132,13 @@ export default function PlanPreview({ builder }) {
             across topics and subjects when it can be. Add time or choose a
             smaller syllabus to cover more; the lists below name what is left out.
           </p>
+          {coverage.finishAll && (
+            <p className="text-sm leading-relaxed text-fg-3" data-testid="finish-all">
+              {coverage.finishAll.tooLong
+                ? "At these hours, the whole syllabus would take more than a year."
+                : `At these hours, the whole syllabus would be done by ${displayDate(coverage.finishAll.date)} (about ${coverage.finishAll.weeks} weeks), mock blocks included.`}
+            </p>
+          )}
           <PlanCoverage byGroup={coverage.byGroup} />
         </div>
       )}

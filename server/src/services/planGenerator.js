@@ -564,6 +564,16 @@ const onTrack = (items, todayYmd) => {
 };
 
 // ---------- what a logged-out visitor may see (decision 9): the numbers and week 1 only ----------
+// When would everything be done at these hours? Plan the same request over the longest plan allowed: with room for all of it,
+// the days are filled in order, so the last task's day is the finish. Only needed when the real plan leaves something out.
+const finishEverything = (input, plan, data) => {
+  if (!plan.coverage.leftOut.length || plan.notices.includes('nothing-fits')) return null;
+  const long = generatePlan({ ...input, weeks: limits.PLAN_MAX_WEEKS }, data);
+  if (long.coverage.leftOut.length || !long.finishDate) return { tooLong: true };
+  const days = dayNumber(long.finishDate) - dayNumber(plan.startDate) + 1;
+  return { date: long.finishDate, weeks: Math.ceil(days / 7) };
+};
+
 const previewPlan = (input, data) => {
   const plan = generatePlan(input, data);
   const week1 = groupByWeek(plan)[0] || { // the first calendar week with tasks: a start on the rest day must not show an empty week
@@ -571,7 +581,7 @@ const previewPlan = (input, data) => {
   return {
     startDate: plan.startDate, deadline: plan.deadline, finishDate: plan.finishDate, earlyDays: plan.earlyDays, notices: plan.notices,
     pace: plan.input.pace,
-    coverage: { syllabusMinutes: plan.coverage.syllabusMinutes, plannedMinutes: plan.coverage.plannedMinutes, extraMinutes: plan.coverage.extraMinutes, leftOutCount: plan.coverage.leftOut.length, leftOutMinutes: sumMinutes(plan.coverage.leftOut), alreadySolved: plan.coverage.alreadySolved, byGroup: plan.coverage.byGroup },
+    coverage: { syllabusMinutes: plan.coverage.syllabusMinutes, plannedMinutes: plan.coverage.plannedMinutes, extraMinutes: plan.coverage.extraMinutes, leftOutCount: plan.coverage.leftOut.length, leftOutMinutes: sumMinutes(plan.coverage.leftOut), alreadySolved: plan.coverage.alreadySolved, byGroup: plan.coverage.byGroup, finishAll: finishEverything(input, plan, data) },
     week1,
   };
 };
