@@ -13,6 +13,7 @@ Items marked **optional** are the owner's call: whether and when. Sections 1 to 
 - [x] Competitor research written down (`docs/research/COMPETITOR_PLANNERS.md`)
 - [x] Docs cleanup; plans written for depth levels and DSA lessons
 - [x] Review fixes (16 Nov): no empty plan saved, the Generate button is off when no task fits, pace is refused on report plans, substitutes follow the pace, honest coverage copy
+- [x] Search optimisation (16 Nov): every notes section is its own indexable page (64 more pages, 91 in the sitemap) with its own title, description and structured data; real text in the page HTML for sections, sheets, roadmaps and the behavioral guide; the home page leads with the study plan; the Striver A2Z claim corrected from "450+" to "440+" problems
 - [x] Open reading: DSA sheets, notes, roadmaps and the behavioral guide need no login; signed out, they never call a personal API and say "Sign in to save your progress" on a tick, a note or a finished quiz; the pages are now indexable (16 Nov)
 - [x] Finish-date comparison in the builder preview: "when would the whole syllabus be done at these hours?" (16 Nov)
 - [x] Role plans never empty (a long roadmap step is planned in parts), Today never empty while work waits on a study day, `plannedItems` counts tasks (16 Nov)

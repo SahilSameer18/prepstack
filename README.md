@@ -687,7 +687,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 | Script            | Description                       |
 | ----------------- | --------------------------------- |
 | `npm run dev`     | Launches dev build server         |
-| `npm run build`   | Builds the bundle, then writes one HTML page per route (title, description, share tags), `sitemap.xml` and `robots.txt`, and fails if any SEO check fails |
+| `npm run build`   | Builds the bundle, then writes one HTML page per route (title, description, share tags, and for notes sections, sheets, roadmaps and the behavioral guide the real text), `sitemap.xml` (91 pages, 64 of them notes sections) and `robots.txt`, and fails if any SEO check fails |
 | `npm run build:app` | Plain Vite build only (no SEO step) |
 | `npm run lint`    | Analyzes code styling with ESLint |
 | `npm run preview` | Previews production bundle output |

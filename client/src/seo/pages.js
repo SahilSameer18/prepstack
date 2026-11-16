@@ -2,6 +2,8 @@
 // Plain JS (no React) on purpose: the app uses it at runtime AND scripts/prerender.mjs uses it at build time
 // to write real per-page HTML, so the two can never disagree.
 
+import SECTIONS from './content.js';
+
 const nodeEnv = globalThis.process?.env || {};
 const viteEnv = (typeof import.meta !== 'undefined' && import.meta.env) || {};
 
@@ -18,7 +20,7 @@ const SHEETS = [
   { slug: 'blind-75', name: 'Blind 75', title: 'Blind 75 DSA Sheet: 75 Must-Do Interview Problems', description: 'Solve the Blind 75, the 75 essential LeetCode problems that cover arrays, strings, trees, graphs and dynamic programming. Track your progress for free.', intro: 'The Blind 75 is a short, curated list of the coding interview problems that cover the core patterns: arrays and hashing, two pointers, sliding window, stacks, trees, graphs and dynamic programming. Mark problems as solved and watch your progress.' },
   { slug: 'neetcode-150', name: 'NeetCode 150', title: 'NeetCode 150: Pattern-Based DSA Practice Sheet', description: 'Work through the NeetCode 150, a pattern-based DSA sheet that goes deeper than the Blind 75. Track solved problems, filter by difficulty and review by topic.', intro: 'NeetCode 150 groups interview problems by pattern so you learn techniques, not just answers. It builds on the Blind 75 with extra depth in every topic.' },
   { slug: 'striver-sde', name: 'Striver SDE Sheet', title: 'Striver SDE Sheet: 191 Interview Problems to Track', description: "Practice Striver's SDE sheet with 191 handpicked problems for core tech interview rounds. Tick off problems, see progress per topic and keep going.", intro: "Striver's SDE sheet is a structured topic-by-topic list of 191 problems that many students use to prepare for product-company interviews." },
-  { slug: 'striver-a2z', name: 'Striver A2Z Sheet', title: 'Striver A2Z DSA Sheet: Beginner to Advanced Practice', description: "Follow Striver's A to Z DSA course sheet from basics to advanced topics. A structured path with 450+ problems and free progress tracking for beginners.", intro: "The A2Z sheet takes you from absolute basics to advanced data structures and algorithms in a fixed order, which makes it a good starting point if you are building a foundation from scratch." },
+  { slug: 'striver-a2z', name: 'Striver A2Z Sheet', title: 'Striver A2Z DSA Sheet: Beginner to Advanced Practice', description: "Follow Striver's A to Z DSA course sheet from basics to advanced topics. A structured path with 440+ problems and free progress tracking for beginners.", intro: "The A2Z sheet takes you from absolute basics to advanced data structures and algorithms in a fixed order, which makes it a good starting point if you are building a foundation from scratch." },
   { slug: 'love-babbar', name: 'Love Babbar DSA Sheet', title: 'Love Babbar 450 DSA Sheet: Track Your Progress', description: "Practice the Love Babbar 450 DSA sheet topic by topic. Tick off solved questions, see your completion per topic and plan what to study next.", intro: 'The Love Babbar sheet is a 450-question list covering the data structures and algorithms usually asked in campus placements and tech interviews.' },
 ];
 
@@ -46,6 +48,15 @@ const ROADMAPS = [
 const link = (path, label) => ({ path, label });
 const HOME = { name: 'Home', path: '/' };
 
+// One page per notes section (64): its own title, description, canonical and structured data, so each can be found on its own.
+const SUBJECT_SHORT = { os: 'OS', dbms: 'DBMS', cn: 'Networks', oops: 'OOP', hld: 'System Design' };
+const sectionTitle = (title, short) => [`${title}: ${short} Interview Notes`, `${title} | ${short} Notes`, `${title} | PrepStack`].find((t) => t.length <= 60) || title.slice(0, 60);
+const SECTION_PAGES = NOTES.flatMap((n) => (SECTIONS[n.slug] || []).map((s, i, list) => ({
+  path: `/notes/${n.slug}/${s.id}`, kind: 'detail', priority: 0.6, changefreq: 'monthly', parent: { name: n.name, path: `/notes/${n.slug}` },
+  title: sectionTitle(s.title, SUBJECT_SHORT[n.slug]), description: s.description, h1: s.title, intro: [s.description], readMinutes: s.readMinutes,
+  links: [list[i - 1] && link(`/notes/${n.slug}/${list[i - 1].id}`, `Previous: ${list[i - 1].title}`), list[i + 1] && link(`/notes/${n.slug}/${list[i + 1].id}`, `Next: ${list[i + 1].title}`), link(`/notes/${n.slug}`, `All ${n.name} notes`)].filter(Boolean),
+})));
+
 const pages = [
   {
     path: '/my-plan', kind: 'static', priority: 0.9, changefreq: 'monthly', parent: HOME,
@@ -57,11 +68,11 @@ const pages = [
   },
   {
     path: '/', kind: 'home', priority: 1.0, changefreq: 'weekly',
-    title: 'PrepStack | DSA Sheets, CS Notes & AI Project Ideas',
-    description: 'Prepare for software engineering interviews with curated DSA sheets, computer science notes, developer roadmaps and AI-generated project ideas. Free to start.',
+    title: 'PrepStack: Free Interview Study Plan, DSA Sheets & Notes',
+    description: 'Build a free interview study plan around your hours, then practise curated DSA sheets, computer science notes and developer roadmaps. No payment needed.',
     h1: 'Stop grinding blindly. Engineer your placement.',
-    intro: ['PrepStack is a free interview preparation workspace for software engineers. Track curated DSA sheets, revise core computer science, follow role-based roadmaps and generate project ideas with AI.'],
-    links: [link('/dsa', 'DSA Sheets'), link('/notes', 'CS Notes'), link('/roadmaps', 'Roadmaps'), link('/behavioral', 'Behavioral Interview Prep'), link('/resume', 'Resume Guide')],
+    intro: ['PrepStack is a free interview preparation workspace for software engineers. Build a study plan around the hours you have, track curated DSA sheets, revise core computer science, follow role-based roadmaps and generate project ideas with AI.'],
+    links: [link('/my-plan', 'Study Plan Builder'), link('/dsa', 'DSA Sheets'), link('/notes', 'CS Notes'), link('/roadmaps', 'Roadmaps'), link('/behavioral', 'Behavioral Interview Prep'), link('/resume', 'Resume Guide')],
   },
   {
     path: '/dsa', kind: 'index', priority: 0.9, changefreq: 'weekly', parent: HOME,
@@ -87,8 +98,9 @@ const pages = [
   ...NOTES.map((n) => ({
     path: `/notes/${n.slug}`, kind: 'detail', priority: 0.8, changefreq: 'monthly', parent: { name: 'CS Notes', path: '/notes' },
     title: n.title, description: n.description, h1: n.name, intro: [n.intro],
-    links: NOTES.filter((o) => o.slug !== n.slug).map((o) => link(`/notes/${o.slug}`, o.name)),
+    links: [...(SECTIONS[n.slug] || []).map((s) => link(`/notes/${n.slug}/${s.id}`, s.title)), ...NOTES.filter((o) => o.slug !== n.slug).map((o) => link(`/notes/${o.slug}`, o.name))],
   })),
+  ...SECTION_PAGES,
   {
     path: '/roadmaps', kind: 'index', priority: 0.9, changefreq: 'monthly', parent: HOME,
     title: 'Developer Roadmaps: Frontend, Backend, MERN & More',
@@ -156,9 +168,6 @@ const byPath = new Map(allPages.map((p) => [p.path, p]));
 export const pageFor = (pathname) => {
   const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
   if (clean.startsWith('/analyzer/')) return { ...byPath.get('/analyzer'), path: clean, title: 'Your role report | PrepStack' }; // private report pages: noindex like /analyzer
-  // a notes section (/notes/os/os-deadlocks) reuses the title of its subject page, so it stays out of search (the subject page is the indexable one)
-  const section = clean.match(new RegExp('^/notes/([^/]+)/[^/]+$'));
-  if (section && byPath.has(`/notes/${section[1]}`)) return { ...byPath.get(`/notes/${section[1]}`), path: clean, noindex: true };
   return byPath.get(clean) || { ...NOT_FOUND, path: clean };
 };
 
@@ -173,6 +182,8 @@ export const jsonLdFor = (page) => {
       { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: SITE_URL, inLanguage: 'en' },
       { '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: SITE_NAME, applicationCategory: 'EducationalApplication', operatingSystem: 'Web', url: SITE_URL, description: page.description, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } },
     );
+  } else if (page.readMinutes) {
+    out.push({ '@context': 'https://schema.org', '@type': 'LearningResource', name: page.h1, description: page.description, url, inLanguage: 'en', learningResourceType: 'Study notes', timeRequired: `PT${page.readMinutes}M`, isAccessibleForFree: true, isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL } });
   } else {
     out.push({ '@context': 'https://schema.org', '@type': 'WebPage', name: page.title, description: page.description, url, inLanguage: 'en', isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL } });
   }

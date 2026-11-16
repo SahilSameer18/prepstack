@@ -68,6 +68,7 @@ Public: `POST /preview` body = the form (below). Login (cookie session, same as 
 - Windows + Git Bash; Python is `python` (3.13). Write scripts to files instead of long shell one-liners (quoting breaks). Edit files with exact-string replacement and run the tests after each change.
 - Server tests use an in-memory MongoDB (`server/test/helpers/setup.js`); `planClock.now` (in `server/src/services/planData.js`) lets a test play a plan on another day. Do not run seeds against a real database; the owner runs `npm run seed:notes` and `npm run seed:all`.
 - The generator and adjust module are pure (`server/src/services/planGenerator.js`, `planAdjust.js`); change a rule only with a test and re-check the acceptance example (`server/test/plan-generator.test.js`, numbers pinned for 12, 8 and 6 weeks).
+- `npm run build:seo-content` (server) rebuilds the two generated files the search pages use (`client/src/seo/content.js` and `contentBody.js`: each notes section's search text, and the sheet topics); run it after changing a notes section or a sheet; a test fails until you do.
 - `npm run build:plan-catalogs` (server) rebuilds `roadmapCatalog.json` and `planCatalog.json` after a roadmap or sheet-topic change; a test fails until you do.
 - Keep `PROJECT_STATUS.md`, `TESTING.md`, the README test counts and the plan's status paragraph true after every phase. Write the next commit command for the owner at the end of each piece.
 

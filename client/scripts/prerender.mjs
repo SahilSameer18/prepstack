@@ -6,6 +6,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
+import BODY from '../src/seo/contentBody.js';
+import { roadmaps } from '../src/data/roadmaps.js';
+import { behavioralQuestions } from '../src/data/behavioralQuestions.js';
 import { allPages, indexablePages, notFoundPage, SITE_URL, SITE_NAME, OG_IMAGE, absoluteUrl, jsonLdFor, robotsContent } from '../src/seo/pages.js';
 
 const DIST = path.resolve('dist');
@@ -57,14 +60,34 @@ const SPLASH = '<div id="boot" role="status" aria-label="Loading PrepStack"><div
 // so a visitor never sees the plain, unstyled version flash before the real page.
 const HIDDEN = 'position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
 
+// The real text of a page, taken from the same data the page shows, so the crawler's copy and the visitor's copy agree:
+// a notes section's overview and topic names, a sheet's topics, a roadmap's steps, the behavioral questions.
+const extraFor = (page) => {
+  const parts = (page.path || '').split('/').filter(Boolean);
+  if (parts[0] === 'notes' && parts.length === 3) {
+    const body = BODY.notes[parts[1]]?.[parts[2]];
+    if (body) return { intro: body.overview, heading: 'Topics in this section', items: body.topics };
+  }
+  if (parts[0] === 'dsa' && parts.length === 2 && BODY.sheets[parts[1]]) return { heading: 'Topics in this sheet', items: BODY.sheets[parts[1]].map((t) => `${t.title} (${t.problems} problems)`) };
+  if (parts[0] === 'roadmaps' && parts.length === 2) {
+    const road = roadmaps.find((r) => r.slug === parts[1]);
+    if (road) return { heading: 'Steps', items: road.steps.map((st) => `${st.title}: ${st.desc}`) };
+  }
+  if (page.path === '/behavioral') return { heading: 'Questions covered', items: behavioralQuestions.map((q) => q.question) };
+  return {};
+};
+
 // Readable content for crawlers and non-JS readers (hidden from view, see HIDDEN). Only for pages meant to be indexed.
 const bodyFor = (page) => {
   if (page.noindex) return `<div id="root">${SPLASH}</div>`;
   const crumbs = page.parent
     ? `<nav aria-label="Breadcrumb" style="font-size:.85rem;color:#a1a1aa;margin-bottom:1.25rem"><a href="/" style="color:#a1a1aa">Home</a>${page.parent.path !== '/' ? ` / <a href="${page.parent.path}" style="color:#a1a1aa">${esc(page.parent.name)}</a>` : ''}</nav>`
     : '';
+  const extra = extraFor(page);
+  const intro = extra.intro || page.intro;
+  const outline = extra.items?.length ? `<h2 style="color:#fff;margin-top:1.5rem">${esc(extra.heading)}</h2><ul style="padding-left:1.25rem">${extra.items.map((i) => `<li style="color:#d4d4d8">${esc(i)}</li>`).join('')}</ul>` : '';
   const links = (page.links || []).map((l) => `<li><a href="${l.path}" style="color:#ffa116">${esc(l.label)}</a></li>`).join('');
-  return `<div id="root">${SPLASH}<main data-prerender inert style="${HIDDEN}">${crumbs}<h1 style="font-size:2.25rem;line-height:1.15;color:#fff;margin:0 0 1rem">${esc(page.h1)}</h1>${page.intro.map((p) => `<p style="color:#d4d4d8">${esc(p)}</p>`).join('')}${links ? `<ul style="padding-left:1.25rem;margin-top:1.5rem">${links}</ul>` : ''}</main></div>`;
+  return `<div id="root">${SPLASH}<main data-prerender inert style="${HIDDEN}">${crumbs}<h1 style="font-size:2.25rem;line-height:1.15;color:#fff;margin:0 0 1rem">${esc(page.h1)}</h1>${intro.map((p) => `<p style="color:#d4d4d8">${esc(p)}</p>`).join('')}${outline}${links ? `<ul style="padding-left:1.25rem;margin-top:1.5rem">${links}</ul>` : ''}</main></div>`;
 };
 
 const render = (page) =>
