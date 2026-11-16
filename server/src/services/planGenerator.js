@@ -492,6 +492,7 @@ const generatePlan = (input, data, context = {}) => {
   if (trimmed.length || result.leftover.length) notices.push('core-does-not-fit');
   if (spread) notices.push('spread');
   if (!content.length) notices.push('nothing-to-plan');
+  if (content.length && !content2.length) notices.push('nothing-fits'); // there is content, but not one task fits these days and hours
   if (!trimmed.length && !result.leftover.length && earlyDays >= 7) notices.push('early-finish');
 
   // each day sorted shortest first (decision 27), dated items at the end of their day

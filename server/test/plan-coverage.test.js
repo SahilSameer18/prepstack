@@ -310,3 +310,16 @@ describe('the real data over many goals, lengths and hours', () => {
     assert.ok(lone.items.length > 0 && lone.items.every((i) => new Date(i.day).getUTCDay() === 4));
   });
 });
+
+describe('nothing fits', () => {
+  it('says so when there is content but not one task fits the days and hours, and not otherwise', () => {
+    const data = makeData([{ id: 'a', problems: problems('a', easy(4)) }]);
+    const tight = generatePlan({ ...base, hoursByWeekday: [0, 0, 0, 0, 0, 0.5, 0] }, data); // one day of 21 minutes: a 40-minute problem needs two days
+    assert.equal(tight.items.length, 0);
+    assert.ok(tight.notices.includes('nothing-fits'));
+    assert.ok(previewPlan({ ...base, hoursByWeekday: [0, 0, 0, 0, 0, 0.5, 0] }, data).notices.includes('nothing-fits'));
+    assert.ok(!generatePlan(base, data).notices.includes('nothing-fits'));
+    const empty = generatePlan({ ...base, knownTopics: ['a'] }, data);
+    assert.ok(empty.notices.includes('nothing-to-plan') && !empty.notices.includes('nothing-fits'), 'an empty syllabus is a different message');
+  });
+});

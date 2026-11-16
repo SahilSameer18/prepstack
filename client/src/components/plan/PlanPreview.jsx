@@ -141,6 +141,12 @@ export default function PlanPreview({ builder }) {
           automatically.
         </p>
       )}
+      {notices.includes("nothing-fits") && (
+        <p role="alert" className="rounded-xl border border-bad-solid/25 bg-bad-solid/10 p-3 text-sm leading-relaxed text-bad">
+          No task fits these days and hours. Add study time or weeks to see a
+          plan.
+        </p>
+      )}
       {notices.includes("nothing-to-plan") && (
         <p className="text-sm text-fg-3">
           Nothing remains to schedule with these choices. Include more topics to

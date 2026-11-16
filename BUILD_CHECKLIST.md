@@ -2,7 +2,7 @@
 
 The order of work, from now on. **Tick a box (`[x]`) when a feature is finished, tested, and the owner has the `git add` and commit commands.** The owner decides the order; an agent recommends and asks before changing it. Status and details: `PROJECT_STATUS.md`. Last updated 15 Nov 2026.
 
-Sections 1 to 8 are the committed order. Sections 9 to 17 are later work from the existing plans: each starts only when the owner says so, and may be reordered.
+Items marked **optional** are the owner's call: whether and when. Sections 1 to 8 are the committed order, apart from those. Sections 9 to 17 are later work from the existing plans: each starts only when the owner says so, and may be reordered.
 
 ## Done
 
@@ -12,6 +12,7 @@ Sections 1 to 8 are the committed order. Sections 9 to 17 are later work from th
 - [x] Homepage and sign-up claims corrected; audit findings fixed
 - [x] Competitor research written down (`docs/research/COMPETITOR_PLANNERS.md`)
 - [x] Docs cleanup; plans written for depth levels and DSA lessons
+- [x] Review fixes (16 Nov): no empty plan saved, the Generate button is off when no task fits, pace is refused on report plans, substitutes follow the pace, honest coverage copy
 
 ## 1. Launch the work so far
 
@@ -23,7 +24,7 @@ Sections 1 to 8 are the committed order. Sections 9 to 17 are later work from th
 
 - [ ] 2.1 A random-walk test through the API: ticks, reviews, skips, moves, pause and resume, report imports, substitutes; no 500 answers and the plan rules hold after every step
 
-## 3. DSA pattern lessons (`docs/plans/DSA_LESSONS_PLAN.md`)
+## 3. DSA pattern lessons (optional: the owner decides whether and when; `docs/plans/DSA_LESSONS_PLAN.md`)
 
 - [ ] 3.1 Phase 0: decisions recorded; sources of wave 1 read and logged, terms of use recorded
 - [ ] 3.2 Phase 1: the `dsa` subject in the loader, validator, seed and notes pages; the `trace` diagram; links to sheet topics; the sample lesson (two pointers) end to end
@@ -33,7 +34,7 @@ Sections 1 to 8 are the committed order. Sections 9 to 17 are later work from th
 
 - [ ] 4.1 Phase 0: owner decisions recorded
 - [ ] 4.2 Phase 1: recap minutes and the notes level in the generator
-- [ ] 4.3 Phase 2: DSA levels (quick revision; from the basics once wave 1 of the lessons is published)
+- [ ] 4.3 Phase 2: DSA levels (quick revision; "from the basics" only if the optional DSA lessons are built)
 - [ ] 4.4 Phase 3: model, validators, controller, adjust, public preview, the `levels` change with a preview
 - [ ] 4.5 Phase 4: builder, preview, Plan tab and "Change depth" dialog
 - [ ] 4.6 Phase 5: the recap view on the notes page and the task links
@@ -41,7 +42,7 @@ Sections 1 to 8 are the committed order. Sections 9 to 17 are later work from th
 - [ ] 4.8 Phase 6: tests (unit, scenario runner with levels, API, browser, mutation checks)
 - [ ] 4.9 Phase 7: docs and close-out
 
-## 5. More DSA lessons
+## 5. More DSA lessons (optional, only if section 3 is done)
 
 - [ ] 5.1 Wave 2: 14 lessons (6, 10, 13, 14, 15, 16, 17, 21, 22, 23, 24, 25, 28, 29)
 - [ ] 5.2 Wave 3: 5 lessons (30 to 34, including "choosing the pattern")
@@ -64,7 +65,7 @@ Sections 1 to 8 are the committed order. Sections 9 to 17 are later work from th
 
 ## 8. Stage 6, small items (`IMPROVEMENT_PLAN.md` stage 6)
 
-- [ ] 8.1 Quizzes page (B7): the quiz data already exists in every section
+- [ ] 8.1 Quizzes page (B7), **optional**: the quiz data already exists in every section
 - [ ] 8.2 Light theme (B12)
 - [ ] 8.3 Opt-in public profile (B8)
 - [ ] 8.4 CI run of the server tests (B9, optional)

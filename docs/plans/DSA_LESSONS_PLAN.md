@@ -1,6 +1,6 @@
 # DSA pattern lessons
 
-Written 15 Nov 2026. Status: **decided to build** (owner, 15 Nov 2026); not started. Content plan. The code side of "From the basics" is in `docs/plans/MY_PLAN_DEPTH_LEVELS_PLAN.md`.
+Written 15 Nov 2026. Status: **optional** (owner, 16 Nov 2026: whether and when is the owner's call); not started. Nothing else in PrepStack depends on it: the planner's "From the basics" DSA level is offered only if the lessons are built. Content plan. The code side of "From the basics" is in `docs/plans/MY_PLAN_DEPTH_LEVELS_PLAN.md`.
 
 ## 1. Why
 

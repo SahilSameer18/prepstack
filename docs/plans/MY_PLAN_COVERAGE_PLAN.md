@@ -189,6 +189,8 @@ About 8 to 10 working days for A, B, C and F.
 **Sweep (320 requests):** plans with a chosen subject at 0 sections 262 → 86; with fewer than half of the topic groups 221 → 26.
 **Scenario runner (`node scripts/plan-fuzz.js 3000 <seed>`):** 9,000 requests on three seeds (fresh plans, and changes mid-plan with work ticked off): 0 rule violations; 800 of them run in `test/plan-scenarios.test.js`. Deliberately broken versions of the generator were caught (6 of 6 breaks).
 
+**Review fixes, 16 Nov 2026:** (1) saving a plan with no task that fits returns 422 and the builder disables Generate with the message "No task fits these days and hours" (new preview notice `nothing-fits`); (2) a plan made from a report refuses a pace change (422) and the Plan tab hides the pace line and button (`fromReport`); (3) substitute problems use the plan's pace; (4) the preview text says time is shared "when it can be" and the lists name what is left out.
+
 **Known limits, said plainly:**
 - Packing: on days where items are close to the size of the day (for example Medium problems at the slower pace on 1.5-hour days), 20 to 35 percent of a day can stay empty. This is the old splitting rule, not changed.
 - A plan for the biggest sheet at 26 weeks takes the server about 0.4 s to calculate (normal plans 0.05 to 0.1 s); the preview is limited to 20 a minute per IP.

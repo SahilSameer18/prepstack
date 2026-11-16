@@ -1,6 +1,6 @@
 # PrepStack: status and build order
 
-**Coverage and clarity fixes built, 15 Nov 2026 (not committed):** after comparing My plan with Planly and others, plans that do not fit now give every DSA topic group at least 1 problem and every chosen CS subject at least 3 sections (a fair share instead of cutting the tail), name what is not included, show dates, day totals and week summaries in plain words, and have a "my pace" choice (Faster, Standard, Slower). Server 964, client 134, 15 browser flows, build and lint pass; 9,000 random scenarios found no rule violations. **Still open:** depth levels per subject. Details, deviations from the plan text and known limits: `docs/plans/MY_PLAN_COVERAGE_PLAN.md` section 7; evidence: `docs/research/COMPETITOR_PLANNERS.md`.
+**Review fixes, 16 Nov 2026:** a plan with no task that fits is refused (and the builder's Generate button is off, with a message), pace is not offered on plans made from a report, substitute problems are estimated at the plan's pace, and the coverage text no longer promises more than the plan can give. **Coverage and clarity fixes built, 15 Nov 2026:** after comparing My plan with Planly and others, plans that do not fit now give every DSA topic group at least 1 problem and every chosen CS subject at least 3 sections (a fair share instead of cutting the tail), name what is not included, show dates, day totals and week summaries in plain words, and have a "my pace" choice (Faster, Standard, Slower). Server 964, client 134, 15 browser flows, build and lint pass; 9,000 random scenarios found no rule violations. **Still open:** depth levels per subject. Details, deviations from the plan text and known limits: `docs/plans/MY_PLAN_COVERAGE_PLAN.md` section 7; evidence: `docs/research/COMPETITOR_PLANNERS.md`.
 
 **Recovery follow-up complete, 15 Nov 2026:** both owner-approved phases are implemented. Phase 1 adds provider-aware problem identity, deadline extension and equivalent resources/distinct substitutes. Phase 2 adds account timezone/rollover, pause/resume with shifted tasks and reviews, review catch-up, and one paused main plan alongside one active sprint. Today keeps one Start button. Final verification: server 924 / 170 suites, client 122 / 13 files, 11 browser flows, build, lint and SEO pass; three recovery mutations caught and restored. Deployment and human validation remain.
 
@@ -29,7 +29,7 @@
 | Live database seeding | OS, OOP, and System Design notes (`npm run seed:notes`) and all DSA sheets (`npm run seed:all`) seeded on live database by owner | Live MongoDB instance |
 | Password reset, login lock, account deletion | built | `README.md` |
 | My plan (B5) | Phases 0–7 implemented: builder, daily workspace, dashboard, report imports, reviews and read-only history; Phase 8 real-user validation remains | `docs/plans/MY_PLAN_PLAN.md` |
-| Tests | server 964, client 134, 15 browser flows; build, lint and SEO pass; ownership/consent mutations caught; 800 plan scenarios in a test, 9,000 run by script with 0 rule violations | `TESTING.md` |
+| Tests | server 968, client 134, 16 browser flows; build, lint and SEO pass; ownership/consent mutations caught; 800 plan scenarios in a test, 9,000 run by script with 0 rule violations | `TESTING.md` |
 
 ## Left, in build order
 
@@ -38,7 +38,7 @@ The order of work, with a tick box for every feature, is in **`BUILD_CHECKLIST.m
 Everything else that is planned, including the parked plans, is listed in `BUILD_CHECKLIST.md` sections 9 to 16.
 
 ## Open items (small, no fixed slot)
-- **DSA pattern lessons (decided, not started):** 34 lessons in 13 steps in the notes format, a new `dsa` subject, Java examples run by scripts, three waves, about 6 to 7 weeks: `docs/plans/DSA_LESSONS_PLAN.md`.
+- **DSA pattern lessons (optional, not started):** 34 lessons in 13 steps in the notes format, a new `dsa` subject, Java examples run by scripts, three waves, about 6 to 7 weeks: `docs/plans/DSA_LESSONS_PLAN.md`.
 - **Depth levels per subject (decided, not started):** a level for each CS subject (quick recap, full, deep dive with 26 advanced sections to write) and for DSA (from the basics, standard, quick revision): `docs/plans/MY_PLAN_DEPTH_LEVELS_PLAN.md`, about 12 to 14 days.
 - **My plan coverage fixes:** built 15 Nov 2026 (see the top of this file); still to do: depth levels per subject: `docs/plans/MY_PLAN_COVERAGE_PLAN.md`.
 - The three Role Analyzer changes the owner set aside (12 Nov).

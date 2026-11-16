@@ -169,7 +169,7 @@ About 13 to 15 working days for the code phases (0 to 7, with 5b). The content p
 7. Should a recap section still count as a normal notes section for the review ladder and the quiz pass rule? **Recommended: yes, identical.**
 8. Deep dive as a third CS level, with the deep sections flagged `tier: deep` in their header and planned only at that level? **Recommended: yes.**
 9. The 26 deep-dive sections of section 2.4 as the starting list, priority 1 first? **Recommended: yes; the owner can add or drop sections before the content plan starts.**
-10. DSA "From the basics" built on the pattern lessons (not on the roadmap's learning hours)? **Recommended: yes; the level is offered once the first wave of lessons is published.**
+10. DSA "From the basics" built on the pattern lessons (not on the roadmap's learning hours)? The lessons are optional (owner, 16 Nov 2026): without them the level is simply not offered, and quick revision and standard still work. **Recommended: yes; the level is offered once the first wave of lessons is published.**
 
 ## 10. What we are not doing
 

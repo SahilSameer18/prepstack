@@ -571,3 +571,12 @@ test('Coverage screens fit a phone: the builder preview, the Plan tab and the pa
   await assertFits(page);
   await expect(page.getByRole('dialog')).toBeVisible();
 });
+
+test('The builder will not generate a plan when no task fits, and says why', async ({ page }) => {
+  await page.goto('/my-plan?goalType=bigtech&weeks=1&weekdayHours=0&weekendHours=0.5&restDay=6&style=one-topic&sheetSlug=neetcode-150&subjects=');
+  await expect(page.getByText('No task fits these days and hours.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Generate my plan' })).toBeDisabled();
+  await page.goto('/my-plan?goalType=bigtech&weeks=4&weekdayHours=2&weekendHours=3&restDay=6&style=one-topic&sheetSlug=neetcode-150&subjects=');
+  await expect(page.getByText('No task fits these days and hours.')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Generate my plan' })).toBeEnabled();
+});

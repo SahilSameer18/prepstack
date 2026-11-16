@@ -46,7 +46,7 @@ export function usePlanBuilder() {
   const activePlan = accountReady ? currentPlan.plan : null;
   const savedPlan = userId && saved?.owner === userId ? saved.plan : null;
   const needsReplacement = !!activePlan && !currentPlan.finished;
-  const nothingToPlan = preview?.data?.notices.includes('nothing-to-plan');
+  const nothingToPlan = preview?.data?.notices.includes('nothing-to-plan') || preview?.data?.notices.includes('nothing-fits');
   const accountAllowsSave = !userId || (accountReady && !currentPlan.error);
   const replacementAllowed = !needsReplacement || replacePlanId === activePlan.id;
   const canGenerate = previewReady && !nothingToPlan && !saving && !checkingSession

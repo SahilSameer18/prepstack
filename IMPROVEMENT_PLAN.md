@@ -293,7 +293,7 @@ A single set of small components for: empty (icon, one line, one button), at-lim
 
 ### B7. Quizzes
 
-Build after A1. Static, reviewed questions in the repo. Scoring on the client, with an optional best score saved to the account. Add the missing client tests for it. **Effort:** 4 to 5 days (mostly question quality).
+**Optional (owner, 16 Nov 2026): whether and when is the owner's call.** Build after A1. Static, reviewed questions in the repo. Scoring on the client, with an optional best score saved to the account. Add the missing client tests for it. **Effort:** 4 to 5 days (mostly question quality).
 
 ### B8. Opt-in public profile (later)
 
