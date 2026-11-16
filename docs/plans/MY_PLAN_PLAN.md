@@ -1,6 +1,6 @@
 # Plan: My plan (the goal planner, B5), end to end (version 9, 13 Nov 2026)
 
-**Signup handoff, 16 Nov 2026.** Direct signups open the dashboard and can start My plan from the card above the overview. Signups started in the builder return to the supplied safe URL, including plan settings.
+**Dashboard layout and signup, 16 Nov 2026.** Direct signup opens the dashboard. Signup started in the builder preserves its safe return URL and plan settings. The single dashboard tab row leads directly to each section. Today lives inside My plan, and the Analyzer checklist lives on its source report. My plan shows the study tabs when a plan exists. Without one, it offers Build my plan or the paused plan's Resume action, with history still reachable.
 
 **Finish date for everything, 16 Nov 2026:** the builder preview says when the whole syllabus would be done at the same hours when something does not fit. It plans the same request over 52 weeks and reads the last content day ("more than a year" if still not enough). Mock blocks are included. Not shown on the saved Plan tab or in change previews.
 

@@ -1,6 +1,6 @@
 # PrepStack: status and build order
 
-**Signup and dashboard follow-up, 16 Nov 2026.** Direct signup opens the dashboard or honors a safe explicit return link. The dashboard puts the plan action above the overview for learners without a current or paused plan. Unconfirmed activity gets a neutral greeting, and the Reports tab offers a retry on failure.
+**Dashboard layout and signup, 16 Nov 2026.** Direct signup opens the dashboard or honors a safe explicit return link. One dashboard tab row leads directly to DSA progress, My plan, Projects, or Reports. The My plan empty state leads with Build my plan and keeps history and study settings accessible. A paused plan offers Resume. Report checklists live on their reports. The dashboard uses a neutral greeting for unconfirmed activity and offers a retry if reports fail.
 
 **Planner realism baseline (`d92bd4d`, 16 Nov 2026):** Today fit waiting work into the learner's available minutes and kept the full backlog in Plan. Resume preserves completed work and fits pending tasks around rest days and lighter days. The preview shows extra deadline time and changes to manually moved tasks. A rebuild retains unscheduled split minutes and can restore them later.
 

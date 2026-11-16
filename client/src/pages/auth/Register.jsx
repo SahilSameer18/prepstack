@@ -218,7 +218,7 @@ const Register = () => {
                 <FiUser className={`text-lg flex-shrink-0 transition-colors ${focusedField === "username" ? "text-brand" : "text-muted"}`} />
                 <input
                   id="register-username" type="text" name="username" placeholder="e.g. coder_sahil"
-                  className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
+                  className="auth-field-input w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.username} onChange={handleChange}
                   onFocus={() => setFocusedField("username")} onBlur={() => setFocusedField(null)}
                   required minLength={4} maxLength={30}
@@ -235,7 +235,7 @@ const Register = () => {
                 <FiMail className={`text-lg flex-shrink-0 transition-colors ${focusedField === "email" ? "text-brand" : "text-muted"}`} />
                 <input
                   id="register-email" type="email" name="email" placeholder="you@example.com"
-                  className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
+                  className="auth-field-input w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.email} onChange={handleChange}
                   onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} required
                 />
@@ -249,12 +249,12 @@ const Register = () => {
                 <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-brand" : "text-muted"}`} />
                 <input
                   id="register-password" type={showPassword ? "text" : "password"} name="password" placeholder="Min. 8 chars, uppercase & number"
-                  className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
+                  className="auth-field-input w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.password} onChange={handleChange}
                   onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)}
                   required minLength={8}
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-muted hover:text-fg-3 transition-colors flex-shrink-0">
+                <button type="button" aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)} className="text-muted hover:text-fg-3 transition-colors flex-shrink-0">
                   {showPassword ? <FiEye className="text-lg" /> : <FiEyeOff className="text-lg" />}
                 </button>
               </div>

@@ -225,7 +225,7 @@ const Login = () => {
                 <FiMail className={`text-lg flex-shrink-0 transition-colors ${focusedField === "email" ? "text-brand" : "text-muted"}`} />
                 <input
                   id="login-email" type="email" name="email" placeholder="you@example.com"
-                  className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
+                  className="auth-field-input w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.email} onChange={handleChange}
                   onFocus={() => setFocusedField("email")} onBlur={() => setFocusedField(null)} required
                 />
@@ -239,7 +239,7 @@ const Login = () => {
                 <FiLock className={`text-lg flex-shrink-0 transition-colors ${focusedField === "password" ? "text-brand" : "text-muted"}`} />
                 <input
                   id="login-password" type={showPassword ? "text" : "password"} name="password" placeholder="Enter your password"
-                  className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
+                  className="auth-field-input w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
                   value={formData.password} onChange={handleChange}
                   onFocus={() => setFocusedField("password")} onBlur={() => setFocusedField(null)} required
                 />

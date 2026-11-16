@@ -25,6 +25,25 @@ test("the home page leads with the study plan and says what it does", async ({ p
   await expect(page).toHaveURL(/\/my-plan/);
 });
 
+test("login shows one field focus outline and keeps the password toggle keyboard accessible", async ({ page }) => {
+  await page.goto("/login");
+  const password = page.getByLabel("Password", { exact: true });
+  const wrapper = password.locator("..");
+  const idleBorder = await wrapper.evaluate((field) => getComputedStyle(field).borderTopColor);
+  await page.getByLabel("Email address").focus();
+  await page.keyboard.press("Tab");
+  await expect(password).toBeFocused();
+  await expect(password).toHaveCSS("outline-style", "none");
+  await expect(wrapper).not.toHaveCSS("border-top-color", idleBorder);
+
+  await page.keyboard.press("Tab");
+  const toggle = page.getByRole("button", { name: "Show password" });
+  await expect(toggle).toBeFocused();
+  await expect(toggle).toHaveCSS("outline-style", "solid");
+  await page.keyboard.press("Enter");
+  await expect(password).toHaveAttribute("type", "text");
+});
+
 for (const destination of ["/dashboard", "/my-plan?weeks=9"]) {
   test(`signup returns to ${destination}`, async ({ page }) => {
     if (destination === "/dashboard") {
@@ -55,10 +74,13 @@ test("a new user sees a welcome, one next step, and guidance on an empty DSA tab
   await expect(page.getByTestId("dsa-empty-hint")).toContainText("You have not solved anything yet.");
   await expect(page.getByRole("alert")).toHaveCount(0);
 
-  // the My plan tab says the same thing in plain words, without mentioning old plans a new user cannot have
   await page.getByRole("tab", { name: /My plan/ }).click();
-  await expect(page.getByText(/You have no current plan\. Choose your goal/)).toBeVisible();
-  await expect(page.getByText(/Older plans/)).toHaveCount(0);
+  await expect(next.getByRole("link", { name: "Build my plan" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Study plan tabs" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Plan history" }).click();
+  await expect(page.getByRole("region", { name: "Plan history" })).toBeVisible();
+  await page.getByRole("button", { name: "Back to My plan" }).click();
+  await expect(next).toBeVisible();
 
   await page.goto("/dashboard");
   await next.getByRole("link", { name: "Build my plan" }).click();
@@ -76,15 +98,18 @@ test("once someone has a plan, the next-step card and the welcome message are go
   await expect(page.getByTestId("first-step")).toHaveCount(0);
 });
 
-test("a returning user with progress but no plan is not welcomed as new, and still gets the next-step card", async ({ page }) => {
+test("a returning learner sees their DSA progress, then can build a plan from My plan", async ({ page }) => {
   await signUp(page, "returning");
   const sheet = (await (await page.request.get(API + "/api/sheets/blind-75")).json()).data;
   const link = sheet.topics[0].problems[0].link;
   expect((await page.request.post(API + "/api/sheets/blind-75/progress", { data: { problemLink: link } })).status()).toBe(200);
   await page.goto("/dashboard");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Welcome back");
-  await expect(page.getByTestId("first-step")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "DSA progress" })).toBeVisible();
+  await expect(page.getByTestId("first-step")).toHaveCount(0);
   await expect(page.getByTestId("dsa-empty-hint")).toHaveCount(0);
+  await page.getByRole("tab", { name: "My plan" }).click();
+  await expect(page.getByTestId("first-step")).toBeVisible();
 });
 
 test("a failed reports read leaves a neutral greeting and offers retry", async ({ page }) => {
@@ -93,7 +118,7 @@ test("a failed reports read leaves a neutral greeting and offers retry", async (
   await page.route(reportRoute, (route) => route.fulfill({ status: 503, json: { message: "Reports are temporarily unavailable." } }));
   await page.goto("/dashboard?tab=reports");
   await expect(page.getByRole("heading", { name: "Could not load your role reports" })).toBeVisible();
-  await expect(page.getByTestId("first-step")).toBeVisible();
+  await expect(page.getByTestId("first-step")).toHaveCount(0);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Hi, ${username}`);
 
   await page.unroute(reportRoute);
@@ -110,6 +135,7 @@ test("the home page and a new user's dashboard fit a phone", async ({ page }) =>
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
   }
   const nextStep = await page.getByTestId("first-step").boundingBox();
-  const overview = await page.getByRole("region", { name: "Overview" }).boundingBox();
-  expect(nextStep.y + nextStep.height).toBeLessThan(overview.y);
+  const tabs = await page.getByRole("tablist", { name: "Dashboard sections" }).boundingBox();
+  expect(tabs.y + tabs.height).toBeLessThan(nextStep.y);
+  expect(nextStep.y + nextStep.height).toBeLessThan(800);
 });

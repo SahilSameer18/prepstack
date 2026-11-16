@@ -11,7 +11,6 @@ import PlanChecklist from './PlanChecklist';
 import { AuthContext } from '../../context/AuthContext';
 import MyPlan from '../../pages/MyPlan';
 import SelectField from '../ui/SelectField';
-import TodayCard from './TodayCard';
 import ReportPlanImport from '../plan/ReportPlanImport';
 import StudyToday from '../plan/StudyToday';
 import StudyRecovery from '../plan/StudyRecovery';
@@ -31,16 +30,6 @@ describe('Daily study screens', () => {
     expect(markup).toContain('Resume plan');
     expect(markup).toContain('Read paused plan');
     expect(markup).not.toContain('>Pause plan<');
-  });
-  it('uses goal-plan Today without report controls or a second Start button', () => {
-    const task = { id: 'one', key: 'one', title: 'Current arrays', plannedMinutes: 40 };
-    const model = { data: { plan: { items: [task] }, today: { items: [task], minutes: 40, isToday: true, startItem: task }, finished: false } };
-    const tree = createElement(MemoryRouter, null, createElement(TodayCard, { planModel: model }));
-    const markup = renderToStaticMarkup(tree);
-    expect(markup).toContain('Current arrays');
-    expect(markup.match(/<button\b/g)).toHaveLength(1);
-    expect(markup).not.toContain('Open report');
-    expect(markup).not.toContain('type="checkbox"');
   });
   it('opening a report offers an import action, without implicit confirmation', () => {
     const tree = createElement(MemoryRouter, null, createElement(ReportPlanImport, { reportId: 'report' }));

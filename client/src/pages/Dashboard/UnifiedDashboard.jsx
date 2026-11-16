@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { motion } from "framer-motion";
 import { FiActivity, FiTrendingUp } from "react-icons/fi";
 import { FaCheckCircle, FaFire } from "react-icons/fa";
 import toast from "react-hot-toast";
@@ -12,19 +11,16 @@ import { extractError } from "../../utils/extractError";
 import DSADash from "./DsaDash";
 import ProjectDash from "./ProjectDash";
 import ReportsDash from "../../components/analyzer/ReportsDash";
-import TodayCard from "../../components/analyzer/TodayCard";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
 import { SectionLoader } from "../../components/ui/Skeletons";
 import { useStudyPlan } from '../../hooks/useStudyPlan';
-import { studyProgress } from '../../utils/studyPlan';
 import MyPlanStudy from '../MyPlanStudy';
 import FirstStepCard from "../../components/plan/FirstStepCard";
 
 const TABS = ["plan", "dsa", "projects", "reports"];
 
 // ── UnifiedDashboard ───────────────────────────────────────────────────────
-// One overview strip and four tabs. The daily workspace shares its server state
-// with the overview; its quiet Today view keeps dashboard statistics out of the way.
+// Each dashboard tab owns its content. The daily workspace shares the dashboard's plan state.
 // The open tab lives in the address (?tab=projects), so a refresh, the back button and links all land on the right tab.
 const UnifiedDashboard = () => {
   const { user } = useAuth();
@@ -133,14 +129,6 @@ const UnifiedDashboard = () => {
     }
   };
 
-  const best = reports?.length ? Math.max(...reports.map((r) => r.score)) : null;
-  const progress = studyProgress(plan?.items || []);
-  const overview = [
-    { key: 'plan', label: 'Plan tasks', value: planModel.loading || planModel.error ? '-' : progress.done, sub: plan ? `of ${progress.total}` : 'Build your plan' },
-    { key: "dsa", label: "DSA solved", value: loading || dashboardError ? "-" : stats.totalSolved, sub: loading || dashboardError ? "" : `of ${stats.totalQuestions}` },
-    { key: "projects", label: "Project ideas", value: projectsLoaded ? projectsTotal : "-", sub: "" },
-    { key: "reports", label: "Role reports", value: reports ? reportTotal : "-", sub: best !== null ? `best ${best}` : "" },
-  ];
   // Greet by confirmed activity. Pending or failed reads leave the greeting neutral.
   const hasPlan = !!plan || !!planModel.data?.pausedPlans?.length;
   const noPlan = !planModel.loading && !planModel.error && !!planModel.data && !hasPlan;
@@ -159,41 +147,10 @@ const UnifiedDashboard = () => {
   ];
 
   return (
-    <div className="px-4 sm:px-6 py-8 max-w-7xl mx-auto page-enter text-fg text-left">
-
-      {/* Keep dashboard statistics away from the calm daily workspace. */}
-      {tab !== 'plan' && <>
-      {/* ── Page Header ────────────────────────────────────────────────── */}
-      <motion.div className="mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
-        <div className="inline-flex items-center gap-2 text-xs font-ui text-muted mb-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-          <span className="tracking-wider font-semibold text-fg-3">Your dashboard</span>
-        </div>
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-fg tracking-[-0.035em] mb-2.5">
-          {greeting}, <span className="text-fg">{user?.username || "Engineer"}</span>
-        </h1>
-        <p className="text-muted text-sm sm:text-base max-w-2xl leading-relaxed">
-          {isNew ? "Start by building a study plan, then practise on the DSA sheets." : "Your study plan, DSA progress, project ideas and role reports in one place."}
-        </p>
-      </motion.div>
-
-      {noPlan && <FirstStepCard />}
-      {/* ── Overview: one number per area, each opens its tab ─────────────── */}
-      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6" aria-label="Overview">
-        {overview.map((o) => (
-          <button
-            key={o.key} type="button" onClick={() => openTab(o.key)}
-            className={`text-left rounded-xl border p-3 sm:p-4 min-h-[44px] cursor-pointer transition-colors ${tab === o.key ? "border-brand/60 bg-brand/[0.04]" : "border-ink/[0.08] bg-card hover:border-ink/[0.18]"}`}
-          >
-            <span className="block text-xs text-muted">{o.label}</span>
-            <span className="block font-display text-2xl sm:text-3xl font-extrabold text-fg mt-1">{o.value} {o.sub && <span className="text-xs sm:text-sm font-normal text-muted">{o.sub}</span>}</span>
-          </button>
-        ))}
-      </section>
-
-      </>}
-
-      {tab !== 'plan' && <TodayCard planModel={planModel} />}
+    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto page-enter text-fg text-left">
+      <h1 className="mb-4 break-words font-display text-2xl font-bold tracking-tight text-fg sm:text-3xl">
+        {greeting}, {user?.username || "Engineer"}
+      </h1>
 
       {/* ── Tabs ──────────────────────────────────────────────────────────── */}
       <div role="tablist" aria-label="Dashboard sections" className="flex gap-1 border-b border-ink/[0.08] overflow-x-auto mb-6">
@@ -202,9 +159,9 @@ const UnifiedDashboard = () => {
             key={key} id={`dashboard-tab-${key}`} role="tab" aria-selected={tab === key}
             aria-controls="dashboard-panel" tabIndex={tab === key ? 0 : -1}
             onKeyDown={navigateTabs} onClick={() => openTab(key)}
-            className={`px-3 sm:px-4 py-3 min-h-[44px] text-sm whitespace-nowrap border-b-2 cursor-pointer transition-colors ${tab === key ? "border-brand text-fg font-semibold" : "border-transparent text-muted hover:text-fg-2"}`}
+            className={`flex-1 shrink-0 px-2 py-3 min-h-[44px] text-sm whitespace-nowrap border-b-2 cursor-pointer transition-colors sm:flex-none sm:px-4 ${tab === key ? "border-brand text-fg font-semibold" : "border-transparent text-muted hover:text-fg-2"}`}
           >
-            {label} <span className="text-xs text-muted font-normal">{counts[key]}</span>
+            {label} <span className="hidden text-xs text-muted font-normal sm:inline">{counts[key]}</span>
           </button>
         ))}
       </div>
@@ -216,9 +173,11 @@ const UnifiedDashboard = () => {
             <PageErrorState message={dashboardError} onRetry={fetchDashboard} backTo="/" backLabel="Go Home" />
           ) : (
             <>
+              <h2 className="mb-4 font-display text-xl font-bold text-fg">DSA progress</h2>
+              {isNew && <FirstStepCard />}
               {!loading && stats.totalSolved === 0 && (
                 <p data-testid="dsa-empty-hint" className="mb-6 rounded-xl border border-ink/[0.08] bg-card px-4 py-3 text-sm text-fg-3">
-                  You have not solved anything yet. <Link to="/dsa" className="font-semibold text-brand">Start with a DSA sheet</Link>, or <Link to="/my-plan" className="font-semibold text-brand">let My plan choose your order</Link>.
+                  You have not solved anything yet. <Link to="/dsa" className="font-semibold text-brand">Start with a DSA sheet</Link>.
                 </p>
               )}
               <section className="mb-10">

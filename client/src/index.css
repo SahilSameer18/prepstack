@@ -16,6 +16,18 @@
   outline-offset: 3px;
 }
 
+/* These auth fields show focus on their rounded wrapper. Keep the default ring in forced colors. */
+@media (forced-colors: none) {
+  .auth-field-input:focus-visible {
+    outline: none;
+  }
+}
+
+/* Login and signup already provide a password visibility button. */
+.auth-field-input::-ms-reveal {
+  display: none;
+}
+
 
 /* ---------------- GLOBAL RESET ---------------- */
 

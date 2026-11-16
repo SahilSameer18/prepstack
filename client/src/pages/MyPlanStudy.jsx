@@ -7,6 +7,7 @@ import StudySchedule from "../components/plan/StudySchedule";
 import StudyRecovery from "../components/plan/StudyRecovery";
 import StudyReview, { StudyItemList } from "../components/plan/StudyReview";
 import StudyHistory from "../components/plan/StudyHistory";
+import FirstStepCard from "../components/plan/FirstStepCard";
 import {
   StudyChangeDialog,
   StudyConfirmDialog,
@@ -39,11 +40,13 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
   const [notice, setNotice] = useState(null);
   const [historyVersion, setHistoryVersion] = useState(0);
   const plan = model.data?.plan;
+  const hasPausedPlan = !!model.data?.pausedPlans?.length;
   const readOnly = !!model.data?.finished;
-  const requestedTab = params.get(embedded ? "view" : "tab") || (readOnly || (!plan && model.data?.pausedPlans?.length) ? "plan" : "today");
-  const tab = TABS.some((name) => name.toLowerCase() === requestedTab)
+  const requestedTab = params.get(embedded ? "view" : "tab");
+  const defaultTab = readOnly || (!plan && hasPausedPlan) ? "plan" : "today";
+  const tab = requestedTab === "history" || (plan && TABS.some((name) => name.toLowerCase() === requestedTab))
     ? requestedTab
-    : "today";
+    : defaultTab;
   const mode = params.get("mode") || "task";
   const selected = plan?.items.find((item) => item.id === params.get("item"));
   const roundItem = round?.[roundIndex];
@@ -142,10 +145,12 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
     startItem: null,
   };
 
+  const Heading = embedded ? 'h2' : 'h1';
+
   return (
-    <div className="mx-auto max-w-5xl py-5 sm:py-8">
-      <h1 className="mb-4 font-display text-2xl font-bold text-fg">My plan</h1>
-      <nav
+    <div className={embedded ? undefined : "mx-auto max-w-5xl py-5 sm:py-8"}>
+      <Heading className="mb-4 font-display text-xl font-bold text-fg">My plan</Heading>
+      {plan && <nav
         aria-label="Study plan tabs"
         className="mb-6 flex gap-1 overflow-x-auto border-b border-ink/[0.1]"
       >
@@ -159,14 +164,20 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
               setRound(null);
               navigate(name.toLowerCase());
             }}
-            className={`min-h-[44px] shrink-0 border-b-2 px-3 text-sm ${tab === name.toLowerCase() ? "border-brand text-brand" : "border-transparent text-muted"}`}
+            className={`min-h-[44px] flex-1 shrink-0 border-b-2 px-2 text-sm sm:flex-none sm:px-3 ${tab === name.toLowerCase() ? "border-brand text-brand" : "border-transparent text-muted"}`}
           >
             {name}
           </button>
         ))}
-      </nav>
+      </nav>}
 
-      {tab === 'plan' && !item && !round && <StudyRecovery model={model} />}
+      {tab === 'plan' && plan && !item && !round && <StudyRecovery model={model} />}
+
+      {!plan && tab === "history" && (
+        <button type="button" className="mb-3 min-h-[44px] text-sm text-brand" onClick={() => navigate(defaultTab)}>
+          Back to My plan
+        </button>
+      )}
 
       {round && !roundItem ? (
         <section className="space-y-4 text-fg-3">
@@ -201,15 +212,19 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
           onClear={() => openDialog("clear-history")}
         />
       ) : !plan ? (
-        <div className="space-y-4 text-sm text-muted">
-          <p>You have no current plan. Choose your goal, your weeks and your daily hours, and see the plan before you save it.</p>
-          <Link
-            className="inline-flex min-h-[44px] items-center text-brand"
-            to="/my-plan"
-          >
-            Build your plan
-          </Link>
-        </div>
+        <>
+          {hasPausedPlan ? <StudyRecovery model={model} /> : <FirstStepCard />}
+          <div className="flex flex-wrap items-center gap-x-5 text-sm">
+            {hasPausedPlan && <Link to="/my-plan" className="inline-flex min-h-[44px] items-center text-brand">Build a new plan</Link>}
+            <button type="button" className="min-h-[44px] text-muted hover:text-fg" onClick={() => navigate("history")}>Plan history</button>
+          </div>
+          {!hasPausedPlan && (
+            <details className="text-sm">
+              <summary className="min-h-[44px] cursor-pointer py-3 text-muted hover:text-fg">Study settings</summary>
+              <StudyRecovery model={model} />
+            </details>
+          )}
+        </>
       ) : tab === "today" ? (
         <StudyToday
           today={readOnly ? { ...today, items: [], minutes: 0, startItem: null } : today}

@@ -170,6 +170,10 @@ test('Phase 7: dashboard uses one calm goal-plan Today and preserves nested navi
   await expect(start).toBeVisible();
   expect((await start.boundingBox()).y + (await start.boundingBox()).height).toBeLessThan(812);
   await expect(today.getByRole('button')).toHaveCount(1);
+  const studyTabs = page.getByRole('navigation', { name: 'Study plan tabs' });
+  for (const row of [tabs, studyTabs]) {
+    expect(await row.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  }
   await assertFits(page);
   await page.screenshot({ path: '../.tmp/phase7-mobile.png', fullPage: true });
   await start.click();
@@ -177,7 +181,8 @@ test('Phase 7: dashboard uses one calm goal-plan Today and preserves nested navi
   await expect(page).toHaveURL(/tab=plan&view=today/);
   await expect(today).toBeVisible();
   await tabs.getByRole('tab', { name: /^DSA/ }).click();
-  await expect(page.getByRole('region', { name: 'Overview' }).getByRole('button', { name: /Plan tasks/ })).toContainText('1');
+  await expect(page.getByRole('heading', { name: 'DSA progress' })).toBeVisible();
+  await expect(today).toHaveCount(0);
   await expect(page.getByRole('region', { name: "Today's study plan" })).toHaveCount(0);
   await page.setViewportSize({ width: 1440, height: 900 });
   await tabs.getByRole('tab', { name: /My plan/ }).click();
@@ -245,17 +250,23 @@ test('Phase 7: report merge and replacement require a fresh preview and preserve
   expect((await savedPlan(page)).items).toHaveLength(3);
 });
 
-test('Phase 7: no goal plan keeps DSA first and falls back to the latest report', async ({ page }) => {
+test('Reports opens directly to saved reports and the source report can still add tasks to My plan', async ({ page }) => {
   const { user } = await createPlan(page);
   await page.request.delete(API + '/api/plan');
   const report = await createReport(page, user);
-  await page.goto('/dashboard');
+  await page.goto('/dashboard?tab=reports');
   const tabs = page.getByRole('tablist', { name: 'Dashboard sections' });
   await expect(tabs.getByRole('tab').first()).toHaveText(/^DSA/);
-  await expect(page.getByRole('region', { name: "Today's study plan" })).toContainText('Frontend role connection');
+  const panel = page.getByRole('tabpanel');
+  await expect(panel.getByRole('heading', { name: 'Role reports' })).toBeVisible();
+  await expect(panel.getByRole('link', { name: 'New report' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Overview' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: "Today's study plan" })).toHaveCount(0);
+  await expect(panel.getByRole('link', { name: /Frontend role connection/ })).toHaveAttribute('href', '/analyzer/' + report);
   await tabs.getByRole('tab', { name: /My plan/ }).click();
-  await expect(page.getByRole('link', { name: 'Build your plan' })).toBeVisible();
-  await page.goto('/analyzer/' + report);
+  await expect(page.getByRole('link', { name: 'Build my plan' })).toBeVisible();
+  await tabs.getByRole('tab', { name: /^Reports/ }).click();
+  await panel.getByRole('link', { name: /Frontend role connection/ }).click();
   await page.getByRole('button', { name: 'Add to My plan', exact: true }).click();
   await page.getByRole('button', { name: 'Preview changes', exact: true }).click();
   await page.getByRole('button', { name: 'Confirm add to My plan' }).click();
@@ -483,7 +494,7 @@ test("replaced and expired plans are readable; clearing history keeps an active 
     .getByRole("button", { name: "Delete current plan", exact: true })
     .click();
   await page.getByRole("button", { name: "Confirm delete plan" }).click();
-  await expect(page.getByText(/You have no current plan/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Build my plan", exact: true })).toBeVisible();
 });
 
 test("expired plans expose no task edits and history errors can be retried", async ({
