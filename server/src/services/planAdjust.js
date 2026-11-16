@@ -42,7 +42,7 @@ function restorePartialRemainders(items, leftOut = []) {
     if (!parts.every((item) => item.doneAt && !item.result && !item.reviewLadder && !item.unscheduledMinutes)) continue;
     if (!parts.some((item) => item.part.of > parts.length)) continue;
     const first = parts[0];
-    const omitted = leftOut.find((item) => item.ref === first.ref && (item.link || null) === (first.link || null));
+    const omitted = leftOut.find((item) => item.ref === first.ref && (item.link || null) === (first.link || null) && (!item.stepId || item.stepId === first.stepId));
     if (omitted?.plannedMinutes > 0) remainders.set(first.key, omitted.plannedMinutes);
   }
   return items.map((item) => remainders.has(item.key)
@@ -226,6 +226,11 @@ const todayView = (stored, today) => {
   }
   take(fresh);
   take(carried);
+  // On a study day, waiting work larger than the whole day must not leave Today empty: offer the smallest piece and let it carry on tomorrow.
+  if (!chosen.size && !reviews.length && hours > 0) {
+    const smallest = [...carried, ...fresh].sort((a, b) => a.plannedMinutes - b.plannedMinutes)[0];
+    if (smallest) chosen.add(smallest.key);
+  }
   let list = [...carried, ...fresh].filter((item) => chosen.has(item.key)).concat(reviews);
   if (!list.length && !carried.length && !fresh.length && !dueReviews(live, today).length) {
     const later = open.filter((it) => it.day > today).map((it) => it.day).sort()[0];

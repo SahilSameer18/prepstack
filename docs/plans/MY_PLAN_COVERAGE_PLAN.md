@@ -85,7 +85,7 @@ The first comparison used one case: 8 to 9 weeks, a student who knows basic to i
 
 **Result (15 Nov 2026):** no errors and no empty plans, but **284 of 320 plans cut something; in 262 of those (92%) at least one chosen CS subject has 0 sections, and in 221 (78%) fewer than half of the DSA topic groups are placed.** Examples: a placements plan on Striver A2Z at 2 h on weekdays places 2 of 56 topic groups in 1 week, 6 of 56 in 8 weeks, 18 of 56 in 26 weeks, and drops CN and OOP even at 26 weeks; a Blind 75 plan at 1 h on weekdays places 7 of 17 groups in 8 weeks and none of the four CS subjects at 1 or 2 weeks. So the problem in section 1 is the normal case, not a corner.
 
-| Scenario | What the code does today | Gap | Where it is handled |
+| Scenario | Behavior before the coverage fixes | Gap identified at the time | Where it is handled |
 |---|---|---|---|
 | Short deadline (1 to 2 weeks), interview soon | Fills the first topics of the sheet in order | A one-week plan should reach many patterns, not finish Arrays; what a good one-week plan contains is an open question (no data for "most important problems"; only 77 of 1,201 problems appear in more than one sheet, so "problems every sheet agrees on" does not work) | Phase B (breadth first), plus an owner decision on a sprint mode |
 | Medium deadline (4 to 8 weeks), few hours | Cuts the tail; chosen subjects drop out | F1 to F3 | Phase A and B |
@@ -172,12 +172,14 @@ About 8 to 10 working days for A, B, C and F.
 |---|---|---|
 | 0 Before numbers | Done | Sweep and the 9-week case saved (section 8 of the research file) |
 | A Name what is missing | Done | `coverage.byGroup` (topic group or subject: total, placed, state); preview card, Plan tab "See what is not in your plan", rebuild/pace preview |
-| B Fair share with floors | Done | One-problem floor per topic group (groups merge "Arrays - I..IV"), 3-section floor per chosen subject, Hard trimmed first, extras (non-core) only with what is left, part-done rebuild items always kept, re-choice until nothing is left over after packing. Roadmap ("role") plans unchanged |
-| B-short (1 to 2 week plans) | Dropped by the owner (15 Nov 2026): short plans need no special handling | |
+| B Fair share with floors | Done | Targets one problem per topic group (groups merge "Arrays - I..IV") and three sections per chosen subject when time permits. Hard problems are trimmed first and extras use remaining room. Phase B applies to sheet goals. |
+| B-short (1 to 2 week plans) | Dropped by the owner (15 Nov 2026) | Short plans use the regular scheduler. Reopen only with the owner's approval. |
 | C Screen clarity | Done | Dates in words, day totals ("2 tasks · 1 h 50 min"), week summary line, readable preview week; Today screen unchanged (a browser spec checks it) |
 | D1 My pace | Done | Faster 0.6 / Standard 1.0 / Slower 1.4; builder, link, saved plan, "Change pace" with preview and consent; rebuilds keep it |
 | D2 Time calibration protocol | Not started | `docs/research/TIME_CALIBRATION.md` still to write |
 | E Depth levels | Decided, not started | Planned in detail in `docs/plans/MY_PLAN_DEPTH_LEVELS_PLAN.md` |
+
+**Short-plan check, 16 Nov 2026.** With a 16 Nov start, one hour per day, no rest day, Standard pace, NeetCode 150 and OS, DBMS, CN and OOP selected, the one-week big-tech plan scheduled 7 distinct DSA problems and the two-week plan scheduled 11. Both scheduled zero CS sections, mock interviews and behavioral items. This is a measured limitation of the regular scheduler. The owner's scope decision above still stands.
 
 **What changed against the plan text (owner to confirm or reverse):**
 1. The floor is per merged topic group, not per sub-topic ("Arrays - I" and "Arrays - II" share one problem). The per-sub-topic floor was too heavy (it broke the 3-section floor of CS subjects on 4-week plans).

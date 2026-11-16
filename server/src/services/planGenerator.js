@@ -266,7 +266,9 @@ const dayCaps = (days, reserved, context) => {
   });
 };
 
-const fillDays = (sequence, days, reserved, context) => {
+// keepPartial: when the days end inside a long item, keep the parts already placed and report the rest as left over
+// (a roadmap step can be longer than the whole plan; dropping it would leave an empty plan while time is free).
+const fillDays = (sequence, days, reserved, context, keepPartial = false) => {
   const caps = dayCaps(days, reserved, context);
   const used = new Array(sequence.length).fill(false);
   const placed = [];
@@ -321,7 +323,10 @@ const fillDays = (sequence, days, reserved, context) => {
     }
   }
   const leftover = [];
-  if (carry) { // ran out of days in the middle of a split: undo the parts and treat the whole item as left over
+  if (carry && keepPartial) {
+    for (const idx of carry.parts) placed[idx].part.of = carry.n + 1; // "part n of n+1": the last part is the unscheduled rest
+    leftover.push({ ...carry.item, plannedMinutes: carry.remaining, partial: true });
+  } else if (carry) { // ran out of days in the middle of a split: undo the parts and treat the whole item as left over
     const drop = new Set(carry.parts);
     for (let k = placed.length - 1; k >= 0; k -= 1) if (drop.has(k)) placed.splice(k, 1);
     leftover.push(carry.item);
@@ -450,7 +455,7 @@ const generatePlan = (input, data, context = {}) => {
       const capacity = Math.max(0, dayCaps(days, reserved, context).reduce((s, c) => s + c, 0) - shrink);
       ({ chosen: sequence, dropped, trimmed, spread } = selectForCapacity(content, capacity, keep));
     }
-    result = fillDays(sequence, days, reserved, context);
+    result = fillDays(sequence, days, reserved, context, input.goalType === 'role');
     result.reserved = reserved;
     const useless = [...mockDays].filter((n) => reserved.has(n) && reserved.get(n).some((it) => it.type === 'mock') && result.placed.filter((p) => p.type === 'dsa' && p.core && dayNumber(p.day) > n).length < 2);
     if (useless.length) { for (const n of useless) mockDays.delete(n); continue; }
@@ -481,7 +486,10 @@ const generatePlan = (input, data, context = {}) => {
   const placedMinutes = sumMinutes(content2);
   const leftOut = [
     ...dropped.map((it) => ({ ref: it.ref, link: it.link || null, title: it.title, plannedMinutes: it.plannedMinutes, core: false, reason: 'extra', topicTitle: it.topicTitle || null })),
-    ...[...trimmed, ...result.leftover].map((it) => ({ ref: it.ref, link: it.link || null, title: it.title, plannedMinutes: it.plannedMinutes, core: it.core, reason: 'no-room', topicTitle: it.topicTitle || null })),
+    ...[...trimmed, ...result.leftover].map((it) => ({
+      ref: it.ref, link: it.link || null, title: it.title, plannedMinutes: it.plannedMinutes, core: it.core, reason: 'no-room', topicTitle: it.topicTitle || null,
+      ...(it.stepId ? { stepId: it.stepId } : {}), ...(it.partial ? { partial: true } : {}),
+    })),
   ];
   const lastDay = content2.reduce((m, it) => Math.max(m, dayNumber(it.day)), -1);
   const finishDate = lastDay >= 0 ? ymdOf(lastDay) : null;
@@ -518,7 +526,7 @@ const generatePlan = (input, data, context = {}) => {
     }),
     coverage: {
       syllabusMinutes, plannedMinutes: placedMinutes, extraMinutes: sumMinutes(finalItems) - placedMinutes,
-      syllabusItems: content.length, plannedItems: content2.length, alreadySolved, knownTopics, leftOut,
+      syllabusItems: content.length, plannedItems: new Set(content2.map(baseId)).size, alreadySolved, knownTopics, leftOut,
       byGroup: coverageByGroup(content, finalItems),
     },
     notices,

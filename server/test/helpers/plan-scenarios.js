@@ -119,7 +119,8 @@ function checkFresh(s, data) {
   }
   for (const d of plan.days) if (d.minutes > d.plannedCap) bad(`${d.date} has ${d.minutes} minutes, over its limit of ${d.plannedCap}`);
   const content = plan.items.filter((i) => i.type !== 'mock' && i.type !== 'behavioral');
-  if (plan.coverage.leftOut.length + uniqueCount(content) !== plan.coverage.syllabusItems) bad('planned + left out is not the syllabus');
+  // a partly planned long item is in both lists: its placed parts and its unscheduled rest
+  if (plan.coverage.leftOut.filter((l) => !l.partial).length + uniqueCount(content) !== plan.coverage.syllabusItems) bad('planned + left out is not the syllabus');
   if (plan.coverage.plannedMinutes > plan.days.reduce((sum, d) => sum + d.newCap, 0)) bad('new work is over the room');
   if (plan.input.pace !== s.pace) bad('the plan lost its pace');
   for (const it of plan.items) { // an unsplit problem has exactly its pace minutes

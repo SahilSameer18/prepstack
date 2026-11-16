@@ -1,24 +1,27 @@
 # PrepStack build checklist
 
-The order of work, from now on. **Tick a box (`[x]`) when a feature is finished, tested, and the owner has the `git add` and commit commands.** The owner decides the order; an agent recommends and asks before changing it. Status and details: `PROJECT_STATUS.md`. Last updated 15 Nov 2026.
+The order of work, from now on. **Tick a box (`[x]`) when a feature is finished, tested, and the owner has the `git add` and commit commands.** The owner decides the order; an agent recommends and asks before changing it. Status and details: `PROJECT_STATUS.md`. Last updated 16 Nov 2026.
 
 Items marked **optional** are the owner's call: whether and when. Sections 1 to 8 are the committed order, apart from those. Sections 9 to 17 are later work from the existing plans: each starts only when the owner says so, and may be reordered.
 
 ## Done
 
 - [x] My plan phases 0 to 7: builder, daily workspace, dashboard, report imports, reviews, history (`docs/plans/MY_PLAN_PLAN.md`)
-- [x] Recovery: pause and resume, study calendar, deadline extension, review catch-up, substitute problems, short sprint next to a paused plan
-- [x] Coverage and clarity fixes: fair share with floors, not-included list, readable dates, day totals, week summaries, "my pace" (`docs/plans/MY_PLAN_COVERAGE_PLAN.md`)
+- [x] Recovery: pause and resume, study calendar, deadline extension, review catch-up, substitute problems, and one active plan alongside one paused plan
+- [x] Coverage and clarity fixes: fair share with floors when time allows, not-included list, readable dates, day totals, week summaries, "my pace" (`docs/plans/MY_PLAN_COVERAGE_PLAN.md`)
 - [x] Homepage and sign-up claims corrected; audit findings fixed
 - [x] Competitor research written down (`docs/research/COMPETITOR_PLANNERS.md`)
 - [x] Docs cleanup; plans written for depth levels and DSA lessons
 - [x] Review fixes (16 Nov): no empty plan saved, the Generate button is off when no task fits, pace is refused on report plans, substitutes follow the pace, honest coverage copy
+- [x] Role plans never empty (a long roadmap step is planned in parts), Today never empty while work waits on a study day, `plannedItems` counts tasks (16 Nov)
 
 ## 1. Launch the work so far
 
 - [x] 1.1 Commit everything built so far (the owner)
 - [x] 1.2 Deploy the server and the client; run `npm run seed:notes` or `seed:all` only if data changed (the owner)
 - [ ] 1.3 Open one plan page live and hand-test the live site: sign up, make a plan, tick a task, change pace, pause and resume (the owner and Claude)
+
+Decided 16 Nov: when a waiting task is bigger than the day, Today shows the smallest one (it carries on the next day); a long roadmap step is planned in parts. The deployed revision and live behavior still need confirmation in 1.3.
 
 ## 2. Close the testing gap
 
@@ -112,6 +115,8 @@ Production steps (each comes right after its learning modules):
 - [ ] 11.6 Version 1.1 idea: LeetCode solved-problem import
 - [ ] 11.7 Curated "must-do" problems per topic (replaces the quick-revision rule) and authored recap lines
 - [ ] 11.8 Plan export to a file or calendar
+
+A dedicated 1–2 week interview scheduler was dropped on 15 Nov. The recovery flow already supports running a short ordinary plan while the main plan is paused. Revisit dedicated scheduling only if the owner reopens it, using the short-plan examples in `docs/plans/MY_PLAN_COVERAGE_PLAN.md`.
 
 ## 12. Role Analyzer
 

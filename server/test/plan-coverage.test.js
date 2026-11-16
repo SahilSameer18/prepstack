@@ -255,7 +255,7 @@ describe('the real data over many goals, lengths and hours', () => {
           const tag = `${sheet} ${weeks}w ${h}h`;
           assert.ok(p.items.length > 0, `${tag}: empty`);
           const content = p.items.filter((i) => i.type === 'dsa' || i.type === 'notes');
-          assert.equal(p.coverage.leftOut.length + uniq(content), p.coverage.syllabusItems, `${tag}: planned + left out is not the syllabus`);
+          assert.equal(p.coverage.leftOut.filter((l) => !l.partial).length + uniq(content), p.coverage.syllabusItems, `${tag}: planned + left out is not the syllabus`);
           assert.equal(new Set(p.items.map((i) => i.key)).size, p.items.length, `${tag}: duplicate keys`);
           for (const d of p.days) assert.ok(d.minutes <= d.plannedCap, `${tag}: ${d.date} is over its limit`);
           assert.ok(p.coverage.plannedMinutes <= sum(p.days, 'newCap'), `${tag}: new items over the room`);

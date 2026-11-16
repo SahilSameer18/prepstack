@@ -1,5 +1,7 @@
 # Plan: My plan (the goal planner, B5), end to end (version 9, 13 Nov 2026)
 
+**Role plans and Today, 16 Nov 2026:** a role plan whose first roadmap step is longer than the whole plan used to come out empty (184 of 486 role, hours and length combinations). The step is now planned in parts ("part n of n+1") and the rest is listed as not included; none of the 486 is empty. Today never shows nothing on a study day while work waits: it offers the smallest waiting task. `coverage.plannedItems` counts tasks, not parts. Rebuilds match a step's unscheduled rest by step id.
+
 **Planner realism follow-up, 16 Nov 2026:** Today keeps one Start button and caps actionable work at the day’s available minutes, with room for due reviews and a balance of current and overdue tasks. A rest day leaves the backlog in Plan. Resume shifts review dates and refits unfinished tasks to available days. It tries to keep the shifted schedule, then uses earlier available space before extending the deadline in the preview. If the work would exceed plan limits, it stays paused. Rebuilds retain a record of unscheduled split minutes. The Plan tab identifies the partial completion, and a later rebuild can restore the remaining work without granting solve credit early. Verification is in `TESTING.md`.
 
 **Recovery follow-up complete, 15 Nov 2026:** both owner-approved phases are implemented. Phase 1 adds provider-aware problem identity, deadline extension and equivalent resources/distinct substitutes. Phase 2 adds account timezone/rollover, pause/resume with shifted tasks and reviews, review catch-up, and one paused main plan alongside one active sprint. Today keeps one Start button. Final verification: server 923 / 170 suites, client 122 / 13 files, 11 browser flows, build, lint and SEO pass; three recovery mutations caught and restored. Deployment and human validation remain.
@@ -178,7 +180,10 @@ The form has 5 to 7 fields and checks them with the server's rules (weeks 1 to 5
 - Two sources of ticks (sheet and plan) can drift if a write fails halfway: one operation, with a test that fails it midway.
 
 ## Still open
-Nothing is open before coding starts. Coding starts only when the owner says so; Phase 0 is first.
+
+Phases 0–7 and the recovery and coverage follow-ups are built. `BUILD_CHECKLIST.md` tracks the remaining work in the owner's order. The live smoke test and randomized API journeys are open. Subject depth is approved and implementation has not started. Phase 8 is the student pilot, followed by calibration of the default study estimates.
+
+Long role-roadmap steps are planned in parts when they are longer than the plan, and the unscheduled rest is reported as not included (decided 16 Nov). On a study day, Today offers the smallest waiting task when every waiting task is larger than the day; it can be longer than the learner's available time and carries on. Dedicated short-interview scheduling was dropped on 15 Nov. The pause-and-switch recovery flow can already run a short ordinary plan alongside a paused main plan.
 
 
 ## Recovery follow-up completed, 15 Nov 2026
@@ -191,7 +196,7 @@ Nothing is open before coding starts. Coding starts only when the owner says so;
 
 **End-to-end check, 15 Nov 2026:** server 924, client 122, 11 browser specs, build and lint pass. A manual browser run (sign up, generate, Today, Start, tick, Plan tab, mobile width) found and fixed: an empty "first week" in the public preview and "Week 2" as the first week in the Plan tab when a plan starts on the rest day (Sunday by default), and invented student quotes on the sign-up page. Plan realism was checked with generated plans on the real sheets; see the report in the conversation. Not verified: competitor outputs (paid or login-only).
 
-**Coverage and pace, 15 Nov 2026:** decisions 10, 28 and 40 ("core first, the tail is cut") are replaced for sheet goals by a fair share with floors (1 problem per DSA topic group, 3 sections per chosen CS subject, Hard trimmed first, extras with what is left); roadmap goals are unchanged. A "my pace" setting (Faster 0.6, Standard 1.0, Slower 1.4) multiplies DSA problem minutes (decision 29 numbers stay the default). See `docs/plans/MY_PLAN_COVERAGE_PLAN.md`.
+**Coverage and pace, 15 Nov 2026:** decisions 10, 28 and 40 ("core first, the tail is cut") are replaced for sheet goals by a fair share targeting one problem per DSA topic group and three sections per chosen CS subject when time allows. Hard problems are trimmed first, and extras use remaining room. This change applies to sheet goals. A "my pace" setting (Faster 0.6, Standard 1.0, Slower 1.4) multiplies DSA problem minutes (decision 29 numbers stay the default). See `docs/plans/MY_PLAN_COVERAGE_PLAN.md`.
 
 ## Version 1.1 candidates (ideas, not approved scope)
 
