@@ -28,7 +28,7 @@ const TABS = ["plan", "dsa", "projects", "reports"];
 // The open tab lives in the address (?tab=projects), so a refresh, the back button and links all land on the right tab.
 const UnifiedDashboard = () => {
   const { user } = useAuth();
-  const { getProjects, projects, projectsTotal } = useProject();
+  const { getProjects, projectsTotal } = useProject();
   const planModel = useStudyPlan();
   const plan = planModel.data?.plan;
   const defaultTab = plan || planModel.data?.pausedPlans?.length ? 'plan' : 'dsa';
@@ -64,8 +64,9 @@ const UnifiedDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [dashboardError, setDashboardError] = useState(null);
-  const [reports, setReports] = useState(null); // null while loading, then the list (the list is optional: a failure shows as 0)
+  const [reports, setReports] = useState(null);
   const [reportTotal, setReportTotal] = useState(0);
+  const [reportsError, setReportsError] = useState(null);
 
   // ── Fetch all dashboard data in 1 single optimized server call ───────────
   const fetchDashboard = useCallback(async () => {
@@ -92,18 +93,34 @@ const UnifiedDashboard = () => {
 
   // The project list can fail on its own (the DSA data may still load): the Projects tab then says so and offers a retry
   const [projectsError, setProjectsError] = useState(null);
+  const [projectsLoaded, setProjectsLoaded] = useState(false);
   const loadProjects = useCallback(() => {
     setProjectsError(null);
-    getProjects().catch((err) => setProjectsError(err.message));
+    setProjectsLoaded(false);
+    getProjects()
+      .then(() => setProjectsLoaded(true))
+      .catch((err) => setProjectsError(err.message));
   }, [getProjects]);
+
+  const loadReports = useCallback(async () => {
+    setReportsError(null);
+    setReports(null);
+    try {
+      const result = await listReports(50);
+      const data = result?.data ?? result;
+      const list = data?.reports ?? [];
+      setReports(list);
+      setReportTotal(data?.totalCount ?? list.length);
+    } catch (error) {
+      setReportsError(extractError(error, "Could not load your role reports."));
+    }
+  }, []);
 
   useEffect(() => {
     fetchDashboard();
     loadProjects();
-    listReports(50)
-      .then((r) => { setReports(r?.reports || r?.data?.reports || []); setReportTotal(r?.totalCount ?? r?.data?.totalCount ?? 0); })
-      .catch(() => setReports([]));
-  }, [fetchDashboard, loadProjects]);
+    loadReports();
+  }, [fetchDashboard, loadProjects, loadReports]);
 
   const removeReport = async (id) => {
     if (!window.confirm("Delete this report? This cannot be undone.")) return;
@@ -120,14 +137,19 @@ const UnifiedDashboard = () => {
   const progress = studyProgress(plan?.items || []);
   const overview = [
     { key: 'plan', label: 'Plan tasks', value: planModel.loading || planModel.error ? '-' : progress.done, sub: plan ? `of ${progress.total}` : 'Build your plan' },
-    { key: "dsa", label: "DSA solved", value: loading ? "-" : stats.totalSolved, sub: loading ? "" : `of ${stats.totalQuestions}` },
-    { key: "projects", label: "Project ideas", value: projects ? (projectsTotal ?? projects.length) : "-", sub: "" },
+    { key: "dsa", label: "DSA solved", value: loading || dashboardError ? "-" : stats.totalSolved, sub: loading || dashboardError ? "" : `of ${stats.totalQuestions}` },
+    { key: "projects", label: "Project ideas", value: projectsLoaded ? projectsTotal : "-", sub: "" },
     { key: "reports", label: "Role reports", value: reports ? reportTotal : "-", sub: best !== null ? `best ${best}` : "" },
   ];
-  // No plan yet: say what to do first. "New" also needs every area loaded and empty, so a returning user never sees "Welcome".
-  const noPlan = !planModel.loading && !planModel.error && !!planModel.data && !plan && !planModel.data.pausedPlans?.length;
-  const isNew = noPlan && !loading && !dashboardError && stats.totalSolved === 0 && !!projects && (projectsTotal ?? projects.length) === 0 && !!reports && reportTotal === 0;
-  const counts = { dsa: dsaData.length ? `${dsaData.length} sheets` : "", projects: projectsTotal ?? projects?.length ?? "", reports: reports ? reportTotal : "" };
+  // Greet by confirmed activity. Pending or failed reads leave the greeting neutral.
+  const hasPlan = !!plan || !!planModel.data?.pausedPlans?.length;
+  const noPlan = !planModel.loading && !planModel.error && !!planModel.data && !hasPlan;
+  const dsaLoaded = !loading && !dashboardError;
+  const isReturning = hasPlan || (dsaLoaded && stats.totalSolved > 0)
+    || (projectsLoaded && projectsTotal > 0) || (!!reports && reportTotal > 0);
+  const isNew = noPlan && dsaLoaded && projectsLoaded && !!reports && !isReturning;
+  const greeting = isReturning ? "Welcome back" : isNew ? "Welcome" : "Hi";
+  const counts = { dsa: dsaData.length ? `${dsaData.length} sheets` : "", projects: projectsLoaded ? projectsTotal : "", reports: reports ? reportTotal : "" };
 
   const dsaStats = [
     { label: "Problems solved", value: stats.totalSolved, sub: "Across all sheets", icon: <FaCheckCircle className="text-ok text-sm" />, color: "text-fg" },
@@ -148,13 +170,14 @@ const UnifiedDashboard = () => {
           <span className="tracking-wider font-semibold text-fg-3">Your dashboard</span>
         </div>
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-fg tracking-[-0.035em] mb-2.5">
-          {isNew ? "Welcome" : "Welcome back"}, <span className="text-fg">{user?.username || "Engineer"}</span>
+          {greeting}, <span className="text-fg">{user?.username || "Engineer"}</span>
         </h1>
         <p className="text-muted text-sm sm:text-base max-w-2xl leading-relaxed">
           {isNew ? "Start by building a study plan, then practise on the DSA sheets." : "Your study plan, DSA progress, project ideas and role reports in one place."}
         </p>
       </motion.div>
 
+      {noPlan && <FirstStepCard />}
       {/* ── Overview: one number per area, each opens its tab ─────────────── */}
       <section className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-6" aria-label="Overview">
         {overview.map((o) => (
@@ -170,7 +193,6 @@ const UnifiedDashboard = () => {
 
       </>}
 
-      {tab !== 'plan' && noPlan && <FirstStepCard />}
       {tab !== 'plan' && <TodayCard planModel={planModel} />}
 
       {/* ── Tabs ──────────────────────────────────────────────────────────── */}
@@ -233,7 +255,9 @@ const UnifiedDashboard = () => {
           )
         )}
         {tab === "projects" && (projectsError ? <PageErrorState title="Could not load your project ideas" message={projectsError} onRetry={loadProjects} backTo="/" backLabel="Go Home" /> : <ProjectDash />)}
-        {tab === "reports" && (reports ? <ReportsDash reports={reports} onDelete={removeReport} /> : <SectionLoader message="Loading your reports..." />)}
+        {tab === "reports" && (reportsError
+          ? <PageErrorState title="Could not load your role reports" message={reportsError} onRetry={loadReports} backTo="/" backLabel="Go Home" />
+          : reports ? <ReportsDash reports={reports} onDelete={removeReport} /> : <SectionLoader message="Loading your reports..." />)}
       </div>
     </div>
   );

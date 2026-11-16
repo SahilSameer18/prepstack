@@ -25,6 +25,26 @@ test("the home page leads with the study plan and says what it does", async ({ p
   await expect(page).toHaveURL(/\/my-plan/);
 });
 
+for (const destination of ["/dashboard", "/my-plan?weeks=9"]) {
+  test(`signup returns to ${destination}`, async ({ page }) => {
+    if (destination === "/dashboard") {
+      await page.goto("/");
+      await page.getByRole("link", { name: "Create Account", exact: true }).first().click();
+    } else {
+      await page.goto(`/register?returnTo=${encodeURIComponent(destination)}`);
+    }
+
+    const suffix = String(Date.now());
+    await page.getByLabel("Username").fill(`signup_${suffix}`);
+    await page.getByLabel("Email address").fill(`signup_${suffix}@example.com`);
+    await page.getByLabel("Password", { exact: true }).fill("Passw0rdX");
+    await page.locator('button[type="submit"]').click();
+
+    await expect(page).toHaveURL((url) => url.pathname + url.search === destination);
+    if (destination === "/dashboard") await expect(page.getByTestId("first-step")).toBeVisible();
+  });
+}
+
 test("a new user sees a welcome, one next step, and guidance on an empty DSA tab", async ({ page }) => {
   const username = await signUp(page, "fresh");
   await page.goto("/dashboard");
@@ -67,6 +87,20 @@ test("a returning user with progress but no plan is not welcomed as new, and sti
   await expect(page.getByTestId("dsa-empty-hint")).toHaveCount(0);
 });
 
+test("a failed reports read leaves a neutral greeting and offers retry", async ({ page }) => {
+  const username = await signUp(page, "report_retry");
+  const reportRoute = /\/api\/analyzer\?limit=50$/;
+  await page.route(reportRoute, (route) => route.fulfill({ status: 503, json: { message: "Reports are temporarily unavailable." } }));
+  await page.goto("/dashboard?tab=reports");
+  await expect(page.getByRole("heading", { name: "Could not load your role reports" })).toBeVisible();
+  await expect(page.getByTestId("first-step")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Hi, ${username}`);
+
+  await page.unroute(reportRoute);
+  await page.getByRole("button", { name: /retry|try again/i }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Welcome, ${username}`);
+});
+
 test("the home page and a new user's dashboard fit a phone", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 800 });
   await signUp(page, "phone");
@@ -75,4 +109,7 @@ test("the home page and a new user's dashboard fit a phone", async ({ page }) =>
     await expect(page.getByRole("link", { name: /Build my (study )?plan/ }).first()).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
   }
+  const nextStep = await page.getByTestId("first-step").boundingBox();
+  const overview = await page.getByRole("region", { name: "Overview" }).boundingBox();
+  expect(nextStep.y + nextStep.height).toBeLessThan(overview.y);
 });

@@ -56,7 +56,6 @@ const HeroSection = () => {
                 className="titanium-button inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-xs sm:text-sm font-medium cursor-pointer select-none"
               >
                 Create Account
-                <span className="kbd-capsule">Tab</span>
               </Link>
             )}
           </div>

@@ -1,5 +1,7 @@
 # PrepStack: status and build order
 
+**Signup and dashboard follow-up, 16 Nov 2026.** Direct signup opens the dashboard or honors a safe explicit return link. The dashboard puts the plan action above the overview for learners without a current or paused plan. Unconfirmed activity gets a neutral greeting, and the Reports tab offers a retry on failure.
+
 **Planner realism baseline (`d92bd4d`, 16 Nov 2026):** Today fit waiting work into the learner's available minutes and kept the full backlog in Plan. Resume preserves completed work and fits pending tasks around rest days and lighter days. The preview shows extra deadline time and changes to manually moved tasks. A rebuild retains unscheduled split minutes and can restore them later.
 
 **Uncommitted planner draft:** A one-week Full Stack plan at 30 minutes per day now schedules 147 minutes across seven parts and reports the remaining time. Today now offers the smallest waiting task when no task fits. The verified 30-minute day can therefore show a 90-minute task. Settle the intended Today behavior before shipping.

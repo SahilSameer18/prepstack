@@ -1,5 +1,7 @@
 # Plan: My plan (the goal planner, B5), end to end (version 9, 13 Nov 2026)
 
+**Signup handoff, 16 Nov 2026.** Direct signups open the dashboard and can start My plan from the card above the overview. Signups started in the builder return to the supplied safe URL, including plan settings.
+
 **Finish date for everything, 16 Nov 2026:** the builder preview says when the whole syllabus would be done at the same hours when something does not fit. It plans the same request over 52 weeks and reads the last content day ("more than a year" if still not enough). Mock blocks are included. Not shown on the saved Plan tab or in change previews.
 
 **Role plans and Today, 16 Nov 2026:** a role plan whose first roadmap step is longer than the whole plan used to come out empty (184 of 486 role, hours and length combinations). The step is now planned in parts ("part n of n+1") and the rest is listed as not included; none of the 486 is empty. Today never shows nothing on a study day while work waits: it offers the smallest waiting task. `coverage.plannedItems` counts tasks, not parts. Rebuilds match a step's unscheduled rest by step id.
