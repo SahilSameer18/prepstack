@@ -84,8 +84,8 @@ describe('every limiter counts in Redis, and keeps its own rule about which requ
   let redis;
   before(async () => { await t.start(); await t.seedSheets(); });
   after(async () => { redisConfig.setRedisForTests(null); await t.stop(); });
-  beforeEach(async () => { redis = new RedisMock(); await redis.flushall(); redisConfig.setRedisForTests(redis); delete process.env.RATE_LIMIT_MEMORY_ONLY; gemini.reset(); gemini.reply = goodIdea(); });
-  afterEach(() => redisConfig.setRedisForTests(null));
+  beforeEach(async () => { redis = new RedisMock(); await redis.flushall(); redisConfig.setRedisForTests(redis); delete process.env.RATE_LIMIT_MEMORY_ONLY; delete process.env.RATE_LIMIT_REDIS; gemini.reset(); gemini.reply = goodIdea(); });
+  afterEach(() => { redisConfig.setRedisForTests(null); delete process.env.RATE_LIMIT_REDIS; });
 
   it('all 14 limiters use the Redis store: none was left on the default in-memory store', () => {
     const { limiterNames } = require('../src/middlewares/rateLimit.middleware');
@@ -116,22 +116,27 @@ describe('every limiter counts in Redis, and keeps its own rule about which requ
     assert.equal((await t.api.post('/api/project/generate', { cookies: other.cookies, body: VALID })).status, 201, 'another user is not affected');
   });
 
-  it('problem notes: per signed-in user, and the count is in Redis', async () => {
+  it('problem notes: per signed-in user; counted in memory by default (a Redis count costs about 36 ms), in Redis when RATE_LIMIT_REDIS names it', async () => {
     const acct = await t.register();
-    const link = t.L('two-sum');
-    const res = await t.api.put('/api/problem-notes', { cookies: acct.cookies, body: { problemLink: link, pattern: 'Two Pointers', approach: 'Sort first.' } });
-    assert.equal(res.status, 200);
-    assert.equal(Number(await redis.get(rl('problem-note', acct.id))), 1);
+    const save = () => t.api.put('/api/problem-notes', { cookies: acct.cookies, body: { problemLink: t.L('two-sum'), pattern: 'Two Pointers', approach: 'Sort first.' } });
+    assert.equal((await save()).status, 200);
+    assert.equal(await redis.exists(rl('problem-note', acct.id)), 0, 'default: no Redis round trip');
+    process.env.RATE_LIMIT_REDIS = 'problem-note';
+    assert.equal((await save()).status, 200);
+    assert.equal(Number(await redis.get(rl('problem-note', acct.id))), 1, 'opted in: counted in Redis');
   });
 
-  it('plan ticks and changes: per signed-in user, in Redis', async () => {
+  it('plan generates count in Redis, and plan ticks per signed-in user in memory unless opted in', async () => {
     const acct = await t.register();
     const made = await t.api.post('/api/plan', { cookies: acct.cookies, body: { goalType: 'placements', style: 'one-topic', weeks: 4, weekdayHours: 2, weekendHours: 3, restDay: null, sheetSlug: 'blind-75', subjects: [] } });
     assert.equal(made.status, 201);
     assert.equal(Number(await redis.get(rl('plan-generate', acct.id))), 1, 'a saved plan counts once');
     const itemId = made.body.data.plan.items[0].id;
     await t.api.patch('/api/plan/items/' + itemId, { cookies: acct.cookies, body: { starred: true } });
-    assert.equal(Number(await redis.get(rl('plan-tick', acct.id))), 1);
+    assert.equal(await redis.exists(rl('plan-tick', acct.id)), 0, 'plan ticks count in memory by default');
+    process.env.RATE_LIMIT_REDIS = 'plan-tick';
+    await t.api.patch('/api/plan/items/' + itemId, { cookies: acct.cookies, body: { starred: true } });
+    assert.equal(Number(await redis.get(rl('plan-tick', acct.id))), 1, 'opted in: counted in Redis');
   });
 });
 

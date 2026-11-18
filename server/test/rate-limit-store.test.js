@@ -14,7 +14,7 @@ describe('rate limit store on Redis', () => {
   let redis;
   let quiet;
   beforeEach(async () => { redis = new RedisMock(); await redis.flushall(); redisConfig.setRedisForTests(redis); quiet = console.log; console.log = () => {}; delete process.env.RATE_LIMIT_MEMORY_ONLY; });
-  afterEach(() => { redisConfig.setRedisForTests(null); console.log = quiet; delete process.env.RATE_LIMIT_MEMORY_ONLY; });
+  afterEach(() => { redisConfig.setRedisForTests(null); console.log = quiet; delete process.env.RATE_LIMIT_MEMORY_ONLY; delete process.env.RATE_LIMIT_REDIS; });
 
   describe('fixed window', () => {
     it('counts hits per client, with a reset time, and keeps clients apart', async () => {
@@ -162,6 +162,24 @@ describe('rate limit store on Redis', () => {
         await store.resetKey('a');
         assert.equal((await store.increment('a')).totalHits, 1, 'reset works on the memory count');
       }
+    });
+
+    it('a limiter whose default is memory counts in memory, and in Redis only when RATE_LIMIT_REDIS names it (RATE_LIMIT_MEMORY_ONLY still wins)', async () => {
+      const chatty = make({ name: 'plan-tick', defaultStore: 'memory' });
+      await chatty.increment('u');
+      assert.equal(await redis.exists(chatty.key('u')), 0, 'default: nothing written to Redis');
+      assert.equal((await chatty.increment('u')).totalHits, 2, 'but it still counts');
+      process.env.RATE_LIMIT_REDIS = 'plan-tick, problem-note';
+      await chatty.increment('v');
+      assert.equal(await redis.exists(chatty.key('v')), 1, 'opted in: counted in Redis');
+      process.env.RATE_LIMIT_MEMORY_ONLY = 'plan-tick';
+      await chatty.increment('w');
+      assert.equal(await redis.exists(chatty.key('w')), 0, 'the memory switch wins');
+      delete process.env.RATE_LIMIT_REDIS;
+      process.env.RATE_LIMIT_MEMORY_ONLY = '';
+      const normal = make({ name: 'login' });
+      await normal.increment('x');
+      assert.equal(await redis.exists(normal.key('x')), 1, 'a normal limiter uses Redis without any setting');
     });
 
     it('RATE_LIMIT_MEMORY_ONLY puts the named limiters (or all) back in memory, and writes nothing to Redis', async () => {

@@ -1,12 +1,14 @@
 const rateLimit = require("express-rate-limit");
 const { RedisRateLimitStore } = require("../services/rateLimitStore");
 
-// Every limiter counts in Redis when it is on (shared by every server, kept across a restart) and in memory when it is not.
+// Almost every limiter counts in Redis when it is on (shared by every server, kept across a restart) and in memory when it is not.
+// The two chatty, low-risk ones (plan ticks, problem note saves) count in memory unless RATE_LIMIT_REDIS names them: a Redis count costs about 36 ms
+// per request (measured), and these only guard against a stuck script.
 // Login uses a sliding window, so a burst across the edge of two windows cannot double the allowance; the others use a fixed window.
-// RATE_LIMIT_MEMORY_ONLY=all (or login,register,...) puts them back in memory.
+// RATE_LIMIT_MEMORY_ONLY=all (or login,register,...) puts any limiter back in memory; RATE_LIMIT_REDIS=plan-tick,problem-note (or all) opts the two in.
 // limiterNames lists every limiter built here, so a test can prove that none was left on the default in-memory store.
 const limiterNames = [];
-const redisStore = (name, algorithm = "fixed") => { limiterNames.push(name); return new RedisRateLimitStore({ name, algorithm }); };
+const redisStore = (name, algorithm = "fixed", defaultStore = "redis") => { limiterNames.push(name); return new RedisRateLimitStore({ name, algorithm, defaultStore }); };
 const { HOUR_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE, PLAN_PREVIEWS_PER_MINUTE, PLAN_GENERATES_PER_HOUR, PLAN_CHANGES_PER_MINUTE, PROBLEM_NOTE_WRITES_PER_MINUTE } = require("../config/limits");
 
 const aiProjectLimiter = rateLimit({
@@ -106,7 +108,7 @@ const analyzerLimiter = rateLimit({
 
 // Ticking a study-plan item: cheap, so a high limit; it only stops a stuck script from hammering the database.
 const planTickLimiter = rateLimit({
-  store: redisStore("plan-tick"),
+  store: redisStore("plan-tick", "fixed", "memory"),
   windowMs: 60 * 1000,
   max: PLAN_TICKS_PER_MINUTE,
   keyGenerator: (req) => req.user?._id?.toString() || req.ip,
@@ -169,7 +171,7 @@ const planChangeLimiter = rateLimit({
 
 // Saving, deleting or importing problem notes (reading is not limited).
 const problemNoteLimiter = rateLimit({
-  store: redisStore("problem-note"),
+  store: redisStore("problem-note", "fixed", "memory"),
   windowMs: 60 * 1000,
   max: PROBLEM_NOTE_WRITES_PER_MINUTE,
   keyGenerator: (req) => req.user?._id?.toString() || req.ip,

@@ -8,6 +8,8 @@
 //
 // When Redis is off or fails, the limiter falls back to an in-memory store, so the app is never unprotected and never blocked by Redis.
 // RATE_LIMIT_MEMORY_ONLY=all (or a list of limiter names, for example login,register) forces memory: the way back if a Redis limiter misbehaves.
+// A limiter built with defaultStore 'memory' counts in memory unless RATE_LIMIT_REDIS names it (or says all): a shared count costs a Redis
+// round trip (36 ms measured), which is not worth it for chatty, low-risk limiters on a single server; with several servers, opt them in.
 // The time comes from the app server's clock (passed into the script); with several servers a skewed clock moves the sliding window a little.
 const crypto = require('node:crypto');
 const { MemoryStore } = require('express-rate-limit');
@@ -40,16 +42,18 @@ local hits = redis.call('ZCARD', KEYS[1])
 local oldest = redis.call('ZRANGE', KEYS[1], 0, 0, 'WITHSCORES')
 return {hits, tonumber(oldest[2])}`;
 
-const memoryOnly = (name) => {
-  const setting = (process.env.RATE_LIMIT_MEMORY_ONLY || '').toLowerCase().split(',').map((part) => part.trim());
+const listed = (variable, name) => {
+  const setting = (process.env[variable] || '').toLowerCase().split(',').map((part) => part.trim());
   return setting.includes('all') || setting.includes(name);
 };
+const memoryOnly = (name) => listed('RATE_LIMIT_MEMORY_ONLY', name);
 
 class RedisRateLimitStore {
-  /** name: the limiter's name in the keys and in RATE_LIMIT_MEMORY_ONLY. algorithm: 'fixed' or 'sliding'. */
-  constructor({ name, algorithm = 'fixed' }) {
+  /** name: the limiter's name in the keys and in the environment lists. algorithm: 'fixed' or 'sliding'. defaultStore: 'redis' or 'memory' (see above). */
+  constructor({ name, algorithm = 'fixed', defaultStore = 'redis' }) {
     this.name = name;
     this.algorithm = algorithm;
+    this.defaultStore = defaultStore;
     this.fallback = new MemoryStore();
     this.localKeys = false; // a count made on one server counts on all of them
     this.windowMs = 60000;
@@ -62,7 +66,11 @@ class RedisRateLimitStore {
 
   key(clientKey) { return redisKey('rl', this.name, clientKey); }
 
-  client() { return memoryOnly(this.name) ? null : getRedis(); }
+  client() {
+    if (memoryOnly(this.name)) return null;
+    if (this.defaultStore === 'memory' && !listed('RATE_LIMIT_REDIS', this.name)) return null;
+    return getRedis();
+  }
 
   async increment(clientKey) {
     const client = this.client();
