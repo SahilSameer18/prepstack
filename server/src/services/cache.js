@@ -9,10 +9,15 @@
 //   - The host has 298 MB and evicts nothing (the job queue needs that), so growth is bounded: a value above maxBytes is not cached,
 //     and each cache name has a write budget per minute. When the budget is spent the request is served without caching.
 //   - The value must survive JSON (it is stored as JSON text).
+//   - In front of Redis sits a small in-process cache (level 1): a hit costs no network at all (a Redis read is about 36 ms from a laptop), identical
+//     requests at the same moment share one load, and it works with Redis off. It holds a value for at most 60 s (CACHE_MEMORY_SECONDS; 0 turns it
+//     off), so after a reseed one server can show the old content for up to a minute. Callers must not change a returned value (it is shared).
 const crypto = require('node:crypto');
 const { getRedis, redisKey, connectRedis, redisStatus, closeRedis } = require('../config/redis');
 
 const NULL_MARKER = '__null__';
+const MEMORY_MAX_ENTRIES = 300;
+const MEMORY_MAX_BYTES = 48 * 1024 * 1024; // this process only: the free host has 512 MB
 const LOCK_MS = 10000; // longer than the slowest loader, so the lock does not expire while someone is still loading
 const WAIT_MS = 1500; // how long a request waits for another request's refill before loading by itself
 const POLL_MS = 40;
@@ -46,7 +51,43 @@ async function store(client, key, name, value, options) {
  * cached(['content', 'sheet', slug], loader, { ttlSeconds })
  * parts: the key words (the first two name the cache for its write budget, unless options.budgetName says otherwise). loader: async, returns a JSON-safe value, or null for "not found".
  */
+// ---- level 1: this process's own memory ----
+const level1 = new Map(); // key -> { value, expiresAt, size } (Map order = oldest first)
+const inFlight = new Map(); // key -> the load already running for it
+let level1Bytes = 0;
+const memorySeconds = () => { const n = Number(process.env.CACHE_MEMORY_SECONDS ?? 60); return Number.isFinite(n) && n >= 0 ? n : 60; };
+const forget = (key) => { const entry = level1.get(key); if (entry) { level1Bytes -= entry.size; level1.delete(key); } };
+function remember(key, value, options) {
+  const limit = memorySeconds();
+  if (limit === 0 || value === undefined) return;
+  const size = value === null ? 8 : JSON.stringify(value).length;
+  if (size > options.maxBytes) return;
+  forget(key);
+  const seconds = value === null ? Math.min(options.negativeTtlSeconds, limit) : Math.min(options.ttlSeconds, limit);
+  level1.set(key, { value, size, expiresAt: Date.now() + withJitter(seconds, options.jitter) * 1000 });
+  level1Bytes += size;
+  while (level1.size > MEMORY_MAX_ENTRIES || level1Bytes > MEMORY_MAX_BYTES) forget(level1.keys().next().value);
+}
+const resetMemoryCache = () => { level1.clear(); inFlight.clear(); level1Bytes = 0; };
+
 async function cached(parts, loader, overrides = {}) {
+  if (!parts.every((part) => SAFE_PART.test(String(part)))) return loader();
+  const options = { ...DEFAULTS, ...overrides };
+  const key = parts.join(':');
+  const hit = level1.get(key);
+  if (hit) { if (hit.expiresAt > Date.now()) return hit.value; forget(key); }
+  const running = inFlight.get(key);
+  if (running) return running; // the same thing is being loaded right now: wait for it instead of loading it again
+  const load = (async () => {
+    const value = await viaRedis(parts, loader, overrides);
+    remember(key, value, options);
+    return value;
+  })().finally(() => inFlight.delete(key));
+  inFlight.set(key, load);
+  return load;
+}
+
+async function viaRedis(parts, loader, overrides = {}) {
   const client = getRedis();
   if (!client || !parts.every((part) => SAFE_PART.test(String(part)))) return loader();
   const options = { ...DEFAULTS, ...overrides };
@@ -105,4 +146,4 @@ async function clearContentCache() {
   return { cleared, skipped: false };
 }
 
-module.exports = { cached, clearContentCache, DEFAULTS };
+module.exports = { cached, clearContentCache, resetMemoryCache, DEFAULTS };

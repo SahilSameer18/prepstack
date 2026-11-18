@@ -68,6 +68,7 @@ PrepStack centralizes the workflow:
 - **Optional Redis, with graceful degradation:** `REDIS_URL` is optional. When on, it also holds the shared state of 12 of the 14 rate limits, the "an idea or report is being generated now" locks (Redis `SET NX PX` with a token, so a double click makes one AI call even across servers), the junk-technology counter, and the AI circuit-breaker marks. Without it, or when Redis is unreachable, the server starts and runs on MongoDB and memory as before, prints one status line (never the address), and closes the connection cleanly on shutdown. With it, the public sheet and notes reads, the dashboard's sheet list and the My plan preview are cached (cache-aside: jittered expiry, one refill against a stampede, "not found" cached briefly, a write budget because the free host has 298 MB and evicts nothing). MongoDB stays the source of truth. The rest of the plan (shared rate limits, locks, a BullMQ job queue) is in [docs/plans/REDIS_PLAN.md](docs/plans/REDIS_PLAN.md); the interview-oriented notes are in [docs/research/REDIS_INTERVIEW_NOTES.md](docs/research/REDIS_INTERVIEW_NOTES.md).
 - **Startup Secret Validation:** Fail-fast environment checks on server boot enforce the presence and minimum cryptographic length (≥32 characters) for `ACCESS_SECRET` and `REFRESH_SECRET`, and the presence of `GOOGLE_CLIENT_ID` (without it the Google sign-in token check would silently weaken).
 - **Safe Startup & Shutdown:** The server listens only after MongoDB is connected, and `SIGTERM`/`SIGINT`/unhandled errors close the HTTP server and the database connection before exiting.
+- **Measured scaling work:** `npm run load:test` starts the real server and measures it at 10, 50 and 100 requests at once; a CPU profile showed that the one Node thread was the limit, so read-only reads return plain objects instead of Mongoose documents, the planner's date helpers remember their answers, and an in-process cache (60 seconds, bounded) sits in front of Redis. On a 12-core laptop that took 100 simultaneous users from 24 to 122 requests a second (median 3.5 s to 0.7 s), and `npm run start:cluster` (one copy per core, needs Redis) reached 401 requests a second. Details, caveats and what is not fixed: [docs/research/SCALING_REPORT.md](docs/research/SCALING_REPORT.md).
 - **Health Check & Access Log:** `GET /health` (no login) returns `200 {"status":"ok","db":"up"}` while the database is connected and `503` when it is not, for hosts and uptime monitors. Every other request writes one log line (`METHOD /path status ms`); query strings and bodies are never logged.
 
 > **More:** 12 more engineering details (sessions, account erasure, OAuth, cookies, motion and loading work) are in [docs/ENGINEERING.md](docs/ENGINEERING.md). Testing is described in [TESTING.md](TESTING.md).
@@ -116,6 +117,7 @@ prepstack/
     │   ├── validators/          # Zod schemas (auth, sheets, project, user, analyzer)
     │   └── app.js               # Express app definition
     ├── test/                    # API and service tests (node:test + supertest + in-memory MongoDB; a fake Redis in test/helpers)
+    ├── cluster.js               # Optional: one server copy per CPU core (needs Redis)
     └── server.js                # Startup and shutdown
 ```
 
@@ -625,9 +627,11 @@ ENABLE_CUSTOM_DNS=
 REDIS_URL=
 REDIS_PREFIX=
 RATE_LIMIT_MEMORY_ONLY=
+CACHE_MEMORY_SECONDS=
+WEB_CONCURRENCY=
 ```
 
-`REDIS_URL` is optional: empty means the server runs without Redis (memory and MongoDB only), and an unreachable Redis never stops the server; the address holds a password, so keep it in your own `.env` only. `REDIS_PREFIX` defaults to `prepstack:<NODE_ENV>:` so development and the live site never share keys. `RATE_LIMIT_MEMORY_ONLY` is the way back if a Redis limiter misbehaves: `all`, or a list such as `login,register`, keeps those limiters in memory. `RATE_LIMIT_REDIS` (`plan-tick`, `problem-note`, or `all`) counts the two chatty limiters in Redis too, for example when you run several servers. `npm run redis:check` checks a Redis service (version, eviction policy, locks, counters, Lua); `npm run test:redis-live` runs the opt-in live test, and `npm run measure:cache` counts database reads and generator runs for 400 public requests with and without Redis. When Redis is on, the public sheet and notes reads, the dashboard's sheet list and the My plan preview are cached for about 10 minutes (the seed scripts clear them), and the four public reads send `Cache-Control: public, max-age=300, stale-while-revalidate=600`.
+`REDIS_URL` is optional: empty means the server runs without Redis (memory and MongoDB only), and an unreachable Redis never stops the server; the address holds a password, so keep it in your own `.env` only. `REDIS_PREFIX` defaults to `prepstack:<NODE_ENV>:` so development and the live site never share keys. `RATE_LIMIT_MEMORY_ONLY` is the way back if a Redis limiter misbehaves: `all`, or a list such as `login,register`, keeps those limiters in memory. `RATE_LIMIT_REDIS` (`plan-tick`, `problem-note`, or `all`) counts the two chatty limiters in Redis too, for example when you run several servers. `CACHE_MEMORY_SECONDS` (default 60, `0` = off) is how long the in-process cache in front of Redis keeps a sheet, notes or preview answer. `WEB_CONCURRENCY` is the number of server copies for `npm run start:cluster` (default: the number of cores, at most 8). `npm run redis:check` checks a Redis service (version, eviction policy, locks, counters, Lua); `npm run test:redis-live` runs the opt-in live test, and `npm run measure:cache` counts database reads and generator runs for 400 public requests with and without Redis. When Redis is on, the public sheet and notes reads, the dashboard's sheet list and the My plan preview are cached for about 10 minutes (the seed scripts clear them), and the four public reads send `Cache-Control: public, max-age=300, stale-while-revalidate=600`.
 
 `ALLOWED_ORIGINS` is a comma-separated list of extra front-end URLs allowed by CORS (exact match). Set `ENABLE_CUSTOM_DNS=true` only if your ISP cannot resolve `mongodb+srv://` addresses. On a production host set `NODE_ENV=production` and add your deployed front-end URL to `ALLOWED_ORIGINS`.
 
@@ -682,7 +686,9 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 | Script               | Description                                |
 | -------------------- | ------------------------------------------ |
 | `npm run dev`        | Boots dev environment using nodemon        |
-| `npm start`          | Launches server                            |
+| `npm start`          | Launches server (one process, one CPU core) |
+| `npm run start:cluster` | One server copy per CPU core (`WEB_CONCURRENCY`, at most 8); refuses to start without `REDIS_URL`, because the copies share rate limits, locks and caches through Redis |
+| `npm run load:test`  | Starts the real server on an in-memory database and measures requests per second and latency at 10, 50 and 100 at once; `PROFILE=1` adds a CPU profile, `ONLY=` one request kind, `CLUSTER=4` four copies |
 | `npm run seed:notes` | Validates and atomically replaces CS notes; requires a MongoDB replica set/Atlas, rolls back failures, and returns a failing exit code (run after changing `src/data/notes`) |
 | `npm run check:links` | Checks that the outside links (roadmaps, skill catalog, resume guide tools) still answer; run by hand before a release, needs the network |
 | `npm run seed:all`   | Idempotently seeds DSA Sheets and CS notes (both seeds also clear the cached copies when Redis is set) |
@@ -710,7 +716,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **1069 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers, Google sign-in and Redis are faked (a small in-memory fake Redis with its own clock, in `server/test/helpers/fake-redis.js`). Two Redis checks need the real service and are opt-in: `npm run test:redis-live` and `npm run measure:cache`.
+The server has **1079 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers, Google sign-in and Redis are faked (a small in-memory fake Redis with its own clock, in `server/test/helpers/fake-redis.js`). Two Redis checks need the real service and are opt-in: `npm run test:redis-live` and `npm run measure:cache`.
 
 ```bash
 cd server
@@ -729,6 +735,7 @@ The Role Analyzer was also checked against the real AI with hand-run scripts in 
 
 - **Rate limits are only shared while Redis is on, and two never are by default.** 12 of the 14 limiters count in Redis when it is on (every server shares one count, and a restart keeps it); plan ticks and problem note saves count per server in memory unless `RATE_LIMIT_REDIS` opts them in. Without Redis, or while it is down, each server counts for itself in memory: counts reset on restart, are not shared, and a limit can be exceeded by the number of servers, so run one instance. Other costs: each Redis-counted request makes one Redis round trip (measured 36 ms median, 40 ms at the 95th percentile, from a laptop to the free Aiven service); the sliding window (login) takes its time from the app server's clock; and the free Aiven service is not meant for production use. `RATE_LIMIT_MEMORY_ONLY` puts chosen limiters back in memory.
 - **Redis is optional and not required to run.** The free Aiven Valkey service has a 298 MB memory limit, evicts nothing and saves snapshots only (no append-only file), and can be powered off when unused. Cached public reads can show content up to about 15 minutes old after a reseed (10 minutes in the server cache plus the browser's 5-minute header).
+- **One server process uses one CPU core, and the plan generator runs on that core.** A burst of people building plans at the same time slows every other request on that process (about 20 ms of CPU per preview, more for saving or rebuilding a plan). `npm run start:cluster` uses all cores but needs `REDIS_URL` and a host with several cores; the free Render instance has about 0.1 of a CPU. The load-test numbers come from a laptop with an in-memory database, so they rank the bottlenecks but are not the capacity of the live site. See [docs/research/SCALING_REPORT.md](docs/research/SCALING_REPORT.md).
 - **The AI runs on free tiers** (Gemini, then Groq). A quota or an outage can make generation fail for a while; the user then gets a clear message and the attempt is not counted. Reports and ideas can differ from run to run.
 - **77 of the 120 skills in the Role Analyzer's catalog point at PrepStack lessons (notes, DSA topics or a roadmap); the other 43 link only to official documentation.** Four soft skills point at the Behavioral page.
 - **Resume PDFs must contain text.** Scanned (image-only) PDFs are rejected, and the PDF export uses standard fonts, so characters outside basic Latin may not draw.

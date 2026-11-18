@@ -173,6 +173,16 @@ The privacy policy says the resume is never stored. A queued job would hold the 
 
 **D30. Testing real Lua without a real Redis.** `ioredis-mock` (dev dependency, has a Lua engine) runs the actual scripts in the normal tests; the opt-in live test runs them on the real service. Mutation checks showed two of my first tests were too weak (a sliding window that never forgets and a fixed window every hit extends both still passed), so they were strengthened: "a test that cannot fail proves nothing".
 
+**D31. Measure first: what "scalable" meant here.** Target chosen by the owner: scale-ready at zero cost, first target about 500 users a day. A load test of the real server found the limit at once: past about 10 simultaneous users throughput fell to about 24 requests a second and the median to 1.8 to 3.5 seconds, with the server process using one core fully and the database almost idle. Lesson for interviews: do not guess the bottleneck; the CPU profile showed it (building Mongoose documents, and date arithmetic inside the plan generator).
+
+**D32. Cheap CPU fixes before architecture.** Plain objects (`lean`) instead of Mongoose documents for read-only reads (sheet list 58 to 5 ms of CPU), memoizing two pure date functions called millions of times (preview 49 to 20 ms), a plain-object read of the saved plan (59 to 18 ms). Interview line: "the first 4x came from removing waste, not from adding servers".
+
+**D33. A cache in front of the cache.** Level 1 is the process's own memory (60 s, 300 entries, 48 MB, shared load for identical simultaneous requests); level 2 is Redis. Why: a Redis read costs about 36 ms from a laptop, memory costs nothing, and it works with Redis off. Trade-offs I name: one server can show old content for up to a minute after a reseed (the seed clears Redis, not other servers' memory), the returned object is shared so callers must not change it, and with several servers each holds its own copy.
+
+**D34. Using more cores: cluster mode.** One Node process uses one core. `cluster.js` forks one copy per core. The copies share nothing in memory, which is why Redis had to come first: rate limits, locks and caches must be shared, so cluster mode refuses to start without `REDIS_URL`. Measured: four copies 401 requests a second against 122 for one (3.3 times, not 4, because the load generator and database also use CPU). Also: restart a crashed copy with a back-off, stop everything on SIGTERM.
+
+**D35. What this does not prove.** One run each on a 12-core laptop, an in-memory database on the same machine, and the free Render instance has about 0.1 of a CPU. The numbers rank bottlenecks; they are not the capacity of the live site. Next in line: the plan generator is still CPU on the main thread (worker thread), the per-request session lookup (R3), AI inside the request (queue).
+
 ---
 
 ## Part 4. Numbers to collect (fill in as each phase is measured)

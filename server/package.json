@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
+    "start:cluster": "node cluster.js",
     "seed:notes": "node src/seed/notesSeed.js",
     "seed:all": "node src/seed/masterSeed.js",
     "check:links": "node scripts/check-links.js",
@@ -14,6 +15,7 @@
     "redis:check": "node scripts/redis-host-check.js",
     "test": "node --test --test-concurrency=2 --test-force-exit \"test/**/*.test.js\"",
     "measure:limits": "node --env-file=.env scripts/measure-limits.js",
+    "load:test": "node scripts/load-test.js",
     "measure:cache": "node --env-file=.env scripts/measure-cache.js",
     "test:redis-live": "node --env-file=.env --test test/redis-live.test.js",
     "test:coverage": "node --test --test-force-exit --experimental-test-coverage \"test/**/*.test.js\""

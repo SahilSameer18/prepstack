@@ -45,13 +45,31 @@ const BIGTECH_SHEETS = ['neetcode-150', 'striver-sde'];
 // ---------- dates ----------
 const DAY_MS = 24 * 60 * 60 * 1000;
 const IST_OFFSET_MS = (5 * 60 + 30) * 60 * 1000;
+// Both are pure and the planner calls them millions of times (the CPU profile of a preview ranked them first), so each remembers its answers.
+// The tables are cleared when they grow past a few thousand dates, so they stay small.
+const MEMO_LIMIT = 20000;
+const dayNumbers = new Map();
+const dayNames = new Map();
 const dayNumber = (ymd) => {
+  const known = dayNumbers.get(ymd);
+  if (known !== undefined) return known;
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd || '');
-  if (!m) return NaN;
-  const n = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])) / DAY_MS;
-  return ymdOf(n) === ymd ? n : NaN; // refuses 2026-02-30
+  let n = NaN;
+  if (m) {
+    const candidate = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])) / DAY_MS;
+    n = ymdOf(candidate) === ymd ? candidate : NaN; // refuses 2026-02-30
+  }
+  if (typeof ymd === 'string') { if (dayNumbers.size > MEMO_LIMIT) dayNumbers.clear(); dayNumbers.set(ymd, n); }
+  return n;
 };
-const ymdOf = (n) => new Date(n * DAY_MS).toISOString().slice(0, 10);
+const ymdOf = (n) => {
+  const known = dayNames.get(n);
+  if (known !== undefined) return known;
+  const name = new Date(n * DAY_MS).toISOString().slice(0, 10);
+  if (dayNames.size > MEMO_LIMIT) dayNames.clear();
+  dayNames.set(n, name);
+  return name;
+};
 const weekdayOf = (n) => (new Date(n * DAY_MS).getUTCDay() + 6) % 7; // Monday = 0
 const todayIst = (now = new Date()) => ymdOf(Math.floor((now.getTime() + IST_OFFSET_MS) / DAY_MS));
 

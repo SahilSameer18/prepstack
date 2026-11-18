@@ -12,7 +12,7 @@ const { PUBLIC_CONTENT_CACHE_CONTROL } = require('../config/limits');
 // The sheets only change when a seed runs, so their public reads come from the cache (phase 4); MongoDB answers a miss or a Redis outage.
 // A seed clears the cached copies (clearContentCache), and every entry expires by itself within about ten minutes anyway.
 const loadSheetList = async () => {
-  const sheets = await DSASheet.find({}, 'name slug description topics.problems.link topics.problems.difficulty topics.problems.tags');
+  const sheets = await DSASheet.find({}, 'name slug description topics.problems.link topics.problems.difficulty topics.problems.tags').lean(); // plain objects: building 1,300 Mongoose documents per request cost 58 ms of CPU
 
   return sheets.map(sheet => {
     const linkSet = new Set();
@@ -65,9 +65,8 @@ exports.getSheets = async (req, res, next) => {
 exports.getSheetBySlug = async (req, res, next) => {
   try {
     const plain = await cached(['content', 'sheet', req.params.slug], async () => {
-      const sheet = await DSASheet.findOne({ slug: req.params.slug }).select('-__v');
-      if (!sheet) return null;
-      const copy = sheet.toObject();
+      const copy = await DSASheet.findOne({ slug: req.params.slug }).select('-__v').lean();
+      if (!copy) return null;
       for (const topic of copy.topics || []) for (const problem of topic.problems || []) problem.link = problemIdentity(problem.link);
       return copy;
     });

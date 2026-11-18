@@ -64,7 +64,7 @@ const summarizeProgress = (sheets, userProgress, now = planClock.now(), calendar
 // Parallel server queries: all DSA sheets, the user's progress records, and the project count
 const loadProgressData = (userId) => Promise.all([
   cached(['content', 'sheet-defs'], () => DSASheet.find({}, 'name slug description topics.problems.link').lean()), // the same for every user (phase 4)
-  progressModel.find({ user: userId }),
+  progressModel.find({ user: userId }).lean(),
   projectModel.countDocuments({ user: userId })
 ]);
 

@@ -4,6 +4,7 @@ const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { FakeRedis } = require('./helpers/fake-redis');
 const redisConfig = require('../src/config/redis');
+process.env.CACHE_MEMORY_SECONDS = '0'; // these tests are about the Redis layer
 const { cached, clearContentCache } = require('../src/services/cache');
 
 const quiet = () => { const log = console.log; console.log = () => {}; return () => { console.log = log; }; };

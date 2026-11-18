@@ -115,7 +115,7 @@ const presentView = (v, allItems) => {
 
 // A saved plan in the shape the generator and the adjust module work on.
 const toStored = (doc) => {
-  const o = doc.toObject();
+  const o = typeof doc.toObject === 'function' ? doc.toObject() : doc; // a plain object (a lean read) is already one
   return {
     input: { goalType: o.goalType, style: o.style, startDate: o.startDate, weeks: o.weeks, hoursByWeekday: o.hoursByWeekday, restDay: o.restDay, sheetSlug: o.sheetSlug, roadmapSlug: o.roadmapSlug, subjects: o.subjects, pace: o.pace || 'standard', knownTopics: o.knownTopics, solvedLinks: o.solvedLinks, lighterDays: o.lighterDays, originReport: o.originReport, pausedDays: o.totalPausedDays || 0 },
     startDate: o.startDate, deadline: o.deadline, items: o.items, coverage: o.coverage, revision: o.updatedAt,
@@ -148,7 +148,7 @@ const getPlan = async (req, res, next) => {
     const calendar = { ...settings, today: studyDay(now, settings), nextRollover: nextStudyBoundary(now, settings) };
     const paused = await Plan.find({ user: req.user._id, status: 'paused' }).select('title deadline pausedAtDay').lean();
     const pausedPlans = paused.map((plan) => ({ id: String(plan._id), title: plan.title, deadline: plan.deadline, pausedAtDay: plan.pausedAtDay }));
-    const doc = await Plan.findOne({ user: req.user._id, status: 'active' });
+    const doc = await Plan.findOne({ user: req.user._id, status: 'active' }).lean(); // read-only: a plain object skips building a Mongoose document for every task
     if (!doc) return sendSuccess(res, 200, 'No active plan', { plan: null, today: null, finished: false, calendar, pausedPlans });
     // a problem solved on its sheet (not through the plan) counts as done here: it leaves Today and the on-track numbers, and the page can show it done
     const solved = await solvedOnSheets(req.user._id, doc);
