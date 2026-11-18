@@ -248,6 +248,27 @@ The owner does the hands-on learning separately (another laptop, no app work). T
 
 ---
 
+## 3e. Phase 6 plan: session cache (R3) and AI budget (R2) (18 Nov 2026, proposed: no code written, the owner decides)
+
+**R3, session cache.** Today every logged-in request runs a MongoDB lookup in `auth.middleware.js` (the user exists, this login session is still active) and also reads the study clock settings from the account. The plan: keep that answer in Redis for at most 30 seconds.
+- Key `session:<userId>:<sessionId>`. The value holds only the study time zone, the day-start hour and the session's own expiry time: no token, password or email. A cached entry never outlives the session's expiry.
+- **Revocation is the hard part.** A session stops being valid in 8 places: logout, logout everywhere, revoking one device, password change, password reset, the replay defence (a refresh token used twice), account deletion, and changing the study clock settings. One mechanism covers all 8: each user has a **version number** in Redis; every one of those paths bumps it before it answers; a cached entry counts only if its recorded version equals the current one (one `MGET` of both keys, one round trip); and a cache fill is written only if the version is unchanged since the database read, done by a Lua script so the check and the write are atomic.
+- Why not just delete the key: a request that read MongoDB before the revoke can write its stale answer back after the delete, and a revoked session would keep working for up to 30 seconds. The version check closes that race.
+- If Redis is off, slow or failing, every request goes to MongoDB exactly as today. Known limit to accept in writing: if Redis fails at the moment of a revoke and returns within 30 seconds, an old entry could live up to 30 seconds.
+- A switch, `SESSION_CACHE=on`, default **off** until measured on the live host.
+- **The gate from section 3, kept:** the step is measured by MongoDB lookups per minute, not by speed. A Redis read from a laptop costs about 36 ms (measured), so if the live MongoDB answers faster than the live Redis, the cache lowers database load but not latency. Decide the default after measuring latency on the deployed host.
+- Tests: hit and miss; a revoked session fails on its next request on all 8 paths even when it is cached; a fill after a revoke is refused; an entry expires with its session; Redis down; the lookups-per-minute measurement; the Lua scripts run for real on ioredis-mock and on the live service (the opt-in live test). Mutation checks on each rule. About 2 days.
+
+**R2, app-wide AI budget.** The free AI tiers have limits for the whole app (the notes record 20 requests a day and 5 a minute for the primary Gemini model on 7 Nov 2026; the owner's own consoles are the source of truth). Today the app finds out it is over a limit from a failed call and a wait.
+- One Lua script reserves a call: a per-minute counter and a per-day counter per provider, atomic, with an expiry on every key.
+- It does nothing until the owner sets numbers per provider in the environment, so a wrong or missing number can never block AI.
+- In the cascade a provider whose budget is spent is skipped without a call, like an open breaker. Redis down: nothing is enforced.
+- Tests: 50 simultaneous reservations against a limit of 5 allow exactly 5; minute and day windows roll over; a spent provider is skipped without a call; Redis down; the budget off when no number is set. Mutation checks. About 2 days.
+
+**Both steps** also get: README, TESTING, the interview notes and the checklist updated in the same change, and the git commands given at the end. Nothing starts until the owner says so.
+
+---
+
 ## 3b. Free Redis hosts (researched 9 Nov 2026 from each provider's own pages)
 
 Re-check each provider's live page before signing up: free tiers change, and some pages disagree with each other (noted below).
@@ -352,6 +373,10 @@ Answered by you on 9 Nov 2026. A decision is recorded only after you answered.
 10. **Job status, 18 Nov 2026: polling.** Confirmed.
 11. **Queue tests, 18 Nov 2026: opt-in against the Aiven service**, a unique key prefix, deleting only their own keys. Confirmed.
 12. **Learning, 18 Nov 2026:** the owner learns Redis by hand separately on another laptop; the agent builds the app steps and keeps the interview notes. No local Redis on this machine; app work runs directly against Aiven with environment-prefixed keys.
+13. **OPEN: session cache default** (R3): off until measured on the live host (recommended), or on at once?
+14. **OPEN: when every provider's AI budget is spent** (R2): try them anyway, as the breaker does (recommended: a wrong number cannot block AI), or fail fast with the "busy" message?
+15. **OPEN: the up to 30 second window** if Redis fails exactly during a revoke (R3): accept it and write it down?
+16. **OPEN: the AI budget numbers** (R2): the owner reads the per-minute and per-day limits for each provider from their own consoles when R2 starts.
 6. **When to learn it: alongside the app work, in the evenings.** A little each week next to stages 0 to 3 of `IMPROVEMENT_PLAN.md`. No live Redis until the first Redis step (R0/R1), which starts after B3 and B4.
 
 ---
