@@ -4,6 +4,8 @@ Written 9 Nov 2026. Status: **planned, nothing built.** This replaces the old an
 
 **Goal updated 16 Nov 2026 (confirmed by the owner): mastering Redis for SDE interviews, by building it in PrepStack.** Section 3c gives the build order and the interview topic of each step; section 10 lists what each step must leave behind (numbers, tests, a note) and the questions you should be able to answer. The older rule "no step starts without a measured reason" now applies to **going live**. A local build for learning starts when you decide, but it needs a before-and-after measurement, and the app must keep working with Redis switched off (`REDIS_URL` optional).
 
+**Status 18 Nov 2026.** Phase 1 is done: the free Aiven Valkey service (version 9.1.3) passed the host check (`noeviction`, memory limit 298 MB, locks, counters, Lua; snapshots only, no AOF). The owner does the hands-on learning separately on another laptop; the agent builds and tests the app steps and keeps `docs/research/REDIS_INTERVIEW_NOTES.md`. Section 3d lists the 8 phases; the owner decisions of 18 Nov are items 8 to 12 of section 8. Nothing in the app is built yet; a draft connection module and the `ioredis` package are uncommitted in the working folder.
+
 **Two goals, one path.**
 1. **Learn** Redis, BullMQ and background jobs from the basics, by building small things that work.
 2. **Use** what you learned in PrepStack, for growth: many users, several servers, busy periods such as placement season.
@@ -176,7 +178,15 @@ Each pattern is a small script plus a test that proves it.
 
 ### R6. Background job queue for AI (about 1 week) (after L5 and L6)
 - The idea generator returns a job number at once. A worker calls the AI with a concurrency matched to the provider limits, retries with a random delay, keeps failed jobs in a dead-letter list, and makes a double click create one job. The page checks the job until it finishes.
-- **Privacy rule:** the Role Analyzer promises that the resume is never stored. A queued analyzer job would hold the resume text in Redis until it finishes. So **the analyzer stays inside the request** until the Privacy Policy wording is changed on purpose (for example: kept for a few minutes, encrypted in transit and at rest, deleted when the job ends). Project ideas have no such text and go first.
+- **Privacy rule (changed 18 Nov 2026 by the owner: the analyzer goes into the queue too).** The Privacy Policy says the resume is never stored. A queued analyzer job holds the resume text, so the promise must change on purpose and the code must make the new promise true:
+  - the text is already cleaned (email, phone numbers and links removed) before anything is queued;
+  - the job payload is **encrypted in the app** (AES-256-GCM, a key in the environment, never in code) before it goes to Redis, so the host's snapshots and backups only ever hold unreadable bytes;
+  - the job is deleted as soon as it finishes **and** when it fails for the last time (`removeOnComplete` and `removeOnFail` with a short age); a short TTL is the safety net;
+  - nothing from the text is logged; the report is what is saved, as today;
+  - the Privacy Policy and the README change before the analyzer is queued: the cleaned text is held for a few minutes, encrypted, in a third-party Redis service (Aiven), and deleted when the job ends; Aiven is named as a service provider;
+  - the analyzer keeps its consent checkbox and its daily limit counted in MongoDB;
+  - if Redis is down or the switch is off, the analyzer runs inside the request exactly as today.
+  Project ideas have no such text and go first (Phase 7a). The analyzer follows (Phase 7b) only after the policy wording is changed and a test shows no readable resume text in any Redis key or value.
 - **Settings to start from (BullMQ docs):**
   - a global limiter (`limiter: { max, duration }`) sized to the providers' requests per minute;
   - `concurrency` of 1 or 2 (0.1 CPU);
@@ -216,6 +226,25 @@ Build for interview practice in this order. Each step is built locally first (WS
 | Optional | R7 | Activity bitmap or sorted set for streaks and the heatmap | Bitmaps, sorted sets (MongoDB stays the source of truth) |
 
 The cache comes before the limiters (the earlier order built shared limits first): it is the safest step and the one interviewers ask about most. R5 stays optional and measured.
+
+---
+
+## 3d. The 8 phases (18 Nov 2026)
+
+The owner does the hands-on learning separately (another laptop, no app work). The agent builds and tests the app steps, one phase at a time, and keeps `docs/research/REDIS_INTERVIEW_NOTES.md`. A phase starts only when the owner says so, and ends with a measurement or check, tests, an interview-notes update and the git commands.
+
+| # | Phase | Covers | Time | Done when |
+|---|---|---|---|---|
+| 1 | Setup and concepts | Aiven free Valkey service, host check | 1 day | **Done 18 Nov 2026.** Valkey 9.1.3; `noeviction`; memory limit 298 MB; locks, counters, Lua and expiry work; round trip about 35 ms; snapshots on, AOF off. Still manual: job survival after a restart (check 4) and the idle command cost (check 5, run the script again after a day idle) |
+| 2 | Hands-on learning (L0 to L2, then L3 to L6 as needed) | The owner, on another laptop | owner's time | The owner's check questions answered; no app work |
+| 3 | Connect it to the app (R0) | Optional client module, one status line, clean shutdown, fake Redis for tests | 1 day | The server starts with Redis, without it and with a wrong address; the address never appears in a log; tests pass |
+| 4 | Caching (R4, R8) | Sheets and notes reads, HTTP cache headers, the My plan preview (not the saved plan) | 3 days | Fewer database reads, measured; every cache key has a TTL (with jitter) and the preview cache has a key cap, because the host has 298 MB and `noeviction` |
+| 5 | Rate limits and locks (R1) | The in-memory limiters, the "being generated now" sets, the junk-technology counter, the shared breaker | 5 days | Two server copies share one limit; a restart keeps the counters; the "which requests count" test passes for every limiter |
+| 6 | Session cache and AI budget (R3, R2) | 30 second session cache deleted on every revoke; an atomic daily counter per AI provider | 4 days | A revoked session fails on its next request; a spent budget goes straight to the next provider |
+| 7 | Queues with BullMQ (R6) | 7a project ideas, 7b the Role Analyzer, 7c host check 4 | about 12 to 14 days | 50 simultaneous requests queue without errors; a killed worker's job is retried; nothing readable is in Redis; the Privacy Policy is changed before 7b |
+| 8 | Hardening and interview pack | Load tests with two instances, a Redis-down drill for every use, a privacy scan, docs, go-live gate; R5 and R7 only if needed | 3 days | Everything passes with Redis on and off; the go-live checklist is written |
+
+**Queue design (decided 18 Nov 2026).** One queue, a worker inside the web process, concurrency 1 or 2, polling for job state, the finished result saved to MongoDB (the job returns only an id), a job id built from the user so a double click makes one job, a global limiter sized to the AI providers' limits, and a feature switch that is off by default. When Redis is down or the switch is off, the work runs inside the request as today.
 
 ---
 
@@ -265,7 +294,7 @@ Re-check each provider's live page before signing up: free tiers change, and som
 | AI provider budget and breaker | Open: try the providers | They answer 429 themselves; the free tier has no bill. **If paid keys are ever used, this changes to closed** |
 | Session cache | Fall through to MongoDB | Always safe |
 | Content and stats cache | Fall through to MongoDB | Always safe |
-| Job queue | Closed: AI generation answers "try again later" | There is no queue to put the job in |
+| Job queue (project ideas and the analyzer) | Open: run the work inside the request, as today | The in-request path stays in the code behind the same switch, so the feature keeps working while Redis is down. Owner decision, 18 Nov 2026 (the older plan answered "try again later") |
 
 ---
 
@@ -290,7 +319,7 @@ About 6 to 7 weeks of full-time work, because learning is part of every step. It
 
 - A small fake Redis in `server/test/helpers/setup.js`, like the fake Gemini, so the app's tests need no real Redis and no network. A short hand-run script checks the same commands against a real Redis once per release.
 - Tests for every step: two server instances sharing one fake Redis, counters surviving a "restart", a Redis failure injected for each use in section 4 (the app keeps the behaviour in the table), and the "which requests count" check for every limiter.
-- For the queue: a worker killed mid-job gets its job retried; a double submission makes one job; no personal text is in any queue key or value (a test scans them).
+- For the queue: a worker killed mid-job gets its job retried; a double submission makes one job; **no readable personal text is in any queue key or value** (a test queues a fixture resume and scans every key and value for its words and for email, phone and link patterns; only ciphertext may appear). Queue tests need a real Redis, so they are **opt-in**: they run only when `REDIS_TEST_URL` is set, use a unique key prefix per run and delete only their own keys afterwards; everything else uses the fake.
 - Break each new rule once on purpose and confirm a test fails.
 
 ---
@@ -318,6 +347,11 @@ Answered by you on 9 Nov 2026. A decision is recorded only after you answered.
 4. **The analyzer in a queue: decide later.** Until then it stays inside the request and only project ideas are planned for the queue.
 5. **Fail open** for the sign-up and reset-email limits during an outage: **yes**, confirmed by you.
 7. **Goal changed 16 Nov 2026: master Redis for SDE interviews by building it in PrepStack, in the order of section 3c.** Confirmed by the owner. Going live still needs the host acceptance check in section 3b.
+8. **Queue scope, 18 Nov 2026: project ideas and the Role Analyzer both go into the queue.** Confirmed by the owner. Project ideas go first; the analyzer needs the privacy changes in section 3 (R6) first.
+9. **When Redis is down, 18 Nov 2026: generate inside the request.** Confirmed.
+10. **Job status, 18 Nov 2026: polling.** Confirmed.
+11. **Queue tests, 18 Nov 2026: opt-in against the Aiven service**, a unique key prefix, deleting only their own keys. Confirmed.
+12. **Learning, 18 Nov 2026:** the owner learns Redis by hand separately on another laptop; the agent builds the app steps and keeps the interview notes. No local Redis on this machine; app work runs directly against Aiven with environment-prefixed keys.
 6. **When to learn it: alongside the app work, in the evenings.** A little each week next to stages 0 to 3 of `IMPROVEMENT_PLAN.md`. No live Redis until the first Redis step (R0/R1), which starts after B3 and B4.
 
 ---
