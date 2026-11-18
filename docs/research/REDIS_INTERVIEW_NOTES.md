@@ -153,6 +153,22 @@ The privacy policy says the resume is never stored. A queued job would hold the 
 
 **D22. An honest limit: caching does not always reduce latency.** The measurement script counts database reads and generator runs, which cache hits remove. Latency only improves when Redis is closer or faster than the thing it replaces. Here the Redis service is about 35 ms away, and a local in-memory database answers in under a millisecond, so a cached read can be slower than a local database read. The saving is load on the database and the CPU spent generating plans. At one server instance an in-process cache would be faster still; Redis earns its place when several instances must share one cache.
 
+**D23. Rate limits in Redis: my own store, two algorithms (phase 5, built).** `express-rate-limit` accepts a store with three methods (`increment`, `decrement`, `resetKey`); its options "count only failed requests" or "count only successful requests" work by calling `decrement` after the response, so the store must support giving a hit back. I wrote the store instead of adding the `rate-limit-redis` package: it is about 100 lines, needs no extra dependency, and lets me show both algorithms and the failure behaviour. Each limiter keeps exactly its old rule; tests assert which requests count.
+
+**D24. Fixed window as one Lua script.** `INCR` the key, read `PTTL`, and set `PEXPIRE` only when the key is new or has no expiry. Why Lua: `INCR` then `EXPIRE` as two commands can die in between and leave a key that never expires (a client blocked for ever), and two callers must never both read "4 of 5" and pass. Known flaw: at the edge of two windows a client can send nearly double the limit in a short time.
+
+**D25. Sliding window log for login only.** A sorted set holds one entry per request (score = time). One script removes entries older than the window, adds this request, counts, and reports the oldest (which gives the reset time). Exact, no edge burst, but memory grows with the limit (10 entries per address for login, trivial). It is used where a burst matters (password guessing), not everywhere. The script receives the app server's clock as input; with several servers a skewed clock shifts the window slightly (the alternative is `TIME` inside the script).
+
+**D26. When Redis fails: count in memory, never block.** Each store has an in-memory fallback (the library's own `MemoryStore`), used when Redis is off, a command fails or times out (`commandTimeout` 2 s, so a silent connection cannot stall requests). The cost: while Redis is down each server counts separately, so a limit can be exceeded by the number of servers. Better than allowing everything or refusing everything. `RATE_LIMIT_MEMORY_ONLY` is the manual way back, per limiter.
+
+**D27. Security-sensitive limiters first, then the rest.** Login, sign-up, Google linking, password-change checks, forgot and reset password, and refresh (7 of 14) moved first because they protect accounts; the AI, analyzer, My plan and note limiters followed on the owner's word the same day, so all 14 now use Redis, with a test that fails if any limiter is left on the default in-memory store. The trade-off I name: every limited request now pays one Redis round trip (about 35 ms to the free service), even a cheap plan tick; the answer is the per-limiter switch back to memory and, at scale, a Redis closer to the server. Interview line: "I moved the security-sensitive limiters first and kept a per-limiter switch back to memory, because a bug in a rate limiter either locks users out or stops limiting attackers."
+
+**D28. The two "being generated now" locks.** The old in-memory sets became Redis locks: `SET key token NX PX ttl` (set only if absent, with an expiry, one atomic command), released by a Lua script that deletes the key only if it still holds my token. Why the token: if my work outlives the lock, someone else may hold it by then, and a plain `DEL` would free their lock. Lifetimes: 90 s for ideas (55 s budget, browser waits 90 s), 150 s for reports. Limit I accept: a request slower than its lock can overlap with the next one (no fencing token); the cost of that is one extra AI call, not corrupted data. Without Redis the lock lives in this process's memory, as before.
+
+**D29. The junk-technology counter and the shared breaker.** The "not a real technology" counter (5 per user per hour) became a sliding-window event count in Redis (same shape as the login limiter). The circuit breaker keeps its local state and also publishes "open until T" as a key with that expiry; each cascade reads the marks before choosing providers, so one server noticing Gemini failing protects the others. Publishing never makes a request wait; a Redis failure just leaves each server on its own state.
+
+**D30. Testing real Lua without a real Redis.** `ioredis-mock` (dev dependency, has a Lua engine) runs the actual scripts in the normal tests; the opt-in live test runs them on the real service. Mutation checks showed two of my first tests were too weak (a sliding window that never forgets and a fixed window every hit extends both still passed), so they were strengthened: "a test that cannot fail proves nothing".
+
 ---
 
 ## Part 4. Numbers to collect (fill in as each phase is measured)
@@ -160,6 +176,7 @@ The privacy policy says the resume is never stored. A queued job would hold the 
 | Phase | What was measured | Before | After | How (tool, inputs, two instances?) |
 |---|---|---|---|---|
 | Caching (18 Nov 2026), baseline without Redis | 400 mixed public requests (sheet list, one sheet, notes list, one subject, preview), 10 at a time | 320 DB reads, 80 generator runs, median 79 ms | pending: run `npm run measure:cache` | `scripts/measure-cache.js`, in-memory MongoDB, no Redis |
+| Rate limit store (18 Nov 2026) | 50 callers at once, two store objects on one Redis: counts 1 to 50, none twice (on ioredis-mock) and on the real Aiven service: fixed and sliding, 50 callers at once across two store objects, counts 1 to 50 exact, one hit given back, key has an expiry (18 Nov 2026, 4 of 4 live tests pass) | n/a | exact on both | `rate-limit-store.test.js` |
 | Phase 3 live check (18 Nov 2026) | Opt-in live test against the real service: connects, expiry, SET NX and 50 parallel INCR exact, 2 of 2 passed in about 0.7 s | n/a | pass | `npm run test:redis-live` |
 | Host check (18 Nov 2026) | Round-trip time to the host (median of 20 pings) | n/a | 35.0 ms | `npm run redis:check`, from the developer machine to the free Aiven service; this is network distance, not Redis speed |
 | Caching | Database reads per 1,000 sheet requests | | | |
@@ -170,7 +187,8 @@ The privacy policy says the resume is never stored. A queued job would hold the 
 
 ## Part 5. Mistakes and lessons
 
-(Empty. Add one line per phase: what went wrong and what fixed it. Interviewers like this question.)
+- Phase 4: caching: my first test for "a slug that is not a plain word is never cached" assumed `Blind-75` would be a 404; the database matched it ignoring case. The test was wrong, not the code: it now asserts the real behaviour (200, uncached).
+- Phase 5: rate limits: two of my first store tests passed even with the key rule broken (a sliding window that never forgot, a fixed window every hit extended). Mutation checks exposed it; the tests now age entries out while the key stays alive and check the countdown across two hits.
 
 ## Part 6. Quick practice questions (answer aloud, then check Parts 1 to 3)
 

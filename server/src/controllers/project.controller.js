@@ -3,23 +3,14 @@ const { generateProjectIdea } = require("../services/ai.service");
 const projectModel = require('../models/project.model');
 const AppError = require('../utils/AppError');
 const { sendSuccess, sanitizeDoc } = require('../utils/responseFormatter');
-const { HOUR_MS, projectsPerDay } = require('../config/limits');
+const { HOUR_MS, PROJECT_LOCK_MS, projectsPerDay } = require('../config/limits');
+const { acquireLock, recentCount, recordEvent } = require('../services/lock');
 const { countLast24h } = require('../services/usage.service');
 
 // Times (ms) at which the AI said a user's typed tech stack was not a real technology, per user. A rejected check still
 // costs an AI call and the hourly limit does not count failed requests, so without this someone could type junk in a
-// loop and use up the shared free quota. Kept in server memory (resets on restart).
-const notATechnology = new Map();
+// loop and use up the shared free quota. Counted in Redis when it is on (shared by every server, survives a restart), else in memory.
 const NOT_A_TECHNOLOGY_LIMIT = 5; // per user per hour
-const recentNotATechnology = (key) => {
-  const fresh = (notATechnology.get(key) || []).filter((at) => Date.now() - at < HOUR_MS);
-  if (fresh.length) notATechnology.set(key, fresh); else notATechnology.delete(key);
-  return fresh.length;
-};
-
-// Users with an idea being generated right now. Kept in server memory, so it resets on restart and is per
-// server process (fine for a single instance).
-const generatingNow = new Set();
 
 // Most ideas one user may save in any 24 hours (the hourly limit of 4 stays as well). The AI quota is shared by
 // everyone on the free plan, so this stops one user from using it all up. Counted from the database, so it
@@ -30,17 +21,17 @@ const generateProject = async (req, res, next) => {
   const userId = req.user._id;
   const key = String(userId);
 
-  // A double click or a second tab must never cost a second AI call. Set before any await so two requests
-  // arriving in the same instant cannot both get past this line.
-  if (generatingNow.has(key)) {
+  // A double click or a second tab must never cost a second AI call. The lock is taken in one atomic step (Redis SET NX, or this
+  // process's memory without Redis), so two requests arriving in the same instant cannot both get it; it expires by itself.
+  const lock = await acquireLock('project', key, PROJECT_LOCK_MS);
+  if (!lock) {
     return next(new AppError(409, 'Your last project idea is still being generated. Please wait for it to finish.'));
   }
-  generatingNow.add(key);
 
   try {
     const { techStack, complexity, domain, notes } = req.body;
 
-    if (recentNotATechnology(key) >= NOT_A_TECHNOLOGY_LIMIT) {
+    if ((await recentCount('not-a-technology', key, HOUR_MS)) >= NOT_A_TECHNOLOGY_LIMIT) {
       return next(new AppError(429, "You've tried several names we don't recognise. Please pick a tech stack from the list, or try again in an hour."));
     }
 
@@ -69,10 +60,10 @@ const generateProject = async (req, res, next) => {
     const sanitizedProject = sanitizeDoc(project);
     return sendSuccess(res, 201, 'Project idea generated successfully', { project: sanitizedProject }, { project: sanitizedProject });
   } catch (error) {
-    if (error.reason === 'invalid-tech-stack') notATechnology.set(key, [...(notATechnology.get(key) || []), Date.now()]);
+    if (error.reason === 'invalid-tech-stack') await recordEvent('not-a-technology', key, HOUR_MS);
     next(error);
   } finally {
-    generatingNow.delete(key); // always cleared: success, failure or the early returns above
+    await lock.release(); // always released: success, failure or the early returns above
   }
 };
 

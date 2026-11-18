@@ -8,11 +8,12 @@ const { analyze } = require('../services/analyzer.service');
 const { adviceForReport } = require('../services/skills.service');
 const { reportsPerDay } = require('../config/limits');
 const { countLast24h } = require('../services/usage.service');
+const { acquireLock } = require('../services/lock');
+const { ANALYZER_LOCK_MS } = require('../config/limits');
 const { todayPlanDay } = require('../utils/planDay');
 
-// Users with a report being written right now (a second request gets a 409). Kept in server memory, so it resets on
-// restart and is per server process: fine for a single instance, the same trade-off as the project-idea generator.
-const generatingNow = new Set();
+// A user with a report being written right now holds a lock (a second request gets a 409): a Redis lock shared by every server,
+// or this process's memory without Redis. It expires by itself, so a crashed server cannot block a user for ever.
 
 // Most reports one user may save in 24 hours (the hourly limit of 3 stays as well). Counted from the database, so it
 // survives restarts. A report is a big AI call and the free AI quota is shared by everyone. The number is in config/limits.js.
@@ -38,9 +39,9 @@ const createReport = async (req, res, next) => {
   const userId = req.user._id;
   const key = String(userId);
 
-  // Set before any await, so two requests in the same instant cannot both pass.
-  if (generatingNow.has(key)) return next(new AppError(409, 'Your last report is still being written. Please wait for it to finish.'));
-  generatingNow.add(key);
+  // Taken in one atomic step, so two requests in the same instant cannot both pass.
+  const lock = await acquireLock('analyzer', key, ANALYZER_LOCK_MS);
+  if (!lock) return next(new AppError(409, 'Your last report is still being written. Please wait for it to finish.'));
 
   try {
     const { jobDescription, resumeText, days } = req.body;
@@ -85,7 +86,7 @@ const createReport = async (req, res, next) => {
   } catch (error) {
     return next(error);
   } finally {
-    generatingNow.delete(key); // always cleared: success, failure or the early returns above
+    await lock.release(); // always released: success, failure or the early returns above
   }
 };
 

@@ -1,7 +1,16 @@
 const rateLimit = require("express-rate-limit");
+const { RedisRateLimitStore } = require("../services/rateLimitStore");
+
+// Every limiter counts in Redis when it is on (shared by every server, kept across a restart) and in memory when it is not.
+// Login uses a sliding window, so a burst across the edge of two windows cannot double the allowance; the others use a fixed window.
+// RATE_LIMIT_MEMORY_ONLY=all (or login,register,...) puts them back in memory.
+// limiterNames lists every limiter built here, so a test can prove that none was left on the default in-memory store.
+const limiterNames = [];
+const redisStore = (name, algorithm = "fixed") => { limiterNames.push(name); return new RedisRateLimitStore({ name, algorithm }); };
 const { HOUR_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE, PLAN_PREVIEWS_PER_MINUTE, PLAN_GENERATES_PER_HOUR, PLAN_CHANGES_PER_MINUTE, PROBLEM_NOTE_WRITES_PER_MINUTE } = require("../config/limits");
 
 const aiProjectLimiter = rateLimit({
+  store: redisStore("ai-project"),
   windowMs: HOUR_MS,
   max: PROJECTS_PER_HOUR, // per user
   skipFailedRequests: true, // if response is 4xx/5xx, don't count it
@@ -22,6 +31,7 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // 10 failed attempts per 15 min per IP
   skipSuccessfulRequests: true,
+  store: redisStore("login", "sliding"),
   message: {
     success: false,
     message: "Too many attempts. Please try again after 15 minutes.",
@@ -35,6 +45,7 @@ const authLimiter = rateLimit({
 const registerLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 30,
+  store: redisStore("register"),
   message: {
     success: false,
     message: "Too many sign-up attempts. Please try again after 15 minutes.",
@@ -47,6 +58,7 @@ const registerLimiter = rateLimit({
 const linkGoogleLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
   max: 5,                      // 5 attempts per 15 min per IP
+  store: redisStore("link-google"),
   message: { 
     success: false, 
     message: "Too many linking attempts. Please try again later.",
@@ -62,6 +74,7 @@ const accountActionLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   skipSuccessfulRequests: true,
+  store: redisStore("account-action"),
   keyGenerator: (req) => req.user?._id?.toString() || req.ip,
   validate: { keyGeneratorIpFallback: false },
   message: {
@@ -76,6 +89,7 @@ const accountActionLimiter = rateLimit({
 // Role Analyzer reports: 3 per hour per signed-in user. Only SAVED reports count (a failed attempt is free), because a
 // report is a large AI call and the free AI quota is shared by everyone.
 const analyzerLimiter = rateLimit({
+  store: redisStore("analyzer"),
   windowMs: HOUR_MS,
   max: REPORTS_PER_HOUR,
   skipFailedRequests: true,
@@ -92,6 +106,7 @@ const analyzerLimiter = rateLimit({
 
 // Ticking a study-plan item: cheap, so a high limit; it only stops a stuck script from hammering the database.
 const planTickLimiter = rateLimit({
+  store: redisStore("plan-tick"),
   windowMs: 60 * 1000,
   max: PLAN_TICKS_PER_MINUTE,
   keyGenerator: (req) => req.user?._id?.toString() || req.ip,
@@ -107,6 +122,7 @@ const planTickLimiter = rateLimit({
 
 // My plan: the public preview needs no login, so it is limited per IP address (every request counts; it makes no database write).
 const planPreviewLimiter = rateLimit({
+  store: redisStore("plan-preview"),
   windowMs: 60 * 1000,
   max: PLAN_PREVIEWS_PER_MINUTE,
   message: {
@@ -120,6 +136,7 @@ const planPreviewLimiter = rateLimit({
 
 // My plan: making or replacing a saved plan, per signed-in user. Only saved plans count.
 const planGenerateLimiter = rateLimit({
+  store: redisStore("plan-generate"),
   windowMs: HOUR_MS,
   max: PLAN_GENERATES_PER_HOUR,
   skipFailedRequests: true,
@@ -136,6 +153,7 @@ const planGenerateLimiter = rateLimit({
 
 // My plan: previewing and applying a rebuild, new hours or lighter days.
 const planChangeLimiter = rateLimit({
+  store: redisStore("plan-change"),
   windowMs: 60 * 1000,
   max: PLAN_CHANGES_PER_MINUTE,
   keyGenerator: (req) => req.user?._id?.toString() || req.ip,
@@ -151,6 +169,7 @@ const planChangeLimiter = rateLimit({
 
 // Saving, deleting or importing problem notes (reading is not limited).
 const problemNoteLimiter = rateLimit({
+  store: redisStore("problem-note"),
   windowMs: 60 * 1000,
   max: PROBLEM_NOTE_WRITES_PER_MINUTE,
   keyGenerator: (req) => req.user?._id?.toString() || req.ip,
@@ -168,6 +187,7 @@ const problemNoteLimiter = rateLimit({
 const forgotPasswordLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
+  store: redisStore("forgot-password"),
   message: {
     success: false,
     message: "Too many reset requests. Please try again after 15 minutes.",
@@ -182,6 +202,7 @@ const resetPasswordLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   skipSuccessfulRequests: true,
+  store: redisStore("reset-password"),
   message: {
     success: false,
     message: "Too many attempts. Please try again after 15 minutes.",
@@ -194,6 +215,7 @@ const resetPasswordLimiter = rateLimit({
 const refreshLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 30, // 30 refresh attempts per 15 min per IP
+  store: redisStore("refresh"),
   message: {
     success: false,
     message: "Too many session refresh attempts. Please log in again.",
@@ -203,4 +225,4 @@ const refreshLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, planTickLimiter, planPreviewLimiter, planGenerateLimiter, planChangeLimiter, problemNoteLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter };
+module.exports = { authLimiter, registerLimiter, accountActionLimiter, analyzerLimiter, planTickLimiter, planPreviewLimiter, planGenerateLimiter, planChangeLimiter, problemNoteLimiter, aiProjectLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter, limiterNames };

@@ -54,4 +54,31 @@ describe('the Redis connection against a real service', { skip: url ? false : 's
     assert.equal(Math.max(...counts), 50);
     assert.equal(new Set(counts).size, 50);
   });
+
+  // phase 5: the real Lua scripts on the real service (the other tests run them on ioredis-mock)
+  it('the rate limit store counts exactly on the real service: fixed and sliding, 50 at once, give-back, and shared by two store objects', async () => {
+    const { RedisRateLimitStore } = require('../src/services/rateLimitStore');
+    for (const algorithm of ['fixed', 'sliding']) {
+      const a = new RedisRateLimitStore({ name: 'live-' + algorithm, algorithm }); a.init({ windowMs: 60000 });
+      const b = new RedisRateLimitStore({ name: 'live-' + algorithm, algorithm }); b.init({ windowMs: 60000 });
+      const hits = await Promise.all(Array.from({ length: 50 }, (_, i) => (i % 2 ? a : b).increment('ip')));
+      assert.deepEqual(hits.map((h) => h.totalHits).sort((x, y) => x - y), Array.from({ length: 50 }, (_, i) => i + 1), algorithm);
+      await a.decrement('ip');
+      assert.equal((await b.increment('ip')).totalHits, 50, algorithm + ': one hit was given back');
+      assert.ok((await redis.getRedis().pttl(a.key('ip'))) > 0, algorithm + ': the key has an expiry');
+    }
+  });
+
+  it('the lock is taken by one, released only by its holder, and the event counter counts a window', async () => {
+    const { acquireLock, recentCount, recordEvent } = require('../src/services/lock');
+    const first = await acquireLock('live', 'u1', 30000);
+    assert.ok(first);
+    assert.equal(await acquireLock('live', 'u1', 30000), null);
+    await first.release();
+    const again = await acquireLock('live', 'u1', 30000);
+    assert.ok(again);
+    await again.release();
+    await recordEvent('live-junk', 'u1', 30000); await recordEvent('live-junk', 'u1', 30000);
+    assert.equal(await recentCount('live-junk', 'u1', 30000), 2);
+  });
 });

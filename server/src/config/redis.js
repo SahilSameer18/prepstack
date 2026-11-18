@@ -8,6 +8,7 @@ const Redis = require('ioredis');
 
 const CONNECT_TIMEOUT_MS = 5000;
 const CLOSE_TIMEOUT_MS = 2000;
+const COMMAND_TIMEOUT_MS = 2000;
 
 let client = null;
 let state = 'disabled'; // disabled | connecting | ready | error
@@ -27,6 +28,7 @@ function connectRedis() {
   state = 'connecting';
   client = new Redis(url, {
     connectTimeout: CONNECT_TIMEOUT_MS,
+    commandTimeout: COMMAND_TIMEOUT_MS, // a command on a connection that went silent fails in time, so callers fall back instead of waiting
     maxRetriesPerRequest: 1, // a command that cannot be sent fails fast, so callers can fall back instead of hanging
     enableOfflineQueue: false, // never pile commands up while disconnected
     retryStrategy: (attempt) => Math.min(attempt * 500, 5000), // keep trying in the background, at most every 5 seconds

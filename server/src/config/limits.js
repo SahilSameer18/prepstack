@@ -12,6 +12,10 @@ const PLAN_TICKS_PER_MINUTE = 60; // ticking study-plan items is not an AI call,
 // My plan (the goal planner). None of these are AI calls.
 // The public reads of sheets and notes change only when a seed runs: browsers may reuse them for 5 minutes and show an older copy for 10 more while refreshing.
 const PUBLIC_CONTENT_CACHE_CONTROL = 'public, max-age=300, stale-while-revalidate=600';
+// How long a "being generated now" lock may live: longer than the slowest generation, so it never expires under a working request,
+// and short enough that a crashed server cannot block a user for long. (The idea call has a 55 s budget and the browser waits 90 s; the analyzer waits 120 s.)
+const PROJECT_LOCK_MS = 90 * 1000;
+const ANALYZER_LOCK_MS = 150 * 1000;
 const PLAN_PREVIEWS_PER_MINUTE = 20; // the public preview (no login, no database write), counted per IP address
 const PLAN_GENERATES_PER_HOUR = 10; // creating, replacing or rebuilding a saved plan, per user
 const PLAN_MAX_ITEMS = 600; // items in one plan
@@ -33,4 +37,4 @@ const fromEnv = (name, fallback) => {
 const projectsPerDay = () => fromEnv('AI_DAILY_LIMIT', 15);
 const reportsPerDay = () => fromEnv('ANALYZER_DAILY_LIMIT', 5);
 
-module.exports = { PUBLIC_CONTENT_CACHE_CONTROL, HOUR_MS, DAY_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE, PLAN_PREVIEWS_PER_MINUTE, PLAN_GENERATES_PER_HOUR, PLAN_CHANGES_PER_MINUTE, PLAN_MAX_FINISHED, PLAN_MAX_START_DAYS_AHEAD, PLAN_MAX_ITEMS, PLAN_TITLE_MAX, PLAN_CUSTOM_ITEM_MAX, PLAN_MIN_WEEKS, PLAN_MAX_WEEKS, PLAN_MIN_DAILY_HOURS, PLAN_MAX_DAILY_HOURS, PROBLEM_NOTE_WRITES_PER_MINUTE, PROBLEM_NOTE_IMPORT_BATCH, projectsPerDay, reportsPerDay };
+module.exports = { PROJECT_LOCK_MS, ANALYZER_LOCK_MS, PUBLIC_CONTENT_CACHE_CONTROL, HOUR_MS, DAY_MS, PROJECTS_PER_HOUR, REPORTS_PER_HOUR, PLAN_TICKS_PER_MINUTE, PLAN_PREVIEWS_PER_MINUTE, PLAN_GENERATES_PER_HOUR, PLAN_CHANGES_PER_MINUTE, PLAN_MAX_FINISHED, PLAN_MAX_START_DAYS_AHEAD, PLAN_MAX_ITEMS, PLAN_TITLE_MAX, PLAN_CUSTOM_ITEM_MAX, PLAN_MIN_WEEKS, PLAN_MAX_WEEKS, PLAN_MIN_DAILY_HOURS, PLAN_MAX_DAILY_HOURS, PROBLEM_NOTE_WRITES_PER_MINUTE, PROBLEM_NOTE_IMPORT_BATCH, projectsPerDay, reportsPerDay };

@@ -8,6 +8,7 @@ const { GoogleGenAI } = require('@google/genai');
 const Groq = require('groq-sdk');
 const { z } = require('zod');
 const AppError = require('../utils/AppError');
+const { getRedis, redisKey } = require('../config/redis');
 const { DIFFICULTIES } = require('../models/project.model');
 
 const projectSchema = z.object({
@@ -155,14 +156,35 @@ const breakerOf = (name) => {
   if (!breakers.has(name)) breakers.set(name, { fails: 0, openUntil: 0 });
   return breakers.get(name);
 };
-const isOpen = (name) => breakerOf(name).openUntil > Date.now();
-const recordSuccess = (name) => { const b = breakerOf(name); b.fails = 0; b.openUntil = 0; };
+// With Redis on, an open breaker is also written there (until when), so one server noticing a failing provider protects the others.
+// Without Redis, or when it fails, each server keeps its own state as before. Publishing never makes a request wait for Redis.
+const sharedKey = (name) => redisKey('breaker', name.toLowerCase().replace(/[^a-z0-9-]+/g, '-'));
+const publishOpen = (name, openUntil) => {
+  const client = getRedis();
+  if (client) client.set(sharedKey(name), String(openUntil), 'PX', Math.max(1, openUntil - Date.now())).catch(() => {});
+};
+const publishClosed = (name) => {
+  const client = getRedis();
+  if (client) client.del(sharedKey(name)).catch(() => {});
+};
+const isOpen = async (name) => {
+  const b = breakerOf(name);
+  if (b.openUntil > Date.now()) return true;
+  const client = getRedis();
+  if (!client) return false;
+  try {
+    const until = Number(await client.get(sharedKey(name)));
+    if (until > Date.now()) { b.openUntil = until; return true; } // another server opened it
+  } catch { /* Redis failed: this server's own state decides */ }
+  return false;
+};
+const recordSuccess = (name) => { const b = breakerOf(name); const wasOpen = b.openUntil > 0; b.fails = 0; b.openUntil = 0; if (wasOpen) publishClosed(name); };
 const recordFailure = (name, info) => {
   const b = breakerOf(name);
-  if (info.kind === 'quota') { b.openUntil = Date.now() + info.waitMs; return; } // the provider told us how long to wait
-  if (info.kind === 'auth' || info.kind === 'bad-request') { b.openUntil = Date.now() + AUTH_SKIP_MS; return; } // our key/model setting is wrong
+  if (info.kind === 'quota') { b.openUntil = Date.now() + info.waitMs; publishOpen(name, b.openUntil); return; } // the provider told us how long to wait
+  if (info.kind === 'auth' || info.kind === 'bad-request') { b.openUntil = Date.now() + AUTH_SKIP_MS; publishOpen(name, b.openUntil); return; } // our key/model setting is wrong
   b.fails += 1;
-  if (b.fails >= FAILS_TO_OPEN) { b.openUntil = Date.now() + settings().breakerMs; b.fails = 0; }
+  if (b.fails >= FAILS_TO_OPEN) { b.openUntil = Date.now() + settings().breakerMs; b.fails = 0; publishOpen(name, b.openUntil); }
 };
 
 // ── what kind of failure was it? ──
@@ -237,8 +259,9 @@ const runCascade = async ({ prompt, jsonSchema, parse, budgetMs, callMs, reserve
   const started = Date.now();
   // Skip providers that are known to be failing. If EVERY provider is marked failing, try them all anyway:
   // the breaker must never turn a short outage into a longer one.
-  const open = providers.filter((p) => isOpen(p.name));
-  const queue = open.length === providers.length ? providers : providers.filter((p) => !isOpen(p.name));
+  const openFlags = await Promise.all(providers.map((p) => isOpen(p.name)));
+  const open = providers.filter((p, i) => openFlags[i]);
+  const queue = open.length === providers.length ? providers : providers.filter((p, i) => !openFlags[i]);
 
   const reasons = [];
   let calls = 0;
