@@ -265,6 +265,16 @@ The owner does the hands-on learning separately (another laptop, no app work). T
 - In the cascade a provider whose budget is spent is skipped without a call, like an open breaker. Redis down: nothing is enforced.
 - Tests: 50 simultaneous reservations against a limit of 5 allow exactly 5; minute and day windows roll over; a spent provider is skipped without a call; Redis down; the budget off when no number is set. Mutation checks. About 2 days.
 
+**Built 18 Nov 2026 (branch `redis`): 6a `aiBudget.js` and 6b `sessionCache.js`, with tests, mutation checks and docs. The owner's live Lua run passed (5 of 5). Not yet done: the AI budget numbers, and any live measurement of the session cache.** The text below is the plan as it was written.
+
+**Updated after the scaling pass (18 Nov 2026).**
+- Measured facts that change the picture: a Redis read costs about 36 ms from the developer laptop; a CPU profile showed the single Node thread is the limit, so every logged-in request's session lookup counts; and cluster mode (`npm run start:cluster`, one copy per core) makes both steps more important, because copies share nothing in memory: without a shared AI budget each copy would count its own calls against one provider quota, and a session revoked on one copy must stop working on all of them.
+- **Order of work:** 6a AI budget (R2) first (smaller, no auth risk, and it matters most in cluster mode), then 6b session cache (R3) behind its switch. Each ends with a measurement, its tests, mutation checks, the docs and the git commands.
+- **6a, R2 in steps:** (1) the reservation Lua script and its tests on ioredis-mock, (2) the cascade skips a spent provider, (3) the environment settings and the "no numbers set means no limit" rule, (4) the live test on the real service, (5) docs and interview notes. About 2 days.
+- **6b, R3 in steps:** (1) the version-number and fill scripts and their tests, (2) the eight revoke paths each bump the version, with one test per path, (3) the cache read in the auth middleware behind `SESSION_CACHE`, (4) the lookups-per-minute and latency measurement, run by the owner against the live setup, (5) the default is decided from that number, (6) docs. About 2 days, plus the owner's measurement.
+- **A new question for R3 (decision 17):** should each server copy also keep a session answer in its own memory for a few seconds (no round trip at all, but a revoke can take up to that many seconds to reach the other copies), or always read Redis (a 36 ms round trip but an immediate revoke)? Recommended: always read Redis at first, and add the memory layer only if the measurement shows the round trip is the cost.
+- **Not part of Phase 6:** the plan generator off the main thread and the AI job queue (Phase 7) are separate.
+
 **Both steps** also get: README, TESTING, the interview notes and the checklist updated in the same change, and the git commands given at the end. Nothing starts until the owner says so.
 
 ---
@@ -373,10 +383,11 @@ Answered by you on 9 Nov 2026. A decision is recorded only after you answered.
 10. **Job status, 18 Nov 2026: polling.** Confirmed.
 11. **Queue tests, 18 Nov 2026: opt-in against the Aiven service**, a unique key prefix, deleting only their own keys. Confirmed.
 12. **Learning, 18 Nov 2026:** the owner learns Redis by hand separately on another laptop; the agent builds the app steps and keeps the interview notes. No local Redis on this machine; app work runs directly against Aiven with environment-prefixed keys.
-13. **OPEN: session cache default** (R3): off until measured on the live host (recommended), or on at once?
-14. **OPEN: when every provider's AI budget is spent** (R2): try them anyway, as the breaker does (recommended: a wrong number cannot block AI), or fail fast with the "busy" message?
-15. **OPEN: the up to 30 second window** if Redis fails exactly during a revoke (R3): accept it and write it down?
-16. **OPEN: the AI budget numbers** (R2): the owner reads the per-minute and per-day limits for each provider from their own consoles when R2 starts.
+13. **Session cache default, 18 Nov 2026: on.** Confirmed by the owner ("on session default"). `SESSION_CACHE=off` is the way back.
+14. **When every provider's AI budget is spent, 18 Nov 2026: try them anyway**, counted. Confirmed by the owner.
+15. **The up to 30 second window** if Redis fails exactly during a revoke, 18 Nov 2026: accepted and written in the README limitations. Confirmed by the owner.
+17. **OPEN, built per the recommendation for one server: session answer in each server copy's memory (5 seconds)** in front of Redis (30 seconds), because a Redis read costs about 36 ms and the host is one free Render server. The owner has not answered; with several copies a revoke can reach another copy up to 5 seconds late.
+16. **OPEN: the AI budget numbers** (R2): built, but `AI_BUDGETS` is empty until the owner copies the per-minute and per-day limits from the Gemini and Groq consoles.
 6. **When to learn it: alongside the app work, in the evenings.** A little each week next to stages 0 to 3 of `IMPROVEMENT_PLAN.md`. No live Redis until the first Redis step (R0/R1), which starts after B3 and B4.
 
 ---

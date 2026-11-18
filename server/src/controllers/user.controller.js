@@ -5,6 +5,7 @@ const progressModel = require('../models/progress.model');
 const PasswordReset = require('../models/passwordReset.model');
 const DSASheet = require('../models/sheets.model');
 const AppError = require('../utils/AppError');
+const { invalidateUser } = require('../services/sessionCache');
 const { findUserByUsername } = require('../utils/usernameHelper');
 const bcrypt = require('bcrypt');
 const { formatUserResponse } = require('../utils/userResponse');
@@ -189,6 +190,7 @@ const changePassword = async (req, res, next) => {
       { _id: userId },
       { $set: { password: hash }, $pull: { refreshTokens: { _id: { $ne: req.user.sid } } } }
     );
+    await invalidateUser(userId);
 
     // An emailed reset link that is still waiting must not work after the password was changed here
     await PasswordReset.deleteMany({ user: userId });
@@ -262,6 +264,8 @@ const deleteAccount = async (req, res, next) => {
     } finally {
       await session.endSession();
     }
+
+    await invalidateUser(userId);
 
     // Clear authentication cookies
     const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };

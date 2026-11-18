@@ -183,6 +183,12 @@ The privacy policy says the resume is never stored. A queued job would hold the 
 
 **D35. What this does not prove.** One run each on a 12-core laptop, an in-memory database on the same machine, and the free Render instance has about 0.1 of a CPU. The numbers rank bottlenecks; they are not the capacity of the live site. Next in line: the plan generator is still CPU on the main thread (worker thread), the per-request session lookup (R3), AI inside the request (queue).
 
+**D36. A shared budget for a shared quota (R2).** The free AI tiers allow a fixed number of calls a minute and a day for the whole app. Reserve a call before making it, in one atomic Lua script that checks both counters and then increments both (two callers can never both take the last call; tested with 50 at once against a limit of 5). A spent provider is skipped without a call. Fail-open choices I name: no numbers configured means no limit, and if every provider is spent they are all tried anyway, because a wrong number must not turn into "AI is down". Redis down: count in process memory, which is exact for one server. The day rolls over at midnight Los Angeles time because that is when Google resets its quotas; keys have expiries.
+
+**D37. Caching a security decision (R3).** The auth middleware asked MongoDB on every request whether a login session was still active. Caching that is only safe if every way of ending a session clears it. My answer: a per-user version number in Redis, raised on all eight paths (logout, logout-all, revoking one session, password change, password reset, replayed refresh token, account deletion, study-calendar change); a cached answer is valid only if it carries the current version; the answer is filled by a Lua script that refuses if the version moved while MongoDB was being read (so a revoke during the read wins); an entry never outlives the session. Stored: time zone, day start, session end. Never a token or email.
+
+**D38. What this cache costs and does not prove.** Two layers: 5 seconds in the process, up to 30 in Redis. Costs I name: with several servers another copy can answer from its memory for up to 5 seconds after a revoke, and if Redis is down exactly during a revoke the Redis entry lives up to 30 seconds. Honest performance note: a Redis read is about 36 ms from a laptop, no faster than MongoDB, so the saving comes from the in-process layer; it was not measured on the live site, and there is an off switch.
+
 ---
 
 ## Part 4. Numbers to collect (fill in as each phase is measured)

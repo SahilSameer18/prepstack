@@ -11,6 +11,7 @@ const { calendarSettings, studyDay, nextStudyBoundary } = require('../utils/stud
 const { normalizedSolves } = require('../utils/problemIdentity');
 const { presentPlan, withTransaction } = require('./plan.controller');
 const { PLAN_MAX_FINISHED } = require('../config/limits');
+const { invalidateUser } = require('../services/sessionCache');
 
 // Read fresh owned state for both preview and apply. Neither caller can submit
 // replacement task data or move another account's paused plan.
@@ -146,6 +147,7 @@ const applyRecovery = async (req, res, next) => {
         throw error;
       }
     });
+    if (req.body.type === 'calendar') await invalidateUser(userId); // the auth middleware caches the study calendar
     const older = await Plan.find({ user: userId, status: 'finished' }).sort({ createdAt: -1 }).skip(PLAN_MAX_FINISHED).select('_id').lean();
     if (older.length) await Plan.deleteMany({ user: userId, _id: { $in: older.map((record) => record._id) } });
     return sendSuccess(res, 200, 'Plan settings saved', { applied: true });

@@ -81,4 +81,19 @@ describe('the Redis connection against a real service', { skip: url ? false : 's
     await recordEvent('live-junk', 'u1', 30000); await recordEvent('live-junk', 'u1', 30000);
     assert.equal(await recentCount('live-junk', 'u1', 30000), 2);
   });
+
+  // phase 6: the AI budget reservation script on the real service
+  it('the AI budget reserves exactly the limit when 50 ask at once, and its keys expire', async () => {
+    const { reserveBudget, resetBudgetMemory } = require('../src/services/aiBudget');
+    resetBudgetMemory();
+    const name = 'gemini:live-' + crypto.randomBytes(4).toString('hex');
+    process.env.AI_BUDGETS = JSON.stringify({ [name]: { perMinute: 5, perDay: 100 } });
+    try {
+      const results = await Promise.all(Array.from({ length: 50 }, () => reserveBudget(name)));
+      assert.equal(results.filter(Boolean).length, 5);
+      const found = await redis.getRedis().keys('*aibudget*' + name.split(':')[1] + '*');
+      assert.equal(found.length, 2);
+      for (const key of found) assert.ok((await redis.getRedis().pttl(key)) > 0, key);
+    } finally { delete process.env.AI_BUDGETS; }
+  });
 });

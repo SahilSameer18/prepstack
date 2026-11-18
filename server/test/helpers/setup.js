@@ -13,6 +13,7 @@ process.env.GOOGLE_API_KEY = 'fake-gemini-key';
 process.env.GOOGLE_CLIENT_ID = 'fake-google-client-id';
 for (const k of ['ALLOWED_ORIGINS', 'CLIENT_URL', 'ENABLE_CUSTOM_DNS', 'MONGO_URI', 'GROQ_API_KEY', 'GEMINI_PRIMARY_MODEL', 'GEMINI_FALLBACK_MODEL', 'GEMINI_FALLBACK_2_MODEL', 'GROQ_MODEL', 'AI_DAILY_LIMIT', 'REDIS_URL', 'REDIS_PREFIX']) delete process.env[k]; // the app tests never reach a real Redis
 process.env.CACHE_MEMORY_SECONDS = '0'; // the in-process cache is off in tests (cache-memory.test.js turns it on), so data changes show at once
+process.env.SESSION_CACHE = 'off'; // the session cache is off in tests (session-cache.test.js turns it on), so direct database changes show at once
 process.env.AI_RETRY_DELAY_MS = '1'; // the AI retry wait is 1 s in real life; keep tests fast
 process.env.AI_RESERVE_MS = '1'; // the time kept for the last provider is 8 s in real life; the tests that check it set their own
 

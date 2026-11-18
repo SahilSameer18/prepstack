@@ -9,6 +9,7 @@ const Groq = require('groq-sdk');
 const { z } = require('zod');
 const AppError = require('../utils/AppError');
 const { getRedis, redisKey } = require('../config/redis');
+const { reserveBudget, hasBudget } = require('./aiBudget');
 const { DIFFICULTIES } = require('../models/project.model');
 
 const projectSchema = z.object({
@@ -261,7 +262,12 @@ const runCascade = async ({ prompt, jsonSchema, parse, budgetMs, callMs, reserve
   // the breaker must never turn a short outage into a longer one.
   const openFlags = await Promise.all(providers.map((p) => isOpen(p.name)));
   const open = providers.filter((p, i) => openFlags[i]);
-  const queue = open.length === providers.length ? providers : providers.filter((p, i) => !openFlags[i]);
+  // A provider whose app-wide budget is spent (AI_BUDGETS, see aiBudget.js) is skipped too, without a call. As with the breaker, if EVERY
+  // provider would be skipped, try them all anyway: a wrong budget number must never turn into "AI is down" (those calls are still counted).
+  const budgetLeft = await Promise.all(providers.map((p) => hasBudget(p.name)));
+  const skipped = providers.map((p, i) => openFlags[i] || !budgetLeft[i]);
+  const triedAnyway = skipped.every(Boolean);
+  const queue = triedAnyway ? providers : providers.filter((p, i) => !skipped[i]);
 
   const reasons = [];
   let calls = 0;
@@ -279,6 +285,7 @@ const runCascade = async ({ prompt, jsonSchema, parse, budgetMs, callMs, reserve
       if (calls >= MAX_CALLS || remaining < enough) { budgetGone = remaining < enough; break providerLoop; }
       const allowed = Math.min(callMs, remaining - reserve);
       if (allowed < enough) break; // no time left for this one without starving the last provider: skip to the next
+      if (!(await reserveBudget(provider.name, { force: triedAnyway }))) { reasons.push(`${provider.name}:budget`); break; } // spent since the check above: next provider
       calls += 1;
       try {
         const raw = await withTimeout((signal) => provider.run(prompt, signal, jsonSchema, maxOutputTokens), allowed);

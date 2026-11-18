@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { generateAccessToken, generateRefreshToken, hashToken } = require('../utils/tokens');
 const AppError = require('../utils/AppError');
+const { invalidateUser } = require('../services/sessionCache');
 const googleClient = require('../utils/googleClient');
 const { generateUniqueUsername, findUserByUsername } = require('../utils/usernameHelper');
 const { parseDeviceInfo } = require('../utils/deviceParser');
@@ -197,6 +198,7 @@ const logoutUser = async (req, res, next) => {
   try {
     // Remove only the current device's session (identified by the access token), leaving other devices active
     await userModel.updateOne({ _id: req.user._id }, { $pull: { refreshTokens: { _id: req.user.sid } } });
+    await invalidateUser(req.user._id);
 
     const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
     res.clearCookie('accessToken', CLEAR_OPTIONS);
@@ -214,6 +216,7 @@ const logoutAllDevices = async (req, res, next) => {
   try {
     // Invalidate all active device sessions globally
     await userModel.updateOne({ _id: req.user._id }, { $set: { refreshTokens: [] } });
+    await invalidateUser(req.user._id);
 
     const CLEAR_OPTIONS = { httpOnly: true, secure: true, sameSite: 'none' };
     res.clearCookie('accessToken', CLEAR_OPTIONS);
@@ -306,6 +309,7 @@ const refreshAccessToken = async (req, res, next) => {
       // thief's chain and the real user's chain are the same session, so both are signed out and the real user logs
       // in again. (Only the immediately previous token is remembered; older ones are just rejected.)
       await userModel.updateOne({ _id: decoded.id }, { $pull: { refreshTokens: { prevTokenHash: incomingHash } } });
+      await invalidateUser(decoded.id);
       return next(new AppError(403, 'Invalid or expired refresh token'));
     }
 
@@ -543,6 +547,7 @@ const revokeSession = async (req, res, next) => {
     if (result.matchedCount === 0) {
       return next(new AppError(404, 'Session not found or already revoked'));
     }
+    await invalidateUser(req.user._id);
 
     const isCurrentRevoked = sessionId === req.user.sid;
 
@@ -617,6 +622,7 @@ const resetPassword = async (req, res, next) => {
     // new password, every device signed out (empty session list), and any login lock cleared
     const result = await userModel.updateOne({ _id: record.user }, { $set: { password: hash, refreshTokens: [] }, $unset: { loginFailures: 1 } });
     if (result.matchedCount === 0) return next(new AppError(400, RESET_INVALID));
+    await invalidateUser(record.user);
     await PasswordReset.deleteMany({ user: record.user });
 
     sendSuccess(res, 200, 'Your password has been updated. Please log in with your new password.', null);
