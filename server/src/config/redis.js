@@ -72,4 +72,7 @@ async function closeRedis() {
   }
 }
 
-module.exports = { connectRedis, getRedis, redisStatus, redisKey, closeRedis };
+// Tests only: use a stand-in client (test/helpers/fake-redis.js) as if it were connected.
+const setRedisForTests = (fake) => { client = fake; state = fake ? 'ready' : 'disabled'; lastError = null; };
+
+module.exports = { connectRedis, getRedis, redisStatus, redisKey, closeRedis, setRedisForTests };

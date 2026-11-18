@@ -100,7 +100,7 @@ Learning track:
 
 Production steps (each comes right after its learning modules). **Interview-practice order, set 16 Nov 2026** (`REDIS_PLAN.md` section 3c): R0, then the cache steps (10.12 and 10.16), then the limiters and locks (10.9), the session cache (10.11), the AI budget (10.10), and last the queue (10.14). Each step leaves a before-and-after measurement, tests and a short note (section 10 of the plan):
 
-- [ ] 10.8 R0 Choose the free host and connect (about 1 day; after L2)
+- [x] 10.8 R0 Choose the free host and connect: Aiven Valkey checked, optional connection module, fake Redis and tests built; the live test passed against the real service (18 Nov 2026, branch `redis`)
 - [ ] 10.9 R1 Shared limits and locks (about 3 days; after L3)
 - [ ] 10.10 R2 App-wide AI budget (about 2 days; after L3)
 - [ ] 10.11 R3 Session check cache (about 2 days; after L3)

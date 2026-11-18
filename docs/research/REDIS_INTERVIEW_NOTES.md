@@ -100,8 +100,12 @@ Situation: zero-money rule; Render's free plan has one instance, background work
 **D4. Practise against the hosted service directly, with isolated keys.** (decided by the owner on 18 Nov)
 Situation: the owner chose to skip a local Redis for the app work and to do hands-on learning on another laptop. Risk: one free service shared by development and the live site, and no way to stop the server to test an outage. Mitigation: every key is prefixed with the environment (`prepstack:development:` by default), no `FLUSHALL` or key sweeps, tests use a fake Redis, and outage behaviour is tested by pointing at a closed port. Say it honestly: "I traded isolation for simplicity and reduced the risk with prefixes and a fake."
 
-**D5. Client library: ioredis 5.** (draft)
+**D5. Client library: ioredis 5.** (built 18 Nov 2026, Phase 3)
 Why: BullMQ is built on ioredis, so one client for everything. Version 5, not 6, to match what BullMQ expects (check at the queue phase). Connection settings: short connect timeout, fail fast instead of queueing commands while disconnected (`enableOfflineQueue: false`), background retry every few seconds at most. Never log the address (it holds a password); log an error code only.
+
+**D5b. How the connection is built (Phase 3, built).** One module hands out the client only while it is connected; otherwise it hands out null and every caller falls back. The server never waits for Redis at startup (it connects in the background and prints one line: disabled, connected, or unavailable with an error code). A command that cannot be sent fails at once instead of queueing, so a Redis outage cannot pile up memory or hang requests. The background retry runs every few seconds at most and the warning is printed once, not on every retry. The address and password are never logged. Why: Redis is an optimisation here, not a dependency; "graceful degradation" is only real if it is tested, so it is: the real `server.js` is started with Redis off, with a closed port and with a host name that does not exist, and must still serve requests.
+
+**D5c. Tests without a real Redis.** A small fake Redis (strings, expiry on its own clock, `SET NX`, counters) lets every later step be tested with no network; the app tests also delete `REDIS_URL` so a developer's real address can never leak into a test. Tests that need real behaviour (queues, a killed worker) are opt-in and use a unique key prefix per run. Mutation checks: logging the address, repeating the warning on every retry, and handing out a client while Redis is down were each introduced on purpose and each made a test fail.
 
 **D6. Order of building: cache first.** (decided)
 Cache-aside for sheets, notes and the plan preview first, then rate limits and locks, then session cache and AI budget, and the queue last. Why: the cache is the safest step (fall through to the database), the most commonly asked, and shows a clean before-and-after number.
@@ -145,6 +149,7 @@ The privacy policy says the resume is never stored. A queued job would hold the 
 
 | Phase | What was measured | Before | After | How (tool, inputs, two instances?) |
 |---|---|---|---|---|
+| Phase 3 live check (18 Nov 2026) | Opt-in live test against the real service: connects, expiry, SET NX and 50 parallel INCR exact, 2 of 2 passed in about 0.7 s | n/a | pass | `npm run test:redis-live` |
 | Host check (18 Nov 2026) | Round-trip time to the host (median of 20 pings) | n/a | 35.0 ms | `npm run redis:check`, from the developer machine to the free Aiven service; this is network distance, not Redis speed |
 | Caching | Database reads per 1,000 sheet requests | | | |
 | Caching | Plan preview time, repeated input | | | |

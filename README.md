@@ -619,7 +619,11 @@ CLIENT_URL=http://localhost:5173
 NODE_ENV=development
 ALLOWED_ORIGINS=
 ENABLE_CUSTOM_DNS=
+REDIS_URL=
+REDIS_PREFIX=
 ```
+
+`REDIS_URL` is optional: empty means the server runs without Redis (memory and MongoDB only), and an unreachable Redis never stops the server; the address holds a password, so keep it in your own `.env` only. `REDIS_PREFIX` defaults to `prepstack:<NODE_ENV>:` so development and the live site never share keys. `npm run redis:check` checks a Redis service (version, eviction policy, locks, counters, Lua); `npm run test:redis-live` runs the opt-in live test.
 
 `ALLOWED_ORIGINS` is a comma-separated list of extra front-end URLs allowed by CORS (exact match). Set `ENABLE_CUSTOM_DNS=true` only if your ISP cannot resolve `mongodb+srv://` addresses. On a production host set `NODE_ENV=production` and add your deployed front-end URL to `ALLOWED_ORIGINS`.
 
