@@ -11,6 +11,7 @@
     "check:links": "node scripts/check-links.js",
     "build:plan-catalogs": "node scripts/build-plan-catalogs.js",
     "build:seo-content": "node scripts/build-seo-content.js",
+    "redis:check": "node scripts/redis-host-check.js",
     "test": "node --test --test-concurrency=2 --test-force-exit \"test/**/*.test.js\"",
     "test:coverage": "node --test --test-force-exit --experimental-test-coverage \"test/**/*.test.js\""
   },
@@ -29,6 +30,7 @@
     "google-auth-library": "^10.9.0",
     "groq-sdk": "^1.6.0",
     "helmet": "^8.3.0",
+    "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.4",
     "multer": "^2.5.0",
