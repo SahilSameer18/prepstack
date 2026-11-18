@@ -1,5 +1,5 @@
 // A small in-memory stand-in for Redis, so the app's tests need no real Redis and no network (like the fake Gemini in setup.js).
-// It has its own clock: call advance(ms) to make keys expire. It knows only what the app uses today (strings, expiry, counters);
+// It has its own clock: call advance(ms) to make keys expire. It knows only what the app uses today (strings, expiry, counters, scan);
 // add a command here when a later step needs it, and test it in redis-config.test.js.
 class FakeRedis {
   constructor() {
@@ -60,6 +60,15 @@ class FakeRedis {
     const entry = this.live(key);
     if (!entry) return -2;
     return entry.expiresAt === null ? -1 : Math.ceil((entry.expiresAt - this.now) / 1000);
+  }
+
+  // scan(cursor, 'MATCH', pattern, 'COUNT', n): the fake answers everything in one page, so the cursor is always '0'
+  async scan(cursor, ...options) {
+    const at = options.findIndex((option) => String(option).toUpperCase() === 'MATCH');
+    const pattern = at === -1 ? '*' : String(options[at + 1]);
+    const escaped = pattern.split('*').map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*');
+    const matcher = new RegExp(`^${escaped}$`);
+    return ['0', [...this.data.keys()].filter((key) => this.live(key) && matcher.test(key))];
   }
 
   async quit() { this.closed = true; return 'OK'; }

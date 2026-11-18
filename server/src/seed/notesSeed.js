@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const notesModel = require('../models/notes.model');
 const { checkNotesSubject } = require('../validators/notes.validators');
+const { clearContentCache } = require('../services/cache');
+const report = (result) => console.log(result.skipped ? 'Content cache: Redis is not set or not reachable, so cached copies expire by themselves within about ten minutes.' : `Content cache cleared (${result.cleared} keys).`);
 
 const osNotes = require('../data/notes/os');
 const dbmsNotes = require('../data/notes/dbms');
@@ -39,6 +41,7 @@ const seedNotes = async () => {
     await require('./seedConfig')();
     await publishNotes(notesToInsert);
     console.log('Notes seeded successfully!');
+    report(await clearContentCache().catch(() => ({ skipped: true, cleared: 0 }))); // the public notes reads are cached for a few minutes (phase 4)
 
   } catch (error) {
     console.error('Error seeding notes:', error);

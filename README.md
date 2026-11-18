@@ -65,6 +65,7 @@ PrepStack centralizes the workflow:
 - **Password Reset by Email:** "Forgot password?" answers the same for known and unknown emails, and sends the mail in the background through Brevo's SMTP relay. The link holds 32 random bytes; only its SHA-256 hash is stored; it works once for 1 hour; setting the new password signs out every device and lifts any login lock, and changing the password in Settings cancels any link that is still waiting.
 - **Layered Request Validation:** Custom Express middleware `validate(schema)` intercepts and validates incoming HTTP requests using Zod schemas before hitting controllers, returning structured `422` field-specific errors.
 - **Route Rate Limiting:** In-memory, fixed-window limits via `express-rate-limit`, keyed by client IP (`req.ip`, using Express `trust proxy`) for `authLimiter` (10 failed tries / 15 min, used by login, Google sign-in and set-password), `registerLimiter` (30 / 15 min), `linkGoogleLimiter` (5 / 15 min), `refreshLimiter` (30 / 15 min), `forgotPasswordLimiter` (5 / 15 min) and `resetPasswordLimiter` (10 failed / 15 min), and by user id for the AI generator (4 / hour) and the Role Analyzer (3 / hour). On login and Google sign-in only **failed** attempts count (so wrong-password guessing is throttled, but many students behind one campus Wi-Fi address can still log in); sign-ups and refreshes count every request; the AI limiter skips failed requests. Counters live in the server process: they reset on restart and are not shared between instances, so run a single instance or move them to a shared store (e.g. Redis) before scaling out.
+- **Optional Redis, with graceful degradation:** `REDIS_URL` is optional. Without it, or when Redis is unreachable, the server starts and runs on MongoDB and memory as before, prints one status line (never the address), and closes the connection cleanly on shutdown. With it, the public sheet and notes reads, the dashboard's sheet list and the My plan preview are cached (cache-aside: jittered expiry, one refill against a stampede, "not found" cached briefly, a write budget because the free host has 298 MB and evicts nothing). MongoDB stays the source of truth. The rest of the plan (shared rate limits, locks, a BullMQ job queue) is in [docs/plans/REDIS_PLAN.md](docs/plans/REDIS_PLAN.md); the interview-oriented notes are in [docs/research/REDIS_INTERVIEW_NOTES.md](docs/research/REDIS_INTERVIEW_NOTES.md).
 - **Startup Secret Validation:** Fail-fast environment checks on server boot enforce the presence and minimum cryptographic length (≥32 characters) for `ACCESS_SECRET` and `REFRESH_SECRET`, and the presence of `GOOGLE_CLIENT_ID` (without it the Google sign-in token check would silently weaken).
 - **Safe Startup & Shutdown:** The server listens only after MongoDB is connected, and `SIGTERM`/`SIGINT`/unhandled errors close the HTTP server and the database connection before exiting.
 - **Health Check & Access Log:** `GET /health` (no login) returns `200 {"status":"ok","db":"up"}` while the database is connected and `503` when it is not, for hosts and uptime monitors. Every other request writes one log line (`METHOD /path status ms`); query strings and bodies are never logged.
@@ -101,20 +102,20 @@ prepstack/
 │   │   └── main.jsx             # React entrypoint
 │   └── vite.config.js           # Bundling settings
 └── server/                      # Express 5 backend
-    ├── scripts/                 # Hand-run tools: list models, compare models, evaluate the analyzer on sample resumes
+    ├── scripts/                 # Hand-run tools: list models, compare models, evaluate the analyzer, build catalogs, check a Redis host, measure the cache
     ├── src/
-    │   ├── config/              # Database configuration
+    │   ├── config/              # Database, limits and the optional Redis connection
     │   ├── controllers/         # Request handlers (auth, user, sheets, notes, project, analyzer)
     │   ├── data/                # CS notes content, skill catalog (120 skills), behavioral question bank
     │   ├── middlewares/         # Auth, validation, errors, rate limits, PDF upload
     │   ├── models/              # User, Notes, Progress, Project, DSASheet, InterviewReport, ProblemNote, PasswordReset
     │   ├── routes/              # Express routers
     │   ├── seed/                # Seed scripts and dataset definitions
-    │   ├── services/            # AI provider chain, analyzer, resume reader, skill matcher, email sender
+    │   ├── services/            # AI provider chain, analyzer, resume reader, skill matcher, email sender, cache-aside helper, plan generator
     │   ├── utils/               # Tokens, device parsing, response helpers
     │   ├── validators/          # Zod schemas (auth, sheets, project, user, analyzer)
     │   └── app.js               # Express app definition
-    ├── test/                    # API and service tests (node:test + supertest + in-memory MongoDB)
+    ├── test/                    # API and service tests (node:test + supertest + in-memory MongoDB; a fake Redis in test/helpers)
     └── server.js                # Startup and shutdown
 ```
 
@@ -349,7 +350,8 @@ Design and decisions: [docs/plans/MY_PLAN_PLAN.md](docs/plans/MY_PLAN_PLAN.md).
 | jsonwebtoken        | 9       | Cryptographic user session tokens                     |
 | bcrypt              | 6       | Salted security hashing (12 rounds)                   |
 | cookie-parser       | 1.4     | Secure browser cookie management                      |
-| express-rate-limit  | 8.5     | IP request flood limiter                              |
+| express-rate-limit  | 8.5     | IP request flood limiter (in memory for now)          |
+| ioredis             | 5.11    | Optional Redis (Valkey) client: cache for public reads and the plan preview; the app runs without it |
 | google-auth-library | latest  | Official backend SDK for Google ID token verification |
 
 ---
@@ -524,8 +526,8 @@ erDiagram
 
 | Method | Endpoint          | Auth   | Description                                |
 | ------ | ----------------- | ------ | ------------------------------------------ |
-| `GET`  | `/`               | None   | Lists all DSA sheets                       |
-| `GET`  | `/:slug`          | None   | Returns sheet sections and problem links   |
+| `GET`  | `/`               | None   | Lists all DSA sheets (cached; `Cache-Control: public, max-age=300, stale-while-revalidate=600`) |
+| `GET`  | `/:slug`          | None   | Returns sheet sections and problem links (cached, same header) |
 | `GET`  | `/:slug/progress` | ✅ JWT | Returns active user solved problems        |
 | `POST` | `/:slug/progress` | ✅ JWT | Toggles state of problem (solved/unsolved) |
 
@@ -547,7 +549,7 @@ Everything except the preview and the options needs a login. Changes are two cal
 | Method | Endpoint | Auth | Description |
 | ------ | -------- | ---- | ----------- |
 | `GET` | `/options` | Public | Goals, sheets, roadmaps and limits for the builder |
-| `POST` | `/preview` | Public | Totals and week 1 for a form; writes nothing _(20/min per IP)_ |
+| `POST` | `/preview` | Public | Totals and week 1 for a form, plus when the whole syllabus would finish when something does not fit; writes nothing; cached for about 10 minutes per input when Redis is on _(20/min per IP)_ |
 | `GET` | `/` | ✅ JWT | The active plan, Today, the study calendar and any paused plan |
 | `POST` | `/` | ✅ JWT | Saves a plan; `replace: true` keeps the old one as history _(10 saved an hour)_ |
 | `DELETE` | `/` | ✅ JWT | Deletes the active plan |
@@ -567,8 +569,8 @@ Everything except the preview and the options needs a login. Changes are two cal
 
 | Method | Endpoint    | Auth | Description                               |
 | ------ | ----------- | ---- | ----------------------------------------- |
-| `GET`  | `/`         | None | Returns each subject with its section count, topic count, reading time and last checked date (no sections) |
-| `GET`  | `/:subject` | None | Returns the subject with its sections; each section has a permanent `id` and its reading time |
+| `GET`  | `/`         | None | Returns each subject with its section count, topic count, reading time and last checked date (no sections); cached, with the public `Cache-Control` header above |
+| `GET`  | `/:subject` | None | Returns the subject with its sections; each section has a permanent `id` and its reading time; cached, same header |
 
 ---
 
@@ -623,7 +625,7 @@ REDIS_URL=
 REDIS_PREFIX=
 ```
 
-`REDIS_URL` is optional: empty means the server runs without Redis (memory and MongoDB only), and an unreachable Redis never stops the server; the address holds a password, so keep it in your own `.env` only. `REDIS_PREFIX` defaults to `prepstack:<NODE_ENV>:` so development and the live site never share keys. `npm run redis:check` checks a Redis service (version, eviction policy, locks, counters, Lua); `npm run test:redis-live` runs the opt-in live test.
+`REDIS_URL` is optional: empty means the server runs without Redis (memory and MongoDB only), and an unreachable Redis never stops the server; the address holds a password, so keep it in your own `.env` only. `REDIS_PREFIX` defaults to `prepstack:<NODE_ENV>:` so development and the live site never share keys. `npm run redis:check` checks a Redis service (version, eviction policy, locks, counters, Lua); `npm run test:redis-live` runs the opt-in live test, and `npm run measure:cache` counts database reads and generator runs for 400 public requests with and without Redis. When Redis is on, the public sheet and notes reads, the dashboard's sheet list and the My plan preview are cached for about 10 minutes (the seed scripts clear them), and the four public reads send `Cache-Control: public, max-age=300, stale-while-revalidate=600`.
 
 `ALLOWED_ORIGINS` is a comma-separated list of extra front-end URLs allowed by CORS (exact match). Set `ENABLE_CUSTOM_DNS=true` only if your ISP cannot resolve `mongodb+srv://` addresses. On a production host set `NODE_ENV=production` and add your deployed front-end URL to `ALLOWED_ORIGINS`.
 
@@ -681,7 +683,12 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 | `npm start`          | Launches server                            |
 | `npm run seed:notes` | Validates and atomically replaces CS notes; requires a MongoDB replica set/Atlas, rolls back failures, and returns a failing exit code (run after changing `src/data/notes`) |
 | `npm run check:links` | Checks that the outside links (roadmaps, skill catalog, resume guide tools) still answer; run by hand before a release, needs the network |
-| `npm run seed:all`   | Idempotently seeds DSA Sheets and CS notes |
+| `npm run seed:all`   | Idempotently seeds DSA Sheets and CS notes (both seeds also clear the cached copies when Redis is set) |
+| `npm run build:plan-catalogs` | Rebuilds the planner's roadmap and sheet-topic catalogs after a roadmap or sheet change; a test fails until you do |
+| `npm run build:seo-content` | Rebuilds the two generated files the search pages use (`client/src/seo/content.js` and `contentBody.js`) after a notes or sheet change; a test fails until you do |
+| `npm run redis:check` | Checks the Redis service in `server/.env`: version, eviction policy, expiry, locks, counters, Lua, connections; prints no address |
+| `npm run test:redis-live` | Opt-in test of the app's Redis connection against the real service (unique key prefix, deletes only its own keys) |
+| `npm run measure:cache` | Counts database reads and generator runs for 400 public requests without Redis and with the real service |
 | `node scripts/migrate-solved-at.js` | One-time: converts old solved-problem links to the dated format (`--dry-run` only prints counts). Run it on the live database before deploying the dated-progress code |
 | `npm test`           | Runs the API test suite (in-memory database, no real keys needed) |
 | `npm run test:coverage` | Same, with a coverage report              |
@@ -700,7 +707,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **982 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers and Google sign-in are faked.
+The server has **1021 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers, Google sign-in and Redis are faked (a small in-memory fake Redis with its own clock, in `server/test/helpers/fake-redis.js`). Two Redis checks need the real service and are opt-in: `npm run test:redis-live` and `npm run measure:cache`.
 
 ```bash
 cd server
@@ -709,7 +716,7 @@ npm test
 
 They cover auth and sessions (refresh rotation, replay defence, revocation), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email (the mail sender is faked), rate limits, the AI provider chain, and the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules). The client has **122 tests** (`cd client && npm test`, Vitest, no browser): 14 for the login token refresh plus a Google conflict hook check (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout) , 5 that fail when a component uses a raw color instead of a design token, 2 for the resume checklist PDF (it must draw as one page), and the rest for the notes quiz scoring and diagram layout, the roadmap data rules and links, the Analyzer link builder, the study-plan checklist helpers, the problem-note import and merge helpers and the page titles. Eleven Playwright browser flows now cover the dashboard, report imports and daily study workspace at phone and desktop widths: task results, quizzes, plan controls, reviews, practice and read-only history. Run them with npm run test:browser from client; installed Chrome and both client/server dependencies are required. The harness uses fresh disposable servers on 3100 and 5175 and does not load the real server environment. Details, and what is not covered: [TESTING.md](TESTING.md).
 
-The client has 134 unit tests, and 16 browser specs for My plan (`cd client && npm run test:browser`; they start their own servers on ports 3100 and 5175 and need Chrome).
+The client has 135 unit tests, and 28 browser flows (My plan, the signed-out pages, first-time experience) (`cd client && npm run test:browser`; they start their own servers on ports 3100 and 5175 and need Chrome).
 
 The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota).
 
@@ -717,7 +724,8 @@ The Role Analyzer was also checked against the real AI with hand-run scripts in 
 
 ## ⚠️ Known Limitations
 
-- **Rate limits live in the server's memory.** They reset on restart and are not shared between servers, so run one instance, or move them to a shared store such as Redis before scaling out.
+- **Rate limits live in the server's memory.** They reset on restart and are not shared between servers, so run one instance. Moving them to Redis is the next step of [docs/plans/REDIS_PLAN.md](docs/plans/REDIS_PLAN.md); today Redis is used only for caching.
+- **Redis is optional and not required to run.** The free Aiven Valkey service has a 298 MB memory limit, evicts nothing and saves snapshots only (no append-only file), and can be powered off when unused. Cached public reads can show content up to about 15 minutes old after a reseed (10 minutes in the server cache plus the browser's 5-minute header).
 - **The AI runs on free tiers** (Gemini, then Groq). A quota or an outage can make generation fail for a while; the user then gets a clear message and the attempt is not counted. Reports and ideas can differ from run to run.
 - **Progress dates start on 9 Nov 2026.** Problems ticked before that have no date, so they do not count toward the streak or the last solved date. Streak days follow your study calendar (India time and midnight by default; ticks made before 15 Nov 2026 keep their India date). The "used / allowed today" numbers on the forms count the last 24 hours; the hourly limit is not shown because it lives in server memory.
 - **77 of the 120 skills in the Role Analyzer's catalog point at PrepStack lessons (notes, DSA topics or a roadmap); the other 43 link only to official documentation.** Four soft skills point at the Behavioral page.

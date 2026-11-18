@@ -5,6 +5,8 @@ const seedStriverSDE = require('./sheetSeeds/striverSDESeed');
 const seedNeetCode = require('./sheetSeeds/neetCodeSeed');
 const seedBlind75 = require('./sheetSeeds/blind75');
 const connectDB = require('./seedConfig');
+const { clearContentCache } = require('../services/cache');
+const report = (result) => console.log(result.skipped ? 'Content cache: Redis is not set or not reachable, so cached copies expire by themselves within about ten minutes.' : `Content cache cleared (${result.cleared} keys).`);
 
 const seedAll = async () => {
   try {
@@ -22,6 +24,7 @@ const seedAll = async () => {
     await seedBlind75();
 
     console.log('All DSA Sheets seeded successfully!');
+    report(await clearContentCache().catch(() => ({ skipped: true, cleared: 0 }))); // the public sheet reads are cached for a few minutes (phase 4)
     process.exit(0);
   } catch (error) {
     console.error('Error seeding data:', error);

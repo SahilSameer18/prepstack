@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { cached } = require('../services/cache');
 const { calendarSettings, studyDay, nextStudyBoundary } = require('../utils/studyCalendar');
 const mongoose = require('mongoose');
 const Plan = require('../models/plan.model');
@@ -123,9 +124,17 @@ const toStored = (doc) => {
 
 // POST /api/plan/preview   (no login, no database write, its own limiter per IP)
 // The numbers and week 1 only: the other weeks appear after login.
-const previewPlan = (req, res, next) => {
+// The result depends only on the validated input (the day is inside it): no user data, so it is cached (phase 4).
+// The key also holds the deployed version, so a new release never serves an older generator's answer.
+const PREVIEW_VERSION = /^[0-9a-f]{7,40}$/.test(process.env.RENDER_GIT_COMMIT || '') ? process.env.RENDER_GIT_COMMIT.slice(0, 12) : 'dev';
+const previewPlan = async (req, res, next) => {
   try {
-    return sendSuccess(res, 200, 'Preview made', gen.previewPlan(toInput(req.body), getPlanData()));
+    const input = toInput(req.body);
+    const digest = crypto.createHash('sha256').update(JSON.stringify(input)).digest('hex').slice(0, 32);
+    const preview = await cached(['preview', PREVIEW_VERSION, digest], async () => gen.previewPlan(input, getPlanData()), {
+      ttlSeconds: 600, budgetName: 'preview', writeBudgetPerMinute: 200, maxBytes: 64 * 1024,
+    });
+    return sendSuccess(res, 200, 'Preview made', preview);
   } catch (error) {
     return next(asAppError(error));
   }

@@ -6,62 +6,75 @@ const { planClock } = require('../services/planData');
 const { calendarSettings, studyDay } = require('../utils/studyCalendar');
 const AppError = require('../utils/AppError');
 const { sendSuccess } = require('../utils/responseFormatter');
+const { cached } = require('../services/cache');
+const { PUBLIC_CONTENT_CACHE_CONTROL } = require('../config/limits');
+
+// The sheets only change when a seed runs, so their public reads come from the cache (phase 4); MongoDB answers a miss or a Redis outage.
+// A seed clears the cached copies (clearContentCache), and every entry expires by itself within about ten minutes anyway.
+const loadSheetList = async () => {
+  const sheets = await DSASheet.find({}, 'name slug description topics.problems.link topics.problems.difficulty topics.problems.tags');
+
+  return sheets.map(sheet => {
+    const linkSet = new Set();
+    const tagSet = new Set();
+    let hasEasy = false, hasMedium = false, hasHard = false;
+
+    (sheet.topics || []).forEach(t => {
+      (t.problems || []).forEach(p => {
+        if (p.link) linkSet.add(problemIdentity(p.link));
+        if (p.difficulty) {
+          const d = p.difficulty.toLowerCase();
+          if (d === 'easy') hasEasy = true;
+          if (d === 'medium') hasMedium = true;
+          if (d === 'hard') hasHard = true;
+        }
+        (p.tags || []).forEach(tag => tagSet.add(tag));
+      });
+    });
+
+    let difficultyLabel = 'Intermediate';
+    if (hasEasy && hasHard) difficultyLabel = 'Beginner → Advanced';
+    else if (hasEasy && hasMedium) difficultyLabel = 'Beginner → Intermediate';
+    else if (hasMedium && hasHard) difficultyLabel = 'Intermediate → Advanced';
+    else if (hasHard) difficultyLabel = 'Advanced';
+    else if (hasEasy) difficultyLabel = 'Beginner';
+
+    return {
+      name: sheet.name,
+      slug: sheet.slug,
+      description: sheet.description || '',
+      totalProblems: linkSet.size,
+      difficulty: difficultyLabel,
+      tags: Array.from(tagSet).slice(0, 4)
+    };
+  });
+};
 
 // controller to get all the sheets with dynamic problem counts
 exports.getSheets = async (req, res, next) => {
   try {
-    const sheets = await DSASheet.find({}, 'name slug description topics.problems.link topics.problems.difficulty topics.problems.tags');
-    
-    const formattedSheets = sheets.map(sheet => {
-      const linkSet = new Set();
-      const tagSet = new Set();
-      let hasEasy = false, hasMedium = false, hasHard = false;
-
-      (sheet.topics || []).forEach(t => {
-        (t.problems || []).forEach(p => {
-          if (p.link) linkSet.add(problemIdentity(p.link));
-          if (p.difficulty) {
-            const d = p.difficulty.toLowerCase();
-            if (d === 'easy') hasEasy = true;
-            if (d === 'medium') hasMedium = true;
-            if (d === 'hard') hasHard = true;
-          }
-          (p.tags || []).forEach(tag => tagSet.add(tag));
-        });
-      });
-
-      let difficultyLabel = 'Intermediate';
-      if (hasEasy && hasHard) difficultyLabel = 'Beginner → Advanced';
-      else if (hasEasy && hasMedium) difficultyLabel = 'Beginner → Intermediate';
-      else if (hasMedium && hasHard) difficultyLabel = 'Intermediate → Advanced';
-      else if (hasHard) difficultyLabel = 'Advanced';
-      else if (hasEasy) difficultyLabel = 'Beginner';
-
-      return {
-        name: sheet.name,
-        slug: sheet.slug,
-        description: sheet.description || '',
-        totalProblems: linkSet.size,
-        difficulty: difficultyLabel,
-        tags: Array.from(tagSet).slice(0, 4)
-      };
-    });
-
+    const formattedSheets = await cached(['content', 'sheets-list'], loadSheetList);
+    res.set('Cache-Control', PUBLIC_CONTENT_CACHE_CONTROL);
     sendSuccess(res, 200, 'DSA sheets fetched successfully', formattedSheets);
   } catch (error) {
     next(error);
   }
 };
 
-// controller to get sheet by slug
+// controller to get sheet by slug (null from the loader means "not found", which is cached briefly too)
 exports.getSheetBySlug = async (req, res, next) => {
   try {
-    const sheet = await DSASheet.findOne({ slug: req.params.slug }).select('-__v');
-    if (!sheet) {
+    const plain = await cached(['content', 'sheet', req.params.slug], async () => {
+      const sheet = await DSASheet.findOne({ slug: req.params.slug }).select('-__v');
+      if (!sheet) return null;
+      const copy = sheet.toObject();
+      for (const topic of copy.topics || []) for (const problem of topic.problems || []) problem.link = problemIdentity(problem.link);
+      return copy;
+    });
+    if (!plain) {
       return next(new AppError(404, 'DSA Sheet not found'));
     }
-    const plain = sheet.toObject();
-    for (const topic of plain.topics || []) for (const problem of topic.problems || []) problem.link = problemIdentity(problem.link);
+    res.set('Cache-Control', PUBLIC_CONTENT_CACHE_CONTROL);
     sendSuccess(res, 200, 'DSA sheet fetched successfully', plain);
   } catch (error) {
     next(error);

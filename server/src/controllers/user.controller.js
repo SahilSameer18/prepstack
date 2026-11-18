@@ -11,6 +11,7 @@ const { formatUserResponse } = require('../utils/userResponse');
 const { sendSuccess } = require('../utils/responseFormatter');
 const { calendarSettings, studyStreak } = require('../utils/studyCalendar');
 const { planClock } = require('../services/planData');
+const { cached } = require('../services/cache');
 const { problemIdentity, normalizedSolves } = require('../utils/problemIdentity');
 
 // The ONE place that decides how many problems a user has solved: only links that still exist in a sheet,
@@ -62,7 +63,7 @@ const summarizeProgress = (sheets, userProgress, now = planClock.now(), calendar
 
 // Parallel server queries: all DSA sheets, the user's progress records, and the project count
 const loadProgressData = (userId) => Promise.all([
-  DSASheet.find({}, 'name slug description topics.problems.link'),
+  cached(['content', 'sheet-defs'], () => DSASheet.find({}, 'name slug description topics.problems.link').lean()), // the same for every user (phase 4)
   progressModel.find({ user: userId }),
   projectModel.countDocuments({ user: userId })
 ]);

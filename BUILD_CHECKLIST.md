@@ -104,11 +104,11 @@ Production steps (each comes right after its learning modules). **Interview-prac
 - [ ] 10.9 R1 Shared limits and locks (about 3 days; after L3)
 - [ ] 10.10 R2 App-wide AI budget (about 2 days; after L3)
 - [ ] 10.11 R3 Session check cache (about 2 days; after L3)
-- [ ] 10.12 R4 DSA sheet reads, content and per-user stats cache (B11; after L3)
+- [ ] 10.12 R4 DSA sheet reads, content and per-user stats cache (B11; after L3). Built 18 Nov 2026 (branch `redis`); tick after the owner runs `npm run measure:cache` and the numbers are in the interview notes
 - [ ] 10.13 R5 Absorb failed-login traffic (optional, after an attack)
 - [ ] 10.14 R6 Background job queue for the AI features (about 1 week; after L5 and L6)
 - [ ] 10.15 R7 Planned features that need Redis
-- [ ] 10.16 R8 My plan: cache the public preview (not the saved plan), part of the cache steps
+- [ ] 10.16 R8 My plan: cache the public preview (not the saved plan), part of the cache steps. Built 18 Nov 2026 with 10.12
 
 ## 11. My plan, later ideas
 
