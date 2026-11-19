@@ -1,6 +1,6 @@
 # HLD case studies (Phase 3, 13 Nov 2026): what was written, from what, and what a reviewer must re-check
 
-Twelve drafts in `server/src/data/notes/hld/drafts/` (not published). The strict draft checker prints `template errors: none` for all 23 HLD drafts (11 concept + 12 case). Numbers: `docs/content/checks/hld-case-check.py` with its saved output `hld-case-check-output.txt` (sections 1 to 12 per case); every input is a made-up assumption and the drafts say so. Each case has 7 topics (requirements, numbers, API and data, first design, two hard parts, failures and scaling), 4 questions, 5 quiz items and 4 to 5 diagrams. All are at or under 1,800 words (1,369 to 1,790). **No diagram has been drawn in a browser yet.**
+Twelve drafts in `server/src/modules/notes/content/hld/drafts/` (not published). The strict draft checker prints `template errors: none` for all 23 HLD drafts (11 concept + 12 case). Numbers: `docs/content/checks/hld-case-check.py` with its saved output `hld-case-check-output.txt` (sections 1 to 12 per case); every input is a made-up assumption and the drafts say so. Each case has 7 topics (requirements, numbers, API and data, first design, two hard parts, failures and scaling), 4 questions, 5 quiz items and 4 to 5 diagrams. All are at or under 1,800 words (1,369 to 1,790). **No diagram has been drawn in a browser yet.**
 
 A case study is one reasonable design with its trade-offs. Statements about what a real company did are written as "company X described in <year>" and only where a primary source was read.
 

@@ -348,12 +348,12 @@ The server only stores progress. It never runs user code. All code follows PrepS
 
 ### 9.1 Files
 ```text
-server/src/models/challengeProgress.model.js
-server/src/models/warmupSetResult.model.js
-server/src/data/debuglabRegistry.js        valid ids: { id, kind, title, setId?, track?, severity?, caps }
-server/src/validators/debuglab.validators.js
-server/src/controllers/debuglab.controller.js
-server/src/routes/debuglab.routes.js       mounted at /api/debug-lab
+server/src/modules/debuglab/challengeProgress.model.js
+server/src/modules/debuglab/warmupSetResult.model.js
+server/src/modules/debuglab/debuglabRegistry.js        valid ids: { id, kind, title, setId?, track?, severity?, caps }
+server/src/modules/debuglab/debuglab.validators.js
+server/src/modules/debuglab/debuglab.controller.js
+server/src/modules/debuglab/debuglab.routes.js       mounted at /api/debug-lab
 ```
 
 ### 9.2 Models

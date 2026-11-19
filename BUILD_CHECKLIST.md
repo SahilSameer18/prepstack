@@ -6,6 +6,8 @@ Items marked **optional** are the owner's call: whether and when. Sections 1 to 
 
 ## Done
 
+- [x] Backend modules (19 Nov, branch module) — all ten features grouped under modules, common code in shared, architecture guard and mutation checks passed, empty old folders removed, docs updated. Server 1,112 and client 135 tests, build, lint, SEO and the local startup/API smoke checks passed.
+
 - [x] My plan phases 0 to 7: builder, daily workspace, dashboard, report imports, reviews, history (`docs/plans/MY_PLAN_PLAN.md`)
 - [x] Recovery: pause and resume, study calendar, deadline extension, review catch-up, substitute problems, and one active plan alongside one paused plan
 - [x] Coverage and clarity fixes: fair share with floors when time allows, not-included list, readable dates, day totals, week summaries, "my pace" (`docs/plans/MY_PLAN_COVERAGE_PLAN.md`)

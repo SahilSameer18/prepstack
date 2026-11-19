@@ -42,7 +42,7 @@ So no new writing is needed for version 1 of the recap, and no reseeding: the re
 ### 2.2 The recap rule (version 1, from existing parts)
 - Shown in the recap view: Overview; for each topic its Definition and Why; Interview questions; Common mistakes; Quiz.
 - Hidden in the recap view (still one tap away): Example, Failure, diagrams. A "Show everything" link returns to the full page.
-- Minutes: `recapMinutes = 3 x (words of the shown parts without the quiz) / 200 + 5`, computed by code from the same word counts as today (`server/src/utils/notesStats.js`), so the numbers cannot drift from the text.
+- Minutes: `recapMinutes = 3 x (words of the shown parts without the quiz) / 200 + 5`, computed by code from the same word counts as today (`server/src/modules/notes/notesStats.js`), so the numbers cannot drift from the text.
 - The quiz is the same quiz, with the same pass rules and the same review ladder (a notes section still starts a review after 3 days).
 - Version 2 (optional, after the owner reads the recap view on real sections): an authored `**Recap:**` line per topic in the Markdown, written from the section's own text, to replace the dropped examples where the recap reads too thin (OOP code examples are the likely case). It is a content job (64 sections), so it is a separate phase.
 

@@ -1,6 +1,6 @@
 # Source notes: OOP drafts (Phase 3, 12 Nov 2026)
 
-The ten Java OOP drafts are in `server/src/data/notes/oops/drafts/` (not loaded by the site). Language: Java 27 (`javac 27`). Every Java example was compiled and run; the source and the real output (`output.txt`, with real compiler messages) are in `docs/content/checks/oops/<section-id>/`. Written by five AI writers, then checked by three accuracy reviewers (who re-fetched the primary sources and re-ran every example) and two plain-words reviewers, then corrected by ten editors. Each editor ran the full-template checker on its own file with no template errors. **The final run of the checker over all ten, the claims table and the link-fit check are Phase 4**, as the owner asked.
+The ten Java OOP drafts are in `server/src/modules/notes/content/oops/drafts/` (not loaded by the site). Language: Java 27 (`javac 27`). Every Java example was compiled and run; the source and the real output (`output.txt`, with real compiler messages) are in `docs/content/checks/oops/<section-id>/`. Written by five AI writers, then checked by three accuracy reviewers (who re-fetched the primary sources and re-ran every example) and two plain-words reviewers, then corrected by ten editors. Each editor ran the full-template checker on its own file with no template errors. **The final run of the checker over all ten, the claims table and the link-fit check are Phase 4**, as the owner asked.
 
 ## Sections (checker word counts after editing)
 | Section id | Words | Main sources |

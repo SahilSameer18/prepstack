@@ -1,5 +1,7 @@
 # Role Analyzer: bringing SkillBridge into PrepStack (version 2 of the plan)
 
+**Historical proposal, retained 19 Nov 2026.** References to unbuilt skill and goal files below describe the original proposal. Existing-file references use the current module paths. Future implementation must follow the module layout in `docs/plans/BACKEND_MODULES_PLAN.md`.
+
 Status (2026-11-07): plan agreed. Phase 2 is DONE (see section 6). Phase 1 is DONE (see section 6). Phase 0 is DONE and its gate PASSED (8 samples, 3 runs each, 24 real reports: format 100%, quotes verified 100%, score spread 1.3 points, score in a sensible range 100%, gap recall 100%, wrongly flagged 0%, the injection resume never obeyed). Next: show real reports to 3 to 5 students, then Phase 1. Part 1 (sections 1 to 8) is the analyzer; Part 2 (sections 9 to 14, at the end) is the interconnection work that starts only after Part 1 is finished and students have tried it.
 Decided: do not store the resume; remove contact details before sending to the AI; 3 reports per hour and 5 per day per user; the name "Role Analyzer"; improve SkillBridge's report and its skill matching instead of copying them.
 Still open: decision 5 (free-tier privacy wording on the privacy page) and your review of the skill-to-PrepStack mapping (Phase 2).
@@ -110,7 +112,7 @@ Every skill gap links to PrepStack's own content **first** (chosen by code from 
 | Resume text stored | **Never stored** |
 | 4 MB PDF only | PDF upload **or paste your resume text** |
 
-Cascade changes needed: `runCascade` in `server/src/services/ai.service.js` is already generic (prompt, JSON schema, parser). It needs a per-call output size (a report is much larger than a project idea) and a per-call Groq token cap.
+Cascade changes needed: `runCascade` in `server/src/modules/ai/ai.service.js` is already generic (prompt, JSON schema, parser). It needs a per-call output size (a report is much larger than a project idea) and a per-call Groq token cap.
 
 Free-tier reality: a report is roughly 3,000 to 5,000 tokens out plus the resume and job description in. Groq's free plan allows 8K tokens per minute, so it can serve about one report a minute. That is fine as the **last resort**; the Gemini models carry the normal load.
 
@@ -129,36 +131,36 @@ One phase at a time. After each phase I run the tests (with your OK), show resul
 
 ### Phase 0: design and test the report on real examples (about 2 days)
 Goal: prove v2 is better before building any screen.
-**Create:** `server/scripts/analyzer-eval.js` (runs old prompt vs new on sample pairs and prints the four measurements), `server/scripts/samples/` (5 to 8 resume and job pairs, **made-up or yours with your OK; never real people's resumes**), a first draft of the report schema and prompt in `server/src/services/analyzer.service.js`.
+**Create:** `server/scripts/analyzer-eval.js` (runs old prompt vs new on sample pairs and prints the four measurements), `server/scripts/samples/` (5 to 8 resume and job pairs, **made-up or yours with your OK; never real people's resumes**), a first draft of the report schema and prompt in `server/src/modules/analyzer/analyzer.service.js`.
 **Done when:** v2 passes the format check on at least 90% of runs, quotes verify at 80% or more, and the score spread over 3 runs is small. Otherwise adjust the design before continuing.
 
 ### Phase 1: server core (about 3 days) — DONE 2026-11-07
 Built and verified (425 server tests pass, 85 of them new; 8 rules broken on purpose, a test failed each time; a live run with the real AI and the real resume PDF worked end to end: 9 seconds, contact details removed, resume not stored).
 What differs from the plan below, and why:
-- `server/src/services/analyzerContext.service.js` is new: it builds the lists the AI may choose from (Blind 75 topics and CS notes sections from the database; roadmap slugs and the behavioral question bank are copies, checked against the client by `test/analyzer.context.test.js`).
-- The skill catalog moved into the server: `server/src/data/skillCatalog.json` (94 skills; the Phase 2 seed will load it). Behavioral questions: `server/src/data/behavioralQuestions.json`.
-- `server/src/middlewares/upload.middleware.js` is new (the upload only runs for multipart requests; a pasted resume is plain JSON).
+- `server/src/modules/analyzer/analyzerContext.service.js` is new: it builds the lists the AI may choose from (Blind 75 topics and CS notes sections from the database; roadmap slugs and the behavioral question bank are copies, checked against the client by `test/analyzer.context.test.js`).
+- The skill catalog moved into the server: `server/src/modules/analyzer/skillCatalog.json` (94 skills; the Phase 2 seed will load it). Behavioral questions: `server/src/shared/content/behavioralQuestions.json`.
+- `server/src/modules/analyzer/upload.middleware.js` is new (the upload only runs for multipart requests; a pasted resume is plain JSON).
 - Added beyond the plan: resume tips that mention a skill the report marked missing are dropped by code; the title must come from the job description; over-long text is trimmed instead of rejecting the report; sentence-end full stops are ignored when checking proof quotes.
 - Not yet done (planned for later phases): `README.md` and `TESTING.md` text (Phase 4), the skills catalog in the database and the PrepStack mapping (Phase 2), all screens (Phase 3).
 
 Original plan for this phase:
 Goal: send a resume and a job description, get a validated report saved.
 **Create**
-- `server/src/models/interviewReport.model.js` (user ref, title, jobDescription, requirements with marks and evidence snippets, computed score, questions, gaps, plan, aiProvider; index on `{ user, createdAt: -1 }`).
-- `server/src/validators/analyzer.validators.js` (job description 30 to 4000 characters; pasted resume 100 to 12000; days until interview 3 to 30; report id).
-- `server/src/services/analyzer.service.js` (final prompt, Zod report schema with **maximum** sizes and field caps, score computation, evidence check, calls `runCascade`).
-- `server/src/services/resume.service.js` (PDF to text with `pdf-parse`, `%PDF-` check, limits, scanned guard, null-byte strip, redaction, truncation to a token budget).
-- `server/src/controllers/analyzer.controller.js` (generate, list with clamped pagination, get one, delete), `server/src/routes/analyzer.routes.js` (`/api/analyzer`).
+- `server/src/modules/analyzer/interviewReport.model.js` (user ref, title, jobDescription, requirements with marks and evidence snippets, computed score, questions, gaps, plan, aiProvider; index on `{ user, createdAt: -1 }`).
+- `server/src/modules/analyzer/analyzer.validators.js` (job description 30 to 4000 characters; pasted resume 100 to 12000; days until interview 3 to 30; report id).
+- `server/src/modules/analyzer/analyzer.service.js` (final prompt, Zod report schema with **maximum** sizes and field caps, score computation, evidence check, calls `runCascade`).
+- `server/src/modules/analyzer/resume.service.js` (PDF to text with `pdf-parse`, `%PDF-` check, limits, scanned guard, null-byte strip, redaction, truncation to a token budget).
+- `server/src/modules/analyzer/analyzer.controller.js` (generate, list with clamped pagination, get one, delete), `server/src/modules/analyzer/analyzer.routes.js` (`/api/analyzer`).
 - `server/test/analyzer.test.js`, `server/test/resume.test.js`.
 **Modify**
-- `server/src/services/ai.service.js` (export `runCascade`; optional output cap per call), `server/src/app.js` (mount the route), `server/src/middlewares/rateLimit.middleware.js` (analyzer limiter: 3 per hour per user, failed requests not counted), `server/package.json` (add `multer`, `pdf-parse`), `server/test/helpers/setup.js` (fake PDF buffer), `server/.env.example`.
+- `server/src/modules/ai/ai.service.js` (export `runCascade`; optional output cap per call), `server/src/app.js` (mount the route), `server/src/shared/http/rateLimit.middleware.js` (analyzer limiter: 3 per hour per user, failed requests not counted), `server/package.json` (add `multer`, `pdf-parse`), `server/test/helpers/setup.js` (fake PDF buffer), `server/.env.example`.
 **Rules:** one report at a time per user (409); daily cap of 5 from the database; friendly 502/504 when every provider fails; no resume text in logs or responses.
 
 ### Phase 2: skills catalog and the PrepStack mapping (about 2 days) — DONE 2026-11-07
 Built and verified (457 server tests pass; 6 catalog and matcher rules and 3 wiring rules were broken on purpose and a test failed each time; a live run with the real AI and your real resume PDF showed the advice per gap).
 What differs from the plan below, and why:
-- **No `Skill` database model and no seed script.** `server/src/data/skillCatalog.json` is the single source of truth (names, aliases, a docs link, a video link, a category and the PrepStack mapping). It avoids a third copy of the skills and two files; a database can be added later if the catalog ever needs editing from the app.
-- **One new file instead of three:** `server/src/services/skills.service.js` holds the matcher and the advice (replacing the planned `skillMatcher.service.js`, `skill.model.js` and `skillsSeed.js`). The tests are in `server/test/skills.test.js`.
+- **No `Skill` database model and no seed script.** `server/src/modules/analyzer/skillCatalog.json` is the single source of truth (names, aliases, a docs link, a video link, a category and the PrepStack mapping). It avoids a third copy of the skills and two files; a database can be added later if the catalog ever needs editing from the app.
+- **One new file instead of three:** `server/src/modules/analyzer/skills.service.js` holds the matcher and the advice (replacing the planned `skillMatcher.service.js`, `skill.model.js` and `skillsSeed.js`). The tests are in `server/test/skills.test.js`.
 - **Advice is worked out on every read and never stored:** the report JSON carries `skillAdvice` (links and PrepStack actions per gap), so an improved catalog improves old reports too.
 - **The mapping is a first draft for you to review** (see below). 47 of the 94 skills have nothing in PrepStack yet (no sheet topic, notes section or roadmap): they only get the external learning links, and the report says so.
 - **Catalog clean-up:** SkillBridge reused the same video for several skills (for example one "SQL" video labelled "SQLite Full Course"). A link is now kept only for the first skill that uses it (6 links dropped), and a test fails if a link is shared.
@@ -171,7 +173,7 @@ Original plan for this phase:
 - `server/src/models/skill.model.js`.
 - `server/src/seed/skillsSeed.js` (the 94 skills and links, converted from SkillBridge's `prisma/seed.js`, plus a `prepstack` object on each skill that can list several things: `{ dsaTopics: [{ sheet, topic }], notes: [{ subject, section }], roadmap, projectStack }`, plus a `category`; **you review this mapping**. The analyzer only uses the first item for now; the later interconnection work (Part 2, section 9 onwards) uses all of them, so keeping the object shape from day one avoids a data migration).
 - `server/src/services/skillMatcher.service.js` (port with the closed-list step, the careful fuzzy rule, and "did you mean" results), `server/test/skillMatcher.test.js` (include "Flash" must not match "Flask", "Shift" must not match "Swift", "k8s" must match Kubernetes).
-**Modify:** `server/src/seed/masterSeed.js` (idempotent), `server/src/controllers/analyzer.controller.js` (attach the matched skill and its PrepStack action to each gap).
+**Modify:** `server/src/modules/sheets/seeds/masterSeed.js` (idempotent), `server/src/modules/analyzer/analyzer.controller.js` (attach the matched skill and its PrepStack action to each gap).
 
 ### Phase 3: client (about 3 days) — DONE 2026-11-07
 Built and checked in a browser (phone and desktop width, against a throwaway backend with an in-memory database; lint, build and SEO check pass). What differs from the plan below:
@@ -324,7 +326,7 @@ One phase at a time, with the same working method as Part 1: after each phase ru
 
 ### Phase I-2: the target role on the server (about 2 days)
 **Create:** `server/src/models/goal.model.js`; `server/src/services/goal.service.js` (computes the view and readiness); `server/src/controllers/goal.controller.js`; `server/src/routes/goal.routes.js` (`POST /api/goal`, `GET /api/goal`, `PATCH /api/goal/gaps/:skillKey`, `DELETE /api/goal`); `server/test/goal.test.js`.
-**Modify:** `server/src/app.js` (mount), `server/src/controllers/user.controller.js` (so account deletion is verified to wipe the goal; the existing cascade should already do it), `server/src/controllers/analyzer.controller.js` (deleting a report removes a goal that uses it).
+**Modify:** `server/src/app.js` (mount), `server/src/modules/user/user.controller.js` (so account deletion is verified to wipe the goal; the existing cascade should already do it), `server/src/modules/analyzer/analyzer.controller.js` (deleting a report removes a goal that uses it).
 **Tests:** one goal per user; a goal from someone else's report is refused; readiness is the same for the same inputs; closing rules (progress, manual, re-run); no goal returns `null`; deleting the report, the account or the goal leaves nothing behind; a user cannot read another user's goal.
 
 ### Phase I-3: client foundation (about 2 days)
@@ -337,7 +339,7 @@ One phase at a time, with the same working method as Part 1: after each phase ru
 **Rule for every page:** hidden completely when there is no goal; text and icon, never colour alone (accessibility).
 
 ### Phase I-5: progress feeds the analyzer, and re-run comparison (about 1.5 days)
-**Modify:** `server/src/services/analyzer.service.js` (a `progress` argument and the code step that applies it; proof source "PrepStack progress"), `server/src/controllers/analyzer.controller.js` (build the progress facts; the "re-run for the same job" option and the before and after comparison), `client/src/pages/analyzer/AnalyzerReport.jsx` (comparison panel, progress-based proof shown differently).
+**Modify:** `server/src/modules/analyzer/analyzer.service.js` (a `progress` argument and the code step that applies it; proof source "PrepStack progress"), `server/src/modules/analyzer/analyzer.controller.js` (build the progress facts; the "re-run for the same job" option and the before and after comparison), `client/src/pages/analyzer/AnalyzerReport.jsx` (comparison panel, progress-based proof shown differently).
 **Tests:** progress never lowers a mark; progress alone cannot make an unrelated skill "met"; a resume trying to claim progress does not matter (progress comes only from the server); the comparison lists closed and still-open gaps correctly.
 
 ### Phase I-6: polish, docs, live check (about 1 day)

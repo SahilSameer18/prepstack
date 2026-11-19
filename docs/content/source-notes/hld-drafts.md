@@ -1,6 +1,6 @@
 # HLD concept drafts (Phase 2, 13 Nov 2026): what was written, from what, and what a reviewer must re-check
 
-Drafts are in `server/src/data/notes/hld/drafts/` (not published, no `lastChecked`). The strict draft checker prints `template errors: none` for all 11. Numbers come from `docs/content/checks/hld-check.py` (output saved next to it as `hld-check-output.txt`; every figure in a worked example is a line of that output or arithmetic shown in the text). The only link error for these files is expected: `hld-storage-indexes` points to `hld-case-url-shortener`, which is written in Phase 3.
+Drafts are in `server/src/modules/notes/content/hld/drafts/` (not published, no `lastChecked`). The strict draft checker prints `template errors: none` for all 11. Numbers come from `docs/content/checks/hld-check.py` (output saved next to it as `hld-check-output.txt`; every figure in a worked example is a line of that output or arithmetic shown in the text). The only link error for these files is expected: `hld-storage-indexes` points to `hld-case-url-shortener`, which is written in Phase 3.
 
 | Section | Topics / questions / diagrams | Words by the checker | Main primary sources |
 |---|---|---|---|

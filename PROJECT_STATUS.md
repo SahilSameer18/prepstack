@@ -1,5 +1,7 @@
 # PrepStack: status and build order
 
+**Backend module migration complete on module, 19 Nov 2026.** The architecture test enforces feature import rules, checks runtime-built planner imports, rejects shared-to-feature dependencies and detects cycles. Three forbidden-import mutations failed as expected and were restored. Ten old source folders were verified empty and removed. Current documentation and comments use the new paths; the dated migration map and an archived unbuilt proposal retain historical paths. All 1,112 server tests and 135 client tests, build, lint and SEO passed. The real server.js also passed eleven local API smoke checks with disposable MongoDB and Redis off. Deployment and real external services were outside this pass.
+
 **Backend modules Phases 5 and 6 complete, 19 Nov 2026.** Thirty AI, project, usage, analyzer and plan files moved into their feature modules. Runtime planner paths, the catalog writer, tests and scripts use the new locations. The full server suite passed all 1,111 tests, and all 135 client tests, build, lint and SEO passed. Phase 7 is next: add the permanent architecture test and remove empty old directories.
 
 **Backend modules Phase 4 complete, 19 Nov 2026.** Sheets, problem notes and notes now live in their feature modules. The move includes 95 files, with all 65 Markdown files preserved and the notes folder structure kept. Imports, dynamic content paths, seed commands, tests, scripts and README now use the new locations. All 1,111 server tests and 135 client tests passed, along with build, lint and SEO. Phase 5 (AI, project, usage and analyzer) is next.
@@ -39,7 +41,7 @@
 | Area | What exists | Where |
 |---|---|---|
 | Foundations (stages 0 to 2) | shared empty/limit states, progress with dates and IST streaks, limits shown on pages, permanent ids, notes validator, computed counts, note pages with quiz and diagrams, internal-link and outside-link checks | `IMPROVEMENT_PLAN.md` stages 0 to 2 |
-| CS notes, 5 subjects | DBMS 10, Computer Networks 10, Operating Systems 11, OOP in Java 10, **System Design 23** (11 concepts + 12 case studies, committed 13 Nov 2026) | `server/src/data/notes/`, plans `NOTES_OS_OOP_PLAN.md`, `HLD_NOTES_PLAN.md` |
+| CS notes, 5 subjects | DBMS 10, Computer Networks 10, Operating Systems 11, OOP in Java 10, **System Design 23** (11 concepts + 12 case studies, committed 13 Nov 2026) | `server/src/modules/notes/content/`, plans `NOTES_OS_OOP_PLAN.md`, `HLD_NOTES_PLAN.md` |
 | Diagrams | flow, layers, graph (shapes, zones, numbered and dashed arrows) and sequence; 6 per section for System Design | `client/src/components/notes/` |
 | Roadmaps | 9 roadmaps (the first 6 with 52 steps, then DSA, Java and Spring Boot, DevOps and cloud), all in the full template with official-doc resources | `client/src/data/roadmaps.js` |
 | Behavioral guide | 50 questions in 10 groups; the story bank was **skipped** by the owner | `client/src/data/behavioralQuestions.js` |

@@ -4,7 +4,7 @@ STATUS (2026-11-10): PLANNED, not started. Build it after `IMPROVEMENT_PLAN.md` 
 
 ## 1. Why this is needed
 
-Measured on 10 Nov 2026 from `server/src/seed/sheetSeeds/*` (reading the data only, nothing changed):
+Measured on 10 Nov 2026 from `server/src/modules/sheets/seeds/sheetSeeds/*` (reading the data only, nothing changed):
 
 | Sheet | Problems | Main source of the links |
 |---|---|---|
@@ -43,7 +43,7 @@ What this causes today:
 ### 3.1 Files
 
 ```text
-server/src/data/dsa/
+server/src/modules/sheets/data/dsa/
   problems.js              the one list of problems
   sheets/blind-75.js       one small file per sheet
   sheets/neetcode-150.js
@@ -147,7 +147,7 @@ In `server/test/dsa-problems.test.js` (reads the data files; no network, no data
 Break each rule on purpose once (mutation check) and confirm a test fails.
 
 ### Phase 4: server and client switch (about 3 days)
-- New seed (`server/src/seed/dsaSeed.js`) validates first and then replaces the sheets (same "validate before wiping" rule as `notesSeed.js`). `masterSeed.js` calls it.
+- New seed (`server/src/modules/sheets/seeds/dsaSeed.js`) validates first and then replaces the sheets (same "validate before wiping" rule as `notesSeed.js`). `masterSeed.js` calls it.
 - New progress model and the changed controllers: `sheets.controller.js` (toggle by id, read progress), `user.controller.js` (dashboard summary, stats), `sheets.validators.js`.
 - `server/scripts/migrate-progress-to-problem-ids.js [--dry-run]`:
   - for each old `Progress` document, map each `link` to a problem id through links and aliases;

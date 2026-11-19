@@ -124,7 +124,7 @@ prepstack/
     │   │   ├── usage/           # Rolling usage counts
     │   │   └── content/         # Roadmap catalog, behavioral questions and link validation
     │   └── app.js               # Express app definition
-    ├── test/                    # API and service tests (node:test + supertest + in-memory MongoDB; a fake Redis in test/helpers)
+    ├── test/                    # Architecture guard, API and service tests (node:test + supertest + in-memory MongoDB; a fake Redis in test/helpers)
     ├── cluster.js               # Optional: one server copy per CPU core (needs Redis)
     └── server.js                # Startup and shutdown
 ```
@@ -700,7 +700,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 | `npm start`          | Launches server (one process, one CPU core) |
 | `npm run start:cluster` | One server copy per CPU core (`WEB_CONCURRENCY`, at most 8); refuses to start without `REDIS_URL`, because the copies share rate limits, locks and caches through Redis |
 | `npm run load:test`  | Starts the real server on an in-memory database and measures requests per second and latency at 10, 50 and 100 at once; `PROFILE=1` adds a CPU profile, `ONLY=` one request kind, `CLUSTER=4` four copies |
-| `npm run seed:notes` | Validates and atomically replaces CS notes; requires a MongoDB replica set/Atlas, rolls back failures, and returns a failing exit code (run after changing `src/data/notes`) |
+| `npm run seed:notes` | Validates and atomically replaces CS notes; requires a MongoDB replica set/Atlas, rolls back failures, and returns a failing exit code (run after changing `src/modules/notes/content`) |
 | `npm run check:links` | Checks that the outside links (roadmaps, skill catalog, resume guide tools) still answer; run by hand before a release, needs the network |
 | `npm run seed:all`   | Idempotently seeds DSA Sheets and CS notes (both seeds also clear the cached copies when Redis is set) |
 | `npm run build:plan-catalogs` | Rebuilds the planner's roadmap and sheet-topic catalogs after a roadmap or sheet change; a test fails until you do |
@@ -727,7 +727,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **1111 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers, Google sign-in and Redis are faked (a small in-memory fake Redis with its own clock, in `server/test/helpers/fake-redis.js`). Two Redis checks need the real service and are opt-in: `npm run test:redis-live` and `npm run measure:cache`.
+The server has **1112 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers, Google sign-in and Redis are faked (a small in-memory fake Redis with its own clock, in `server/test/helpers/fake-redis.js`). Two Redis checks need the real service and are opt-in: `npm run test:redis-live` and `npm run measure:cache`.
 
 ```bash
 cd server

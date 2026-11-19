@@ -37,7 +37,7 @@ Fill this in while writing each section, before it is reviewed. The DBMS rows ar
 | resume | Send a PDF with selectable text unless the application asks for another format | None yet. General guidance. Outside reader to confirm | not yet | |
 | resume | A plain font (Arial, Calibri, Roboto) at 10 to 11 pt | None yet. Common convention. Outside reader to confirm | not yet | |
 | resume | Role variants: what to stress for SDE intern, backend, frontend and data resumes | None yet. Opinion. Outside reader to confirm | not yet | |
-| resume | The Role Analyzer prefers lines that show a skill being used over a skills list; never suggests adding a missing skill; removes email, phone and links before the AI reads the text; scanned PDFs fail; PDF at most 3 MB and 5 pages; it is not an ATS | server/src/services/analyzer.service.js and resume.service.js (read 9 Nov 2026) | Claude, from the code | 2026-11-09 |
+| resume | The Role Analyzer prefers lines that show a skill being used over a skills list; never suggests adding a missing skill; removes email, phone and links before the AI reads the text; scanned PDFs fail; PDF at most 3 MB and 5 pages; it is not an ATS | server/src/modules/analyzer/analyzer.service.js and resume.service.js (read 9 Nov 2026) | Claude, from the code | 2026-11-09 |
 | resume | The weak and strong examples and the sample resume (names, college, company, numbers) | Invented for illustration and labelled as such on the page | not applicable | |
 | dbms-keys-constraints | A super key identifies every row; a candidate key is a minimal super key; the primary key is one chosen candidate key | Database System Concepts 7th ed. slides (db-book.com, ch2 slides.pdf), slide 2.8; ch7 slide 7.15 | not yet (draft) |  |
 | dbms-keys-constraints | A foreign key value must appear in the referenced relation (or be NULL); the holder is the referencing relation | DSC slides ch2, slide 2.8; PostgreSQL 18 docs 5.5 Constraints (postgresql.org/docs/current/ddl-constraints.html) | not yet (draft) |  |
@@ -490,4 +490,4 @@ Other problem substitutions come from the existing sheet catalog and receive the
 
 | Number | Where | Status |
 |---|---|---|
-| Faster 0.6, Standard 1.0, Slower 1.4 times the minutes of a DSA problem | `server/src/services/planGenerator.js` (`PACES`), shown in the builder and Plan tab | Design choice; no external source. The base minutes (Basic 30, Easy 40, Medium 70, Hard 120) are unchanged. |
+| Faster 0.6, Standard 1.0, Slower 1.4 times the minutes of a DSA problem | `server/src/modules/plan/planGenerator.js` (`PACES`), shown in the builder and Plan tab | Design choice; no external source. The base minutes (Basic 30, Easy 40, Medium 70, Hard 120) are unchanged. |

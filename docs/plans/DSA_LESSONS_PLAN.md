@@ -10,7 +10,7 @@ DSA is the largest part of a big-tech interview loop, and it is the first thing 
 
 A lesson is a notes section in the existing format, so everything that already works for the CS notes works for it: the Markdown loader and its validator, the seed, the quiz and its scoring, saving a quiz score to a plan task, the review ladder, the notes pages, the recap view planned for every subject, the claim rows in `docs/content/SOURCES.md`, and the numbers-from-a-script rule.
 
-- **Subject:** a new notes subject, `dsa` ("DSA lessons"), with one Markdown file per lesson in `server/src/data/notes/dsa/`.
+- **Subject:** a new notes subject, `dsa` ("DSA lessons"), with one Markdown file per lesson in `server/src/modules/notes/content/dsa/`.
 - **Size:** about 2,000 words and a 10-minute read, like every other section; about 35 planned minutes with its quiz.
 - **Shape of a lesson** (the same blocks as every section, used for a pattern):
   - **Overview:** when to reach for the pattern, and the signals in a problem statement that point to it (sorted input, "longest substring", "all combinations", a graph in disguise).
@@ -90,11 +90,11 @@ Every claim about a cost, a rule or a behaviour gets a row in `docs/content/SOUR
 
 | Where | Change |
 |---|---|
-| `server/src/data/notes/dsa.js` and `dsa/` | The new subject, loaded like `hld.js` |
-| `server/src/seed/notesSeed.js` | Seed the `dsa` subject (`npm run seed:notes`, run by the owner) |
-| `server/src/validators/notes.validators.js` | Accept the `trace` diagram kind and its limits; the diagram count rule for `dsa` |
-| `server/src/services/planData.js`, `planGenerator.js` | `dsa` is loaded as notes data and labelled "DSA lessons", but is not one of the default or chosen CS subjects: it is planned only through the DSA level |
-| `server/src/services/skills.service.js`, `skillCatalog.json` | Label for the subject; map catalog skills with `dsaTopics` to lessons |
+| `server/src/modules/notes/content/dsa.js` and `dsa/` | The new subject, loaded like `hld.js` |
+| `server/src/modules/notes/notesSeed.js` | Seed the `dsa` subject (`npm run seed:notes`, run by the owner) |
+| `server/src/modules/notes/notes.validators.js` | Accept the `trace` diagram kind and its limits; the diagram count rule for `dsa` |
+| `server/src/modules/plan/planData.js`, `planGenerator.js` | `dsa` is loaded as notes data and labelled "DSA lessons", but is not one of the default or chosen CS subjects: it is planned only through the DSA level |
+| `server/src/modules/analyzer/skills.service.js`, `skillCatalog.json` | Label for the subject; map catalog skills with `dsaTopics` to lessons |
 | `server/scripts/analyzer-eval.js` | Include the new subject in the references |
 | `server/scripts/dsa-lesson-links.js` (new) | Writes the `sheetTopics` header of each lesson from the plan catalog, so every sheet topic of a step links to that step's lessons |
 | `client/src/pages/csNotes/Notes.jsx`, `NotesDetail.jsx` | A "DSA lessons" card; the page for a lesson shows the Practise links |

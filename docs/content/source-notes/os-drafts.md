@@ -1,6 +1,6 @@
 # Source notes: Operating Systems drafts (Phase 2, 12 Nov 2026)
 
-The eleven OS drafts are in `server/src/data/notes/os/drafts/` (not loaded by the site). Each was written by one of four AI writers from the sources in `os-oops-phase1.md`, then checked by `check-drafts.js` (the real notes validator and link rules): **template errors: none for all 11**. All numbers come from `docs/content/checks/os-check.py`. The drafts have **not** yet had the two read-only reviewers or the plain-words check (Phase 4); the "to check" lists below are what those reviewers start from.
+The eleven OS drafts are in `server/src/modules/notes/content/os/drafts/` (not loaded by the site). Each was written by one of four AI writers from the sources in `os-oops-phase1.md`, then checked by `check-drafts.js` (the real notes validator and link rules): **template errors: none for all 11**. All numbers come from `docs/content/checks/os-check.py`. The drafts have **not** yet had the two read-only reviewers or the plain-words check (Phase 4); the "to check" lists below are what those reviewers start from.
 
 ## Sections, sources and size (words counted by the checker; all above the 1,100 to 1,800 target, to be trimmed after review)
 | Section id | Words | Main sources |

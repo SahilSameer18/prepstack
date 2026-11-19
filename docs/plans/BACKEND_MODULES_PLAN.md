@@ -1,4 +1,8 @@
-# Backend modules: the move plan (19 Nov 2026, decisions made by the owner, ready for an agent to execute)
+# Backend modules: migration completed on module (19 Nov 2026)
+
+**Backend module migration complete on module, 19 Nov 2026.** The architecture test enforces feature import rules, checks runtime-built planner imports, rejects shared-to-feature dependencies and detects cycles. Three forbidden-import mutations failed as expected and were restored. Ten old source folders were verified empty and removed. Current documentation and comments use the new paths; the dated migration map and an archived unbuilt proposal retain historical paths. All 1,112 server tests and 135 client tests, build, lint and SEO passed. The real server.js also passed eleven local API smoke checks with disposable MongoDB and Redis off. Deployment and real external services were outside this pass.
+
+The dated phase records and original-path map below document the completed migration.
 
 **Read this whole file before touching anything.** It is written so an agent that has not seen the earlier conversation can do the work. The owner decided the items in section 3; everything else here is a fact read from the code on 19 Nov 2026 or an instruction.
 
@@ -29,7 +33,7 @@ The owner authorized Phases 5 and 6 together with one full test run after both. 
 ## 1. The goal
 Change `server/src` from one folder per kind of file (controllers, services, models, routes, validators, utils, middlewares, data, seed) to **one folder per feature** (a module), plus a `shared/` folder. A new feature (readiness, the AI queue, the LeetCode extension, DebugLab) then lives in one place.
 
-## 2. Facts (read from the code, 19 Nov 2026)
+## 2. Historical baseline before the move (read 19 Nov 2026)
 - `server/src` has 161 files: 96 `.js` and `.json` files plus 65 `.md` note files under `data/notes/`. The table in section 5 covers all of them (the note folders are listed as whole folders).
 - Server suite on 19 Nov 2026: **1111 tests, 0 failures** (`cd server && npm test`). Record the number you see at step 0; that is the baseline.
 - `server.js` (root of `server/`) requires four files that move: `src/config/database`, `src/config/redis`, `src/services/ai.service`, `src/services/email.service`. `cluster.js` and `src/app.js` stay where they are; `app.js` requires every route file and every middleware it uses. The Render start command stays `node server.js`.
@@ -68,10 +72,10 @@ server/
 ```
 File names do not change. Inside a module the files are flat, except `modules/sheets/seeds/` and `modules/notes/content/`.
 
-## 5. File-by-file map (paths relative to `server/src/`)
+## 5. Historical migration map (original and current paths relative to `server/src/`)
 | From | To | Done |
 |---|---|---|
-| `app.js` | stays | |
+| `app.js` | stays | Done, Phase 6 |
 | `config/database.js` | `shared/config/database.js` | Done, Phase 2 |
 | `config/limits.js` | `shared/config/limits.js` | Done, Phase 2 |
 | `config/redis.js` | `shared/config/redis.js` | Done, Phase 2 |
@@ -177,7 +181,7 @@ plan             -> analyzer, auth, notes, sheets, shared
 ```
 No cycles. The architecture test (step 7) checks exactly this table.
 
-## 7. Order of work
+## 7. Completed order of work
 Each step ends with: the full server suite passes with the **same number of tests as the baseline**, then **stop and hand the owner the git commands** (rule 1). Do not start the next step until the owner says so.
 
 | Step | What | Check |
@@ -189,9 +193,9 @@ Each step ends with: the full server suite passes with the **same number of test
 | 4 | **`modules/sheets`, `modules/problem-notes`, `modules/notes`.** Move `data/notes/` as one folder. Update `package.json` `seed:*` scripts and the scripts that read these files. | Pass; load (do not run) the seed modules |
 | 5 | **`modules/ai`, `modules/project`, `modules/usage`, `modules/analyzer`.** | Pass |
 | 6 | **`modules/plan`** (largest). Fix the two run-time paths in `planData.js`: they must now point at `../sheets/seeds/sheetSeeds/` and `../notes/content/`. | Pass |
-| 7 | **Architecture test** `server/test/architecture.test.js`: parse every `require(...)` in `src/` (and the string-built ones are already gone), map each file to its module by folder (`shared`, or `modules/<name>`), and assert (a) no cycles between modules, (b) `shared` imports no module, (c) every module imports only what section 6 allows. Do a **mutation check**: add a forbidden import, see the test fail, remove it. Remove the now-empty old folders (`controllers`, `services`, `routes`, `models`, `validators`, `utils`, `middlewares`, `data`, `seed`). | New test passes; suite count is the baseline plus the new test |
-| 8 | **Docs and comments.** README (project structure section and any path it names), `TESTING.md`, the documents and client comments in section 2, `docs/HANDOFF.md`, `PROJECT_STATUS.md` (one dated line), `BUILD_CHECKLIST.md` if it has an item for this. Then search the whole repo for each old folder name (`src/services/`, `src/controllers/`, and so on) and fix what is left (history files that record the past may keep old paths if clearly dated). | Search finds no stale path |
-| 9 | **Final report.** Run the full server suite, then `cd client && npm run build && npm run lint`. Start the server once on a spare port (3100) with Redis off and request one public route per module (for example `/health`, `/api/sheets`, `/api/notes`, `/api/plan/options`) and one protected route to see a 401. Report the numbers and **what was not checked** (real seeds, live Redis, the deployed site). | Report |
+| 7 (done) | **Architecture test** `server/test/architecture.test.js`: inspect every `require(...)` in `src/`, including the two runtime-built content imports in `planData.js`, map each file to its module by folder (`shared`, or `modules/<name>`), and assert (a) no cycles between modules, (b) `shared` imports no module, (c) every module imports only what section 6 allows. Do a **mutation check**: add a forbidden import, see the test fail, remove it. Remove the now-empty old folders (`controllers`, `services`, `routes`, `models`, `validators`, `utils`, `middlewares`, `data`, `seed`). | New test passes; suite count is the baseline plus the new test |
+| 8 (done) | **Docs and comments.** README (project structure section and any path it names), `TESTING.md`, the documents and client comments in section 2, `docs/HANDOFF.md`, `PROJECT_STATUS.md` (one dated line), `BUILD_CHECKLIST.md` if it has an item for this. Then search the whole repo for each old folder name (`src/services/`, `src/controllers/`, and so on) and fix what is left (history files that record the past may keep old paths if clearly dated). | Search finds no stale path |
+| 9 (done locally) | **Final report.** Run the full server suite, then `cd client && npm run build && npm run lint`. Start the server once on a spare port (3100) with Redis off and request one public route per module (for example `/health`, `/api/sheets`, `/api/notes`, `/api/plan/options`) and one protected route to see a 401. Report the numbers and **what was not checked** (real seeds, live Redis, the deployed site). | Report |
 
 ## 8. How to move a step's files safely
 1. Create the target folders, `mv` the files listed for the step, keep file contents unchanged except the require paths.
