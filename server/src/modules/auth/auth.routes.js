@@ -1,9 +1,9 @@
 const express = require('express');
-const authController = require('../controllers/auth.controller')
-const authMiddleware = require('../middlewares/auth.middleware')
-const { authLimiter, registerLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter } = require('../shared/http/rateLimit.middleware')
-const validate = require('../shared/http/validate.middleware')
-const { registerSchema, loginSchema, googleLoginSchema, setPasswordSchema, forgotPasswordSchema, resetPasswordSchema } = require('../validators/auth.validators')
+const authController = require('./auth.controller')
+const authMiddleware = require('./auth.middleware')
+const { authLimiter, registerLimiter, linkGoogleLimiter, refreshLimiter, forgotPasswordLimiter, resetPasswordLimiter } = require('../../shared/http/rateLimit.middleware')
+const validate = require('../../shared/http/validate.middleware')
+const { registerSchema, loginSchema, googleLoginSchema, setPasswordSchema, forgotPasswordSchema, resetPasswordSchema } = require('./auth.validators')
 
 const authRouter = express.Router();
 

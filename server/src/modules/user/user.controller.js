@@ -1,19 +1,19 @@
 const mongoose = require('mongoose');
-const userModel = require('../models/auth.model');
-const projectModel = require('../models/project.model');
-const progressModel = require('../models/progress.model');
-const PasswordReset = require('../models/passwordReset.model');
-const DSASheet = require('../models/sheets.model');
-const AppError = require('../shared/http/AppError');
-const { invalidateUser } = require('../shared/infra/sessionCache');
-const { findUserByUsername } = require('../utils/usernameHelper');
+const userModel = require('../auth/auth.model');
+const projectModel = require('../../models/project.model');
+const progressModel = require('../../models/progress.model');
+const PasswordReset = require('../auth/passwordReset.model');
+const DSASheet = require('../../models/sheets.model');
+const AppError = require('../../shared/http/AppError');
+const { invalidateUser } = require('../../shared/infra/sessionCache');
+const { findUserByUsername } = require('../auth/usernameHelper');
 const bcrypt = require('bcrypt');
-const { formatUserResponse } = require('../utils/userResponse');
-const { sendSuccess } = require('../shared/http/responseFormatter');
-const { calendarSettings, studyStreak } = require('../shared/calendar/studyCalendar');
-const { planClock } = require('../shared/calendar/clock');
-const { cached } = require('../shared/infra/cache');
-const { problemIdentity, normalizedSolves } = require('../utils/problemIdentity');
+const { formatUserResponse } = require('../auth/userResponse');
+const { sendSuccess } = require('../../shared/http/responseFormatter');
+const { calendarSettings, studyStreak } = require('../../shared/calendar/studyCalendar');
+const { planClock } = require('../../shared/calendar/clock');
+const { cached } = require('../../shared/infra/cache');
+const { problemIdentity, normalizedSolves } = require('../../utils/problemIdentity');
 
 // The ONE place that decides how many problems a user has solved: only links that still exist in a sheet,
 // each counted once (a link repeated in two topics is one problem). Used by both stats endpoints so they agree.

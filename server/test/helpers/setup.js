@@ -112,7 +112,7 @@ const goodIdea = (over = {}) => ({
 const google = {
   token: (payload) => JSON.stringify({ email_verified: true, picture: 'https://lh3.example/photo.jpg', name: 'Test Person', ...payload }),
 };
-const googleClient = require(path.join(SERVER_ROOT, 'src', 'utils', 'googleClient.js'));
+const googleClient = require(path.join(SERVER_ROOT, 'src', 'modules', 'auth', 'googleClient.js'));
 googleClient.verifyIdToken = async ({ idToken }) => {
   let payload;
   try { payload = JSON.parse(idToken); } catch { throw new Error('Wrong number of segments in token'); }
@@ -144,7 +144,7 @@ async function stop() {
   if (mongod) await mongod.stop();
 }
 const getModels = () => ({
-  User: require(path.join(SERVER_ROOT, 'src', 'models', 'auth.model.js')),
+  User: require(path.join(SERVER_ROOT, 'src', 'modules', 'auth', 'auth.model.js')),
   Project: require(path.join(SERVER_ROOT, 'src', 'models', 'project.model.js')),
   Progress: require(path.join(SERVER_ROOT, 'src', 'models', 'progress.model.js')),
   DSASheet: require(path.join(SERVER_ROOT, 'src', 'models', 'sheets.model.js')),

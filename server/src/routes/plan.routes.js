@@ -25,7 +25,7 @@ const {
   getSubstitutes,
   substituteItem,
 } = require('../controllers/plan.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
+const authMiddleware = require('../modules/auth/auth.middleware');
 const { previewRecovery, applyRecovery, getPausedPlan } = require('../controllers/planRecovery.controller');
 const validate = require('../shared/http/validate.middleware');
 const {

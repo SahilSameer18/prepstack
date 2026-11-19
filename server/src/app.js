@@ -56,11 +56,11 @@ app.get('/health', (req, res) => {
 });
 
 // require all the routes here
-const authRouter = require('./routes/auth.routes')
+const authRouter = require('./modules/auth/auth.routes')
 const sheetsRouter = require('./routes/sheets.routes')
 const projectRouter = require('./routes/project.routes')
 const notesRouter = require('./routes/notes.routes')
-const userRouter = require('./routes/user.routes')
+const userRouter = require('./modules/user/user.routes')
 const analyzerRouter = require('./routes/analyzer.routes')
 const usageRouter = require('./routes/usage.routes')
 const problemNotesRouter = require('./routes/problemNotes.routes')

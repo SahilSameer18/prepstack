@@ -8,6 +8,8 @@
 
 The owner authorized Phases 1 and 2 together. They were verified separately and are ready for the owner to commit together. The architecture test and the remaining feature moves stay in their later steps.
 
+**Backend modules Phase 3 complete, 19 Nov 2026.** Fifteen files moved into auth and user modules, including the User model in auth. Callers and string-built test paths now point at the modules. The server suite passed all 1,111 tests in 210 suites; all 135 client tests, build, lint and SEO passed. Phase 4 (sheets, problem notes and notes) is next.
+
 ## 0. Rules for the agent (from `CLAUDE.md`, the owner's standing rules)
 1. **Never stage, commit or push.** This also means **do not use `git mv`** (it stages). Move files with plain `mv` (Git sees the renames when the owner commits). After each step, stop and give the owner the commands: one `git add -A server` (and docs when changed) and a one-line `git commit -m "..."` with no `Co-Authored-By` or other trailer.
 2. **Never read, edit or print `server/.env`.** One step changes a relative path that points at it (`seedConfig`, step 2); change the path string only.
@@ -68,7 +70,7 @@ File names do not change. Inside a module the files are flat, except `modules/sh
 | `config/limits.js` | `shared/config/limits.js` | Done, Phase 2 |
 | `config/redis.js` | `shared/config/redis.js` | Done, Phase 2 |
 | `controllers/analyzer.controller.js` | `modules/analyzer/analyzer.controller.js` | |
-| `controllers/auth.controller.js` | `modules/auth/auth.controller.js` | |
+| `controllers/auth.controller.js` | `modules/auth/auth.controller.js` | Done, Phase 3 |
 | `controllers/notes.controller.js` | `modules/notes/notes.controller.js` | |
 | `controllers/plan.controller.js` | `modules/plan/plan.controller.js` | |
 | `controllers/planRecovery.controller.js` | `modules/plan/planRecovery.controller.js` | |
@@ -76,36 +78,36 @@ File names do not change. Inside a module the files are flat, except `modules/sh
 | `controllers/project.controller.js` | `modules/project/project.controller.js` | |
 | `controllers/sheets.controller.js` | `modules/sheets/sheets.controller.js` | |
 | `controllers/usage.controller.js` | `modules/usage/usage.controller.js` | |
-| `controllers/user.controller.js` | `modules/user/user.controller.js` | |
+| `controllers/user.controller.js` | `modules/user/user.controller.js` | Done, Phase 3 |
 | `data/behavioralQuestions.json` | `shared/content/behavioralQuestions.json` | Done, Phase 2 |
 | `data/notes/` (whole folder, 71 files, structure kept) | `modules/notes/content/` | |
 | `data/planCatalog.json` | `modules/plan/planCatalog.json` | |
 | `data/problemNoteOptions.js` | `modules/problem-notes/problemNoteOptions.js` | |
 | `data/roadmapCatalog.json` | `shared/content/roadmapCatalog.json` | Done, Phase 2 |
 | `data/skillCatalog.json` | `modules/analyzer/skillCatalog.json` | |
-| `middlewares/auth.middleware.js` | `modules/auth/auth.middleware.js` | |
+| `middlewares/auth.middleware.js` | `modules/auth/auth.middleware.js` | Done, Phase 3 |
 | `middlewares/error.middleware.js` | `shared/http/error.middleware.js` | Done, Phase 2 |
 | `middlewares/rateLimit.middleware.js` | `shared/http/rateLimit.middleware.js` | Done, Phase 2 |
 | `middlewares/upload.middleware.js` | `modules/analyzer/upload.middleware.js` | |
 | `middlewares/validate.middleware.js` | `shared/http/validate.middleware.js` | Done, Phase 2 |
-| `models/auth.model.js` | `modules/auth/auth.model.js` | |
+| `models/auth.model.js` | `modules/auth/auth.model.js` | Done, Phase 3 |
 | `models/interviewReport.model.js` | `modules/analyzer/interviewReport.model.js` | |
 | `models/notes.model.js` | `modules/notes/notes.model.js` | |
-| `models/passwordReset.model.js` | `modules/auth/passwordReset.model.js` | |
+| `models/passwordReset.model.js` | `modules/auth/passwordReset.model.js` | Done, Phase 3 |
 | `models/plan.model.js` | `modules/plan/plan.model.js` | |
 | `models/problemNote.model.js` | `modules/problem-notes/problemNote.model.js` | |
 | `models/progress.model.js` | `modules/sheets/progress.model.js` | |
 | `models/project.model.js` | `modules/project/project.model.js` | |
 | `models/sheets.model.js` | `modules/sheets/sheets.model.js` | |
 | `routes/analyzer.routes.js` | `modules/analyzer/analyzer.routes.js` | |
-| `routes/auth.routes.js` | `modules/auth/auth.routes.js` | |
+| `routes/auth.routes.js` | `modules/auth/auth.routes.js` | Done, Phase 3 |
 | `routes/notes.routes.js` | `modules/notes/notes.routes.js` | |
 | `routes/plan.routes.js` | `modules/plan/plan.routes.js` | |
 | `routes/problemNotes.routes.js` | `modules/problem-notes/problemNotes.routes.js` | |
 | `routes/project.routes.js` | `modules/project/project.routes.js` | |
 | `routes/sheets.routes.js` | `modules/sheets/sheets.routes.js` | |
 | `routes/usage.routes.js` | `modules/usage/usage.routes.js` | |
-| `routes/user.routes.js` | `modules/user/user.routes.js` | |
+| `routes/user.routes.js` | `modules/user/user.routes.js` | Done, Phase 3 |
 | `seed/masterSeed.js` | `modules/sheets/seeds/masterSeed.js` | |
 | `seed/notesSeed.js` | `modules/notes/notesSeed.js` | |
 | `seed/seedConfig.js` | `shared/config/seedConfig.js` | Done, Phase 2 |
@@ -115,7 +117,7 @@ File names do not change. Inside a module the files are flat, except `modules/sh
 | `services/analyzer.service.js` | `modules/analyzer/analyzer.service.js` | |
 | `services/analyzerContext.service.js` | `modules/analyzer/analyzerContext.service.js` | |
 | `services/cache.js` | `shared/infra/cache.js` | Done, Phase 2 |
-| `services/email.service.js` | `modules/auth/email.service.js` | |
+| `services/email.service.js` | `modules/auth/email.service.js` | Done, Phase 3 |
 | `services/lock.js` | `shared/infra/lock.js` | Done, Phase 2 |
 | `services/planAdjust.js` | `modules/plan/planAdjust.js` | |
 | `services/planData.js` | `modules/plan/planData.js` | |
@@ -130,8 +132,8 @@ File names do not change. Inside a module the files are flat, except `modules/sh
 | `services/skills.service.js` | `modules/analyzer/skills.service.js` | |
 | `services/usage.service.js` | `shared/usage/usage.service.js` | Done, Phase 2 |
 | `utils/AppError.js` | `shared/http/AppError.js` | Done, Phase 2 |
-| `utils/deviceParser.js` | `modules/auth/deviceParser.js` | |
-| `utils/googleClient.js` | `modules/auth/googleClient.js` | |
+| `utils/deviceParser.js` | `modules/auth/deviceParser.js` | Done, Phase 3 |
+| `utils/googleClient.js` | `modules/auth/googleClient.js` | Done, Phase 3 |
 | `utils/clock.js` (added in Phase 1) | `shared/calendar/clock.js` | Done, Phase 2 |
 | `utils/istDay.js` | `shared/calendar/istDay.js` | Done, Phase 2 |
 | `utils/notesStats.js` | `modules/notes/notesStats.js` | |
@@ -139,18 +141,18 @@ File names do not change. Inside a module the files are flat, except `modules/sh
 | `utils/problemIdentity.js` | `modules/sheets/problemIdentity.js` | |
 | `utils/responseFormatter.js` | `shared/http/responseFormatter.js` | Done, Phase 2 |
 | `utils/studyCalendar.js` | `shared/calendar/studyCalendar.js` | Done, Phase 2 |
-| `utils/tokens.js` | `modules/auth/tokens.js` | |
-| `utils/userResponse.js` | `modules/auth/userResponse.js` | |
-| `utils/usernameHelper.js` | `modules/auth/usernameHelper.js` | |
+| `utils/tokens.js` | `modules/auth/tokens.js` | Done, Phase 3 |
+| `utils/userResponse.js` | `modules/auth/userResponse.js` | Done, Phase 3 |
+| `utils/usernameHelper.js` | `modules/auth/usernameHelper.js` | Done, Phase 3 |
 | `validators/analyzer.validators.js` | `modules/analyzer/analyzer.validators.js` | |
-| `validators/auth.validators.js` | `modules/auth/auth.validators.js` | |
+| `validators/auth.validators.js` | `modules/auth/auth.validators.js` | Done, Phase 3 |
 | `validators/contentLinks.js` | `shared/content/contentLinks.js` | Done, Phase 2 |
 | `validators/notes.validators.js` | `modules/notes/notes.validators.js` | |
 | `validators/plan.validators.js` | `modules/plan/plan.validators.js` | |
 | `validators/problemNotes.validators.js` | `modules/problem-notes/problemNotes.validators.js` | |
 | `validators/project.validators.js` | `modules/project/project.validators.js` | |
 | `validators/sheets.validators.js` | `modules/sheets/sheets.validators.js` | |
-| `validators/user.validators.js` | `modules/user/user.validators.js` | |
+| `validators/user.validators.js` | `modules/user/user.validators.js` | Done, Phase 3 |
 
 ## 6. Who may import whom
 ```

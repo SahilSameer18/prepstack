@@ -1,18 +1,18 @@
-const userModel = require('../models/auth.model')
-const PasswordReset = require('../models/passwordReset.model');
+const userModel = require('./auth.model')
+const PasswordReset = require('./passwordReset.model');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { generateAccessToken, generateRefreshToken, hashToken } = require('../utils/tokens');
-const AppError = require('../shared/http/AppError');
-const { invalidateUser } = require('../shared/infra/sessionCache');
-const googleClient = require('../utils/googleClient');
-const { generateUniqueUsername, findUserByUsername } = require('../utils/usernameHelper');
-const { parseDeviceInfo } = require('../utils/deviceParser');
-const { sendSuccess } = require('../shared/http/responseFormatter');
-const { formatUserResponse, defaultAvatar } = require('../utils/userResponse');
-const { sendEmail, isEmailConfigured, passwordResetEmail, googleOnlyEmail, settings: emailSettings } = require('../services/email.service');
+const { generateAccessToken, generateRefreshToken, hashToken } = require('./tokens');
+const AppError = require('../../shared/http/AppError');
+const { invalidateUser } = require('../../shared/infra/sessionCache');
+const googleClient = require('./googleClient');
+const { generateUniqueUsername, findUserByUsername } = require('./usernameHelper');
+const { parseDeviceInfo } = require('./deviceParser');
+const { sendSuccess } = require('../../shared/http/responseFormatter');
+const { formatUserResponse, defaultAvatar } = require('./userResponse');
+const { sendEmail, isEmailConfigured, passwordResetEmail, googleOnlyEmail, settings: emailSettings } = require('./email.service');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

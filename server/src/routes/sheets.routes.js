@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const sheetsController = require('../controllers/sheets.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
+const authMiddleware = require('../modules/auth/auth.middleware');
 const validate = require('../shared/http/validate.middleware');
 const { toggleProblemSchema } = require('../validators/sheets.validators');
 

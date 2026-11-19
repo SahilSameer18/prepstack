@@ -1,5 +1,7 @@
 # PrepStack: status and build order
 
+**Backend modules Phase 3 complete, 19 Nov 2026.** Fifteen files moved into auth and user modules, including the User model in auth. Callers and string-built test paths now point at the modules. The server suite passed all 1,111 tests in 210 suites; all 135 client tests, build, lint and SEO passed. Phase 4 (sheets, problem notes and notes) is next.
+
 **Backend modules Phases 1 and 2 complete, 19 Nov 2026.** The clock is shared independently of planner content, and AI owns the difficulty values used by the project model. Twenty-one files now live under server/src/shared, with imports, runtime paths, scripts and README updated. The full server suite passed all 1,111 tests after each phase. All 135 client tests, the build, lint and SEO passed. Phase 3 (auth and user modules) is next.
 
 **Backend modules Phase 0, 19 Nov 2026.** Baseline verified on branch module before moving files. All 1,111 server tests passed in 210 suites, with zero failures, cancellations or skips. Phase 1 is next. See docs/plans/BACKEND_MODULES_PLAN.md.

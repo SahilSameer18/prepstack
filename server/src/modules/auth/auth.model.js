@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { USERNAME_COLLATION } = require('../utils/usernameHelper');
+const { USERNAME_COLLATION } = require('./usernameHelper');
 
 const userSchema = new mongoose.Schema({
   // Defaults preserve existing users' India-midnight calendar.

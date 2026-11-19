@@ -1,6 +1,6 @@
 const crypto = require('node:crypto');
 const Plan = require('../models/plan.model');
-const User = require('../models/auth.model');
+const User = require('../modules/auth/auth.model');
 const Progress = require('../models/progress.model');
 const AppError = require('../shared/http/AppError');
 const { sendSuccess } = require('../shared/http/responseFormatter');

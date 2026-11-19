@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { getUserStats, getDashboardSummary, updateProfile, changePassword, deleteAccount } = require('../controllers/user.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
-const validate = require('../shared/http/validate.middleware');
-const { accountActionLimiter } = require('../shared/http/rateLimit.middleware');
-const { updateProfileSchema, changePasswordSchema, deleteAccountSchema } = require('../validators/user.validators');
+const { getUserStats, getDashboardSummary, updateProfile, changePassword, deleteAccount } = require('./user.controller');
+const authMiddleware = require('../auth/auth.middleware');
+const validate = require('../../shared/http/validate.middleware');
+const { accountActionLimiter } = require('../../shared/http/rateLimit.middleware');
+const { updateProfileSchema, changePasswordSchema, deleteAccountSchema } = require('./user.validators');
 
 // Apply authentication middleware to all user routes
 router.use(authMiddleware);
