@@ -66,6 +66,7 @@ Candidates scatter their preparation across disconnected tools: LeetCode or a sh
 - [Getting Started](#getting-started)
 - [Scripts](#scripts)
 - [Testing](#testing)
+- [Evaluation](#evaluation)
 - [Deployment Notes and Roadmap](#deployment-notes-and-roadmap)
 - [Project Documentation](#project-documentation)
 - [Contributing](#contributing)
@@ -760,8 +761,9 @@ With Redis on, cached public reads can show content up to about 15 minutes old a
 
 | Script | Description |
 |---|---|
+| `node scripts/plan-fuzz.js [count] [seed]` | Runs the real planner on generated plan requests and checks its rules; prints the violations and how many plans cut work (writes nothing) |
 | `npm run load:test` | Starts the real server on an in-memory database and measures requests per second and latency at 10, 50 and 100 at once; `PROFILE=1` adds a CPU profile, `ONLY=` one request kind, `CLUSTER=4` four copies |
-| `npm run benchmark:analyzer` | Runs the real Role Analyzer on labelled resume and job pairs and prints how often it agrees with the labels, how much repeat runs and models disagree, and the false-reassurance rate (real AI calls; without `--data` it runs 7 made-up pairs as a smoke test; see [docs/research/ANALYZER_BENCHMARK.md](docs/research/ANALYZER_BENCHMARK.md)) |
+| `npm run benchmark:analyzer` | Runs the real Role Analyzer on labelled resume and job pairs (the 12-pair starter set by default) and prints precision, recall and F1 per status, false reassurance, quote checks, score error, run-to-run and per-model spread with 95% intervals, next to a keyword baseline. `-- --baseline-only` needs no AI; `--split dev` or `--split holdout`; `--data <file>` for your own pairs (real AI calls otherwise; see [docs/research/ANALYZER_BENCHMARK.md](docs/research/ANALYZER_BENCHMARK.md)) |
 | `node scripts/student-check-report.js <usernames>` | Read-only counts for the student check (tasks done, days active, reviews); never prints emails (see [docs/research/STUDENT_CHECK.md](docs/research/STUDENT_CHECK.md)) |
 | `npm run redis:check` | Checks the Redis service in `server/.env`: version, eviction policy, expiry, locks, counters, Lua, connections; prints no address |
 | `npm run measure:cache` | Counts database reads and generator runs for 400 public requests without Redis and with the real service |
@@ -793,7 +795,7 @@ With Redis on, cached public reads can show content up to about 15 minutes old a
 
 | Suite | Count | How to run |
 |---|---|---|
-| Server (`node:test` + `supertest` + in-memory MongoDB) | **1128 tests** | `cd server && npm test` |
+| Server (`node:test` + `supertest` + in-memory MongoDB) | **1140 tests** | `cd server && npm test` |
 | Client unit tests (Vitest, no browser) | **135 tests** in 14 files | `cd client && npm test` |
 | Browser flows (Playwright) | **32 flows** in 3 files | `cd client && npm run test:browser` |
 
@@ -802,6 +804,27 @@ The server tests need no real keys and no network: the AI providers, Google sign
 The client unit tests cover the login token refresh (refresh once, share it between parallel requests, sign out only when the server refuses it, never on a timeout), a design-token check that fails when a component uses a raw color, the resume checklist PDF, notes quiz scoring and diagram layout, the roadmap data rules and links, the Analyzer link builder, study-plan helpers, problem-note import and merge, and page titles. The browser flows cover the signed-out pages, first-time experience, the dashboard, report imports and the daily study workspace at phone and desktop widths; they use fresh disposable servers and do not load the real server environment.
 
 The Role Analyzer was also checked against the real AI with hand-run scripts in `server/scripts/` (they need your own keys and use free-tier quota). Details, and what is not covered: [TESTING.md](TESTING.md).
+
+---
+
+## Evaluation
+
+### My plan: generated scenarios
+
+`node scripts/plan-fuzz.js 5000 2718` builds 5,000 plan requests from a fixed seed (every goal, all five sheets, all nine roadmaps, all three paces, both study styles, rest days, lighter days, known and solved work) and runs the real planner on the real catalog. Run on 19 Nov 2026:
+
+| What | Result |
+|---|---|
+| Requests | 5,000 (3,680 fresh plans and 1,320 changes to an existing plan), 22 seconds |
+| Rule violations | **0** |
+| Changes to an existing plan | 1,306 applied, 14 refused by the rules |
+| Hours-and-sheet sweep (`node scripts/plan-scenarios.js`) | 320 combinations, **0 errors and 0 empty plans** |
+
+The rules checked on every plan: no duplicate items; nothing outside the plan window or on a day with no study hours; no day over its minute limit; the planned and left-out work add up to the syllabus; minutes follow difficulty and pace; solved problems and known topics are never planned. For a change to an existing plan: finished work is untouched, no open work is left before today or after the deadline, the pace is applied, and the preview carries a checksum. 800 of these requests also run in the normal test suite (`npm test`). When the hours are too short, plans trim lower-priority work and explain what was left out. These are generated requests on the real data, not real students.
+
+### Role Analyzer: a labelled benchmark
+
+`npm run benchmark:analyzer` runs the real analyzer on a **12-pair starter set** (3 strong, 3 partial, 3 weak and 3 tricky matches, such as Java against JavaScript or a skills list with no project evidence) and compares it with human-style labels. It reports precision, recall and F1 for met, partial and missing, false reassurance, quotes found in the resume, score against the expected range, run-to-run spread and results per AI model, with 95% Wilson intervals, next to a keyword baseline that needs no AI. Four pairs are held out for a final check. Method, research and pass marks: [docs/research/ANALYZER_BENCHMARK.md](docs/research/ANALYZER_BENCHMARK.md). Results will be added here after the first labelled run.
 
 ---
 

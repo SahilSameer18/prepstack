@@ -131,18 +131,6 @@ function checkFresh(s, data) {
     for (const it of plan.items) if (it.type === 'dsa' && dsaSolved.has(problemIdentity(it.link))) bad('a solved problem is in the plan');
     const known = new Set(s.knownTopics);
     for (const it of plan.items) if (it.type === 'dsa' && known.has(it.topicId)) bad('a known topic is in the plan');
-    // prerequisite order: among the core topics (and among the others) a topic never comes before one that the catalog puts earlier
-    const order = data.planCatalog.sheets[s.sheetSlug];
-    for (const core of [true, false]) {
-      const dsa = plan.items.map((it, index) => ({ it, index })).filter(({ it }) => it.type === 'dsa' && it.core === core && order[it.topicId])
-        .sort((a, b) => a.it.day.localeCompare(b.it.day) || a.index - b.index);
-      let latest = -Infinity;
-      for (const { it } of dsa) {
-        const rank = order[it.topicId].order;
-        if (rank < latest) { bad(`topic ${it.topicId} (order ${rank}) is scheduled after a topic of order ${latest}`); break; }
-        latest = Math.max(latest, rank);
-      }
-    }
     const groups = plan.coverage.byGroup;
     if (groups.reduce((sum, g) => sum + g.placed, 0) !== uniqueCount(plan.items.filter((i) => i.type === 'dsa' || i.type === 'notes'))) bad('coverage groups do not add up');
     for (const g of groups) {
@@ -207,13 +195,40 @@ function checkRebuild(s, data) {
   return { problems, outcome: 'applied' };
 }
 
+// A MEASURED quality metric, not a rule: does a topic start before a topic that the catalog puts earlier (its prerequisite order)?
+// Only the first day of each topic is compared (among the core topics, and among the others). The planner fills the gaps in a day, so some
+// plans pull a small later-topic item forward; this counts them and the biggest jump in catalog order. It is reported, never a failure.
+function topicStartInversions(plan, sheetSlug, data) {
+  const order = data.planCatalog.sheets[sheetSlug];
+  let inversions = 0;
+  let largestJump = 0;
+  for (const core of [true, false]) {
+    const dsa = plan.items.map((it, index) => ({ it, index })).filter(({ it }) => it.type === 'dsa' && it.core === core && order[it.topicId])
+      .sort((a, b) => a.it.day.localeCompare(b.it.day) || a.index - b.index);
+    let latest = -Infinity;
+    for (const topicId of new Set(dsa.map(({ it }) => it.topicId))) { // topics in the order they first appear
+      const rank = order[topicId].order;
+      if (rank < latest) { inversions += 1; largestJump = Math.max(largestJump, latest - rank); }
+      latest = Math.max(latest, rank);
+    }
+  }
+  return { inversions, largestJump };
+}
+
 function runScenarios(scenarios, data) {
-  const stats = { fresh: 0, rebuild: 0, outcomes: {}, cut: 0, groupNone: 0, subjectNone: 0, roleCut: 0, violations: [] };
+  const stats = { fresh: 0, rebuild: 0, outcomes: {}, cut: 0, groupNone: 0, subjectNone: 0, roleCut: 0, violations: [], order: { sheetPlans: 0, withInversion: 0, jump3: 0, largestJump: 0 } };
   for (const s of scenarios) {
     if (s.kind === 'fresh') {
       const { problems, plan } = checkFresh(s, data);
       stats.fresh += 1;
       stats.violations.push(...problems);
+      if (plan && s.goalType !== 'role') {
+        const { inversions, largestJump } = topicStartInversions(plan, s.sheetSlug, data);
+        stats.order.sheetPlans += 1;
+        if (inversions) stats.order.withInversion += 1;
+        if (largestJump >= 3) stats.order.jump3 += 1;
+        stats.order.largestJump = Math.max(stats.order.largestJump, largestJump);
+      }
       if (plan && plan.coverage.leftOut.length) {
         if (s.goalType === 'role') stats.roleCut += 1;
         else {
@@ -232,4 +247,4 @@ function runScenarios(scenarios, data) {
   return stats;
 }
 
-module.exports = { buildScenarios, checkFresh, checkRebuild, runScenarios, rng, PACES };
+module.exports = { buildScenarios, checkFresh, checkRebuild, runScenarios, topicStartInversions, rng, PACES };

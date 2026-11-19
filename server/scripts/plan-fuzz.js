@@ -17,6 +17,8 @@ const { buildScenarios, runScenarios } = require(path.join(__dirname, '../test/h
   console.log('sheet plans that cut something:', stats.cut, '| role plans that cut something:', stats.roleCut);
   console.log('  of the sheet plans that cut, with a DSA topic group at 0 problems:', stats.groupNone, '| with a chosen subject at 0 sections:', stats.subjectNone);
   console.log('changes mid-plan, by result:', JSON.stringify(stats.outcomes));
+  const o = stats.order;
+  console.log(`topic order (measured, not a rule): ${o.withInversion} of ${o.sheetPlans} sheet plans start a topic before an earlier one in the catalog order (${o.jump3} of them by 3 or more steps, the largest by ${o.largestJump}); the planner fills the gaps in a day`);
   console.log('rule violations:', stats.violations.length);
   for (const line of stats.violations.slice(0, 25)) console.log('  ' + line);
   process.exit(stats.violations.length ? 1 : 0);

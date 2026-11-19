@@ -127,12 +127,15 @@ Production steps (each comes right after its learning modules). **Interview-prac
 - [ ] 11.6 Version 1.1 idea: LeetCode solved-problem import
 - [ ] 11.7 Curated "must-do" problems per topic (replaces the quick-revision rule) and authored recap lines
 - [ ] 11.8 Plan export to a file or calendar
+- [ ] 11.9 Planner finding (19 Nov 2026): gap filling pulls a later-topic item forward, so 57% of generated sheet plans start a topic before an earlier one in the catalog order (577 of 2,561 by 3 or more steps, the largest 9). Decide: leave it, restrict gap filling to the same or the next topic, or only to items no more than N steps ahead; then make the order a tested rule (`topicStartInversions` in `test/helpers/plan-scenarios.js` already measures it)
+- [ ] 11.10 Analyzer benchmark: have a second person review the draft labels of the 12-pair starter set, run `npm run benchmark:analyzer` (dev pairs, then the held-out pairs once), grow the set to 30 to 50 pairs, then publish the numbers with intervals
 
 A dedicated 1–2 week interview scheduler was dropped on 15 Nov. The recovery flow already supports running a short ordinary plan while the main plan is paused. Revisit dedicated scheduling only if the owner reopens it, using the short-plan examples in `docs/plans/MY_PLAN_COVERAGE_PLAN.md`.
 
 ## 12. Role Analyzer
 
 - [ ] 12.1 The three Role Analyzer changes the owner set aside on 12 Nov (the owner decides which to do)
+- [ ] 12.3 Analyzer reliability (19 Nov 2026 benchmark run): 9 of 14 attempted runs failed under the live limits (Gemini 503 or timeout at 20 s per call, wrong-shape JSON from `gemini-3.1-flash-lite` and Groq). Measure per-provider answer time and wrong-shape rate on the live chain, then decide: a longer per-call limit for the analyzer, a smaller answer, a simpler schema, or a queue (REDIS_PLAN phase 7)
 - [ ] 12.2 Part 2, "interconnection": the rest of PrepStack changes because of the analyzer (`docs/archive/ANALYZER_PLAN.md`, section 12; starts only if students say yes)
 
 ## 13. LeetCode auto-sync extension (`docs/plans/EXTENSION.md`)
