@@ -1,5 +1,5 @@
 // Works out where everything goes in a diagram, kept apart from the screen so it can be tested.
-// A diagram is plain data: { kind: 'flow' | 'layers' | 'graph' | 'sequence', caption, ... } (the rules are in server/src/validators/notes.validators.js).
+// A diagram is plain data: { kind: 'flow' | 'layers' | 'graph' | 'sequence', caption, ... } (the rules are in server/src/modules/notes/notes.validators.js).
 // Every layout returns { width, height, boxes: [{ key, label, x, y, w, h, shape? }], arrows: [{ x1, y1, x2, y2, label, step?, dashed? }] } in SVG units;
 // a graph also returns groups (zone boxes) and a sequence also returns lifelines.
 const BOX_H = 44;

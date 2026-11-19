@@ -16,13 +16,13 @@ describe('Plan ticks on a replica set (transaction path)', () => {
 
   it('notes publishing rolls back a failure after deletion, validates first, then replaces successfully', async () => {
     const Notes = t.mongoose.model('Notes');
-    const { publishNotes } = require('../src/seed/notesSeed');
+    const { publishNotes } = require('../src/modules/notes/notesSeed');
     await Notes.init();
     await Notes.create({ subject: 'Previous notes', subjectSlug: 'previous', sections: [] });
     const before = await Notes.find({}).lean();
     await assert.rejects(publishNotes([{ subject: '', subjectSlug: 'os', sections: [] }]), /problems/);
     assert.deepEqual(await Notes.find({}).lean(), before);
-    const os = require('../src/data/notes/os');
+    const os = require('../src/modules/notes/content/os');
     const replacement = [{ subject: os.subject, subjectSlug: 'os', sections: os.sections }];
     const insert = Notes.insertMany;
     Notes.insertMany = async () => { throw new Error('replacement failed'); };

@@ -3,11 +3,11 @@
 const t = require('./helpers/setup');
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
-const { checkNotesSubject, ID_PATTERN } = require('../src/validators/notes.validators');
-const { countWords, readMinutes, sectionStats, subjectStats, WORDS_PER_MINUTE } = require('../src/utils/notesStats');
+const { checkNotesSubject, ID_PATTERN } = require('../src/modules/notes/notes.validators');
+const { countWords, readMinutes, sectionStats, subjectStats, WORDS_PER_MINUTE } = require('../src/modules/notes/notesStats');
 
 const SUBJECTS = ['os', 'dbms', 'cn', 'oops', 'hld'];
-const realData = (slug) => require(`../src/data/notes/${slug}.js`);
+const realData = (slug) => require(`../src/modules/notes/content/${slug}.js`);
 const words = (n) => Array.from({ length: n }, (_, i) => `word${i}`).join(' ');
 
 // A section that follows the whole template

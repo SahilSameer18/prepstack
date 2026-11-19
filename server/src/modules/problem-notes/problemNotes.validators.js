@@ -1,6 +1,6 @@
 const { z } = require('zod');
-const { TIME_COMPLEXITIES, SPACE_COMPLEXITIES, COMMON_PATTERNS, APPROACH_MAX } = require('../data/problemNoteOptions');
-const { PROBLEM_NOTE_IMPORT_BATCH } = require('../shared/config/limits');
+const { TIME_COMPLEXITIES, SPACE_COMPLEXITIES, COMMON_PATTERNS, APPROACH_MAX } = require('./problemNoteOptions');
+const { PROBLEM_NOTE_IMPORT_BATCH } = require('../../shared/config/limits');
 
 // A choice from the drawer's chips, or '' for "not set"
 const choice = (list, label) => z.enum([...list, ''], { error: `${label} must be one of the choices or empty` }).default('');

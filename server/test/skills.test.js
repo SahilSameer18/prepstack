@@ -13,7 +13,7 @@ const { catalog } = skills;
 // ref -> readable title, built from the real notes data and the Blind 75 seed (the app builds the same map from the database)
 const titles = Object.fromEntries([
   ...t.sheetSeedData()[0].topics.map((tp) => [`dsa:blind-75:${tp.id}`, tp.title.trim()]),
-  ...['os', 'dbms', 'cn', 'oops', 'hld'].flatMap((subject) => require(`../src/data/notes/${subject}.js`).sections.map((sec) => [`notes:${subject}:${sec.id}`, sec.title])),
+  ...['os', 'dbms', 'cn', 'oops', 'hld'].flatMap((subject) => require(`../src/modules/notes/content/${subject}.js`).sections.map((sec) => [`notes:${subject}:${sec.id}`, sec.title])),
 ]);
 const match = (text) => skills.matchSkillText(text);
 
@@ -205,7 +205,7 @@ describe('the catalog itself', () => {
 
 describe('every link into PrepStack still points at something real (the dangling-link test)', () => {
   const readBlind75Topics = () => t.sheetSeedData()[0].topics.map((topic) => topic.id);
-  const notesSections = (subject) => require(`../src/data/notes/${subject}.js`).sections.map((s) => s.id);
+  const notesSections = (subject) => require(`../src/modules/notes/content/${subject}.js`).sections.map((s) => s.id);
 
   it('the DSA topics exist in the Blind 75 sheet', () => {
     const real = new Set(readBlind75Topics());

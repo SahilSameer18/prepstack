@@ -1,8 +1,8 @@
-const ProblemNote = require('../models/problemNote.model');
-const DSASheet = require('../models/sheets.model');
-const AppError = require('../shared/http/AppError');
-const { sendSuccess } = require('../shared/http/responseFormatter');
-const { deleteNoteSchema, isEmpty } = require('../validators/problemNotes.validators');
+const ProblemNote = require('./problemNote.model');
+const DSASheet = require('../sheets/sheets.model');
+const AppError = require('../../shared/http/AppError');
+const { sendSuccess } = require('../../shared/http/responseFormatter');
+const { deleteNoteSchema, isEmpty } = require('./problemNotes.validators');
 
 const FIELDS = ['pattern', 'timeComplexity', 'spaceComplexity', 'approach'];
 const present = (n) => ({ problemLink: n.problemLink, pattern: n.pattern, timeComplexity: n.timeComplexity, spaceComplexity: n.spaceComplexity, approach: n.approach, updatedAt: n.updatedAt });

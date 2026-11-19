@@ -173,7 +173,7 @@ describe('POST /api/problem-notes/import (the one-time move from the browser)', 
 describe('the choices match the drawer on the client', { skip: !fs.existsSync(path.join(t.SERVER_ROOT, '..', 'client', 'src', 'data', 'problemNoteOptions.js')) && 'client folder not present' }, () => {
   it('server and client lists are the same', async () => {
     const client = await import(pathToFileURL(path.join(t.SERVER_ROOT, '..', 'client', 'src', 'data', 'problemNoteOptions.js')).href);
-    const server = require('../src/data/problemNoteOptions');
+    const server = require('../src/modules/problem-notes/problemNoteOptions');
     for (const k of ['TIME_COMPLEXITIES', 'SPACE_COMPLEXITIES', 'COMMON_PATTERNS', 'APPROACH_MAX']) assert.deepEqual(client[k], server[k], k);
   });
 });

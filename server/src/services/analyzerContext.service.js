@@ -8,9 +8,9 @@
 //   roadmap:<slug>              the roadmaps. The roadmap content lives in the client, so the slugs are listed here;
 //                               test/analyzer.context.test.js fails if they drift from client/src/data/roadmaps.js
 //   behavioral   PrepStack's behavioral question bank (id and text), copied from the client for the same reason
-const DSASheet = require('../models/sheets.model');
+const DSASheet = require('../modules/sheets/sheets.model');
 const roadmapCatalog = require('../shared/content/roadmapCatalog.json');
-const Notes = require('../models/notes.model');
+const Notes = require('../modules/notes/notes.model');
 const catalog = require('../data/skillCatalog.json');
 const behavioral = require('../shared/content/behavioralQuestions.json');
 

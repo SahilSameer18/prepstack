@@ -1,5 +1,5 @@
-const Progress = require('../models/progress.model');
-const { problemIdentity, normalizedSolves } = require('../utils/problemIdentity');
+const Progress = require('./progress.model');
+const { problemIdentity, normalizedSolves } = require('./problemIdentity');
 
 // Normalize legacy aliases inside the atomic update, not in a read/replace
 // cycle. Concurrent toggles continue to operate on the latest stored array.

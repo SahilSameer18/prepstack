@@ -5,8 +5,8 @@ const os = require('node:os');
 const path = require('node:path');
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
-const { parseSection, loadMarkdownSections, withMarkdownSections, orderByNext } = require('../src/data/notes/markdownSections');
-const { checkNotesSubject } = require('../src/validators/notes.validators');
+const { parseSection, loadMarkdownSections, withMarkdownSections, orderByNext } = require('../src/modules/notes/content/markdownSections');
+const { checkNotesSubject } = require('../src/modules/notes/notes.validators');
 
 const OVERVIEW = [
   'A relational schema is in good shape when each fact is stored once. Interviewers ask about this to see whether you can spot redundancy and name the rule it breaks.',
@@ -227,8 +227,8 @@ describe('loadMarkdownSections and withMarkdownSections', () => {
 });
 
 describe('the real DBMS notes (all Markdown)', () => {
-  const dir = path.join(__dirname, '..', 'src', 'data', 'notes', 'dbms');
-  const dbms = require('../src/data/notes/dbms');
+  const dir = path.join(__dirname, '..', 'src', 'modules', 'notes', 'content', 'dbms');
+  const dbms = require('../src/modules/notes/content/dbms');
   const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md') && !f.startsWith('_'));
 
   it('has the ten sections, one file each, in reading order', () => {
@@ -274,8 +274,8 @@ describe('the real DBMS notes (all Markdown)', () => {
 });
 
 describe('the real Computer Networks notes (all Markdown)', () => {
-  const dir = path.join(__dirname, '..', 'src', 'data', 'notes', 'cn');
-  const cn = require('../src/data/notes/cn');
+  const dir = path.join(__dirname, '..', 'src', 'modules', 'notes', 'content', 'cn');
+  const cn = require('../src/modules/notes/content/cn');
   const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md') && !f.startsWith('_'));
 
   it('has the ten sections, one file each, in reading order', () => {

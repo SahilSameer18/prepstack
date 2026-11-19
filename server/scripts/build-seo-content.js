@@ -5,7 +5,7 @@
 // Run after changing a notes section or a sheet: npm run build:seo-content. test/seo-content.test.js fails when the copies are stale.
 const fs = require('fs');
 const path = require('path');
-const { sectionStats } = require('../src/utils/notesStats');
+const { sectionStats } = require('../src/modules/notes/notesStats');
 
 const SEO_DIR = path.join(__dirname, '..', '..', 'client', 'src', 'seo');
 const SUBJECTS = ['os', 'dbms', 'cn', 'oops', 'hld'];
@@ -36,14 +36,14 @@ function build() {
   const sections = {};
   const body = { notes: {}, sheets: {} };
   for (const subject of SUBJECTS) {
-    const list = require(path.join('..', 'src', 'data', 'notes', subject)).sections;
+    const list = require(path.join('..', 'src', 'modules', 'notes', 'content', subject)).sections;
     sections[subject] = list.map((s) => ({ id: s.id, title: s.title, readMinutes: sectionStats(s).readMinutes, description: describe(plain(s.overview[0])) }));
     body.notes[subject] = Object.fromEntries(list.map((s) => [s.id, { overview: s.overview.slice(0, 2).map(plain), topics: s.topics.map((t) => plain(t.name)) }]));
   }
   const config = require.resolve('../src/shared/config/seedConfig');
   require.cache[config] = { id: config, filename: config, loaded: true, exports: async () => {} }; // the seeds would connect to a database otherwise
   for (const file of SHEET_FILES) {
-    const { slug, topics } = require(`../src/seed/sheetSeeds/${file}`).data;
+    const { slug, topics } = require(`../src/modules/sheets/seeds/sheetSeeds/${file}`).data;
     body.sheets[slug] = topics.map((t) => ({ title: plain(t.title || t.topic), problems: t.problems.length }));
   }
   return { sections, body };

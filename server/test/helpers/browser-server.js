@@ -9,7 +9,7 @@ async function start() {
   const app = await t.start();
   const { DSASheet, Notes } = t.getModels();
   await DSASheet.insertMany(sheets);
-  const data = require('../../src/data/notes/os');
+  const data = require('../../src/modules/notes/content/os');
   await Notes.create({ subject: data.subject, subjectSlug: 'os', sections: data.sections });
   const fixture = express();
   fixture.use(express.json());

@@ -105,18 +105,19 @@ prepstack/
 └── server/                      # Express 5 backend
     ├── scripts/                 # Hand-run tools: list models, compare models, evaluate the analyzer, build catalogs, check a Redis host, measure the cache
     ├── src/
-    │   ├── controllers/         # Request handlers for sheets, notes, project, analyzer and plan
-    │   ├── data/                # CS notes content, skill catalog and plan catalog
+    │   ├── controllers/         # Request handlers for project, analyzer, plan and usage
+    │   ├── data/                # Skill catalog and plan catalog
     │   ├── middlewares/         # PDF upload
-    │   ├── models/              # Notes, Progress, Project, DSASheet, InterviewReport, ProblemNote
+    │   ├── models/              # Project, InterviewReport and Plan
     │   ├── routes/              # Express routers for the remaining features
     │   ├── modules/             # Feature modules moved here during migration
     │   │   ├── auth/            # Login, sessions, User model, password reset and email
-    │   │   └── user/            # Profile, dashboard summary and account deletion
-    │   ├── seed/                # Seed scripts and dataset definitions
+    │   │   ├── user/            # Profile, dashboard summary and account deletion
+    │   │   ├── sheets/          # DSA sheets, progress, problem identity and seeds
+    │   │   ├── problem-notes/   # Saved problem notes and allowed choices
+    │   │   └── notes/           # CS notes, validators, content and notes seed
     │   ├── services/            # AI provider chain, analyzer, resume reader, skill matcher, AI budget, plan generator
-    │   ├── utils/               # Content and problem helpers
-    │   ├── validators/          # Zod schemas for sheets, project, analyzer, notes and plan
+    │   ├── validators/          # Zod schemas for project, analyzer and plan
     │   ├── shared/              # Common code moved here during backend module migration
     │   │   ├── config/          # Database, limits, Redis and seed connection setup
     │   │   ├── http/            # Errors, validation, rate limits and response helpers

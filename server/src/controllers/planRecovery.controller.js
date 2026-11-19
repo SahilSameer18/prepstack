@@ -1,14 +1,14 @@
 const crypto = require('node:crypto');
 const Plan = require('../models/plan.model');
 const User = require('../modules/auth/auth.model');
-const Progress = require('../models/progress.model');
+const Progress = require('../modules/sheets/progress.model');
 const AppError = require('../shared/http/AppError');
 const { sendSuccess } = require('../shared/http/responseFormatter');
 const { planClock } = require('../shared/calendar/clock');
 const { PlanInputError } = require('../services/planGenerator');
 const { resumePlan, recoverReviews } = require('../services/planRecovery');
 const { calendarSettings, studyDay, nextStudyBoundary } = require('../shared/calendar/studyCalendar');
-const { normalizedSolves } = require('../utils/problemIdentity');
+const { normalizedSolves } = require('../modules/sheets/problemIdentity');
 const { presentPlan, withTransaction } = require('./plan.controller');
 const { PLAN_MAX_FINISHED } = require('../shared/config/limits');
 const { invalidateUser } = require('../shared/infra/sessionCache');

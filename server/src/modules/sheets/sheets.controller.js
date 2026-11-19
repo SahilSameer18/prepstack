@@ -1,13 +1,13 @@
-const DSASheet = require('../models/sheets.model');
-const Progress = require('../models/progress.model');
-const { problemIdentity, normalizedSolves } = require('../utils/problemIdentity');
-const { writeProblemProgress } = require('../services/problemProgress');
-const { planClock } = require('../shared/calendar/clock');
-const { calendarSettings, studyDay } = require('../shared/calendar/studyCalendar');
-const AppError = require('../shared/http/AppError');
-const { sendSuccess } = require('../shared/http/responseFormatter');
-const { cached } = require('../shared/infra/cache');
-const { PUBLIC_CONTENT_CACHE_CONTROL } = require('../shared/config/limits');
+const DSASheet = require('./sheets.model');
+const Progress = require('./progress.model');
+const { problemIdentity, normalizedSolves } = require('./problemIdentity');
+const { writeProblemProgress } = require('./problemProgress');
+const { planClock } = require('../../shared/calendar/clock');
+const { calendarSettings, studyDay } = require('../../shared/calendar/studyCalendar');
+const AppError = require('../../shared/http/AppError');
+const { sendSuccess } = require('../../shared/http/responseFormatter');
+const { cached } = require('../../shared/infra/cache');
+const { PUBLIC_CONTENT_CACHE_CONTROL } = require('../../shared/config/limits');
 
 // The sheets only change when a seed runs, so their public reads come from the cache (phase 4); MongoDB answers a miss or a Redis outage.
 // A seed clears the cached copies (clearContentCache), and every entry expires by itself within about ten minutes anyway.

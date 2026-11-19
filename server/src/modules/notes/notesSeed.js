@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
-const notesModel = require('../models/notes.model');
-const { checkNotesSubject } = require('../validators/notes.validators');
-const { clearContentCache } = require('../shared/infra/cache');
+const notesModel = require('./notes.model');
+const { checkNotesSubject } = require('./notes.validators');
+const { clearContentCache } = require('../../shared/infra/cache');
 const report = (result) => console.log(result.skipped ? 'Content cache: Redis is not set or not reachable, so cached copies expire by themselves within about ten minutes.' : `Content cache cleared (${result.cleared} keys).`);
 
-const osNotes = require('../data/notes/os');
-const dbmsNotes = require('../data/notes/dbms');
-const cnNotes = require('../data/notes/cn');
-const oopsNotes = require('../data/notes/oops');
-const hldNotes = require('../data/notes/hld');
+const osNotes = require('./content/os');
+const dbmsNotes = require('./content/dbms');
+const cnNotes = require('./content/cn');
+const oopsNotes = require('./content/oops');
+const hldNotes = require('./content/hld');
 
 const publishNotes = async (notesToInsert) => {
   const problems = notesToInsert.flatMap(({ subjectSlug, subject, sections }) => checkNotesSubject(subjectSlug, { subject, sections }));
@@ -38,7 +38,7 @@ const seedNotes = async () => {
     ];
 
     // Only the explicit command loads environment/connection configuration.
-    await require('../shared/config/seedConfig')();
+    await require('../../shared/config/seedConfig')();
     await publishNotes(notesToInsert);
     console.log('Notes seeded successfully!');
     report(await clearContentCache().catch(() => ({ skipped: true, cleared: 0 }))); // the public notes reads are cached for a few minutes (phase 4)

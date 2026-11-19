@@ -15,7 +15,7 @@ const SUBJECTS = ['os', 'dbms', 'cn', 'oops', 'hld'];
 describe('links between notes, roadmaps and sheets', { skip: !hasClient && 'client folder not present' }, () => {
   it('every link in the real data resolves', async () => {
     const { roadmaps } = await import(pathToFileURL(path.join(CLIENT_DATA, 'roadmaps.js')).href);
-    const notes = Object.fromEntries(SUBJECTS.map((s) => [s, require(`../src/data/notes/${s}.js`)]));
+    const notes = Object.fromEntries(SUBJECTS.map((s) => [s, require(`../src/modules/notes/content/${s}.js`)]));
     assert.deepEqual(checkContentLinks({ notes, sheets: t.sheetSeedData(), roadmaps }), []);
   });
 });

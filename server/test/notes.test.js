@@ -16,8 +16,8 @@ describe('CS notes (public)', () => {
 
   it('publishing on a standalone database fails safely without clearing existing notes', async () => {
     const Notes = t.getModels().Notes;
-    const { publishNotes } = require('../src/seed/notesSeed');
-    const os = require('../src/data/notes/os');
+    const { publishNotes } = require('../src/modules/notes/notesSeed');
+    const os = require('../src/modules/notes/content/os');
     const before = await Notes.find({}).lean();
     await assert.rejects(publishNotes([{ subject: os.subject, subjectSlug: 'os', sections: os.sections }]), /Transaction numbers|replica set/i);
     assert.deepEqual(await Notes.find({}).lean(), before);
@@ -27,7 +27,7 @@ describe('CS notes (public)', () => {
     const script = `
       const config = require.resolve('./src/shared/config/seedConfig');
       require.cache[config] = { id: config, filename: config, loaded: true, exports: async () => { throw new Error('simulated offline database'); } };
-      require('./src/seed/notesSeed').seedNotes();
+      require('./src/modules/notes/notesSeed').seedNotes();
     `;
     const child = spawnSync(process.execPath, ['-e', script], { cwd: require('node:path').join(__dirname, '..'), encoding: 'utf8', timeout: 10000 });
     assert.equal(child.status, 1);

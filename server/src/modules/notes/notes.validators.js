@@ -1,6 +1,6 @@
 const { z } = require('zod');
 
-// Rules for the notes data in server/src/data/notes/*.js (see docs/content/NOTES_TEMPLATE.md).
+// Rules for the notes data in server/src/modules/notes/content/*.js (see docs/content/NOTES_TEMPLATE.md).
 //
 // Always enforced: every section has a unique id (<subject>-<words>, never changed) and a title, and topics is a list.
 // Enforced only on a section that has lastChecked: the full template. A section gets lastChecked only when it has been

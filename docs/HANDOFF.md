@@ -3,6 +3,7 @@
 Updated 16 Nov 2026. Read this file, then `PROJECT_STATUS.md` and `BUILD_CHECKLIST.md` for current status and build order, then `CLAUDE.md` for the rules. Dated handoff sections below record what was verified at each phase.
 
 ## Backend modules handoff, 19 Nov 2026
+- Phase 4 is complete. Sheets, problem notes and notes are in their feature modules. Notes content lives in modules/notes/content with its folder structure kept. The seed commands point at modules/notes/notesSeed.js and modules/sheets/seeds/masterSeed.js. Planner runtime paths, build scripts and test helpers were updated. Server 1,111, client 135, build, lint and SEO passed. Next is Phase 5.
 - Phase 3 is complete. Auth and user files now live under server/src/modules/auth and server/src/modules/user. The User model and authentication middleware both live in auth. The test helper resolves these new locations. Server 1,111, client 135, build, lint and SEO passed. Next is Phase 4. Older phase notes below record their state at the time.
 - Phases 0–2 passed on branch module. Shared code is now in server/src/shared. Auth, user and the other feature files remain in their original folders until the later phases. The clock is shared/calendar/clock.js. The seed configuration path still resolves to server/.env, which was not opened.
 - Server 1,111 tests passed after both steps; client 135, build, lint and SEO passed. The owner authorized these two phases together. Next is Phase 3 in docs/plans/BACKEND_MODULES_PLAN.md.

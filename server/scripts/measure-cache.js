@@ -56,7 +56,7 @@ async function scenario(label) {
   await t.start();
   await t.seedSheets();
   const { Notes } = t.getModels();
-  const os = require('../src/data/notes/os');
+  const os = require('../src/modules/notes/content/os');
   await Notes.create({ subject: os.subject, subjectSlug: 'os', sections: os.sections });
   instrument();
 

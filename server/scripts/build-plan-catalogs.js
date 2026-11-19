@@ -103,7 +103,7 @@ const buildPlanCatalog = (roadmapCatalog) => {
   const stepOrder = Object.fromEntries(dsa.steps.map((s, i) => [s.id, i + 1]));
   const sheets = {};
   for (const file of SHEETS) {
-    const sheet = require(path.join('..', 'src', 'seed', 'sheetSeeds', file)).data;
+    const sheet = require(path.join('..', 'src', 'modules', 'sheets', 'seeds', 'sheetSeeds', file)).data;
     const table = MAP[sheet.slug];
     if (!table) throw new Error(`no mapping for sheet ${sheet.slug}`);
     sheets[sheet.slug] = {};

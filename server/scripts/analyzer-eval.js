@@ -33,8 +33,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // ── the context the new approach needs: the catalog and what a plan may point to ──
 const readText = (p) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 const buildContext = async () => {
-  const dsaRefs = [...readText('src/seed/sheetSeeds/blind75.js').matchAll(/\{\s*title:\s*["']([^"']+)["'],\s*problems:/g)].map((m) => `dsa:${m[1]}`);
-  const notesRefs = ['os', 'dbms', 'cn', 'oops', 'hld'].flatMap((slug) => require(`../src/data/notes/${slug}.js`).sections.map((s) => `notes:${slug}:${s.title}`));
+  const dsaRefs = [...readText('src/modules/sheets/seeds/sheetSeeds/blind75.js').matchAll(/\{\s*title:\s*["']([^"']+)["'],\s*problems:/g)].map((m) => `dsa:${m[1]}`);
+  const notesRefs = ['os', 'dbms', 'cn', 'oops', 'hld'].flatMap((slug) => require(`../src/modules/notes/content/${slug}.js`).sections.map((s) => `notes:${slug}:${s.title}`));
   const roadmaps = (await import(pathToFileURL(path.join(__dirname, '..', '..', 'client', 'src', 'data', 'roadmaps.js')).href)).roadmaps;
   const bank = (await import(pathToFileURL(path.join(__dirname, '..', '..', 'client', 'src', 'data', 'behavioralQuestions.js')).href)).behavioralQuestions;
   return {

@@ -3,7 +3,7 @@
 // "fresh" = a new plan from the generator; "rebuild" = a plan some days in, with work ticked off, changed through the adjust module (rebuild, hours, lighter days or pace).
 const gen = require('../../src/services/planGenerator');
 const adj = require('../../src/services/planAdjust');
-const { problemIdentity } = require('../../src/utils/problemIdentity');
+const { problemIdentity } = require('../../src/modules/sheets/problemIdentity');
 
 const { generatePlan, baseId, dayNumber, ymdOf, weekdayOf, problemMinutes, PACES } = gen;
 

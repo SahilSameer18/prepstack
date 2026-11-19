@@ -7,7 +7,7 @@
 //
 // Dates are plain "YYYY-MM-DD" strings (Indian time is decided by the caller: todayIst below). Weekdays are numbered Monday = 0 ... Sunday = 6.
 const limits = require('../shared/config/limits');
-const { problemIdentity } = require('../utils/problemIdentity');
+const { problemIdentity } = require('../modules/sheets/problemIdentity');
 
 const MINUTES_BY_DIFFICULTY = { Basic: 30, Easy: 40, Medium: 70, Hard: 120 }; // solve and check the solution (decision 29)
 const FALLBACK_DIFFICULTY = 'Medium';

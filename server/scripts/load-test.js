@@ -76,7 +76,7 @@ function summarizeProfile(dir) {
   await mongoose.connect(mongod.getUri());
   const { DSASheet, Notes } = t.getModels();
   await DSASheet.insertMany(t.sheetSeedData());
-  const notesData = require('../src/data/notes/os');
+  const notesData = require('../src/modules/notes/content/os');
   await Notes.create({ subject: notesData.subject, subjectSlug: 'os', sections: notesData.sections });
   await mongoose.disconnect();
 

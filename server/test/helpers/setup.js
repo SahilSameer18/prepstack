@@ -146,9 +146,9 @@ async function stop() {
 const getModels = () => ({
   User: require(path.join(SERVER_ROOT, 'src', 'modules', 'auth', 'auth.model.js')),
   Project: require(path.join(SERVER_ROOT, 'src', 'models', 'project.model.js')),
-  Progress: require(path.join(SERVER_ROOT, 'src', 'models', 'progress.model.js')),
-  DSASheet: require(path.join(SERVER_ROOT, 'src', 'models', 'sheets.model.js')),
-  Notes: require(path.join(SERVER_ROOT, 'src', 'models', 'notes.model.js')),
+  Progress: require(path.join(SERVER_ROOT, 'src', 'modules', 'sheets', 'progress.model.js')),
+  DSASheet: require(path.join(SERVER_ROOT, 'src', 'modules', 'sheets', 'sheets.model.js')),
+  Notes: require(path.join(SERVER_ROOT, 'src', 'modules', 'notes', 'notes.model.js')),
 });
 const resetData = async () => { await mongoose.connection.db.dropDatabase(); await Promise.all(Object.values(getModels()).map((m) => m.init())); };
 
@@ -251,7 +251,7 @@ async function seedSheets() {
 function sheetSeedData() {
   const configPath = require.resolve('../../src/shared/config/seedConfig');
   require.cache[configPath] = { id: configPath, filename: configPath, loaded: true, exports: async () => {} };
-  return ['blind75', 'loveBabbarSeed', 'neetCodeSeed', 'striverA2ZSeed', 'striverSDESeed'].map((f) => require(`../../src/seed/sheetSeeds/${f}`).data);
+  return ['blind75', 'loveBabbarSeed', 'neetCodeSeed', 'striverA2ZSeed', 'striverSDESeed'].map((f) => require(`../../src/modules/sheets/seeds/sheetSeeds/${f}`).data);
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const countAt = async (Model, filter) => Model.countDocuments(filter);

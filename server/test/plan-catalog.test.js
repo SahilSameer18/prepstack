@@ -8,7 +8,7 @@ const { buildRoadmapCatalog, buildPlanCatalog } = require('../scripts/build-plan
 const limits = require('../src/shared/config/limits');
 
 const SHEETS = { 'blind-75': 'blind75', 'neetcode-150': 'neetCodeSeed', 'striver-sde': 'striverSDESeed', 'striver-a2z': 'striverA2ZSeed', 'love-babbar': 'loveBabbarSeed' };
-const sheet = (slug) => require(`../src/seed/sheetSeeds/${SHEETS[slug]}`).data;
+const sheet = (slug) => require(`../src/modules/sheets/seeds/sheetSeeds/${SHEETS[slug]}`).data;
 
 describe('roadmapCatalog.json (a server copy of client/src/data/roadmaps.js)', () => {
   it('equals what the build script makes from the client roadmaps (run `npm run build:plan-catalogs` after changing a roadmap)', async () => {
