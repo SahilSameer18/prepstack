@@ -1,5 +1,7 @@
 # PrepStack: status and build order
 
+**Backend modules Phases 5 and 6 complete, 19 Nov 2026.** Thirty AI, project, usage, analyzer and plan files moved into their feature modules. Runtime planner paths, the catalog writer, tests and scripts use the new locations. The full server suite passed all 1,111 tests, and all 135 client tests, build, lint and SEO passed. Phase 7 is next: add the permanent architecture test and remove empty old directories.
+
 **Backend modules Phase 4 complete, 19 Nov 2026.** Sheets, problem notes and notes now live in their feature modules. The move includes 95 files, with all 65 Markdown files preserved and the notes folder structure kept. Imports, dynamic content paths, seed commands, tests, scripts and README now use the new locations. All 1,111 server tests and 135 client tests passed, along with build, lint and SEO. Phase 5 (AI, project, usage and analyzer) is next.
 
 **Backend modules Phase 3 complete, 19 Nov 2026.** Fifteen files moved into auth and user modules, including the User model in auth. Callers and string-built test paths now point at the modules. The server suite passed all 1,111 tests in 210 suites; all 135 client tests, build, lint and SEO passed. Phase 4 (sheets, problem notes and notes) is next.

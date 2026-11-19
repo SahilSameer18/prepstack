@@ -3,8 +3,8 @@
 // Part 1 uses small made-up data whose numbers are worked out in the comments. Part 2 runs the real data over many goals, lengths and hours.
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const gen = require('../src/services/planGenerator');
-const { loadPlanData } = require('../src/services/planData');
+const gen = require('../src/modules/plan/planGenerator');
+const { loadPlanData } = require('../src/modules/plan/planData');
 
 const { generatePlan, previewPlan, baseId, PlanInputError } = gen;
 const problems = (prefix, difficulties) => difficulties.map((d, i) => ({ title: `${prefix}${i + 1}`, link: `https://x.test/${prefix}-${i + 1}`, difficulty: d }));

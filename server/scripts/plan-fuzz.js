@@ -2,7 +2,7 @@
 // Run: cd server && node scripts/plan-fuzz.js [count] [seed]      (default 1000 scenarios, seed 20261115)
 // It checks the rules in test/helpers/plan-scenarios.js and prints how many plans cut something and any rule that broke.
 const path = require('node:path');
-const { loadPlanData } = require(path.join(__dirname, '../src/services/planData'));
+const { loadPlanData } = require(path.join(__dirname, '../src/modules/plan/planData'));
 const { buildScenarios, runScenarios } = require(path.join(__dirname, '../test/helpers/plan-scenarios'));
 
 (async () => {

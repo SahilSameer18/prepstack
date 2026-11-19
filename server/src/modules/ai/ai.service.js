@@ -7,8 +7,8 @@
 const { GoogleGenAI } = require('@google/genai');
 const Groq = require('groq-sdk');
 const { z } = require('zod');
-const AppError = require('../shared/http/AppError');
-const { getRedis, redisKey } = require('../shared/config/redis');
+const AppError = require('../../shared/http/AppError');
+const { getRedis, redisKey } = require('../../shared/config/redis');
 const { reserveBudget, hasBudget } = require('./aiBudget');
 // The form, project schema and AI output use the same difficulty values.
 const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];

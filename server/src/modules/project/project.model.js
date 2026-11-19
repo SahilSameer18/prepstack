@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const { DIFFICULTIES } = require("../services/ai.service.js");
+const { DIFFICULTIES } = require("../ai/ai.service.js");
 
 const projectSchema = new mongoose.Schema(
   {

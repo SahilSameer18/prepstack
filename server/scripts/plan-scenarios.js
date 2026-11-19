@@ -3,8 +3,8 @@
 // It reports how often a plan cuts something and which parts of the request disappear completely
 // (a chosen CS subject with 0 sections, fewer than half of the DSA topic groups). Used for docs/plans/MY_PLAN_COVERAGE_PLAN.md.
 const path = require('node:path');
-const gen = require(path.join(__dirname, '../src/services/planGenerator'));
-const { loadPlanData } = require(path.join(__dirname, '../src/services/planData'));
+const gen = require(path.join(__dirname, '../src/modules/plan/planGenerator'));
+const { loadPlanData } = require(path.join(__dirname, '../src/modules/plan/planData'));
 
 const SUBJECTS = ['os', 'dbms', 'cn', 'oops'];
 const GOALS = [['bigtech', 'neetcode-150'], ['bigtech', 'striver-sde'], ['placements', 'striver-a2z'], ['placements', 'blind-75'], ['placements', 'love-babbar']];

@@ -18,7 +18,7 @@ const mongoose = require('mongoose');
 const dns = require('dns');
 const app = require('./src/app');
 const connectToDB = require('./src/shared/config/database')
-const { describeProviders } = require('./src/services/ai.service')
+const { describeProviders } = require('./src/modules/ai/ai.service')
 const { describeEmail, isEmailConfigured } = require('./src/modules/auth/email.service')
 const { connectRedis, closeRedis } = require('./src/shared/config/redis')
 

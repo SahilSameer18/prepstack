@@ -1,4 +1,4 @@
-// The app-wide AI budget (src/services/aiBudget.js, phase 6 R2): the Lua reservation runs for real on ioredis-mock, the memory fallback is tested
+// The app-wide AI budget (src/modules/ai/aiBudget.js, phase 6 R2): the Lua reservation runs for real on ioredis-mock, the memory fallback is tested
 // without Redis, and the provider cascade must skip a spent provider without calling it, but never turn a wrong number into "AI is down".
 const t = require('./helpers/setup');
 const { describe, it, beforeEach, afterEach } = require('node:test');
@@ -6,9 +6,9 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const RedisMock = require('ioredis-mock');
 const redisConfig = require('../src/shared/config/redis');
-const { reserveBudget, hasBudget, resetBudgetMemory } = require('../src/services/aiBudget');
+const { reserveBudget, hasBudget, resetBudgetMemory } = require('../src/modules/ai/aiBudget');
 
-const ai = require(path.join(t.SERVER_ROOT, 'src', 'services', 'ai.service.js'));
+const ai = require(path.join(t.SERVER_ROOT, 'src', 'modules', 'ai', 'ai.service.js'));
 const { MODELS: M, gemini, goodIdea } = t;
 const set = (budgets) => { process.env.AI_BUDGETS = JSON.stringify(budgets); };
 const T0 = Date.UTC(2026, 10, 18, 12, 0, 30); // 18 Nov 2026, 12:00:30 UTC

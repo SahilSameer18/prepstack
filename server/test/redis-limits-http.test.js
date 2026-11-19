@@ -7,7 +7,7 @@ const RedisMock = require('ioredis-mock');
 const path = require('node:path');
 const redisConfig = require('../src/shared/config/redis');
 
-const ai = require(path.join(t.SERVER_ROOT, 'src', 'services', 'ai.service.js'));
+const ai = require(path.join(t.SERVER_ROOT, 'src', 'modules', 'ai', 'ai.service.js'));
 const { MODELS: M, gemini, apiError, goodIdea } = t;
 const VALID = { techStack: 'MERN Stack', complexity: 'beginner' };
 const rl = (name, id) => redisConfig.redisKey('rl', name, id);

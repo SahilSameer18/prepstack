@@ -6,7 +6,7 @@ const { describe, it, before, after, beforeEach, afterEach } = require('node:tes
 const assert = require('node:assert/strict');
 const { FakeRedis } = require('./helpers/fake-redis');
 const redisConfig = require('../src/shared/config/redis');
-const gen = require('../src/services/planGenerator');
+const gen = require('../src/modules/plan/planGenerator');
 
 const PUBLIC = 'public, max-age=300, stale-while-revalidate=600';
 let DSASheet; let Notes;

@@ -2,7 +2,7 @@
 // made from a fixed seed, run on the real data. The rules are in test/helpers/plan-scenarios.js. `node scripts/plan-fuzz.js 3000` runs more.
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { loadPlanData } = require('../src/services/planData');
+const { loadPlanData } = require('../src/modules/plan/planData');
 const { buildScenarios, runScenarios } = require('./helpers/plan-scenarios');
 
 describe('800 different plan requests on the real data', () => {

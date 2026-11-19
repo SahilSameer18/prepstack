@@ -1,7 +1,7 @@
 const { z } = require("zod");
-const { validTimeZone } = require("../shared/calendar/studyCalendar");
-const { GOALS, STYLES, dayNumber } = require("../services/planGenerator");
-const { SUBJECTS } = require("../services/planData");
+const { validTimeZone } = require("../../shared/calendar/studyCalendar");
+const { GOALS, STYLES, dayNumber } = require("./planGenerator");
+const { SUBJECTS } = require("./planData");
 const {
   PLAN_MIN_WEEKS,
   PLAN_MAX_WEEKS,
@@ -9,7 +9,7 @@ const {
   PLAN_MAX_DAILY_HOURS,
   PLAN_TITLE_MAX,
   PLAN_CUSTOM_ITEM_MAX,
-} = require("../shared/config/limits");
+} = require("../../shared/config/limits");
 
 // The My plan form. The form asks for hours on a weekday and on a weekend day plus a rest day; the controller turns that into hours for each weekday.
 const date = (what) =>

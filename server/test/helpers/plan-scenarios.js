@@ -1,8 +1,8 @@
 // Many different plan requests, made from a fixed seed (the same list every run), and the rules every plan must keep.
 // Used by test/plan-scenarios.test.js (800 of them) and scripts/plan-fuzz.js (as many as you ask for).
 // "fresh" = a new plan from the generator; "rebuild" = a plan some days in, with work ticked off, changed through the adjust module (rebuild, hours, lighter days or pace).
-const gen = require('../../src/services/planGenerator');
-const adj = require('../../src/services/planAdjust');
+const gen = require('../../src/modules/plan/planGenerator');
+const adj = require('../../src/modules/plan/planAdjust');
 const { problemIdentity } = require('../../src/modules/sheets/problemIdentity');
 
 const { generatePlan, baseId, dayNumber, ymdOf, weekdayOf, problemMinutes, PACES } = gen;

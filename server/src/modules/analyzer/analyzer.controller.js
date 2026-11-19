@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
-const Report = require('../models/interviewReport.model');
-const AppError = require('../shared/http/AppError');
-const { sendSuccess } = require('../shared/http/responseFormatter');
-const { extractPdfText, prepareResumeText } = require('../services/resume.service');
-const { buildContext } = require('../services/analyzerContext.service');
-const { analyze } = require('../services/analyzer.service');
-const { adviceForReport } = require('../services/skills.service');
-const { reportsPerDay } = require('../shared/config/limits');
-const { countLast24h } = require('../shared/usage/usage.service');
-const { acquireLock } = require('../shared/infra/lock');
-const { ANALYZER_LOCK_MS } = require('../shared/config/limits');
-const { todayPlanDay } = require('../shared/calendar/planDay');
+const Report = require('./interviewReport.model');
+const AppError = require('../../shared/http/AppError');
+const { sendSuccess } = require('../../shared/http/responseFormatter');
+const { extractPdfText, prepareResumeText } = require('./resume.service');
+const { buildContext } = require('./analyzerContext.service');
+const { analyze } = require('./analyzer.service');
+const { adviceForReport } = require('./skills.service');
+const { reportsPerDay } = require('../../shared/config/limits');
+const { countLast24h } = require('../../shared/usage/usage.service');
+const { acquireLock } = require('../../shared/infra/lock');
+const { ANALYZER_LOCK_MS } = require('../../shared/config/limits');
+const { todayPlanDay } = require('../../shared/calendar/planDay');
 
 // A user with a report being written right now holds a lock (a second request gets a 409): a Redis lock shared by every server,
 // or this process's memory without Redis. It expires by itself, so a crashed server cannot block a user for ever.

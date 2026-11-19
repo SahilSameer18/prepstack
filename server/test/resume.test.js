@@ -3,7 +3,7 @@
 const t = require('./helpers/setup');
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const r = require('../src/services/resume.service');
+const r = require('../src/modules/analyzer/resume.service');
 
 const LINES = [
   'Priya Example, Software Developer',

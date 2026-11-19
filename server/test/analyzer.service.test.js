@@ -2,8 +2,8 @@
 // No database and no AI calls.
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const a = require('../src/services/analyzer.service');
-const { BadOutput } = require('../src/services/ai.service');
+const a = require('../src/modules/analyzer/analyzer.service');
+const { BadOutput } = require('../src/modules/ai/ai.service');
 
 const ctx = {
   skillNames: ['React', 'Node.js', 'Docker', 'SQL'],

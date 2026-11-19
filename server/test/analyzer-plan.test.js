@@ -184,7 +184,7 @@ describe('GET /api/analyzer/today', () => {
 
 describe('the AI never supplies done', () => {
   it('the AI service does not know about done / doneAt (they are the student\'s, never the model\'s)', () => {
-    const src = require('node:fs').readFileSync(require.resolve('../src/services/analyzer.service'), 'utf8');
+    const src = require('node:fs').readFileSync(require.resolve('../src/modules/analyzer/analyzer.service'), 'utf8');
     assert.ok(!/doneAt|\bdone\b\s*:/.test(src), 'analyzer.service.js must not mention done');
   });
 });

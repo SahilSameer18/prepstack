@@ -24,16 +24,16 @@ const {
   applyReportImport,
   getSubstitutes,
   substituteItem,
-} = require('../controllers/plan.controller');
-const authMiddleware = require('../modules/auth/auth.middleware');
-const { previewRecovery, applyRecovery, getPausedPlan } = require('../controllers/planRecovery.controller');
-const validate = require('../shared/http/validate.middleware');
+} = require('./plan.controller');
+const authMiddleware = require('../auth/auth.middleware');
+const { previewRecovery, applyRecovery, getPausedPlan } = require('./planRecovery.controller');
+const validate = require('../../shared/http/validate.middleware');
 const {
   planPreviewLimiter,
   planGenerateLimiter,
   planChangeLimiter,
   planTickLimiter,
-} = require('../shared/http/rateLimit.middleware');
+} = require('../../shared/http/rateLimit.middleware');
 const {
   previewPlanSchema,
   createPlanSchema,
@@ -49,7 +49,7 @@ const {
   substituteSchema,
   lifecyclePreviewSchema,
   lifecycleApplySchema,
-} = require('../validators/plan.validators');
+} = require('./plan.validators');
 
 // The one public route: the form's preview (numbers and week 1 only, no database write).
 router.get('/options', getPlanOptions);

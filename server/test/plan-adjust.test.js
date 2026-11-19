@@ -1,11 +1,11 @@
-// What happens to a plan after it exists (src/services/planAdjust.js): the review ladder, skip and move, carried over, the Today list,
+// What happens to a plan after it exists (src/modules/plan/planAdjust.js): the review ladder, skip and move, carried over, the Today list,
 // and changes with a preview (rebuild, new hours, lighter days). Pure functions on plain items, so small made-up data is enough.
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const gen = require('../src/services/planGenerator');
-const adj = require('../src/services/planAdjust');
+const gen = require('../src/modules/plan/planGenerator');
+const adj = require('../src/modules/plan/planAdjust');
 const calendar = require('../src/shared/calendar/studyCalendar');
-const recovery = require('../src/services/planRecovery');
+const recovery = require('../src/modules/plan/planRecovery');
 
 describe('personal study calendar and review recovery', () => {
   it('resumes across uneven weeks, lighter stretches and short or long breaks without losing work', () => {

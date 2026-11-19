@@ -2,7 +2,7 @@
 // The resume is personal data, so this file also removes contact details. The text is only held in memory for the length of
 // one request: nothing here writes it to a database or a log.
 const { PDFParse } = require('pdf-parse');
-const AppError = require('../shared/http/AppError');
+const AppError = require('../../shared/http/AppError');
 
 const MAX_PDF_BYTES = 3 * 1024 * 1024; // also enforced by the upload middleware
 const MAX_PAGES = 5; // a resume longer than this is not a resume

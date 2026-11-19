@@ -5,7 +5,7 @@
 //   node scripts/compare-models.js                      default request (MERN, intermediate, FinTech)
 //   node scripts/compare-models.js "Go + Postgres" advanced Healthcare "keep it small"
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env'), quiet: true });
-const { buildPrompt, buildProviders, parseIdea } = require('../src/services/ai.service');
+const { buildPrompt, buildProviders, parseIdea } = require('../src/modules/ai/ai.service');
 
 const [techStack = 'MERN', complexity = 'intermediate', domain = 'FinTech', notes = ''] = process.argv.slice(2);
 const params = { techStack, complexity, domain, notes };

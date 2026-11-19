@@ -1,18 +1,18 @@
 // What the Role Analyzer is allowed to point a student at. The AI may only choose from these lists, and the code drops
 // anything else (see analyzer.service.js), so a report can never link to a page or a skill that does not exist.
 //
-//   skills       the catalog of skill names (src/data/skillCatalog.json)
+//   skills       the catalog of skill names (src/modules/analyzer/skillCatalog.json)
 //   dsa:<sheet>:<topicId>       topics of the Blind 75 sheet, by permanent topic id (read from the database)
 //   notes:<subject>:<sectionId> sections of the CS notes, by permanent section id (read from the database)
 //   titles       ref -> readable title, so a report can show "Deadlocks" for notes:os:os-deadlocks. Titles can change, ids never do.
 //   roadmap:<slug>              the roadmaps. The roadmap content lives in the client, so the slugs are listed here;
 //                               test/analyzer.context.test.js fails if they drift from client/src/data/roadmaps.js
 //   behavioral   PrepStack's behavioral question bank (id and text), copied from the client for the same reason
-const DSASheet = require('../modules/sheets/sheets.model');
-const roadmapCatalog = require('../shared/content/roadmapCatalog.json');
-const Notes = require('../modules/notes/notes.model');
-const catalog = require('../data/skillCatalog.json');
-const behavioral = require('../shared/content/behavioralQuestions.json');
+const DSASheet = require('../sheets/sheets.model');
+const roadmapCatalog = require('../../shared/content/roadmapCatalog.json');
+const Notes = require('../notes/notes.model');
+const catalog = require('./skillCatalog.json');
+const behavioral = require('../../shared/content/behavioralQuestions.json');
 
 const ROADMAP_SLUGS = ['frontend', 'backend', 'fullstack', 'android', 'data-analytics', 'machine-learning', 'dsa', 'java-spring', 'devops-cloud'];
 // What each roadmap really teaches, in one line, so the AI links a plan task to a roadmap only when it fits (11 Nov 2026: it once

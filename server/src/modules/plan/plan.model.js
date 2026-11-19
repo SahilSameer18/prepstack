@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const { PLAN_MAX_ITEMS, PLAN_TITLE_MAX } = require("../shared/config/limits");
+const { PLAN_MAX_ITEMS, PLAN_TITLE_MAX } = require("../../shared/config/limits");
 
-// A student's goal plan ("My plan"). The rules for what goes in it are in docs/plans/MY_PLAN_PLAN.md and src/services/planGenerator.js.
+// A student's goal plan ("My plan"). The rules for what goes in it are in docs/plans/MY_PLAN_PLAN.md and src/modules/plan/planGenerator.js.
 // The `user` reference means the "delete my account" cascade wipes plans automatically (see user.controller.js).
 // Dates are plain "YYYY-MM-DD" strings in the account study calendar, like the generator uses.
 const itemSchema = new mongoose.Schema({

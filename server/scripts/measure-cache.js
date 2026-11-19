@@ -6,7 +6,7 @@ const url = process.env.REDIS_URL; // the test harness below removes it from the
 const crypto = require('node:crypto');
 const t = require('../test/helpers/setup');
 const redisConfig = require('../src/shared/config/redis');
-const gen = require('../src/services/planGenerator');
+const gen = require('../src/modules/plan/planGenerator');
 
 const REQUESTS = Number(process.env.REQUESTS || 400);
 const DB_LATENCY_MS = Number(process.env.DB_LATENCY_MS || 0);

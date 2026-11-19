@@ -7,8 +7,8 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
-const ctxService = require('../src/services/analyzerContext.service');
-const catalog = require('../src/data/skillCatalog.json');
+const ctxService = require('../src/modules/analyzer/analyzerContext.service');
+const catalog = require('../src/modules/analyzer/skillCatalog.json');
 const behavioral = require('../src/shared/content/behavioralQuestions.json');
 
 const CLIENT_DATA = path.join(t.SERVER_ROOT, '..', 'client', 'src', 'data');
@@ -26,7 +26,7 @@ describe('copies of client data stay in sync', { skip: !hasClient && 'client fol
   });
   it('the roadmap names used in the advice labels cover exactly the same roadmaps', async () => {
     const { roadmaps } = await fromClient('roadmaps.js');
-    assert.deepEqual(Object.keys(require('../src/services/skills.service').ROADMAP_TITLES).sort(), roadmaps.map((r) => r.slug).sort());
+    assert.deepEqual(Object.keys(require('../src/modules/analyzer/skills.service').ROADMAP_TITLES).sort(), roadmaps.map((r) => r.slug).sort());
   });
   it('the behavioral questions match client/src/data/behavioralQuestions.js (same ids, same text)', async () => {
     const { behavioralQuestions } = await fromClient('behavioralQuestions.js');

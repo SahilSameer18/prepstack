@@ -2,9 +2,9 @@
 // Real data: the Full Stack roadmap starts with a 55 to 85 hour step.
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { loadPlanData } = require('../src/services/planData');
-const gen = require('../src/services/planGenerator');
-const adj = require('../src/services/planAdjust');
+const { loadPlanData } = require('../src/modules/plan/planData');
+const gen = require('../src/modules/plan/planGenerator');
+const adj = require('../src/modules/plan/planAdjust');
 
 const data = loadPlanData();
 const role = (slug, weeks, hours, extra = {}) => gen.generatePlan({

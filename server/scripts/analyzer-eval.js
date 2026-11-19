@@ -17,10 +17,10 @@ const path = require('path');
 const { pathToFileURL } = require('url');
 const { z } = require('zod');
 const { GoogleGenAI } = require('@google/genai');
-const analyzer = require('../src/services/analyzer.service');
+const analyzer = require('../src/modules/analyzer/analyzer.service');
 // Extra samples can be added from a file OUTSIDE the repo (for example your own resume): EVAL_EXTRA=C:/path/to/file.js
 const samples = [...require('./samples/samples'), ...(process.env.EVAL_EXTRA ? require(process.env.EVAL_EXTRA) : [])];
-const skills = require('../src/data/skillCatalog.json'); // the same catalog the server uses
+const skills = require('../src/modules/analyzer/skillCatalog.json'); // the same catalog the server uses
 
 const arg = (name, fallback) => { const i = process.argv.indexOf(`--${name}`); return i > -1 ? process.argv[i + 1] : fallback; };
 const RUNS = Number(arg('runs', 3));

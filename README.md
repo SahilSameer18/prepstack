@@ -105,20 +105,18 @@ prepstack/
 └── server/                      # Express 5 backend
     ├── scripts/                 # Hand-run tools: list models, compare models, evaluate the analyzer, build catalogs, check a Redis host, measure the cache
     ├── src/
-    │   ├── controllers/         # Request handlers for project, analyzer, plan and usage
-    │   ├── data/                # Skill catalog and plan catalog
-    │   ├── middlewares/         # PDF upload
-    │   ├── models/              # Project, InterviewReport and Plan
-    │   ├── routes/              # Express routers for the remaining features
-    │   ├── modules/             # Feature modules moved here during migration
+    │   ├── modules/             # Feature code grouped by responsibility
     │   │   ├── auth/            # Login, sessions, User model, password reset and email
     │   │   ├── user/            # Profile, dashboard summary and account deletion
     │   │   ├── sheets/          # DSA sheets, progress, problem identity and seeds
     │   │   ├── problem-notes/   # Saved problem notes and allowed choices
-    │   │   └── notes/           # CS notes, validators, content and notes seed
-    │   ├── services/            # AI provider chain, analyzer, resume reader, skill matcher, AI budget, plan generator
-    │   ├── validators/          # Zod schemas for project, analyzer and plan
-    │   ├── shared/              # Common code moved here during backend module migration
+    │   │   ├── notes/           # CS notes, validators, content and notes seed
+    │   │   ├── ai/              # AI provider chain and shared provider budgets
+    │   │   ├── project/         # Generated project ideas
+    │   │   ├── usage/           # Usage API
+    │   │   ├── analyzer/        # Resume analysis, reports, skill catalog and PDF upload
+    │   │   └── plan/            # My plan, scheduling, recovery and plan catalog
+    │   ├── shared/              # Infrastructure and utilities used across features
     │   │   ├── config/          # Database, limits, Redis and seed connection setup
     │   │   ├── http/            # Errors, validation, rate limits and response helpers
     │   │   ├── infra/           # Caches, locks and rate-limit store
@@ -270,7 +268,7 @@ sequenceDiagram
 
 Paste a job description and add your resume (PDF or pasted text). You get a report with a match score, each requirement marked met / partly / missing with a quote from your resume, the skills you lack with where to learn them, likely technical and behavioral questions, and a day-by-day plan. Everything it links to is something PrepStack really has.
 
-- **The code decides, not the AI.** The AI only reads the text: it lists the job's requirements, marks each one, and quotes proof. The score is computed by the server (must-have = 3 points, nice-to-have = 1; met = full, partly = half). Every quote is checked against the resume; a quote that cannot be found downgrades that requirement. Skill names come from a closed list of 120 skills (`server/src/data/skillCatalog.json`; the AI may write any text, and the code turns a name that is not on the list into "none"), titles must come from the job description (and are shown in Title Case, at most 60 characters), and plan links are kept only if they point at content that exists (Blind 75 topics, CS notes sections, roadmaps, behavioral questions).
+- **The code decides, not the AI.** The AI only reads the text: it lists the job's requirements, marks each one, and quotes proof. The score is computed by the server (must-have = 3 points, nice-to-have = 1; met = full, partly = half). Every quote is checked against the resume; a quote that cannot be found downgrades that requirement. Skill names come from a closed list of 120 skills (`server/src/modules/analyzer/skillCatalog.json`; the AI may write any text, and the code turns a name that is not on the list into "none"), titles must come from the job description (and are shown in Title Case, at most 60 characters), and plan links are kept only if they point at content that exists (Blind 75 topics, CS notes sections, roadmaps, behavioral questions).
 - **Privacy:** the resume is never stored. Email, phone number and links are removed before anything leaves the server, and only the report (with short quotes) is saved. The user must tick a consent box (the text goes to Google and, if Gemini is busy, to Groq). Deleting an account deletes its reports.
 - **Limits:** PDF only (checked by its first bytes), 3 MB, 5 pages, 10 s to read, scanned PDFs are rejected with a clear message. 3 reports per hour and 5 per 24 hours per user (`ANALYZER_DAILY_LIMIT`; failed attempts are not counted), one report at a time (`409`).
 - **Skill advice is computed on every read** from the catalog (never stored), so improving the catalog improves old reports. Each skill points at DSA topics, CS notes, a roadmap, the Behavioral Prep page (soft skills) or an AI project idea (`/ai-projects?stack=...`), plus official docs. About half of the catalog has no PrepStack lessons yet; those skills show docs links only.

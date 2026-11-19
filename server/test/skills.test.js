@@ -6,8 +6,8 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
-const skills = require('../src/services/skills.service');
-const { ROADMAP_SLUGS } = require('../src/services/analyzerContext.service');
+const skills = require('../src/modules/analyzer/skills.service');
+const { ROADMAP_SLUGS } = require('../src/modules/analyzer/analyzerContext.service');
 
 const { catalog } = skills;
 // ref -> readable title, built from the real notes data and the Blind 75 seed (the app builds the same map from the database)

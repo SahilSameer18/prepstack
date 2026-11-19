@@ -12,7 +12,7 @@
 //   Code: the SCORE (computed from the marks), the proof check (quotes must really be in the resume), and the plan links
 //         (only real PrepStack items survive)
 const { z } = require('zod');
-const { runCascade, settings, BadOutput } = require('./ai.service');
+const { runCascade, settings, BadOutput } = require('../ai/ai.service');
 const { matchSkillText, makeIndex } = require('./skills.service');
 
 const IMPORTANCE = ['must', 'nice'];

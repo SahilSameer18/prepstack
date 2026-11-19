@@ -1,9 +1,9 @@
-// The goal planner's generator (src/services/planGenerator.js), a pure module: small made-up data for each rule, then the acceptance example
+// The goal planner's generator (src/modules/plan/planGenerator.js), a pure module: small made-up data for each rule, then the acceptance example
 // on the real data (decision 35 of docs/plans/MY_PLAN_PLAN.md).
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const gen = require('../src/services/planGenerator');
-const { loadPlanData } = require('../src/services/planData');
+const gen = require('../src/modules/plan/planGenerator');
+const { loadPlanData } = require('../src/modules/plan/planData');
 
 const { generatePlan, previewPlan, groupByWeek, onTrack, validateInput, dayBudget, dayNumber, weekdayOf, todayIst, PlanInputError } = gen;
 const sum = (items) => items.reduce((s, it) => s + it.plannedMinutes, 0);

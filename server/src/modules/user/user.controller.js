@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const userModel = require('../auth/auth.model');
-const projectModel = require('../../models/project.model');
+const projectModel = require('../project/project.model');
 const progressModel = require('../sheets/progress.model');
 const PasswordReset = require('../auth/passwordReset.model');
 const DSASheet = require('../sheets/sheets.model');

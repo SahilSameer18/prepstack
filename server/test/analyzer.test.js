@@ -509,7 +509,7 @@ describe('privacy: deleting the account deletes the reports', () => {
 });
 
 describe('what the AI is told, and the claims the code will not keep (11 Nov 2026)', () => {
-  const svc = require('../src/services/analyzer.service');
+  const svc = require('../src/modules/analyzer/analyzer.service');
 
   it('the prompt asks for a soft-skill question when the job names one, and lists what each roadmap teaches', async () => {
     const acct = await t.register();

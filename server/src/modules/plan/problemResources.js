@@ -1,5 +1,5 @@
 const crypto = require('node:crypto');
-const { problemIdentity } = require('../modules/sheets/problemIdentity');
+const { problemIdentity } = require('../sheets/problemIdentity');
 const { problemMinutes } = require('./planGenerator');
 
 // Independently published equivalent exercises, checked against the provider's

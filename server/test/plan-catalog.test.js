@@ -3,7 +3,7 @@
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const roadmapCatalog = require('../src/shared/content/roadmapCatalog.json');
-const planCatalog = require('../src/data/planCatalog.json');
+const planCatalog = require('../src/modules/plan/planCatalog.json');
 const { buildRoadmapCatalog, buildPlanCatalog } = require('../scripts/build-plan-catalogs');
 const limits = require('../src/shared/config/limits');
 

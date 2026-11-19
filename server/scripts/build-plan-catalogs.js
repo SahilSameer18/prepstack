@@ -2,7 +2,7 @@
 //
 //   src/shared/content/roadmapCatalog.json  a copy of what the planner needs from client/src/data/roadmaps.js (the roadmap content lives in the
 //                                 client). test/plan-catalog.test.js fails when the copy and the client data differ.
-//   src/data/planCatalog.json     for every topic of every DSA sheet: the step of our DSA roadmap it belongs to (this gives the order:
+//   src/modules/plan/planCatalog.json     for every topic of every DSA sheet: the step of our DSA roadmap it belongs to (this gives the order:
 //                                 the planner follows the DSA roadmap) and whether it is "core" or "extra".
 //
 // "core" is our own judgement, not a count of what interviews ask: a topic is core when its idea has its own place in the Blind 75
@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
 
-const DATA = path.join(__dirname, '..', 'src', 'data');
+const DATA = path.join(__dirname, '..', 'src', 'modules', 'plan');
 const SHEETS = ['blind75', 'neetCodeSeed', 'striverSDESeed', 'striverA2ZSeed', 'loveBabbarSeed'];
 
 const STEP = {

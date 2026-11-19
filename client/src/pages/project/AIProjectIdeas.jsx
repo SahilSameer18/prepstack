@@ -7,7 +7,7 @@ import { InlineSpinner } from "../../components/ui/Skeletons";
 import { UsageNotice } from "../../components/ui/StateComponents";
 import { useUsage } from "../../hooks/useUsage";
 
-// KEEP IN SYNC with KNOWN_STACKS in server/src/services/ai.service.js: typed names that are not in this list are
+// KEEP IN SYNC with KNOWN_STACKS in server/src/modules/ai/ai.service.js: typed names that are not in this list are
 // checked by the AI ("is this a real technology?") before an idea is generated.
 const techStacks = ["MERN Stack", "PERN Stack", "MEAN Stack", "Next.js", "Angular", "Python / Django", "FastAPI", "Java / Spring Boot", "Go", ".NET", "Flutter", "React Native", "Kotlin (Android)"];
 // Same rule as the server: 2 to 40 characters, letters, numbers and + # . / & ( ) -, with at least 2 letters

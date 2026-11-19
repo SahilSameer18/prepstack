@@ -4,7 +4,7 @@ const t = require('./helpers/setup');
 const { describe, it, before, after, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { planClock } = require('../src/shared/calendar/clock');
-const { todayIst, dayNumber, ymdOf } = require('../src/services/planGenerator');
+const { todayIst, dayNumber, ymdOf } = require('../src/modules/plan/planGenerator');
 
 let Plan, Progress;
 before(async () => {
@@ -30,8 +30,8 @@ async function lifecycleApply(acct, body) {
 
 describe('study calendar, freeze and short sprint recovery', () => {
   it('refits a five-day break around rest days and retains every unfinished minute', async () => {
-    const { hoursOn } = require('../src/services/planAdjust');
-    const { dayBudget } = require('../src/services/planGenerator');
+    const { hoursOn } = require('../src/modules/plan/planAdjust');
+    const { dayBudget } = require('../src/modules/plan/planGenerator');
     planClock.now = () => new Date('2026-11-16T07:00:00Z');
     const acct = await t.register();
     const made = (await create(acct, form({
@@ -269,7 +269,7 @@ describe('study calendar, freeze and short sprint recovery', () => {
 // Direct model fixtures avoid an AI request while exercising the real import API.
 async function importReport(acct) {
   const Report = t.mongoose.model('InterviewReport');
-  const data = require('../src/services/planData').getPlanData();
+  const data = require('../src/modules/plan/planData').getPlanData();
   return Report.create({
     user: acct.id, title: 'Frontend role', jobDescription: 'Saved test role', days: 7, score: 50,
     plan: [
@@ -536,7 +536,7 @@ describe('POST /api/plan/preview (public)', () => {
     const response = await t.api.get('/api/plan/options');
     assert.equal(response.status, 200);
     const options = response.body.data;
-    const data = require('../src/services/planData').getPlanData();
+    const data = require('../src/modules/plan/planData').getPlanData();
     assert.equal(options.sheets.length, Object.keys(data.sheets).length);
     assert.equal(options.roadmaps.length, data.roadmapCatalog.length);
     assert.deepEqual(options.subjects.map((s) => s.id), Object.keys(data.notes));

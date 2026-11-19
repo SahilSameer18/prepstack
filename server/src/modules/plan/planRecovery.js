@@ -1,9 +1,9 @@
 const { createHash } = require('node:crypto');
 const { baseId, dayBudget, dayNumber, PlanInputError } = require('./planGenerator');
 const { hoursOn, reviewRoom, REVIEW_MINUTES } = require('./planAdjust');
-const { calendarSettings, studyDay, addStudyDays } = require('../shared/calendar/studyCalendar');
-const { problemIdentity } = require('../modules/sheets/problemIdentity');
-const { PLAN_MAX_ITEMS, PLAN_MAX_WEEKS } = require('../shared/config/limits');
+const { calendarSettings, studyDay, addStudyDays } = require('../../shared/calendar/studyCalendar');
+const { problemIdentity } = require('../sheets/problemIdentity');
+const { PLAN_MAX_ITEMS, PLAN_MAX_WEEKS } = require('../../shared/config/limits');
 
 // Keep whole tasks when a regular day can hold them. Previously moved tasks
 // can be larger, so split those across available days without losing minutes.

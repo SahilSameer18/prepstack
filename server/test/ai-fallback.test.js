@@ -5,7 +5,7 @@ const { describe, it, before, after, beforeEach, afterEach } = require('node:tes
 const assert = require('node:assert/strict');
 const path = require('path');
 
-const ai = require(path.join(t.SERVER_ROOT, 'src', 'services', 'ai.service.js'));
+const ai = require(path.join(t.SERVER_ROOT, 'src', 'modules', 'ai', 'ai.service.js'));
 const { MODELS: M, gemini, groq, apiError, goodIdea } = t;
 
 const PARAMS = { techStack: 'MERN Stack', complexity: 'beginner', domain: '', notes: '' };

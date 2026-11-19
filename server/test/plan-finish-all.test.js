@@ -1,8 +1,8 @@
 // "When would I finish everything at these hours?": the preview plans the same request over the longest plan allowed (real data).
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { loadPlanData } = require('../src/services/planData');
-const gen = require('../src/services/planGenerator');
+const { loadPlanData } = require('../src/modules/plan/planData');
+const gen = require('../src/modules/plan/planGenerator');
 
 const data = loadPlanData();
 const ask = (over) => ({

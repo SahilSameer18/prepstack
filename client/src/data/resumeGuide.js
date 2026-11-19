@@ -1,7 +1,7 @@
 // Content of the Resume Guide page and its one-page checklist PDF.
 // Everything here is advice, not a guarantee: no company is named as using a rule, and no statistics are quoted.
 // The weak/strong examples and the sample resume are invented for illustration.
-// What this file says about the Role Analyzer matches server/src/services/analyzer.service.js and resume.service.js:
+// What this file says about the Role Analyzer matches server/src/modules/analyzer/analyzer.service.js and resume.service.js:
 // it prefers a line that shows a skill being used over a skills list; it never suggests adding a skill the resume lacks;
 // it removes email, phone and links before the AI reads the text; scanned (image-only) PDFs fail; PDF max 3 MB and 5 pages.
 // Each disputable claim has a row in docs/content/SOURCES.md.

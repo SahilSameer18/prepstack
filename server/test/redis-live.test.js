@@ -84,7 +84,7 @@ describe('the Redis connection against a real service', { skip: url ? false : 's
 
   // phase 6: the AI budget reservation script on the real service
   it('the AI budget reserves exactly the limit when 50 ask at once, and its keys expire', async () => {
-    const { reserveBudget, resetBudgetMemory } = require('../src/services/aiBudget');
+    const { reserveBudget, resetBudgetMemory } = require('../src/modules/ai/aiBudget');
     resetBudgetMemory();
     const name = 'gemini:live-' + crypto.randomBytes(4).toString('hex');
     process.env.AI_BUDGETS = JSON.stringify({ [name]: { perMinute: 5, perDay: 100 } });

@@ -72,7 +72,7 @@ if (require.main === module) {
     const clientData = path.join(__dirname, '..', '..', 'client', 'src', 'data');
     const { roadmaps } = await import(pathToFileURL(path.join(clientData, 'roadmaps.js')).href);
     const { tools } = await import(pathToFileURL(path.join(clientData, 'resumeGuide.js')).href);
-    const catalog = require('../src/data/skillCatalog.json');
+    const catalog = require('../src/modules/analyzer/skillCatalog.json');
     const entries = collectUrls({ roadmaps, catalog, tools });
     console.log(`Checking ${entries.length} different addresses (this takes a minute or two)...`);
     const results = await checkAll(entries);

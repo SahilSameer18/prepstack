@@ -1,7 +1,7 @@
 // The skill catalog: finding a skill in free text, and turning a skill into things a student can DO in PrepStack.
-// The catalog (src/data/skillCatalog.json) is the one source of truth: names, aliases, a docs link and a video link, and a
+// The catalog (src/modules/analyzer/skillCatalog.json) is the one source of truth: names, aliases, a docs link and a video link, and a
 // "prepstack" object saying which PrepStack content teaches the skill. Nothing here touches a database.
-const catalog = require('../data/skillCatalog.json');
+const catalog = require('./skillCatalog.json');
 
 // ── finding a skill in text ──
 const normalise = (s) => String(s ?? '').toLowerCase().replace(/\s+/g, ' ').trim();

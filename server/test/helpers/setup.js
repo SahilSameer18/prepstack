@@ -24,7 +24,7 @@ process.env.AI_RESERVE_MS = '1'; // the time kept for the last provider is 8 s i
 //   per model: `.script[modelId] = [step1, step2, ...]`, used on that model's 1st, 2nd... call (the last step repeats);
 //              a step is { reply } | { error } | { hang: true }, and may add { delayMs } to answer slowly
 // `.models` lists the model IDs that were called, in order; `.calls` counts all calls.
-const aiServicePath = path.join(SERVER_ROOT, 'src', 'services', 'ai.service.js');
+const aiServicePath = path.join(SERVER_ROOT, 'src', 'modules', 'ai', 'ai.service.js');
 const resetAiState = () => { const m = require.cache[aiServicePath]; if (m && m.exports.resetState) m.exports.resetState(); };
 function makeFake() {
   return {
@@ -145,7 +145,7 @@ async function stop() {
 }
 const getModels = () => ({
   User: require(path.join(SERVER_ROOT, 'src', 'modules', 'auth', 'auth.model.js')),
-  Project: require(path.join(SERVER_ROOT, 'src', 'models', 'project.model.js')),
+  Project: require(path.join(SERVER_ROOT, 'src', 'modules', 'project', 'project.model.js')),
   Progress: require(path.join(SERVER_ROOT, 'src', 'modules', 'sheets', 'progress.model.js')),
   DSASheet: require(path.join(SERVER_ROOT, 'src', 'modules', 'sheets', 'sheets.model.js')),
   Notes: require(path.join(SERVER_ROOT, 'src', 'modules', 'notes', 'notes.model.js')),
