@@ -51,7 +51,7 @@
 | Live database seeding | OS, OOP, and System Design notes (`npm run seed:notes`) and all DSA sheets (`npm run seed:all`) seeded on live database by owner | Live MongoDB instance |
 | Password reset, login lock, account deletion | built | `README.md` |
 | My plan (B5) | Phases 0–7 implemented: builder, daily workspace, dashboard, report imports, reviews and read-only history; Phase 8 real-user validation remains | `docs/plans/MY_PLAN_PLAN.md` |
-| Tests | Server 1128 (19 Nov), client 136 and 28 browser flows passed (16 Nov). Build, lint and SEO passed (91 indexable pages). 5,000 generated scenarios, 53 named scenarios (about 12,250 independent checks) and 900 simulated student lives found zero rule violations; no role plan is empty across 486 combinations. Eight mixed API journeys and 28 resume combinations passed. | `TESTING.md` |
+| Tests | Server 1128 (19 Nov), client 135 unit tests (19 Nov); 32 browser flows listed, **31 passed and 1 failed on 19 Nov** (the dashboard tab row is wider than a phone screen; not yet investigated). Build, lint and SEO passed (91 indexable pages). 5,000 generated scenarios, 53 named scenarios (about 12,250 independent checks) and 900 simulated student lives found zero rule violations; no role plan is empty across 486 combinations. Eight mixed API journeys and 28 resume combinations passed. | `TESTING.md` |
 
 ## Left, in build order
 
