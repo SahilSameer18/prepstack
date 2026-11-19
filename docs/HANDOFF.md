@@ -2,6 +2,11 @@
 
 Updated 16 Nov 2026. Read this file, then `PROJECT_STATUS.md` and `BUILD_CHECKLIST.md` for current status and build order, then `CLAUDE.md` for the rules. Dated handoff sections below record what was verified at each phase.
 
+## Redis handoff, 19 Nov 2026
+- Redis Phases 3 to 6 and the scaling pass are on `main` and deployed on Render (commit `a7df3e9`). Redis is optional: with no `REDIS_URL` the server uses memory and MongoDB, and an unreachable Redis never stops it. Read `docs/plans/REDIS_PLAN.md` first (phase table, decisions 1 to 17), then `README.md` (environment settings: `REDIS_URL`, `REDIS_PREFIX`, `RATE_LIMIT_MEMORY_ONLY`, `RATE_LIMIT_REDIS`, `CACHE_MEMORY_SECONDS`, `WEB_CONCURRENCY`, `AI_BUDGETS`, `AI_BUDGET_DAY_TIMEZONE`, `SESSION_CACHE`).
+- Code: `server/src/config/redis.js`, `services/cache.js`, `rateLimitStore.js`, `lock.js`, `aiBudget.js`, `sessionCache.js`; `server/cluster.js`; tests use `ioredis-mock` and `test/helpers/fake-redis.js`, and the harness turns the in-process caches off. Live checks are opt-in: `npm run test:redis-live` and `npm run measure:cache`. Never touch `server/.env`.
+- Open: Phase 7 (BullMQ AI queue, 7a project ideas then 7b the Role Analyzer, privacy policy first), Phase 8, `measure:cache` numbers, decision 17 (answered yes: 5-second in-process session layer).
+
 ## Recovery phases handoff, 15 Nov 2026 (historical)
 - Both recovery phases are complete. See `TESTING.md` for verification and limits.
 - New authenticated routes: POST /api/plan/lifecycle/preview and /apply, plus GET /api/plan/paused/:id (owned read-only snapshot). Lifecycle bodies use type calendar | pause | resume | recover | discard. Calendar takes timeZone (IANA) and dayStartHour (integer 0–6); resume/discard take planId; recover takes recoveryDays (1–28, default 7). Apply also requires the 32-hex preview checksum. Resume extends the deadline by default; the UI uses that default. A fixed deadline requested directly is rejected if shifted work cannot fit. No client-supplied task replacement is accepted.
