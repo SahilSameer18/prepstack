@@ -1,8 +1,8 @@
 const express = require('express');
 const { generateProject, getAllProjects, getProjectById, deleteProject } = require('../controllers/project.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
-const { aiProjectLimiter } = require('../middlewares/rateLimit.middleware')
-const validate = require('../middlewares/validate.middleware')
+const { aiProjectLimiter } = require('../shared/http/rateLimit.middleware')
+const validate = require('../shared/http/validate.middleware')
 const { generateProjectSchema } = require('../validators/project.validators')
 
 

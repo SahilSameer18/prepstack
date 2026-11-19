@@ -7,10 +7,11 @@
 const { GoogleGenAI } = require('@google/genai');
 const Groq = require('groq-sdk');
 const { z } = require('zod');
-const AppError = require('../utils/AppError');
-const { getRedis, redisKey } = require('../config/redis');
+const AppError = require('../shared/http/AppError');
+const { getRedis, redisKey } = require('../shared/config/redis');
 const { reserveBudget, hasBudget } = require('./aiBudget');
-const { DIFFICULTIES } = require('../models/project.model');
+// The form, project schema and AI output use the same difficulty values.
+const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];
 
 const projectSchema = z.object({
   title: z.string().min(1),
@@ -389,4 +390,4 @@ const resetState = () => { breakers.clear(); stackAnswers.clear(); };
 
 // buildPrompt, buildProviders and parseIdea are exported for scripts/compare-models.js, which tries each provider on its own
 // runCascade is also used by the Role Analyzer (services/analyzer.service.js); settings() gives it the shared time limits
-module.exports = { generateProjectIdea, describeProviders, resetState, buildPrompt, buildProviders, parseIdea, runCascade, settings, BadOutput };
+module.exports = { DIFFICULTIES, generateProjectIdea, describeProviders, resetState, buildPrompt, buildProviders, parseIdea, runCascade, settings, BadOutput };

@@ -27,13 +27,13 @@ const {
 } = require('../controllers/plan.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
 const { previewRecovery, applyRecovery, getPausedPlan } = require('../controllers/planRecovery.controller');
-const validate = require('../middlewares/validate.middleware');
+const validate = require('../shared/http/validate.middleware');
 const {
   planPreviewLimiter,
   planGenerateLimiter,
   planChangeLimiter,
   planTickLimiter,
-} = require('../middlewares/rateLimit.middleware');
+} = require('../shared/http/rateLimit.middleware');
 const {
   previewPlanSchema,
   createPlanSchema,

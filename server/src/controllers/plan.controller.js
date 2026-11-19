@@ -1,6 +1,6 @@
 const crypto = require('crypto');
-const { cached } = require('../services/cache');
-const { calendarSettings, studyDay, nextStudyBoundary } = require('../utils/studyCalendar');
+const { cached } = require('../shared/infra/cache');
+const { calendarSettings, studyDay, nextStudyBoundary } = require('../shared/calendar/studyCalendar');
 const mongoose = require('mongoose');
 const Plan = require('../models/plan.model');
 const Progress = require('../models/progress.model');
@@ -9,12 +9,13 @@ const { writeProblemProgress } = require('../services/problemProgress');
 const { alternativeResources, substituteOptions } = require('../services/problemResources');
 const Report = require('../models/interviewReport.model');
 const { prepareReportImport } = require('../services/planReport');
-const AppError = require('../utils/AppError');
-const { sendSuccess } = require('../utils/responseFormatter');
+const AppError = require('../shared/http/AppError');
+const { sendSuccess } = require('../shared/http/responseFormatter');
 const gen = require('../services/planGenerator');
 const adj = require('../services/planAdjust');
-const { getPlanData, getPlanChoices, planClock } = require('../services/planData');
-const { PLAN_MAX_ITEMS, PLAN_MAX_FINISHED, PLAN_MAX_START_DAYS_AHEAD } = require('../config/limits');
+const { getPlanData, getPlanChoices } = require('../services/planData');
+const { planClock } = require('../shared/calendar/clock');
+const { PLAN_MAX_ITEMS, PLAN_MAX_FINISHED, PLAN_MAX_START_DAYS_AHEAD } = require('../shared/config/limits');
 
 const GOAL_TITLES = { placements: 'Placement prep', role: 'Role switch', bigtech: 'Big-tech SDE interview' };
 const MAX_SOLVED_LINKS = 1500;

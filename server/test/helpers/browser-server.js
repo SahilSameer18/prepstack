@@ -13,7 +13,7 @@ async function start() {
   await Notes.create({ subject: data.subject, subjectSlug: 'os', sections: data.sections });
   const fixture = express();
   fixture.use(express.json());
-  const { planClock } = require('../../src/services/planData');
+  const { planClock } = require('../../src/shared/calendar/clock');
   fixture.post('/__test/clock', (req, res) => {
     const instant = req.body.now ? new Date(req.body.now) : null;
     if (instant && Number.isNaN(instant.getTime())) return res.status(400).json({ message: 'Invalid fixture date' });
@@ -49,7 +49,7 @@ async function start() {
     item.reviewStage = 0;
     item.reviewLadder = 'solution';
     const user = await t.getModels().User.findById(req.body.user).lean();
-    const { studyDay, calendarSettings } = require('../../src/utils/studyCalendar');
+    const { studyDay, calendarSettings } = require('../../src/shared/calendar/studyCalendar');
     item.reviewBaseDay = studyDay(planClock.now(), calendarSettings(user));
     item.nextReviewDay = item.reviewBaseDay;
     if (req.body.complete) doc.items = [item];

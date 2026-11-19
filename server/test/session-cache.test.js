@@ -1,11 +1,11 @@
-// The session cache in the auth middleware (src/services/sessionCache.js, phase 6 R3). The harness turns it off; here it is on.
+// The session cache in the auth middleware (src/shared/infra/sessionCache.js, phase 6 R3). The harness turns it off; here it is on.
 // The rule under test: caching may save MongoDB reads, but a revoked session must stop working at once on this server, whatever was cached.
 const t = require('./helpers/setup');
 const { describe, it, before, after, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const RedisMock = require('ioredis-mock');
-const redisConfig = require('../src/config/redis');
-const { sessionFor, invalidateUser, resetSessionCache } = require('../src/services/sessionCache');
+const redisConfig = require('../src/shared/config/redis');
+const { sessionFor, invalidateUser, resetSessionCache } = require('../src/shared/infra/sessionCache');
 
 let User;
 let lookups = 0; // MongoDB reads made by the auth middleware

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const sheetsController = require('../controllers/sheets.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
-const validate = require('../middlewares/validate.middleware');
+const validate = require('../shared/http/validate.middleware');
 const { toggleProblemSchema } = require('../validators/sheets.validators');
 
 // route to get all the sheets

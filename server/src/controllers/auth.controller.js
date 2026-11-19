@@ -5,12 +5,12 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { generateAccessToken, generateRefreshToken, hashToken } = require('../utils/tokens');
-const AppError = require('../utils/AppError');
-const { invalidateUser } = require('../services/sessionCache');
+const AppError = require('../shared/http/AppError');
+const { invalidateUser } = require('../shared/infra/sessionCache');
 const googleClient = require('../utils/googleClient');
 const { generateUniqueUsername, findUserByUsername } = require('../utils/usernameHelper');
 const { parseDeviceInfo } = require('../utils/deviceParser');
-const { sendSuccess } = require('../utils/responseFormatter');
+const { sendSuccess } = require('../shared/http/responseFormatter');
 const { formatUserResponse, defaultAvatar } = require('../utils/userResponse');
 const { sendEmail, isEmailConfigured, passwordResetEmail, googleOnlyEmail, settings: emailSettings } = require('../services/email.service');
 

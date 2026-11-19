@@ -1,9 +1,9 @@
 const notesModel = require('../models/notes.model');
-const AppError = require('../utils/AppError');
-const { sendSuccess } = require('../utils/responseFormatter');
+const AppError = require('../shared/http/AppError');
+const { sendSuccess } = require('../shared/http/responseFormatter');
 const { sectionStats, subjectStats } = require('../utils/notesStats');
-const { cached } = require('../services/cache');
-const { PUBLIC_CONTENT_CACHE_CONTROL } = require('../config/limits');
+const { cached } = require('../shared/infra/cache');
+const { PUBLIC_CONTENT_CACHE_CONTROL } = require('../shared/config/limits');
 
 // controller to get all the notes: each subject with numbers worked out from its sections (no sections are sent)
 const getNotes = async (req, res, next) => {

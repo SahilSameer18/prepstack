@@ -1,10 +1,10 @@
-// The in-process cache in front of Redis (level 1, src/services/cache.js): it works with Redis off, shares one load between identical requests,
+// The in-process cache in front of Redis (level 1, src/shared/infra/cache.js): it works with Redis off, shares one load between identical requests,
 // never caches errors or unsafe keys, stays bounded, and spares Redis a round trip when it has the answer.
 const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
-const redisConfig = require('../src/config/redis');
+const redisConfig = require('../src/shared/config/redis');
 const { FakeRedis } = require('./helpers/fake-redis');
-const { cached, resetMemoryCache } = require('../src/services/cache');
+const { cached, resetMemoryCache } = require('../src/shared/infra/cache');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const counter = (value) => { const f = async () => { f.calls += 1; return typeof value === 'function' ? value() : value; }; f.calls = 0; return f; };

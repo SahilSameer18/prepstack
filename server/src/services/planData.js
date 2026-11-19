@@ -20,15 +20,14 @@ const loadPlanData = () => {
     sheets,
     notes,
     planCatalog: require('../data/planCatalog.json'),
-    roadmapCatalog: require('../data/roadmapCatalog.json'),
-    behavioral: require('../data/behavioralQuestions.json'),
+    roadmapCatalog: require('../shared/content/roadmapCatalog.json'),
+    behavioral: require('../shared/content/behavioralQuestions.json'),
   };
 };
 
-// Loading the notes and sheets takes a moment, so it is done once. Tests can replace `planClock.now` to play a plan on another day.
+// Loading the notes and sheets takes a moment, so it is done once.
 let cached = null;
 const getPlanData = () => (cached ??= loadPlanData());
-const planClock = { now: () => new Date() };
 
 // Only DSA practice topics can be excluded from a roadmap by the current generator.
 function roadmapTopicChoices(roadmap, sheets) {
@@ -71,4 +70,4 @@ function getPlanChoices() {
   return { sheets, subjects, roadmaps };
 }
 
-module.exports = { loadPlanData, getPlanData, getPlanChoices, planClock, SUBJECTS };
+module.exports = { loadPlanData, getPlanData, getPlanChoices, SUBJECTS };

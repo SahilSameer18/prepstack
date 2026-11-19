@@ -1,5 +1,5 @@
 const DSASheet = require('../../models/sheets.model');
-const connectDB = require('../seedConfig');
+const connectDB = require('../../shared/config/seedConfig');
 
 const striverSDEData = {
   name: "Striver SDE Sheet",

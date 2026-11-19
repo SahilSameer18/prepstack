@@ -4,8 +4,8 @@ const seedStriverA2Z = require('./sheetSeeds/striverA2ZSeed');
 const seedStriverSDE = require('./sheetSeeds/striverSDESeed');
 const seedNeetCode = require('./sheetSeeds/neetCodeSeed');
 const seedBlind75 = require('./sheetSeeds/blind75');
-const connectDB = require('./seedConfig');
-const { clearContentCache } = require('../services/cache');
+const connectDB = require('../shared/config/seedConfig');
+const { clearContentCache } = require('../shared/infra/cache');
 const report = (result) => console.log(result.skipped ? 'Content cache: Redis is not set or not reachable, so cached copies expire by themselves within about ten minutes.' : `Content cache cleared (${result.cleared} keys).`);
 
 const seedAll = async () => {

@@ -1,4 +1,4 @@
-const AppError = require('../utils/AppError');
+const AppError = require('./AppError');
 
 /**
  * Centralized Express error-handling middleware.

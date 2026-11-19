@@ -2,16 +2,16 @@ const crypto = require('node:crypto');
 const Plan = require('../models/plan.model');
 const User = require('../models/auth.model');
 const Progress = require('../models/progress.model');
-const AppError = require('../utils/AppError');
-const { sendSuccess } = require('../utils/responseFormatter');
-const { planClock } = require('../services/planData');
+const AppError = require('../shared/http/AppError');
+const { sendSuccess } = require('../shared/http/responseFormatter');
+const { planClock } = require('../shared/calendar/clock');
 const { PlanInputError } = require('../services/planGenerator');
 const { resumePlan, recoverReviews } = require('../services/planRecovery');
-const { calendarSettings, studyDay, nextStudyBoundary } = require('../utils/studyCalendar');
+const { calendarSettings, studyDay, nextStudyBoundary } = require('../shared/calendar/studyCalendar');
 const { normalizedSolves } = require('../utils/problemIdentity');
 const { presentPlan, withTransaction } = require('./plan.controller');
-const { PLAN_MAX_FINISHED } = require('../config/limits');
-const { invalidateUser } = require('../services/sessionCache');
+const { PLAN_MAX_FINISHED } = require('../shared/config/limits');
+const { invalidateUser } = require('../shared/infra/sessionCache');
 
 // Read fresh owned state for both preview and apply. Neither caller can submit
 // replacement task data or move another account's paused plan.

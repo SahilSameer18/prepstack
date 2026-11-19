@@ -10,7 +10,7 @@ const connectDB = async () => {
   if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_CUSTOM_DNS === 'true') {
     dns.setServers(['1.1.1.1', '8.8.8.8']);
   }
-  require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+  require('dotenv').config({ path: path.join(__dirname, '../../../.env') });
   
   const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/prepstack';
   await mongoose.connect(mongoUri);

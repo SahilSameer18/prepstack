@@ -1,5 +1,5 @@
 const rateLimit = require("express-rate-limit");
-const { RedisRateLimitStore } = require("../services/rateLimitStore");
+const { RedisRateLimitStore } = require("../infra/rateLimitStore");
 
 // Almost every limiter counts in Redis when it is on (shared by every server, kept across a restart) and in memory when it is not.
 // The two chatty, low-risk ones (plan ticks, problem note saves) count in memory unless RATE_LIMIT_REDIS names them: a Redis count costs about 36 ms

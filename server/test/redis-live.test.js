@@ -8,7 +8,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const url = process.env.REDIS_TEST_URL || process.env.REDIS_URL;
-const MODULE = path.join(__dirname, '..', 'src', 'config', 'redis.js');
+const MODULE = path.join(__dirname, '..', 'src', 'shared', 'config', 'redis.js');
 const prefix = `prepstack:test:${crypto.randomBytes(6).toString('hex')}:`;
 
 describe('the Redis connection against a real service', { skip: url ? false : 'set REDIS_TEST_URL or REDIS_URL (npm run test:redis-live)' }, () => {
@@ -57,7 +57,7 @@ describe('the Redis connection against a real service', { skip: url ? false : 's
 
   // phase 5: the real Lua scripts on the real service (the other tests run them on ioredis-mock)
   it('the rate limit store counts exactly on the real service: fixed and sliding, 50 at once, give-back, and shared by two store objects', async () => {
-    const { RedisRateLimitStore } = require('../src/services/rateLimitStore');
+    const { RedisRateLimitStore } = require('../src/shared/infra/rateLimitStore');
     for (const algorithm of ['fixed', 'sliding']) {
       const a = new RedisRateLimitStore({ name: 'live-' + algorithm, algorithm }); a.init({ windowMs: 60000 });
       const b = new RedisRateLimitStore({ name: 'live-' + algorithm, algorithm }); b.init({ windowMs: 60000 });
@@ -70,7 +70,7 @@ describe('the Redis connection against a real service', { skip: url ? false : 's
   });
 
   it('the lock is taken by one, released only by its holder, and the event counter counts a window', async () => {
-    const { acquireLock, recentCount, recordEvent } = require('../src/services/lock');
+    const { acquireLock, recentCount, recordEvent } = require('../src/shared/infra/lock');
     const first = await acquireLock('live', 'u1', 30000);
     assert.ok(first);
     assert.equal(await acquireLock('live', 'u1', 30000), null);

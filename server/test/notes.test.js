@@ -25,7 +25,7 @@ describe('CS notes (public)', () => {
 
   it('the seed command returns a failing exit code when publishing cannot connect', () => {
     const script = `
-      const config = require.resolve('./src/seed/seedConfig');
+      const config = require.resolve('./src/shared/config/seedConfig');
       require.cache[config] = { id: config, filename: config, loaded: true, exports: async () => { throw new Error('simulated offline database'); } };
       require('./src/seed/notesSeed').seedNotes();
     `;
@@ -38,7 +38,7 @@ describe('CS notes (public)', () => {
     const script = `
       require('dotenv').config = () => { throw new Error('unexpected environment read'); };
       require('node:dns').setServers = () => { throw new Error('unexpected DNS change'); };
-      if (typeof require('./src/seed/seedConfig') !== 'function') process.exit(1);
+      if (typeof require('./src/shared/config/seedConfig') !== 'function') process.exit(1);
     `;
     const child = spawnSync(process.execPath, ['-e', script], {
       cwd: require('node:path').join(__dirname, '..'), encoding: 'utf8', timeout: 10000,

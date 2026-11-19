@@ -3,8 +3,8 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const helmet = require('helmet')
 const mongoose = require('mongoose')
-const errorMiddleware = require('./middlewares/error.middleware')
-const AppError = require('./utils/AppError')
+const errorMiddleware = require('./shared/http/error.middleware')
+const AppError = require('./shared/http/AppError')
 
 // initialize the express app
 const app = express()

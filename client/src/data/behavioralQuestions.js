@@ -2,7 +2,7 @@
 // Mignone Center, Indeed, Wikipedia, Google re:Work); see docs/content/source-notes/behavioral.md. The example answers are examples
 // written for students, not scripts. Each question has: what the interviewer is checking, a STAR outline (Situation, Task, Action,
 // Result), an example answer and two common mistakes. Ids are permanent: the Role Analyzer picks questions by id, and
-// server/src/data/behavioralQuestions.json is a copy of the ids and questions (a test fails if they drift apart).
+// server/src/shared/content/behavioralQuestions.json is a copy of the ids and questions (a test fails if they drift apart).
 export const CATEGORIES = [
   "Personal", "Teamwork", "Conflict", "Failure and learning", "Leadership",
   "Taking responsibility", "Deadlines and pressure", "Unclear situations and learning", "Feedback", "Motivation",

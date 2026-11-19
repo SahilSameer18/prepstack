@@ -1,7 +1,7 @@
 const ProblemNote = require('../models/problemNote.model');
 const DSASheet = require('../models/sheets.model');
-const AppError = require('../utils/AppError');
-const { sendSuccess } = require('../utils/responseFormatter');
+const AppError = require('../shared/http/AppError');
+const { sendSuccess } = require('../shared/http/responseFormatter');
 const { deleteNoteSchema, isEmpty } = require('../validators/problemNotes.validators');
 
 const FIELDS = ['pattern', 'timeComplexity', 'spaceComplexity', 'approach'];

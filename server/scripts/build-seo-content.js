@@ -40,7 +40,7 @@ function build() {
     sections[subject] = list.map((s) => ({ id: s.id, title: s.title, readMinutes: sectionStats(s).readMinutes, description: describe(plain(s.overview[0])) }));
     body.notes[subject] = Object.fromEntries(list.map((s) => [s.id, { overview: s.overview.slice(0, 2).map(plain), topics: s.topics.map((t) => plain(t.name)) }]));
   }
-  const config = require.resolve('../src/seed/seedConfig');
+  const config = require.resolve('../src/shared/config/seedConfig');
   require.cache[config] = { id: config, filename: config, loaded: true, exports: async () => {} }; // the seeds would connect to a database otherwise
   for (const file of SHEET_FILES) {
     const { slug, topics } = require(`../src/seed/sheetSeeds/${file}`).data;

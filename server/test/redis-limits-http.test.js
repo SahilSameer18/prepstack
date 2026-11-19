@@ -5,7 +5,7 @@ const { describe, it, before, after, beforeEach, afterEach } = require('node:tes
 const assert = require('node:assert/strict');
 const RedisMock = require('ioredis-mock');
 const path = require('node:path');
-const redisConfig = require('../src/config/redis');
+const redisConfig = require('../src/shared/config/redis');
 
 const ai = require(path.join(t.SERVER_ROOT, 'src', 'services', 'ai.service.js'));
 const { MODELS: M, gemini, apiError, goodIdea } = t;
@@ -88,7 +88,7 @@ describe('every limiter counts in Redis, and keeps its own rule about which requ
   afterEach(() => { redisConfig.setRedisForTests(null); delete process.env.RATE_LIMIT_REDIS; });
 
   it('all 14 limiters use the Redis store: none was left on the default in-memory store', () => {
-    const { limiterNames } = require('../src/middlewares/rateLimit.middleware');
+    const { limiterNames } = require('../src/shared/http/rateLimit.middleware');
     assert.deepEqual([...limiterNames].sort(), ['account-action', 'ai-project', 'analyzer', 'forgot-password', 'link-google', 'login', 'plan-change', 'plan-generate', 'plan-preview', 'plan-tick', 'problem-note', 'refresh', 'register', 'reset-password']);
   });
 

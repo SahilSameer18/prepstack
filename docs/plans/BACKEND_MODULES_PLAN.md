@@ -2,6 +2,12 @@
 
 **Read this whole file before touching anything.** It is written so an agent that has not seen the earlier conversation can do the work. The owner decided the items in section 3; everything else here is a fact read from the code on 19 Nov 2026 or an instruction.
 
+**Phase 0 complete, 19 Nov 2026.** Branch module had no tracked or staged changes. The existing untracked .claude/ directory was left untouched. The server baseline passed 1,111 tests in 210 suites, with zero failures, cancellations or skips (about 3 minutes). Live Redis opt-in variables were cleared for the run. Phases 1 and 2 are recorded below.
+
+**Backend modules Phases 1 and 2 complete, 19 Nov 2026.** The clock is shared independently of planner content, and AI owns the difficulty values used by the project model. Twenty-one files now live under server/src/shared, with imports, runtime paths, scripts and README updated. The full server suite passed all 1,111 tests after each phase. All 135 client tests, the build, lint and SEO passed. Phase 3 (auth and user modules) is next.
+
+The owner authorized Phases 1 and 2 together. They were verified separately and are ready for the owner to commit together. The architecture test and the remaining feature moves stay in their later steps.
+
 ## 0. Rules for the agent (from `CLAUDE.md`, the owner's standing rules)
 1. **Never stage, commit or push.** This also means **do not use `git mv`** (it stages). Move files with plain `mv` (Git sees the renames when the owner commits). After each step, stop and give the owner the commands: one `git add -A server` (and docs when changed) and a one-line `git commit -m "..."` with no `Co-Authored-By` or other trailer.
 2. **Never read, edit or print `server/.env`.** One step changes a relative path that points at it (`seedConfig`, step 2); change the path string only.
@@ -58,9 +64,9 @@ File names do not change. Inside a module the files are flat, except `modules/sh
 | From | To | Done |
 |---|---|---|
 | `app.js` | stays | |
-| `config/database.js` | `shared/config/database.js` | |
-| `config/limits.js` | `shared/config/limits.js` | |
-| `config/redis.js` | `shared/config/redis.js` | |
+| `config/database.js` | `shared/config/database.js` | Done, Phase 2 |
+| `config/limits.js` | `shared/config/limits.js` | Done, Phase 2 |
+| `config/redis.js` | `shared/config/redis.js` | Done, Phase 2 |
 | `controllers/analyzer.controller.js` | `modules/analyzer/analyzer.controller.js` | |
 | `controllers/auth.controller.js` | `modules/auth/auth.controller.js` | |
 | `controllers/notes.controller.js` | `modules/notes/notes.controller.js` | |
@@ -71,17 +77,17 @@ File names do not change. Inside a module the files are flat, except `modules/sh
 | `controllers/sheets.controller.js` | `modules/sheets/sheets.controller.js` | |
 | `controllers/usage.controller.js` | `modules/usage/usage.controller.js` | |
 | `controllers/user.controller.js` | `modules/user/user.controller.js` | |
-| `data/behavioralQuestions.json` | `shared/content/behavioralQuestions.json` | |
+| `data/behavioralQuestions.json` | `shared/content/behavioralQuestions.json` | Done, Phase 2 |
 | `data/notes/` (whole folder, 71 files, structure kept) | `modules/notes/content/` | |
 | `data/planCatalog.json` | `modules/plan/planCatalog.json` | |
 | `data/problemNoteOptions.js` | `modules/problem-notes/problemNoteOptions.js` | |
-| `data/roadmapCatalog.json` | `shared/content/roadmapCatalog.json` | |
+| `data/roadmapCatalog.json` | `shared/content/roadmapCatalog.json` | Done, Phase 2 |
 | `data/skillCatalog.json` | `modules/analyzer/skillCatalog.json` | |
 | `middlewares/auth.middleware.js` | `modules/auth/auth.middleware.js` | |
-| `middlewares/error.middleware.js` | `shared/http/error.middleware.js` | |
-| `middlewares/rateLimit.middleware.js` | `shared/http/rateLimit.middleware.js` | |
+| `middlewares/error.middleware.js` | `shared/http/error.middleware.js` | Done, Phase 2 |
+| `middlewares/rateLimit.middleware.js` | `shared/http/rateLimit.middleware.js` | Done, Phase 2 |
 | `middlewares/upload.middleware.js` | `modules/analyzer/upload.middleware.js` | |
-| `middlewares/validate.middleware.js` | `shared/http/validate.middleware.js` | |
+| `middlewares/validate.middleware.js` | `shared/http/validate.middleware.js` | Done, Phase 2 |
 | `models/auth.model.js` | `modules/auth/auth.model.js` | |
 | `models/interviewReport.model.js` | `modules/analyzer/interviewReport.model.js` | |
 | `models/notes.model.js` | `modules/notes/notes.model.js` | |
@@ -102,15 +108,15 @@ File names do not change. Inside a module the files are flat, except `modules/sh
 | `routes/user.routes.js` | `modules/user/user.routes.js` | |
 | `seed/masterSeed.js` | `modules/sheets/seeds/masterSeed.js` | |
 | `seed/notesSeed.js` | `modules/notes/notesSeed.js` | |
-| `seed/seedConfig.js` | `shared/config/seedConfig.js` | |
+| `seed/seedConfig.js` | `shared/config/seedConfig.js` | Done, Phase 2 |
 | `seed/sheetSeeds/` (whole folder, 5 files, structure kept) | `modules/sheets/seeds/sheetSeeds/` | |
 | `services/ai.service.js` | `modules/ai/ai.service.js` | |
 | `services/aiBudget.js` | `modules/ai/aiBudget.js` | |
 | `services/analyzer.service.js` | `modules/analyzer/analyzer.service.js` | |
 | `services/analyzerContext.service.js` | `modules/analyzer/analyzerContext.service.js` | |
-| `services/cache.js` | `shared/infra/cache.js` | |
+| `services/cache.js` | `shared/infra/cache.js` | Done, Phase 2 |
 | `services/email.service.js` | `modules/auth/email.service.js` | |
-| `services/lock.js` | `shared/infra/lock.js` | |
+| `services/lock.js` | `shared/infra/lock.js` | Done, Phase 2 |
 | `services/planAdjust.js` | `modules/plan/planAdjust.js` | |
 | `services/planData.js` | `modules/plan/planData.js` | |
 | `services/planGenerator.js` | `modules/plan/planGenerator.js` | |
@@ -118,26 +124,27 @@ File names do not change. Inside a module the files are flat, except `modules/sh
 | `services/planReport.js` | `modules/plan/planReport.js` | |
 | `services/problemProgress.js` | `modules/sheets/problemProgress.js` | |
 | `services/problemResources.js` | `modules/plan/problemResources.js` | |
-| `services/rateLimitStore.js` | `shared/infra/rateLimitStore.js` | |
+| `services/rateLimitStore.js` | `shared/infra/rateLimitStore.js` | Done, Phase 2 |
 | `services/resume.service.js` | `modules/analyzer/resume.service.js` | |
-| `services/sessionCache.js` | `shared/infra/sessionCache.js` | |
+| `services/sessionCache.js` | `shared/infra/sessionCache.js` | Done, Phase 2 |
 | `services/skills.service.js` | `modules/analyzer/skills.service.js` | |
-| `services/usage.service.js` | `shared/usage/usage.service.js` | |
-| `utils/AppError.js` | `shared/http/AppError.js` | |
+| `services/usage.service.js` | `shared/usage/usage.service.js` | Done, Phase 2 |
+| `utils/AppError.js` | `shared/http/AppError.js` | Done, Phase 2 |
 | `utils/deviceParser.js` | `modules/auth/deviceParser.js` | |
 | `utils/googleClient.js` | `modules/auth/googleClient.js` | |
-| `utils/istDay.js` | `shared/calendar/istDay.js` | |
+| `utils/clock.js` (added in Phase 1) | `shared/calendar/clock.js` | Done, Phase 2 |
+| `utils/istDay.js` | `shared/calendar/istDay.js` | Done, Phase 2 |
 | `utils/notesStats.js` | `modules/notes/notesStats.js` | |
-| `utils/planDay.js` | `shared/calendar/planDay.js` | |
+| `utils/planDay.js` | `shared/calendar/planDay.js` | Done, Phase 2 |
 | `utils/problemIdentity.js` | `modules/sheets/problemIdentity.js` | |
-| `utils/responseFormatter.js` | `shared/http/responseFormatter.js` | |
-| `utils/studyCalendar.js` | `shared/calendar/studyCalendar.js` | |
+| `utils/responseFormatter.js` | `shared/http/responseFormatter.js` | Done, Phase 2 |
+| `utils/studyCalendar.js` | `shared/calendar/studyCalendar.js` | Done, Phase 2 |
 | `utils/tokens.js` | `modules/auth/tokens.js` | |
 | `utils/userResponse.js` | `modules/auth/userResponse.js` | |
 | `utils/usernameHelper.js` | `modules/auth/usernameHelper.js` | |
 | `validators/analyzer.validators.js` | `modules/analyzer/analyzer.validators.js` | |
 | `validators/auth.validators.js` | `modules/auth/auth.validators.js` | |
-| `validators/contentLinks.js` | `shared/content/contentLinks.js` | |
+| `validators/contentLinks.js` | `shared/content/contentLinks.js` | Done, Phase 2 |
 | `validators/notes.validators.js` | `modules/notes/notes.validators.js` | |
 | `validators/plan.validators.js` | `modules/plan/plan.validators.js` | |
 | `validators/problemNotes.validators.js` | `modules/problem-notes/problemNotes.validators.js` | |

@@ -6,7 +6,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { checkContentLinks } = require('../src/validators/contentLinks');
+const { checkContentLinks } = require('../src/shared/content/contentLinks');
 
 const CLIENT_DATA = path.join(t.SERVER_ROOT, '..', 'client', 'src', 'data');
 const hasClient = fs.existsSync(path.join(CLIENT_DATA, 'roadmaps.js')); // the server may be tested alone, without the client folder

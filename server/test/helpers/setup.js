@@ -249,7 +249,7 @@ async function seedSheets() {
 // The data of the five DSA sheets, as written in the seed files. Those files connect to the real database when they are
 // loaded (seedConfig), so that connection helper is replaced first and nothing outside the test is touched.
 function sheetSeedData() {
-  const configPath = require.resolve('../../src/seed/seedConfig');
+  const configPath = require.resolve('../../src/shared/config/seedConfig');
   require.cache[configPath] = { id: configPath, filename: configPath, loaded: true, exports: async () => {} };
   return ['blind75', 'loveBabbarSeed', 'neetCodeSeed', 'striverA2ZSeed', 'striverSDESeed'].map((f) => require(`../../src/seed/sheetSeeds/${f}`).data);
 }

@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const { generateProjectIdea } = require("../services/ai.service");
 const projectModel = require('../models/project.model');
-const AppError = require('../utils/AppError');
-const { sendSuccess, sanitizeDoc } = require('../utils/responseFormatter');
-const { HOUR_MS, PROJECT_LOCK_MS, projectsPerDay } = require('../config/limits');
-const { acquireLock, recentCount, recordEvent } = require('../services/lock');
-const { countLast24h } = require('../services/usage.service');
+const AppError = require('../shared/http/AppError');
+const { sendSuccess, sanitizeDoc } = require('../shared/http/responseFormatter');
+const { HOUR_MS, PROJECT_LOCK_MS, projectsPerDay } = require('../shared/config/limits');
+const { acquireLock, recentCount, recordEvent } = require('../shared/infra/lock');
+const { countLast24h } = require('../shared/usage/usage.service');
 
 // Times (ms) at which the AI said a user's typed tech stack was not a real technology, per user. A rejected check still
 // costs an AI call and the hourly limit does not count failed requests, so without this someone could type junk in a

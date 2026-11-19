@@ -33,7 +33,7 @@ const migrateSolvedAt = async (collection, { dryRun = false } = {}) => {
 module.exports = { migrateSolvedAt };
 
 if (require.main === module) {
-  const connectDB = require('../src/seed/seedConfig');
+  const connectDB = require('../src/shared/config/seedConfig');
   const dryRun = process.argv.includes('--dry-run');
   (async () => {
     await connectDB();

@@ -1,11 +1,11 @@
-// The optional Redis connection (src/config/redis.js, step R0) and the fake Redis the other tests will use.
+// The optional Redis connection (src/shared/config/redis.js, step R0) and the fake Redis the other tests will use.
 // No real Redis and no network here: a closed local port stands in for "Redis is down".
 const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const { FakeRedis } = require('./helpers/fake-redis');
 
-const MODULE = path.join(__dirname, '..', 'src', 'config', 'redis.js');
+const MODULE = path.join(__dirname, '..', 'src', 'shared', 'config', 'redis.js');
 const SECRET = 'topsecretpassword';
 
 // A fresh copy of the module (it keeps its connection in a variable), with the environment and the console under test control.

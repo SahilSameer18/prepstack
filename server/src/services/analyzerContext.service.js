@@ -9,10 +9,10 @@
 //                               test/analyzer.context.test.js fails if they drift from client/src/data/roadmaps.js
 //   behavioral   PrepStack's behavioral question bank (id and text), copied from the client for the same reason
 const DSASheet = require('../models/sheets.model');
-const roadmapCatalog = require('../data/roadmapCatalog.json');
+const roadmapCatalog = require('../shared/content/roadmapCatalog.json');
 const Notes = require('../models/notes.model');
 const catalog = require('../data/skillCatalog.json');
-const behavioral = require('../data/behavioralQuestions.json');
+const behavioral = require('../shared/content/behavioralQuestions.json');
 
 const ROADMAP_SLUGS = ['frontend', 'backend', 'fullstack', 'android', 'data-analytics', 'machine-learning', 'dsa', 'java-spring', 'devops-cloud'];
 // What each roadmap really teaches, in one line, so the AI links a plan task to a roadmap only when it fits (11 Nov 2026: it once

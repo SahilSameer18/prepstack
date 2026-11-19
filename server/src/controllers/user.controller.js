@@ -4,15 +4,15 @@ const projectModel = require('../models/project.model');
 const progressModel = require('../models/progress.model');
 const PasswordReset = require('../models/passwordReset.model');
 const DSASheet = require('../models/sheets.model');
-const AppError = require('../utils/AppError');
-const { invalidateUser } = require('../services/sessionCache');
+const AppError = require('../shared/http/AppError');
+const { invalidateUser } = require('../shared/infra/sessionCache');
 const { findUserByUsername } = require('../utils/usernameHelper');
 const bcrypt = require('bcrypt');
 const { formatUserResponse } = require('../utils/userResponse');
-const { sendSuccess } = require('../utils/responseFormatter');
-const { calendarSettings, studyStreak } = require('../utils/studyCalendar');
-const { planClock } = require('../services/planData');
-const { cached } = require('../services/cache');
+const { sendSuccess } = require('../shared/http/responseFormatter');
+const { calendarSettings, studyStreak } = require('../shared/calendar/studyCalendar');
+const { planClock } = require('../shared/calendar/clock');
+const { cached } = require('../shared/infra/cache');
 const { problemIdentity, normalizedSolves } = require('../utils/problemIdentity');
 
 // The ONE place that decides how many problems a user has solved: only links that still exist in a sheet,

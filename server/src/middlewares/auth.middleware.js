@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const userModel = require('../models/auth.model');
-const { sessionFor } = require('../services/sessionCache');
+const { sessionFor } = require('../shared/infra/sessionCache');
 
 const unauthorized = (res, message) =>
   res.status(401).json({ success: false, message, errors: [message] });

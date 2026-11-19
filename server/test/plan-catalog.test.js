@@ -2,10 +2,10 @@
 // If someone changes a roadmap, adds a sheet topic or edits the NeetCode seed, these tests say what to update.
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const roadmapCatalog = require('../src/data/roadmapCatalog.json');
+const roadmapCatalog = require('../src/shared/content/roadmapCatalog.json');
 const planCatalog = require('../src/data/planCatalog.json');
 const { buildRoadmapCatalog, buildPlanCatalog } = require('../scripts/build-plan-catalogs');
-const limits = require('../src/config/limits');
+const limits = require('../src/shared/config/limits');
 
 const SHEETS = { 'blind-75': 'blind75', 'neetcode-150': 'neetCodeSeed', 'striver-sde': 'striverSDESeed', 'striver-a2z': 'striverA2ZSeed', 'love-babbar': 'loveBabbarSeed' };
 const sheet = (slug) => require(`../src/seed/sheetSeeds/${SHEETS[slug]}`).data;

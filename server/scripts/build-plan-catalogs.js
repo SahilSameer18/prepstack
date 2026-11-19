@@ -1,6 +1,6 @@
 // Builds the two files the goal planner ("My plan") reads on the server. Run: npm run build:plan-catalogs
 //
-//   src/data/roadmapCatalog.json  a copy of what the planner needs from client/src/data/roadmaps.js (the roadmap content lives in the
+//   src/shared/content/roadmapCatalog.json  a copy of what the planner needs from client/src/data/roadmaps.js (the roadmap content lives in the
 //                                 client). test/plan-catalog.test.js fails when the copy and the client data differ.
 //   src/data/planCatalog.json     for every topic of every DSA sheet: the step of our DSA roadmap it belongs to (this gives the order:
 //                                 the planner follows the DSA roadmap) and whether it is "core" or "extra".
@@ -125,7 +125,7 @@ if (require.main === module) {
   (async () => {
     const roadmapCatalog = await buildRoadmapCatalog();
     const planCatalog = buildPlanCatalog(roadmapCatalog);
-    fs.writeFileSync(path.join(DATA, 'roadmapCatalog.json'), JSON.stringify(roadmapCatalog, null, 1) + '\n');
+    fs.writeFileSync(path.join(__dirname, '..', 'src', 'shared', 'content', 'roadmapCatalog.json'), JSON.stringify(roadmapCatalog, null, 1) + '\n');
     fs.writeFileSync(path.join(DATA, 'planCatalog.json'), JSON.stringify(planCatalog, null, 1) + '\n');
     console.log(`roadmapCatalog.json: ${roadmapCatalog.length} roadmaps, ${roadmapCatalog.reduce((n, r) => n + r.steps.length, 0)} steps`);
     console.log(`planCatalog.json: ${Object.entries(planCatalog.sheets).map(([s, t]) => `${s} ${Object.keys(t).length}`).join(', ')}`);

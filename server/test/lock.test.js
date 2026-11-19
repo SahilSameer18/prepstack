@@ -1,9 +1,9 @@
-// The "one at a time" locks and the short-window counter (src/services/lock.js, phase 5). The Lua release script runs for real (ioredis-mock).
+// The "one at a time" locks and the short-window counter (src/shared/infra/lock.js, phase 5). The Lua release script runs for real (ioredis-mock).
 const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const RedisMock = require('ioredis-mock');
-const redisConfig = require('../src/config/redis');
-const { acquireLock, recentCount, recordEvent, resetLocalState } = require('../src/services/lock');
+const redisConfig = require('../src/shared/config/redis');
+const { acquireLock, recentCount, recordEvent, resetLocalState } = require('../src/shared/infra/lock');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

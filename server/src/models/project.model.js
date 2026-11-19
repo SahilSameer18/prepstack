@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 
-// The only difficulty values the app uses (the form offers them, the AI output is checked against them,
-// and the client renders exactly these)
-const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];
+const { DIFFICULTIES } = require("../services/ai.service.js");
 
 const projectSchema = new mongoose.Schema(
   {

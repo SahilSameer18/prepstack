@@ -1,7 +1,7 @@
 // Which plan day is "today": pure rule, no database.
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
-const { todayPlanDay } = require('../src/utils/planDay');
+const { todayPlanDay } = require('../src/shared/calendar/planDay');
 
 const day = (n, ...done) => ({ day: n, items: done.map((d) => ({ done: d })) });
 // IST is UTC+5:30, so 2026-11-10T18:29Z is still 10 Nov in IST and 18:30Z is already 11 Nov

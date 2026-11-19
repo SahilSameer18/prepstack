@@ -1,11 +1,11 @@
-// The Redis rate limit store (src/services/rateLimitStore.js, phase 5). The Lua scripts run for real here (ioredis-mock has a Lua engine),
+// The Redis rate limit store (src/shared/infra/rateLimitStore.js, phase 5). The Lua scripts run for real here (ioredis-mock has a Lua engine),
 // so these tests check the actual scripts: counting, expiry, the sliding window, giving a hit back, many callers at once, two "servers"
 // sharing one Redis, and every way Redis can be missing falling back to memory.
 const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const RedisMock = require('ioredis-mock');
-const redisConfig = require('../src/config/redis');
-const { RedisRateLimitStore } = require('../src/services/rateLimitStore');
+const redisConfig = require('../src/shared/config/redis');
+const { RedisRateLimitStore } = require('../src/shared/infra/rateLimitStore');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const make = (options, windowMs = 60000) => { const store = new RedisRateLimitStore(options); store.init({ windowMs }); return store; };

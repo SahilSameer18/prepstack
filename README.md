@@ -105,16 +105,22 @@ prepstack/
 └── server/                      # Express 5 backend
     ├── scripts/                 # Hand-run tools: list models, compare models, evaluate the analyzer, build catalogs, check a Redis host, measure the cache
     ├── src/
-    │   ├── config/              # Database, limits and the optional Redis connection
     │   ├── controllers/         # Request handlers (auth, user, sheets, notes, project, analyzer)
-    │   ├── data/                # CS notes content, skill catalog (120 skills), behavioral question bank
-    │   ├── middlewares/         # Auth, validation, errors, rate limits, PDF upload
+    │   ├── data/                # CS notes content, skill catalog and plan catalog
+    │   ├── middlewares/         # Auth and PDF upload
     │   ├── models/              # User, Notes, Progress, Project, DSASheet, InterviewReport, ProblemNote, PasswordReset
     │   ├── routes/              # Express routers
     │   ├── seed/                # Seed scripts and dataset definitions
-    │   ├── services/            # AI provider chain, analyzer, resume reader, skill matcher, email sender, cache-aside helper, Redis rate-limit store and locks, AI budget, session cache, plan generator
-    │   ├── utils/               # Tokens, device parsing, response helpers
+    │   ├── services/            # AI provider chain, analyzer, resume reader, skill matcher, email sender, AI budget, plan generator
+    │   ├── utils/               # Tokens, device parsing, content helpers
     │   ├── validators/          # Zod schemas (auth, sheets, project, user, analyzer)
+    │   ├── shared/              # Common code moved here during backend module migration
+    │   │   ├── config/          # Database, limits, Redis and seed connection setup
+    │   │   ├── http/            # Errors, validation, rate limits and response helpers
+    │   │   ├── infra/           # Caches, locks and rate-limit store
+    │   │   ├── calendar/        # Study dates, streaks and the shared clock
+    │   │   ├── usage/           # Rolling usage counts
+    │   │   └── content/         # Roadmap catalog, behavioral questions and link validation
     │   └── app.js               # Express app definition
     ├── test/                    # API and service tests (node:test + supertest + in-memory MongoDB; a fake Redis in test/helpers)
     ├── cluster.js               # Optional: one server copy per CPU core (needs Redis)

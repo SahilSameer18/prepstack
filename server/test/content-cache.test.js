@@ -5,7 +5,7 @@ const t = require('./helpers/setup');
 const { describe, it, before, after, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { FakeRedis } = require('./helpers/fake-redis');
-const redisConfig = require('../src/config/redis');
+const redisConfig = require('../src/shared/config/redis');
 const gen = require('../src/services/planGenerator');
 
 const PUBLIC = 'public, max-age=300, stale-while-revalidate=600';

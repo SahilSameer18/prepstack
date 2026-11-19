@@ -5,7 +5,7 @@
 const url = process.env.REDIS_URL; // the test harness below removes it from the environment; keep a copy
 const crypto = require('node:crypto');
 const t = require('../test/helpers/setup');
-const redisConfig = require('../src/config/redis');
+const redisConfig = require('../src/shared/config/redis');
 const gen = require('../src/services/planGenerator');
 
 const REQUESTS = Number(process.env.REQUESTS || 400);

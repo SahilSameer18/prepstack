@@ -9,7 +9,7 @@
 // With Redis on, the counters are shared by every server copy (one atomic Lua script reserves a call); without it, or when it fails, they count in
 // this process's memory, which is exact for one server. The day starts at midnight in AI_BUDGET_DAY_TIMEZONE (default America/Los_Angeles, where
 // Google resets its daily quotas); every key has an expiry.
-const { getRedis, redisKey } = require('../config/redis');
+const { getRedis, redisKey } = require('../shared/config/redis');
 
 // ARGV: minute limit, day limit (0 = no limit). Check both, then count both, in one step: two callers can never both take the last call.
 const RESERVE = `

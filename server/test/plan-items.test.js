@@ -2,7 +2,7 @@
 const t = require('./helpers/setup');
 const { describe, it, before, after, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
-const { planClock } = require('../src/services/planData');
+const { planClock } = require('../src/shared/calendar/clock');
 const { todayIst, dayNumber, ymdOf } = require('../src/services/planGenerator');
 
 let Plan, Progress, User;

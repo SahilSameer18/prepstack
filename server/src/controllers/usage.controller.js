@@ -1,8 +1,8 @@
 const projectModel = require('../models/project.model');
 const Report = require('../models/interviewReport.model');
-const { projectsPerDay, reportsPerDay } = require('../config/limits');
-const { dailyUsage } = require('../services/usage.service');
-const { sendSuccess } = require('../utils/responseFormatter');
+const { projectsPerDay, reportsPerDay } = require('../shared/config/limits');
+const { dailyUsage } = require('../shared/usage/usage.service');
+const { sendSuccess } = require('../shared/http/responseFormatter');
 
 // GET /api/usage: how much of today's allowance the user has used, for the forms to show before the user hits a limit.
 const getUsage = async (req, res, next) => {

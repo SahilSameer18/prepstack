@@ -1,11 +1,11 @@
-// The cache-aside helper (src/services/cache.js, phase 4) on the fake Redis: hit and miss, expiry with jitter, the lock against a stampede,
+// The cache-aside helper (src/shared/infra/cache.js, phase 4) on the fake Redis: hit and miss, expiry with jitter, the lock against a stampede,
 // "not found" cached briefly, a bounded write budget and size, and every Redis failure falling through to the loader.
 const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { FakeRedis } = require('./helpers/fake-redis');
-const redisConfig = require('../src/config/redis');
+const redisConfig = require('../src/shared/config/redis');
 process.env.CACHE_MEMORY_SECONDS = '0'; // these tests are about the Redis layer
-const { cached, clearContentCache } = require('../src/services/cache');
+const { cached, clearContentCache } = require('../src/shared/infra/cache');
 
 const quiet = () => { const log = console.log; console.log = () => {}; return () => { console.log = log; }; };
 const counter = (value) => { const f = async () => { f.calls += 1; return typeof value === 'function' ? value() : value; }; f.calls = 0; return f; };

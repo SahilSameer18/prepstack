@@ -5,7 +5,7 @@ const { describe, it, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const RedisMock = require('ioredis-mock');
-const redisConfig = require('../src/config/redis');
+const redisConfig = require('../src/shared/config/redis');
 const { reserveBudget, hasBudget, resetBudgetMemory } = require('../src/services/aiBudget');
 
 const ai = require(path.join(t.SERVER_ROOT, 'src', 'services', 'ai.service.js'));

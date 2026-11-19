@@ -2,7 +2,7 @@
 const t = require('./helpers/setup');
 const { describe, it, before, after, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
-const limits = require('../src/config/limits');
+const limits = require('../src/shared/config/limits');
 
 const HOUR = 60 * 60 * 1000;
 const RESUME_TEXT = [

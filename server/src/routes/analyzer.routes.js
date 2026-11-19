@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { createReport, listReports, getReport, deleteReport, setPlanItem, getToday } = require('../controllers/analyzer.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
-const validate = require('../middlewares/validate.middleware');
-const { analyzerLimiter, planTickLimiter } = require('../middlewares/rateLimit.middleware');
+const validate = require('../shared/http/validate.middleware');
+const { analyzerLimiter, planTickLimiter } = require('../shared/http/rateLimit.middleware');
 const { resumeUpload } = require('../middlewares/upload.middleware');
 const { createReportSchema, planTickSchema } = require('../validators/analyzer.validators');
 

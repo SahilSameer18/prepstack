@@ -2,6 +2,10 @@
 
 Updated 16 Nov 2026. Read this file, then `PROJECT_STATUS.md` and `BUILD_CHECKLIST.md` for current status and build order, then `CLAUDE.md` for the rules. Dated handoff sections below record what was verified at each phase.
 
+## Backend modules handoff, 19 Nov 2026
+- Phases 0–2 passed on branch module. Shared code is now in server/src/shared. Auth, user and the other feature files remain in their original folders until the later phases. The clock is shared/calendar/clock.js. The seed configuration path still resolves to server/.env, which was not opened.
+- Server 1,111 tests passed after both steps; client 135, build, lint and SEO passed. The owner authorized these two phases together. Next is Phase 3 in docs/plans/BACKEND_MODULES_PLAN.md.
+
 ## Redis handoff, 19 Nov 2026
 - Redis Phases 3 to 6 and the scaling pass are on `main` and deployed on Render (commit `a7df3e9`). Redis is optional: with no `REDIS_URL` the server uses memory and MongoDB, and an unreachable Redis never stops it. Read `docs/plans/REDIS_PLAN.md` first (phase table, decisions 1 to 17), then `README.md` (environment settings: `REDIS_URL`, `REDIS_PREFIX`, `RATE_LIMIT_MEMORY_ONLY`, `RATE_LIMIT_REDIS`, `CACHE_MEMORY_SECONDS`, `WEB_CONCURRENCY`, `AI_BUDGETS`, `AI_BUDGET_DAY_TIMEZONE`, `SESSION_CACHE`).
 - Code: `server/src/config/redis.js`, `services/cache.js`, `rateLimitStore.js`, `lock.js`, `aiBudget.js`, `sessionCache.js`; `server/cluster.js`; tests use `ioredis-mock` and `test/helpers/fake-redis.js`, and the harness turns the in-process caches off. Live checks are opt-in: `npm run test:redis-live` and `npm run measure:cache`. Never touch `server/.env`.

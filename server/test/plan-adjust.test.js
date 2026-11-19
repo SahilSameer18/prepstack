@@ -4,7 +4,7 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const gen = require('../src/services/planGenerator');
 const adj = require('../src/services/planAdjust');
-const calendar = require('../src/utils/studyCalendar');
+const calendar = require('../src/shared/calendar/studyCalendar');
 const recovery = require('../src/services/planRecovery');
 
 describe('personal study calendar and review recovery', () => {

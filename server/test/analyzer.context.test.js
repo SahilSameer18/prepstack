@@ -9,7 +9,7 @@ const path = require('path');
 const { pathToFileURL } = require('url');
 const ctxService = require('../src/services/analyzerContext.service');
 const catalog = require('../src/data/skillCatalog.json');
-const behavioral = require('../src/data/behavioralQuestions.json');
+const behavioral = require('../src/shared/content/behavioralQuestions.json');
 
 const CLIENT_DATA = path.join(t.SERVER_ROOT, '..', 'client', 'src', 'data');
 const hasClient = fs.existsSync(path.join(CLIENT_DATA, 'roadmaps.js')); // the server may be tested alone, without the client folder

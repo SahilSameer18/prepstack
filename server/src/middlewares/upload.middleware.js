@@ -1,5 +1,5 @@
 const multer = require('multer');
-const AppError = require('../utils/AppError');
+const AppError = require('../shared/http/AppError');
 const { MAX_PDF_BYTES } = require('../services/resume.service');
 
 // The resume PDF is read into memory, parsed, and dropped: it is never written to disk. One file, one field.

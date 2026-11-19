@@ -3,7 +3,7 @@
 const t = require('./helpers/setup');
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
-const { istDayNumber, currentStreak } = require('../src/utils/istDay');
+const { istDayNumber, currentStreak } = require('../src/shared/calendar/istDay');
 const { migrateSolvedAt } = require('../scripts/migrate-solved-at');
 
 const HOUR = 60 * 60 * 1000;

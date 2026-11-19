@@ -17,10 +17,10 @@ if (process.env.ACCESS_SECRET.length < 32 || process.env.REFRESH_SECRET.length <
 const mongoose = require('mongoose');
 const dns = require('dns');
 const app = require('./src/app');
-const connectToDB = require('./src/config/database')
+const connectToDB = require('./src/shared/config/database')
 const { describeProviders } = require('./src/services/ai.service')
 const { describeEmail, isEmailConfigured } = require('./src/services/email.service')
-const { connectRedis, closeRedis } = require('./src/config/redis')
+const { connectRedis, closeRedis } = require('./src/shared/config/redis')
 
 // Indexes are built in the background when the DB connects. If one fails (e.g. old data already breaks a unique
 // rule), the app keeps running, so say so loudly instead of staying silent.
