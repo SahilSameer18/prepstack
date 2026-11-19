@@ -289,6 +289,9 @@ const dayCaps = (days, reserved, context) => {
 const fillDays = (sequence, days, reserved, context, keepPartial = false) => {
   const caps = dayCaps(days, reserved, context);
   const used = new Array(sequence.length).fill(false);
+  const unitAt = new Map(); // the units (topics, notes sections, roadmap steps) in list order, so "the next unit" is known
+  for (const it of sequence) if (!unitAt.has(it.unitId)) unitAt.set(it.unitId, unitAt.size);
+  const unitList = [...unitAt.keys()];
   const placed = [];
   let head = 0;
   let carry = null; // an item longer than a day, being placed part by part
@@ -319,7 +322,9 @@ const fillDays = (sequence, days, reserved, context, keepPartial = false) => {
         if (left < partMin && left < caps[di]) break;
         used[head] = true; startSplit(item); break;
       }
-      // does not fit the rest of the day: a smaller item of the same topic that does, else the next one that does (decision 30)
+      // does not fit the rest of the day: a smaller item of the same topic that does, else one from the NEXT topic (or notes section) that does (decision 30,
+      // narrowed on 19 Nov 2026). Items from topics further ahead are never pulled forward, so a topic never starts before the one the catalog puts before it.
+      const nextUnit = unitList[unitAt.get(item.unitId) + 1]; // the unit right after this one in the list, even when it is already used up: nothing further ahead is pulled forward
       let found = -1;
       let near = -1;
       for (let k = head + 1, seen = 0; k < sequence.length && seen < LOOKAHEAD; k += 1) {
@@ -327,7 +332,7 @@ const fillDays = (sequence, days, reserved, context, keepPartial = false) => {
         seen += 1;
         if (sequence[k].plannedMinutes > left) continue;
         if (sequence[k].unitId === item.unitId) { found = k; break; }
-        if (near < 0) near = k;
+        if (near < 0 && sequence[k].unitId === nextUnit) near = k;
       }
       if (found < 0) found = near;
       if (found >= 0) { place(sequence[found], days[di], sequence[found].plannedMinutes, null); used[found] = true; left -= sequence[found].plannedMinutes; continue; }
@@ -588,8 +593,22 @@ const finishEverything = (input, plan, data) => {
   if (!plan.coverage.leftOut.length || plan.notices.includes('nothing-fits')) return null;
   const long = generatePlan({ ...input, weeks: limits.PLAN_MAX_WEEKS }, data);
   if (long.coverage.leftOut.length || !long.finishDate) return { tooLong: true };
-  const days = dayNumber(long.finishDate) - dayNumber(plan.startDate) + 1;
-  return { date: long.finishDate, weeks: Math.ceil(days / 7) };
+  const weeksTo = (date) => Math.ceil((dayNumber(date) - dayNumber(plan.startDate) + 1) / 7);
+  let date = long.finishDate;
+  let weeks = weeksTo(date);
+  // A plan of that many weeks has its own dated items near its end (behavioral questions) and can finish a day or two later than the 52 week plan, so check it:
+  // if it holds everything but finishes later, say that date; if it leaves something out, ask for one more week. The date shown is then what the student really gets.
+  for (let tries = 0; tries < 4; tries += 1) {
+    const whole = generatePlan({ ...input, weeks }, data);
+    if (!whole.coverage.leftOut.length) {
+      if (whole.finishDate <= date) break;
+      date = whole.finishDate;
+      const next = weeksTo(date);
+      if (next === weeks) break;
+      weeks = next;
+    } else weeks = Math.min(weeks + 1, limits.PLAN_MAX_WEEKS);
+  }
+  return { date, weeks };
 };
 
 const previewPlan = (input, data) => {

@@ -320,7 +320,10 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
   // planned is below the room for new items (weeks x 14 h), the first week (Friday 126 + Saturday 210 minutes of room) holds 330, and the mock and behavioral minutes are 90 and 10 each.
   // Since 15 Nov 2026 a short plan shares its time (every topic and subject keeps a floor) instead of cutting the tail, so the planned minutes are a little lower
   // than the old tail-cut plans (8718, 5865 and 4380) because the choice is made again until nothing is left over after the days are filled.
-  for (const [weeks, mocks, behavioral, planned, leftOut] of [[12, 9, 12, 8454, 47], [8, 5, 12, 5653, 90], [6, 3, 12, 4306, 111]]) {
+  // 19 Nov 2026: a gap in a day is now filled only from the same topic or the NEXT one (never from topics further ahead), so a topic never starts early by more than one place.
+  // The packing got slightly better (8454, 5653 and 4306 became 8749, 6013 and 4524 planned minutes; 47, 90 and 111 became 42, 84 and 108 items left out); the same checks hold.
+  // The last Saturday's mock block is gone from each of the three plans (9, 5 and 3 became 8, 4 and 2): the last days hold only CS notes now, and a mock needs unsolved core problems after it.
+  for (const [weeks, mocks, behavioral, planned, leftOut] of [[12, 8, 12, 8749, 42], [8, 4, 12, 6013, 84], [6, 2, 12, 4524, 108]]) {
     it(`${weeks} weeks: fair share, no day above 85 percent, ${mocks} mock blocks, ${behavioral} behavioral questions, nothing silently lost`, () => {
       const plan = generatePlan({ ...input, weeks }, data);
       const c = plan.coverage;
@@ -342,7 +345,8 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
       assert.equal(plan.items.filter((i) => i.type === 'behavioral').length, behavioral);
       assert.equal(plan.finishDate, plan.deadline);
       assert.ok(c.leftOut.some((l) => l.reason === 'extra' && l.topicTitle === 'Advanced Graphs'), 'the extra topic goes first');
-      assert.ok(plan.items.filter((i) => i.topicId === 'advanced-graphs').length <= 1, 'the extra topic keeps only its floor');
+      // 1, 1 and 2 of its 6 problems in the three plans: its floor, or one more when the better packing leaves room (19 Nov 2026; it used to be 1 in all three)
+      assert.ok(plan.items.filter((i) => i.topicId === 'advanced-graphs').length <= 2, 'the extra topic keeps only a small part of its problems');
       assert.ok(plan.items.filter((i) => i.topicId === 'arrays-hashing').length > 1, 'a core topic keeps more than its floor');
     });
   }

@@ -164,7 +164,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
               setRound(null);
               navigate(name.toLowerCase());
             }}
-            className={`min-h-[44px] flex-1 shrink-0 border-b-2 px-2 text-sm sm:flex-none sm:px-3 ${tab === name.toLowerCase() ? "border-brand text-brand" : "border-transparent text-muted"}`}
+            className={`min-h-[44px] flex-1 shrink-0 border-b-2 px-1 text-sm sm:flex-none sm:px-3${tab === name.toLowerCase() ? "border-brand text-brand" : "border-transparent text-muted"}`}
           >
             {name}
           </button>

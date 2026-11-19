@@ -131,6 +131,10 @@ function checkFresh(s, data) {
     for (const it of plan.items) if (it.type === 'dsa' && dsaSolved.has(problemIdentity(it.link))) bad('a solved problem is in the plan');
     const known = new Set(s.knownTopics);
     for (const it of plan.items) if (it.type === 'dsa' && known.has(it.topicId)) bad('a known topic is in the plan');
+    // prerequisite order: a topic never starts more than one place ahead of its turn ("one topic at a time"), or more than the 3 neighbouring topics that "mix from the start" rotates over
+    const { largestJump } = topicStartInversions(plan, s.sheetSlug, data);
+    const allowedJump = s.style === 'mixed' ? 3 : 1;
+    if (largestJump > allowedJump) bad(`a topic starts ${largestJump} places ahead of its turn (at most ${allowedJump} for the ${s.style} style)`);
     const groups = plan.coverage.byGroup;
     if (groups.reduce((sum, g) => sum + g.placed, 0) !== uniqueCount(plan.items.filter((i) => i.type === 'dsa' || i.type === 'notes'))) bad('coverage groups do not add up');
     for (const g of groups) {
@@ -199,17 +203,20 @@ function checkRebuild(s, data) {
 // Only the first day of each topic is compared (among the core topics, and among the others). The planner fills the gaps in a day, so some
 // plans pull a small later-topic item forward; this counts them and the biggest jump in catalog order. It is reported, never a failure.
 function topicStartInversions(plan, sheetSlug, data) {
-  const order = data.planCatalog.sheets[sheetSlug];
+  const catalog = data.planCatalog.sheets[sheetSlug];
+  // each topic's place in the dependency order, the way the planner sorts them: the catalog's order, then the sheet's own order
+  const place = new Map(data.sheets[sheetSlug].topics.map((t, index) => ({ id: t.id, index, order: catalog[t.id].order })).sort((a, b) => a.order - b.order || a.index - b.index).map((t, i) => [t.id, i]));
   let inversions = 0;
-  let largestJump = 0;
+  let largestJump = 0; // how many places ahead of its turn a topic started
   for (const core of [true, false]) {
-    const dsa = plan.items.map((it, index) => ({ it, index })).filter(({ it }) => it.type === 'dsa' && it.core === core && order[it.topicId])
-      .sort((a, b) => a.it.day.localeCompare(b.it.day) || a.index - b.index);
-    let latest = -Infinity;
-    for (const topicId of new Set(dsa.map(({ it }) => it.topicId))) { // topics in the order they first appear
-      const rank = order[topicId].order;
-      if (rank < latest) { inversions += 1; largestJump = Math.max(largestJump, latest - rank); }
-      latest = Math.max(latest, rank);
+    const first = new Map(); // topic -> the first day any of its problems is planned (the order inside one day means nothing)
+    for (const it of plan.items) if (it.type === 'dsa' && it.core === core && place.has(it.topicId) && (!first.has(it.topicId) || it.day < first.get(it.topicId))) first.set(it.topicId, it.day);
+    // only the topics that are in this plan count, so a topic the plan left out does not stretch the distance
+    const topics = [...first].map(([topicId, day]) => ({ place: place.get(topicId), day })).sort((a, b) => a.place - b.place).map((t, i) => ({ ...t, place: i }));
+    let latest = { day: '', place: -1 }; // the latest first-day among the topics before this one
+    for (const t of topics) {
+      if (t.day < latest.day) { inversions += 1; largestJump = Math.max(largestJump, t.place - latest.place); }
+      if (t.day > latest.day) latest = t;
     }
   }
   return { inversions, largestJump };
