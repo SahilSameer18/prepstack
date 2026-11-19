@@ -2,6 +2,7 @@ import { Document, Page, Text, View, Link, Svg, Circle, Font, StyleSheet } from 
 import { refLink } from "../../utils/reportLinks";
 import { formatDate } from "../../utils/formatDate";
 import { formatTitle } from "../../utils/formatTitle";
+import { orderRequirements, missingRequired, requirementName } from "../analyzer/requirements";
 
 // The Role Analyzer report as a PDF. Built in the browser and loaded only when the user clicks Download.
 // Only the standard PDF fonts are used (no font files to fetch), so text outside basic Latin may not draw.
@@ -13,7 +14,6 @@ const STATUS = {
   partial: { label: "PARTLY", fg: "#b45309", bg: "#fef3c7" },
   missing: { label: "MISSING", fg: "#b91c1c", bg: "#fee2e2" },
 };
-const ORDER = { missing: 0, partial: 1, met: 2 };
 const scoreColor = (n) => (n >= 70 ? "#34d399" : n >= 40 ? "#fbbf24" : "#fb7185");
 
 const s = StyleSheet.create({
@@ -73,7 +73,8 @@ const Ring = ({ score }) => {
 
 const AnalyzerReportPDF = ({ report, origin }) => {
   const advice = report.skillAdvice || {};
-  const reqs = [...report.requirements].sort((a, b) => ORDER[a.status] - ORDER[b.status]);
+  const reqs = orderRequirements(report.requirements);
+  const missingMust = missingRequired(reqs);
   const seen = new Set();
   const gaps = reqs.filter((r) => r.status !== "met" && advice[r.skillKey] && !seen.has(r.skillKey) && seen.add(r.skillKey));
   const must = report.scoreBreakdown?.must || {};
@@ -90,7 +91,7 @@ const AnalyzerReportPDF = ({ report, origin }) => {
           <View style={{ flex: 1 }}>
             <Text style={s.brand}>PREPSTACK  ·  ROLE ANALYZER</Text>
             <Text style={s.title}>{formatTitle(report.title)}</Text>
-            <Text style={s.headSub}>Created {formatDate(report.createdAt)}. The score is worked out from the marks below, not by the AI.</Text>
+            <Text style={s.headSub}>Created {formatDate(report.createdAt)}. The evidence match is worked out from the marks below, not by the AI. It is not a chance of getting the job.</Text>
           </View>
           <Ring score={report.score} />
         </View>
@@ -118,7 +119,13 @@ const AnalyzerReportPDF = ({ report, origin }) => {
           </View>
         )}
 
-        <Section title="What the job asks for" sub="Gaps first" />
+        {missingMust.length > 0 && (
+          <Text style={[s.bold, { color: STATUS.missing.fg, marginTop: 10 }]}>
+            {missingMust.length} required {missingMust.length === 1 ? "skill is" : "skills are"} not shown in your resume: {missingMust.map(requirementName).join(", ")}.
+          </Text>
+        )}
+
+        <Section title="What the job asks for" sub="Required skills and gaps first" />
         {reqs.map((r, i) => {
           const st = STATUS[r.status] || STATUS.missing;
           return (
@@ -127,7 +134,7 @@ const AnalyzerReportPDF = ({ report, origin }) => {
                 <Text style={[s.pill, { color: st.fg, backgroundColor: st.bg, width: 52, textAlign: "center", marginRight: 9 }]}>{st.label}</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={s.bold}>{r.text}</Text>
-                  <Text style={s.tiny}>{r.importance === "must" ? "Required" : "Nice to have"}{r.downgraded ? "  ·  proof not found in your resume, so counted as weaker" : ""}</Text>
+                  <Text style={s.tiny}>{r.why || (r.importance === "must" ? "Required" : "Nice to have")}</Text>
                 </View>
               </View>
               {r.status !== "missing" && r.evidence ? <Text style={s.quote}>From your resume: "{r.evidence}"</Text> : null}

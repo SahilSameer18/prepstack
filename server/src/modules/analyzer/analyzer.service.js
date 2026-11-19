@@ -233,6 +233,17 @@ const computeScore = (requirements) => {
   return total ? Math.round((100 * got) / total) : 0;
 };
 
+// One plain sentence per requirement: what it is worth and why, worked out from the mark and the checks (no AI), so the score can be traced line by line.
+const explainRequirement = (r) => {
+  const weight = WEIGHT[r.importance] || WEIGHT.nice;
+  const got = weight * (CREDIT[r.status] ?? 0);
+  const worth = `${r.importance === 'must' ? 'Required' : 'Nice to have'}: ${got} of ${weight} ${weight === 1 ? 'point' : 'points'}.`;
+  if (r.downgraded) return `${worth} The AI quoted proof that is not in your resume, so it counts as ${r.status === 'partial' ? 'partly met' : 'missing'}.`;
+  if (r.status === 'met') return `${worth} Your resume shows it.`;
+  if (r.status === 'partial') return `${worth} Your resume shows it only in part.`;
+  return `${worth} Nothing in your resume shows it.`;
+};
+
 // The title must come from the JOB DESCRIPTION. If most of its words are not in it (for example a resume talked the AI into
 // putting its own words there), use the first sentence of the job description instead.
 // A title that came out all lower case (a job description typed in lower case) is shown in Title Case, and a long one is cut at a word.
@@ -358,5 +369,5 @@ const analyze = async ({ resume, jobDescription, days }, ctx, { label = 'report'
 
 module.exports = {
   analyze, buildReportSchema, buildJsonSchema, buildReportPrompt, parseReport, clampReport, finalizeReport,
-  verifyEvidence, computeScore, normalise, safeTitle, clip, stripFrequencyClaims, FREQUENCY_CLAIM, LIMIT, MAX_RESUME_CHARS, MAX_JD_CHARS,
+  verifyEvidence, computeScore, explainRequirement, normalise, safeTitle, clip, stripFrequencyClaims, FREQUENCY_CLAIM, LIMIT, MAX_RESUME_CHARS, MAX_JD_CHARS,
 };

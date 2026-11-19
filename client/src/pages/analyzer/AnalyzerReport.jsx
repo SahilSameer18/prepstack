@@ -10,12 +10,12 @@ import { refLink } from "../../utils/reportLinks";
 import { formatTitle } from "../../utils/formatTitle";
 import ScoreRing from "../../components/analyzer/ScoreRing";
 import RequirementRow from "../../components/analyzer/RequirementRow";
+import { orderRequirements, missingRequired, requirementName } from "../../components/analyzer/requirements";
 import SkillGapCard from "../../components/analyzer/SkillGapCard";
 import PlanChecklist from "../../components/analyzer/PlanChecklist";
 import { countPlan, setItemDone } from "../../components/analyzer/planProgress";
 import ReportPlanImport from '../../components/plan/ReportPlanImport';
 
-const ORDER = { missing: 0, partial: 1, met: 2 };
 const card = "rounded-xl bg-card-hover border border-ink/[0.08] p-4";
 const tag = { missing: "text-bad bg-bad-solid/10 border-bad-solid/25", partial: "text-warn bg-warn-solid/10 border-warn-solid/25", met: "text-ok bg-ok-solid/10 border-ok-solid/25" };
 
@@ -79,8 +79,9 @@ const AnalyzerReport = () => {
   if (!report) return <SectionLoader message="Loading your report..." />;
 
   const advice = report.skillAdvice || {};
-  const reqs = [...report.requirements].sort((a, b) => ORDER[a.status] - ORDER[b.status]);
+  const reqs = orderRequirements(report.requirements); // required skills first, gaps first inside each group
   const gaps = reqs.filter((r) => r.status !== "met");
+  const missingMust = missingRequired(reqs);
   const must = report.scoreBreakdown?.must || {};
   const mustTotal = (must.met || 0) + (must.partial || 0) + (must.missing || 0);
   const hours = (report.priorities || []).reduce((n, p) => n + (p.hours || 0), 0);
@@ -115,9 +116,10 @@ const AnalyzerReport = () => {
       <div className="titanium-card rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-5 sm:gap-6">
         <ScoreRing score={report.score} />
         <div className="flex-1 min-w-0 text-center sm:text-left">
-          <p className="text-xs font-ui font-semibold tracking-wider text-brand mb-1">ROLE MATCH</p>
+          <p className="text-xs font-ui font-semibold tracking-wider text-brand mb-1">EVIDENCE MATCH</p>
           <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-fg tracking-[-0.03em] break-words">{formatTitle(report.title)}</h1>
           <p className="text-sm text-muted mt-1">{must.met || 0} of {mustTotal} required skills matched</p>
+          <p className="text-xs text-muted mt-2 leading-relaxed">How much of the job&rsquo;s list your resume backs with proof. Required skills count 3 points, nice to have 1. It is not a chance of getting the job.</p>
         </div>
         <dl className="grid grid-cols-3 gap-5 text-center sm:text-left shrink-0">
           {[["Gaps", gaps.length], ["Study time", hours ? `${hours} h` : "-"], ["Plan", `${report.days} days`]].map(([k, v]) => (
@@ -125,6 +127,15 @@ const AnalyzerReport = () => {
           ))}
         </dl>
       </div>
+
+      {missingMust.length > 0 && (
+        <div role="note" className="mt-3 rounded-xl border border-bad-solid/25 bg-bad-solid/10 px-4 py-3">
+          <p className="text-sm text-fg-2 leading-snug">
+            <span className="font-semibold text-bad">{missingMust.length} required {missingMust.length === 1 ? "skill is" : "skills are"} not shown in your resume:</span>{" "}
+            {missingMust.map(requirementName).join(", ")}. A high score does not hide this.
+          </p>
+        </div>
+      )}
 
       <ReportPlanImport key={report._id} reportId={report._id} />
 
@@ -252,7 +263,7 @@ const AnalyzerReport = () => {
               </div>
             </div>
           )}
-          <p className="text-xs text-muted leading-relaxed">The score is worked out by our code from these marks, not by the AI. Each match shows the line from your resume that proves it, under Skills.</p>
+          <p className="text-xs text-muted leading-relaxed">The evidence match is worked out by our code from these marks, not by the AI. Each match shows the line from your resume that proves it, under Skills.</p>
         </aside>
       </div>
 

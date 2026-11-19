@@ -74,6 +74,35 @@ describe('POST /api/analyzer: a pasted resume', () => {
     const acct = await t.register();
     assert.equal((await create(acct)).body.data.report.score, 75);
   });
+  it('says in one plain sentence what each requirement is worth and why, and the points in those sentences add up to the score', async () => {
+    gemini.reply = goodReply({ requirements: [
+      req(), req({ text: 'Node.js', skillKey: 'Node.js', status: 'partial', evidence: 'added two Express.js endpoints with validation and tests.' }),
+      req({ text: 'Git', skillKey: 'Git', importance: 'nice', evidence: 'Skills: JavaScript, React, Node.js, Express.js, MongoDB, Git.' }),
+      req({ text: 'Docker', status: 'missing', evidence: '', skillKey: 'Docker' }),
+      req({ text: 'Kubernetes', importance: 'nice', status: 'missing', evidence: '', skillKey: 'none' }),
+    ] });
+    const acct = await t.register();
+    const r = (await create(acct)).body.data.report;
+    assert.deepEqual(r.requirements.map((q) => q.why), [
+      'Required: 3 of 3 points. Your resume shows it.',
+      'Required: 1.5 of 3 points. Your resume shows it only in part.',
+      'Nice to have: 1 of 1 point. Your resume shows it.',
+      'Required: 0 of 3 points. Nothing in your resume shows it.',
+      'Nice to have: 0 of 1 point. Nothing in your resume shows it.',
+    ]);
+    let got = 0; let total = 0;
+    for (const q of r.requirements) { const [, g, w] = /(\d+(?:\.\d+)?) of (\d+) point/.exec(q.why); got += Number(g); total += Number(w); }
+    assert.equal(Math.round((100 * got) / total), r.score, 'the sentences trace the score');
+  });
+  it('explains a requirement whose proof was not found in the resume, and old reports read from the database have the sentences too', async () => {
+    gemini.reply = goodReply({ requirements: [req({ evidence: 'Won an international hackathon with a React app' }), req({ text: 'Node.js', skillKey: 'Node.js' }), req({ text: 'MongoDB', skillKey: 'MongoDB', evidence: 'Stored data in MongoDB with indexes.' }), req({ text: 'Docker', status: 'missing', evidence: '', skillKey: 'Docker' })] });
+    const acct = await t.register();
+    const created = (await create(acct)).body.data.report;
+    assert.equal(created.requirements[0].why, 'Required: 1.5 of 3 points. The AI quoted proof that is not in your resume, so it counts as partly met.');
+    const opened = (await t.api.get(`/api/analyzer/${created._id}`, { cookies: acct.cookies })).body.data.report;
+    assert.ok(opened.requirements.every((q) => typeof q.why === 'string' && q.why.length > 10));
+    assert.ok(!('why' in (await Report.findById(created._id).lean()).requirements[0]), 'the sentence is worked out on read, never stored');
+  });
   it('verifies every proof quote against the resume', async () => {
     const acct = await t.register();
     const r = (await create(acct)).body.data.report;

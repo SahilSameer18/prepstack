@@ -94,7 +94,7 @@ Design and decisions: [docs/plans/MY_PLAN_PLAN.md](docs/plans/MY_PLAN_PLAN.md).
 
 ### Role Analyzer (resume vs job description)
 
-Paste a job description and add your resume (PDF or pasted text). You get a report with a match score, each requirement marked met / partly / missing with a quote from your resume, the skills you lack with where to learn them, likely technical and behavioral questions, and a day-by-day plan. Everything it links to is something PrepStack really has.
+Paste a job description and add your resume (PDF or pasted text). You get a report with an **evidence match** (how much of the job's list your resume backs with proof; not a chance of getting the job), required skills your resume does not show called out at the top, each requirement marked met / partly / missing with a quote and a one-line reason (what it is worth and why) from your resume, the skills you lack with where to learn them, likely technical and behavioral questions, and a day-by-day plan. Everything it links to is something PrepStack really has.
 
 - **The code decides, not the AI.** The AI only reads the text: it lists the job's requirements, marks each one, and quotes proof. The score is computed by the server (must-have = 3 points, nice-to-have = 1; met = full, partly = half). Every quote is checked against the resume; a quote that cannot be found downgrades that requirement. Skill names come from a closed list of 120 skills (`server/src/modules/analyzer/skillCatalog.json`; the AI may write any text, and the code turns a name that is not on the list into "none"), titles must come from the job description (and are shown in Title Case, at most 60 characters), and plan links are kept only if they point at content that exists (Blind 75 topics, CS notes sections, roadmaps, behavioral questions).
 - **Privacy:** the resume is never stored. Email, phone number and links are removed before anything leaves the server, and only the report (with short quotes) is saved. The user must tick a consent box (the text goes to Google and, if Gemini is busy, to Groq). Deleting an account deletes its reports.
@@ -795,9 +795,9 @@ With Redis on, cached public reads can show content up to about 15 minutes old a
 
 | Suite | Count | How to run |
 |---|---|---|
-| Server (`node:test` + `supertest` + in-memory MongoDB) | **1140 tests** | `cd server && npm test` |
-| Client unit tests (Vitest, no browser) | **135 tests** in 14 files | `cd client && npm test` |
-| Browser flows (Playwright) | **32 flows** in 3 files | `cd client && npm run test:browser` |
+| Server (`node:test` + `supertest` + in-memory MongoDB) | **1142 tests** | `cd server && npm test` |
+| Client unit tests (Vitest, no browser) | **141 tests** in 15 files | `cd client && npm test` |
+| Browser flows (Playwright) | **34 flows** in 4 files | `cd client && npm run test:browser` |
 
 The server tests need no real keys and no network: the AI providers, Google sign-in, email and Redis are faked (Redis by `ioredis-mock`, which runs the real Lua scripts, and a small fake with its own clock in `server/test/helpers/fake-redis.js`). They cover auth and sessions (refresh rotation, replay defence, revocation, attack-style races and cross-site requests), the DSA, notes and project APIs, account deletion, the per-account login lock, password reset by email, rate limits, the AI provider chain and budget, the session cache, My plan (including generated scenarios and simulated student lives), the Role Analyzer (score maths, quote checking, closed skill list, PDF checks, privacy rules), and an architecture test that fails when a module imports one it should not. Two Redis checks need the real service and are opt-in: `npm run test:redis-live` and `npm run measure:cache`.
 

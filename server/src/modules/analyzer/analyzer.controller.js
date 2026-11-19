@@ -4,7 +4,7 @@ const AppError = require('../../shared/http/AppError');
 const { sendSuccess } = require('../../shared/http/responseFormatter');
 const { extractPdfText, prepareResumeText } = require('./resume.service');
 const { buildContext } = require('./analyzerContext.service');
-const { analyze } = require('./analyzer.service');
+const { analyze, explainRequirement } = require('./analyzer.service');
 const { adviceForReport } = require('./skills.service');
 const { reportsPerDay } = require('../../shared/config/limits');
 const { countLast24h } = require('../../shared/usage/usage.service');
@@ -22,6 +22,8 @@ const { todayPlanDay } = require('../../shared/calendar/planDay');
 const present = (doc, titles) => {
   const o = typeof doc.toObject === 'function' ? doc.toObject() : { ...doc };
   delete o.__v; delete o.aiProvider;
+  // One sentence per requirement saying what it is worth and why. Worked out on every read (never stored), so old reports have it too.
+  o.requirements = (o.requirements || []).map((r) => ({ ...r, why: explainRequirement(r) }));
   // What to do about each gap in PrepStack, and the learning links. Worked out on every read from the catalog and never
   // stored, so an improved catalog improves old reports too.
   o.skillAdvice = adviceForReport(o, titles);

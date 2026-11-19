@@ -26,6 +26,12 @@ async function start() {
     const Report = t.mongoose.model('InterviewReport');
     const report = await Report.create({
       user: req.body.user, title: 'Frontend role connection', jobDescription: 'Disposable browser fixture', days: 7, score: 60,
+      scoreBreakdown: { must: { met: 1, partial: 0, missing: 1 }, nice: { met: 0, partial: 1, missing: 0 } },
+      requirements: [
+        { text: 'React', importance: 'must', status: 'met', evidence: 'Built dashboards in React', evidenceCheck: 'exact', skillKey: 'React', category: 'stack' },
+        { text: 'Docker', importance: 'must', status: 'missing', evidence: '', evidenceCheck: 'n/a', skillKey: 'Docker', category: 'stack' },
+        { text: 'GraphQL', importance: 'nice', status: 'partial', evidence: 'Used an API layer', evidenceCheck: 'exact', skillKey: 'GraphQL', category: 'stack' },
+      ],
       plan: [
         { day: 1, items: [
           { task: 'Practice arrays from this report', ref: 'dsa:blind-75:arrays-hashing' },

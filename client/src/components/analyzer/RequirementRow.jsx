@@ -19,8 +19,8 @@ const RequirementRow = ({ req }) => {
           <div className="flex flex-wrap items-center gap-2 mt-2">
             <span className={`text-xs font-semibold rounded-full px-2.5 py-0.5 border ${s.box} ${s.text}`}>{s.label}</span>
             <span className="text-xs text-muted">{req.importance === "must" ? "Required" : "Nice to have"}</span>
-            {req.downgraded && <span className="text-xs text-warn">We could not find this proof in your resume, so it counts as weaker.</span>}
           </div>
+          {req.why && <p className="mt-2 text-xs text-fg-3 leading-relaxed">{req.why}</p>}
           {quoted && (
             <p className="mt-3 text-xs text-muted border-l-2 border-ink/[0.12] pl-3 leading-relaxed break-words">
               From your resume: &ldquo;{req.evidence}&rdquo;
