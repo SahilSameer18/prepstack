@@ -9,7 +9,7 @@
 [![Express Version](https://img.shields.io/badge/Express-5.2-000000.svg?logo=express&style=for-the-badge)](https://expressjs.com/)
 [![AI Integration](https://img.shields.io/badge/Gemini--AI-Structured-red.svg?logo=googlegemini&style=for-the-badge)](https://ai.google.dev/)
 
-**A full-stack SDE interview preparation platform: DSA sheets, CS notes, AI project ideas and a resume-vs-job analyzer.**
+**A free study plan for software interviews that fits your hours and survives a missed week.**
 
 [Live Demo](https://prepstack-ss.vercel.app) · [Report Bug](https://github.com/SahilSameer18/prepstack/issues) · [Request Feature](https://github.com/SahilSameer18/prepstack/issues)
 
@@ -17,7 +17,32 @@
 
 ---
 
-PrepStack is a full-stack SDE interview preparation platform that unifies **AI-powered project generation**, **DSA progress tracking**, **CS fundamentals revision**, **behavioral interview workflows** and a **Role Analyzer** (match your resume to a job description) in one place.
+Most people do not fail interview preparation for lack of material. They fail because the plan breaks: they miss a week, fall behind, feel guilty and quit. PrepStack is built around that problem.
+
+**What it does**
+
+- **Builds a plan from your goal and your hours** (campus placements, a switch to a developer role, or big-tech interviews). It shows what fits before you sign in, and an honest finish date when it does not.
+- **Keeps going after a bad week.** Pause, resume, rebuild from today, lighter days and a changed study calendar all show a preview before anything is saved, and finished work is kept.
+- **Brings problems back for review** (spaced reviews that depend on whether you solved it alone, with hints, or needed the solution).
+- **Keeps everything in one place:** five DSA sheets, sourced CS notes with quizzes (OS, DBMS, networks, OOP, system design), roadmaps, and a Role Analyzer that matches your resume to a job description and turns the gaps into a plan.
+- **The schedule is plain code, not AI guesses**, so the same input gives the same plan. AI is used only for project ideas and for reading a resume and a job description, and its replies are checked by code.
+
+**Free.** Reading (sheets, notes, roadmaps, the plan preview) needs no account; saving a plan and progress needs a login.
+
+**Status, honestly:** built and heavily tested (see [Testing](#-testing)) and live at [prepstack-ss.vercel.app](https://prepstack-ss.vercel.app), but **not yet validated with a group of real students**, and the Role Analyzer has not been measured against a hand-labelled set of resumes. See [Known Limitations](#️-known-limitations).
+
+## 📸 Product Tour <!-- omit in toc -->
+
+_Screenshots use disposable test data._
+
+| | |
+|---|---|
+| **See what fits, before you sign in.** The planner preview shows the hours and the finish date. | **Today stays simple:** only today's tasks, the time needed and one Start button. |
+| ![The plan builder with a live preview](docs/screenshots/my-plan-builder.png) | ![Today: two tasks and one Start button](docs/screenshots/today.png) |
+| **The whole schedule** can be adjusted with a preview before saving. | **On a phone** the same screen fits at 390 px. |
+| ![The Plan tab with the schedule](docs/screenshots/plan-schedule.png) | ![Today on a phone](docs/screenshots/today-mobile.png) |
+| **DSA sheets** (Blind 75, NeetCode 150, Striver, Love Babbar) with progress. | **CS notes** written from sources, with a last-checked date and quizzes. |
+| ![The Blind 75 sheet](docs/screenshots/dsa-sheet.png) | ![An Operating Systems note](docs/screenshots/cs-notes.png) |
 
 **My plan** is a free goal-based study planner: preview at `/my-plan`, then save and study from the dashboard or `/my-plan/study`. It includes estimated daily work, results, quizzes, reviews, schedule adjustments, optional revision practice and read-only history. Analyzer reports can be merged or used as a replacement after an explicit preview and confirmation. Study calendars support saved timezone and day rollover, explicit pause/resume, review catch-up and one paused main plan alongside an active interview sprint. Current, paused and historical plans are removed with the account. The report-import API uses `POST /api/plan/reports/:reportId/preview` and `/apply`; implementation and remaining human validation are tracked in [the plan](docs/plans/MY_PLAN_PLAN.md).
 
@@ -25,6 +50,7 @@ PrepStack is a full-stack SDE interview preparation platform that unifies **AI-p
 
 ## 📋 Table of Contents <!-- omit in toc -->
 
+- [📸 Product Tour](#-product-tour)
 - [🎯 The Problem PrepStack Solves](#-the-problem-prepstack-solves)
 - [⚡ High-Yield Technical Highlights](#-high-yield-technical-highlights)
 - [📁 Directory Structure](#-directory-structure)
@@ -44,14 +70,15 @@ PrepStack is a full-stack SDE interview preparation platform that unifies **AI-p
 
 ## 🎯 The Problem PrepStack Solves
 
-Candidates typically scatter preparation workflows across multiple disconnected tools: LeetCode/CodeStudio for DSA sheets, blog posts for CS theory, general-purpose LLMs for generic project ideas, and static templates for behavioral resumes.
+Candidates scatter their preparation across disconnected tools: LeetCode or a sheet for DSA, blog posts for CS theory, a general chatbot for project ideas, a spreadsheet or notes app for the schedule. Each is good at its own job. The part that breaks is the schedule that ties them together, because a fixed 90-day calendar does not survive a missed week.
 
-PrepStack centralizes the workflow:
+**How PrepStack is different, and where it is not**
 
-1. **Generates unique, recruiter-ready SDE project profiles** tailored to your tech stack and domain, returning STAR-style resume bullet points via Gemini AI.
-2. **Tracks problem-solving progress asynchronously** across industry-standard DSA sheets (Striver A2Z + SDE, Blind75, NeetCode, Love Babbar) in one clean dashboard.
-3. **Consolidates core CS theory revisions** (OS, DBMS, Networks, OOP) and behavioral STAR strategies in an interactive hub.
-4. **Matches your resume to a real job description** and turns the gaps into a study plan that links back to PrepStack's own sheets, notes and roadmaps (the Role Analyzer: score computed by code, every quote checked against the resume).
+1. **The plan is the product.** It fits your hours, shows what does not fit, brings problems back for review, and recovers when you fall behind. A chatbot can write a plan once; it does not keep it honest week after week.
+2. **One place for the pieces the plan points at:** the sheets, the notes, the roadmaps and the resume-to-job gap analysis link into each other.
+3. **Where it is weaker than the alternatives:** LeetCode is better for actually solving and judging code, roadmap.sh has a bigger roadmap community, and dedicated resume tools have more mature resume workflows. PrepStack does not try to replace them; it plans around them.
+
+The technical sections below explain how it is built and why.
 
 ---
 
@@ -700,6 +727,8 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 | `npm start`          | Launches server (one process, one CPU core) |
 | `npm run start:cluster` | One server copy per CPU core (`WEB_CONCURRENCY`, at most 8); refuses to start without `REDIS_URL`, because the copies share rate limits, locks and caches through Redis |
 | `npm run load:test`  | Starts the real server on an in-memory database and measures requests per second and latency at 10, 50 and 100 at once; `PROFILE=1` adds a CPU profile, `ONLY=` one request kind, `CLUSTER=4` four copies |
+| `npm run benchmark:analyzer` | Runs the real Role Analyzer on labelled resume and job pairs and prints how often it agrees with the labels, how much repeat runs and models disagree, and the false-reassurance rate (real AI calls; without `--data` it runs 7 made-up pairs as a smoke test; see [docs/research/ANALYZER_BENCHMARK.md](docs/research/ANALYZER_BENCHMARK.md)) |
+| `node scripts/student-check-report.js <usernames>` | Read-only counts for the student check (tasks done, days active, reviews); never prints emails (see [docs/research/STUDENT_CHECK.md](docs/research/STUDENT_CHECK.md)) |
 | `npm run seed:notes` | Validates and atomically replaces CS notes; requires a MongoDB replica set/Atlas, rolls back failures, and returns a failing exit code (run after changing `src/modules/notes/content`) |
 | `npm run check:links` | Checks that the outside links (roadmaps, skill catalog, resume guide tools) still answer; run by hand before a release, needs the network |
 | `npm run seed:all`   | Idempotently seeds DSA Sheets and CS notes (both seeds also clear the cached copies when Redis is set) |
@@ -727,7 +756,7 @@ _(Uses idempotent upsert logic: safe to run multiple times)._
 
 ## 🧪 Testing
 
-The server has **1112 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers, Google sign-in and Redis are faked (a small in-memory fake Redis with its own clock, in `server/test/helpers/fake-redis.js`). Two Redis checks need the real service and are opt-in: `npm run test:redis-live` and `npm run measure:cache`.
+The server has **1128 automated tests** (`node:test` + `supertest` + an in-memory MongoDB). They need no real keys and no network: the AI providers, Google sign-in and Redis are faked (a small in-memory fake Redis with its own clock, in `server/test/helpers/fake-redis.js`). Two Redis checks need the real service and are opt-in: `npm run test:redis-live` and `npm run measure:cache`.
 
 ```bash
 cd server
@@ -749,6 +778,8 @@ The Role Analyzer was also checked against the real AI with hand-run scripts in 
 - **The session cache can show a revoked session for a few seconds in one case.** Revoking clears the answer at once on the server that handled it and raises a version number in Redis, so other server copies refuse the cached answer on their next Redis read; but a copy that holds the answer in its own memory keeps it for up to 5 seconds, and if Redis is down exactly during a revoke the Redis copy can live up to 30 seconds. With one server (the free Render plan) the 5-second case cannot happen. The cache has not been measured against the live site, so its latency gain is unproven: a Redis read costs about 36 ms from a laptop, which is no faster than a MongoDB read, so the saving comes from the in-process layer. Switch it off with `SESSION_CACHE=off`.
 - **The AI budget is only as good as its numbers.** `AI_BUDGETS` was set on Render on 19 Nov 2026 from the Gemini and Groq consoles (a little under each per-minute and per-day limit). If a provider changes its limits the numbers must be edited by hand; Google counts one quota for the whole project, so calls made with the same key outside PrepStack are not counted; and Groq's tokens-per-minute limit is not counted at all (only requests).
 - **One server process uses one CPU core, and the plan generator runs on that core.** A burst of people building plans at the same time slows every other request on that process (about 20 ms of CPU per preview, more for saving or rebuilding a plan). `npm run start:cluster` uses all cores but needs `REDIS_URL` and a host with several cores; the free Render instance has about 0.1 of a CPU. The load-test numbers come from a laptop with an in-memory database, so they rank the bottlenecks but are not the capacity of the live site. See [docs/research/SCALING_REPORT.md](docs/research/SCALING_REPORT.md).
+- **Not yet validated with real students.** No group of students has used My plan end to end, so there is no data on how many finish a plan, return the next week, or find the estimates right. A check with a few students is planned ([docs/research/STUDENT_CHECK.md](docs/research/STUDENT_CHECK.md)).
+- **The Role Analyzer has not been measured against a hand-labelled set** of resumes and job descriptions. The score is computed by code and every quote is checked against the resume, but how well it agrees with a human judge is unknown. A benchmark is planned ([docs/research/ANALYZER_BENCHMARK.md](docs/research/ANALYZER_BENCHMARK.md)).
 - **The AI runs on free tiers** (Gemini, then Groq). A quota or an outage can make generation fail for a while; the user then gets a clear message and the attempt is not counted. Reports and ideas can differ from run to run.
 - **77 of the 120 skills in the Role Analyzer's catalog point at PrepStack lessons (notes, DSA topics or a roadmap); the other 43 link only to official documentation.** Four soft skills point at the Behavioral page.
 - **Resume PDFs must contain text.** Scanned (image-only) PDFs are rejected, and the PDF export uses standard fonts, so characters outside basic Latin may not draw.

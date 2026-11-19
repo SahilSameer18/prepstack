@@ -82,6 +82,9 @@ function sendProdError(err, res) {
 const errorMiddleware = (err, req, res, next) => {
   // An upload problem (file too big, wrong field) is the caller's mistake in every mode, never a 500
   if (err.name === 'MulterError') err = handleUploadError(err);
+  // The same for a body that is not valid JSON or is over the size limit (set by express.json): a 400 or 413, not a 500 and a logged "unexpected error"
+  if (err.type === 'entity.parse.failed') err = new AppError(400, 'The request body is not valid JSON.');
+  else if (err.type === 'entity.too.large') err = new AppError(413, 'The request body is too large.');
 
   // Default to 500 if statusCode wasn't set
   err.statusCode = err.statusCode || 500;

@@ -30,20 +30,7 @@ const PACE = Number(arg('pace', 4500));
 const OUT = process.env.EVAL_OUT || path.join(os.tmpdir(), 'analyzer-eval');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// ── the context the new approach needs: the catalog and what a plan may point to ──
-const readText = (p) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
-const buildContext = async () => {
-  const dsaRefs = [...readText('src/modules/sheets/seeds/sheetSeeds/blind75.js').matchAll(/\{\s*title:\s*["']([^"']+)["'],\s*problems:/g)].map((m) => `dsa:${m[1]}`);
-  const notesRefs = ['os', 'dbms', 'cn', 'oops', 'hld'].flatMap((slug) => require(`../src/modules/notes/content/${slug}.js`).sections.map((s) => `notes:${slug}:${s.title}`));
-  const roadmaps = (await import(pathToFileURL(path.join(__dirname, '..', '..', 'client', 'src', 'data', 'roadmaps.js')).href)).roadmaps;
-  const bank = (await import(pathToFileURL(path.join(__dirname, '..', '..', 'client', 'src', 'data', 'behavioralQuestions.js')).href)).behavioralQuestions;
-  return {
-    skillNames: skills.map((s) => s.name),
-    dsaRefs: [...new Set(dsaRefs)],
-    refs: [...new Set([...dsaRefs, ...notesRefs, ...roadmaps.map((r) => `roadmap:${r.slug}`)])],
-    behavioral: bank.map((b) => ({ id: b.id, question: b.question })),
-  };
-};
+const { buildContext } = require('./lib/eval-context');
 
 // ── turning free text into catalog skills (exact name or whole-word alias; no fuzzy matching) ──
 const boundedAt = (text, term) => {
