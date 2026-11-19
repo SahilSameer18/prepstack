@@ -116,7 +116,7 @@ const BentoGrid = () => {
             </p>
 
             {/* A labelled example, not generated output or an executable command. */}
-            <div className="bg-scrim/70 rounded-xl p-3.5 font-ui text-xs text-fg-3 relative group/terminal shadow-[inset_0_1px_0_color-mix(in_srgb,var(--ink)_6%,transparent)]">
+            <div className="bg-inset/70 rounded-xl p-3.5 font-ui text-xs text-fg-3 relative group/terminal shadow-[inset_0_1px_0_color-mix(in_srgb,var(--ink)_6%,transparent)]">
               <div className="flex items-center justify-between text-muted pb-2 mb-2 border-b border-ink/[0.06] text-xs">
                 <span>Example idea (made up)</span>
               </div>

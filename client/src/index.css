@@ -49,8 +49,9 @@ body, #root {
 
 /* ================= COLOR TOKENS =================
    Components never use raw colors. They use the names below (bg-card, text-muted, border-ink/10, text-ok ...).
-   The values live in :root. To add a light theme, define the same variables again under
-   :root[data-theme="light"] and nothing else needs to change. */
+   The values live in :root (dark). The light theme redefines the same variables under :root[data-theme="light"]
+   (below the dark block). Brand rule: --brand is the colour for text and for fills with --on-brand text; the
+   brighter orange of the buttons is --brand-grad-* with dark --on-grad text. */
 @theme inline {
   --color-canvas: var(--canvas);
   --color-card: var(--card);
@@ -58,6 +59,7 @@ body, #root {
   --color-elevated: var(--elevated);
   --color-ink: var(--ink);          /* overlay base: white on dark, black on light. Use with an opacity: bg-ink/5 */
   --color-scrim: var(--scrim);      /* modal backdrops and shadows */
+  --color-inset: var(--inset);      /* sunken panels (code boxes, tab wells): black on dark, a warm tan on light */
   --color-fg: var(--fg);            /* strongest text */
   --color-fg-1: var(--fg-1);
   --color-fg-2: var(--fg-2);
@@ -98,6 +100,7 @@ body, #root {
   --elevated: oklch(21% 0.006 285.885);
   --ink: #ffffff;
   --scrim: #000000;
+  --inset: #000000;
   --shadow: #000000;
 
   /* ── text ── */
@@ -115,6 +118,7 @@ body, #root {
   --brand-hover: #ffb84d;
   --brand-deep: #ff8c00;
   --on-brand: #050505;
+  --on-grad: #050505;               /* text on the gradient buttons (.amber-specular-button) */
   --brand-grad-top: #ffa826;
   --brand-grad-bottom: #e68d05;
   --brand-grad-hover-top: #ffb342;
@@ -191,6 +195,77 @@ body, #root {
   --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  color-scheme: dark;
+}
+
+/* ================= LIGHT THEME =================
+   Warm cream canvas, warm-white cards, near-black warm text, one amber accent (the same hue as the dark theme).
+   Contrast (checked by src/test/theme.test.js): text on canvas and cards 4.5:1 or more; --brand text on cream 4.5:1;
+   white on --brand 5:1; dark --on-grad text on the orange gradient 5.9:1 or more. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --canvas: #fbf6ee;
+  --card: #fffcf7;
+  --card-hover: #f5eee2;
+  --elevated: #fffcf7;
+  --ink: #1a1208;
+  --scrim: #1a1208;
+  --inset: #efe6d6;
+  --shadow: #7a5a2e;   /* warm brown: shadows on cream are tinted, never black */
+
+  --fg: #17130d;
+  --fg-1: #1f1910;
+  --fg-2: #2f281d;
+  --fg-3: #4a4135;
+  --muted: #6a5f4e;
+  --faint: #766b59;
+  --body: #2a2318;
+  --line: #cdbfa8;
+
+  --brand: #945400;   /* deep amber: readable as text on cream; the bright amber is the button gradient */
+  --brand-hover: #7a4400;
+  --brand-deep: #7a4400;
+  --on-brand: #ffffff;
+  --on-grad: #1a0f05;
+  --brand-grad-top: #ffa826;
+  --brand-grad-bottom: #e68d05;
+  --brand-grad-hover-top: #ffb342;
+  --brand-grad-hover-bottom: #f59508;
+
+  --ok: oklch(47% 0.12 150);
+  --ok-solid: oklch(56% 0.14 150);
+  --bad: oklch(50% 0.19 25);
+  --bad-solid: oklch(56% 0.2 25);
+  --warn: oklch(50% 0.12 75);
+  --warn-solid: oklch(66% 0.15 75);
+  --info: oklch(48% 0.16 255);
+  --info-solid: oklch(55% 0.17 255);
+  --cyan: oklch(50% 0.09 215);
+  --cyan-solid: oklch(60% 0.1 215);
+  --violet: oklch(48% 0.19 300);
+  --violet-solid: oklch(55% 0.2 300);
+  --pink: oklch(50% 0.19 355);
+  --pink-solid: oklch(58% 0.2 355);
+  --orange: oklch(50% 0.15 50);
+  --orange-solid: oklch(62% 0.17 50);
+  --yellow: oklch(50% 0.11 95);
+  --yellow-solid: oklch(75% 0.15 90);
+
+  --data-blue: #1d4ed8;
+  --data-purple: #6d28d9;
+  --data-green: #047857;
+  --data-pink: #be185d;
+  --data-blue-soft: #3b82f6;
+  --data-green-soft: #10b981;
+  --data-purple-soft: #8b5cf6;
+  --data-orange-soft: #ea580c;
+  --data-pink-soft: #ec4899;
+  --toast-ok: #15803d;
+  --toast-bad: #b91c1c;
+
+  --overlay-base: #fbf6ee;
 }
 
 /* ---------------- BODY & TYPOGRAPHY (Apple Optical Sizing Hierarchy) ---------------- */
@@ -303,7 +378,7 @@ kbd,
 
 .amber-specular-button {
   background: linear-gradient(180deg, var(--brand-grad-top) 0%, var(--brand-grad-bottom) 100%);
-  color: var(--on-brand);
+  color: var(--on-grad);
   box-shadow: 0 8px 24px -4px color-mix(in srgb, var(--brand-deep) 38%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 40%, transparent);
   transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease, background 0.12s ease;
   will-change: transform;
@@ -615,4 +690,76 @@ input:-webkit-autofill:active {
   select {
     font-size: 16px;
   }
+}
+
+/* ---------------- LIGHT THEME: SURFACES ----------------
+   The dark theme builds depth from white highlights and heavy black shadows. On cream, depth is a soft
+   tinted shadow (--shadow is a warm brown) and a white top edge. */
+:root[data-theme="light"] .luxury-card,
+:root[data-theme="light"] .titanium-card {
+  background: var(--card);
+  border-color: color-mix(in srgb, var(--ink) 10%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 14%, transparent), 0 12px 28px -14px color-mix(in srgb, var(--shadow) 30%, transparent);
+}
+
+:root[data-theme="light"] .luxury-card:hover,
+:root[data-theme="light"] .titanium-card:hover {
+  border-color: color-mix(in srgb, var(--ink) 18%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 12%, transparent), 0 18px 36px -14px color-mix(in srgb, var(--shadow) 30%, transparent);
+}
+
+:root[data-theme="light"] .luxury-glass {
+  box-shadow: 0 18px 40px -18px color-mix(in srgb, var(--shadow) 28%, transparent);
+}
+
+:root[data-theme="light"] .specular-border {
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .spotlight-card:hover {
+  box-shadow: 0 16px 34px -14px color-mix(in srgb, var(--shadow) 26%, transparent);
+}
+
+:root[data-theme="light"] .titanium-button {
+  background: var(--card);
+  border-color: color-mix(in srgb, var(--ink) 16%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 14%, transparent);
+}
+
+:root[data-theme="light"] .titanium-button:hover {
+  background: var(--card-hover);
+  border-color: color-mix(in srgb, var(--ink) 28%, transparent);
+}
+
+:root[data-theme="light"] .kbd-capsule {
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--shadow) 18%, transparent);
+}
+
+:root[data-theme="light"] .glass {
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+}
+
+:root[data-theme="light"] .skeleton-shine {
+  background: linear-gradient(90deg,
+      color-mix(in srgb, var(--ink) 5%, transparent) 25%,
+      color-mix(in srgb, var(--ink) 10%, transparent) 50%,
+      color-mix(in srgb, var(--ink) 5%, transparent) 75%);
+  background-size: 600px 100%;
+}
+
+:root[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--ink) 22%, transparent);
+}
+
+:root[data-theme="light"] ::selection {
+  background: color-mix(in srgb, var(--brand) 22%, transparent);
+}
+
+/* ---------------- THEME SWITCH ----------------
+   ThemeToggle grows the new theme out of the button as a circle. The browser's default cross-fade is turned off
+   so only that circle moves; browsers without View Transitions skip all of this. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }

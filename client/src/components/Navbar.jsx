@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import { InlineSpinner } from "../components/ui/Skeletons";
 import LogoMark from "./ui/LogoMark";
+import ThemeToggle from "./ui/ThemeToggle";
 
 const Navbar = () => {
 
@@ -182,6 +183,7 @@ const Navbar = () => {
 
           {/* ── Desktop CTA ── */}
           <div className="hidden xl:flex items-center gap-2">
+            <ThemeToggle />
             {user ? (
               <div className="relative" ref={userRef} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setUserMenuOpen(false); }}>
                 <button
@@ -269,14 +271,16 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* ── Mobile Toggle (WCAG 44x44px target) ── */}
+          {/* ── Mobile: theme + menu (WCAG 44x44px targets) ── */}
+          <div className="xl:hidden flex items-center gap-1">
+          <ThemeToggle />
           <button
             type="button"
             ref={mobileToggleRef}
             aria-expanded={mobileOpen}
             aria-controls="navbar-mobile"
             aria-label="Toggle Navigation Menu"
-            className="xl:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             <AnimatePresence mode="wait">
@@ -291,6 +295,7 @@ const Navbar = () => {
               )}
             </AnimatePresence>
           </button>
+          </div>
         </div>
       </div>
 

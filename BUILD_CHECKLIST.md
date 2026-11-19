@@ -76,7 +76,7 @@ Decided 16 Nov: when a waiting task is bigger than the day, Today shows the smal
 ## 8. Stage 6, small items (`IMPROVEMENT_PLAN.md` stage 6)
 
 - [ ] 8.1 Quizzes page (B7), **optional**: the quiz data already exists in every section
-- [ ] 8.2 Light theme (B12)
+- [x] 8.2 Light theme (B12), built 19 Nov 2026: warm cream and amber light tokens, a sun/moon button in the navbar (follows the system until chosen, saved in the browser), set before the first paint, a circle-reveal switch. Checked at 375 px and desktop width; the full redesign comes after
 - [ ] 8.3 Opt-in public profile (B8)
 - [ ] 8.4 CI run of the server tests (B9, optional)
 - [ ] 8.5 Security S3: lower-case the Google email on sign-in, and warn at start when `NODE_ENV=development` (`docs/plans/SECURITY_FIXES_PLAN.md`, about 1 hour)

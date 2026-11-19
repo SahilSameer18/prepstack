@@ -22,7 +22,7 @@ const Label = ({ children, className = "text-brand" }) => (
 );
 
 const Example = ({ text }) => (
-  <pre className="bg-scrim/60 border border-ink/[0.08] rounded-xl p-4 text-fg-3 text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap font-ui selection:bg-brand/30">{text}</pre>
+  <pre className="bg-inset/60 border border-ink/[0.08] rounded-xl p-4 text-fg-3 text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap font-ui selection:bg-brand/30">{text}</pre>
 );
 
 const SectionCard = ({ section }) => (

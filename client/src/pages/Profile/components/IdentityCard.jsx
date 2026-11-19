@@ -174,7 +174,7 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
                       : "bg-card-hover border-ink/[0.08] text-muted hover:border-ink/[0.2] hover:text-fg"
                   }`}
                 >
-                  <img src={avatarUrl} alt={preset.label} className="w-6 h-6 rounded-lg bg-scrim/40" />
+                  <img src={avatarUrl} alt={preset.label} className="w-6 h-6 rounded-lg bg-inset/40" />
                   <span className="text-xs font-ui font-medium">{preset.label}</span>
                 </button>
               );

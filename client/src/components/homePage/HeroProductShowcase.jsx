@@ -63,7 +63,7 @@ const HeroProductShowcase = () => {
         </div>
 
         {/* ── SILKY SEGMENTED CONTROL ── */}
-        <div className="relative flex items-center w-full sm:w-auto bg-scrim/60 p-1 rounded-xl">
+        <div className="relative flex items-center w-full sm:w-auto bg-inset/60 p-1 rounded-xl">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -248,7 +248,7 @@ const HeroProductShowcase = () => {
                 </div>
 
                 {/* Concurrency Selector */}
-                <div className="flex items-center bg-scrim/60 p-0.5 rounded-lg text-xs font-ui">
+                <div className="flex items-center bg-inset/60 p-0.5 rounded-lg text-xs font-ui">
                   <button
                     type="button"
                     onClick={() => setConcurrencyMode("mutex")}
@@ -271,7 +271,7 @@ const HeroProductShowcase = () => {
               </div>
 
               {/* Simulation Architecture Diagram */}
-              <div className="bg-scrim/50 rounded-xl p-3.5 space-y-3 font-ui text-xs">
+              <div className="bg-inset/50 rounded-xl p-3.5 space-y-3 font-ui text-xs">
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   <div className="p-2 rounded-lg bg-elevated/80 border border-ink/[0.06]">
                     <div className="text-muted text-xs">Thread 0 (Producer)</div>

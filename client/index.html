@@ -11,7 +11,19 @@
   <!--seo-head-->
 
   <meta name="theme-color" content="#060608" />
-  <meta name="color-scheme" content="dark" />
+  <meta name="color-scheme" content="dark light" />
+
+  <!-- Sets the theme before the first paint (no flash). Saved choice first, else the system setting. Same rule as src/utils/theme.js. -->
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('prepstack-theme'); } catch (e) {}
+      if (t !== 'light' && t !== 'dark') t = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', t === 'light' ? '#fbf6ee' : '#060608');
+    })();
+  </script>
 
   <!-- Loading screen shown from the first paint until React starts (the build puts its markup inside #root). Colors come from the tokens in index.css. -->
   <style>
