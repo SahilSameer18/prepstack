@@ -131,6 +131,18 @@ function checkFresh(s, data) {
     for (const it of plan.items) if (it.type === 'dsa' && dsaSolved.has(problemIdentity(it.link))) bad('a solved problem is in the plan');
     const known = new Set(s.knownTopics);
     for (const it of plan.items) if (it.type === 'dsa' && known.has(it.topicId)) bad('a known topic is in the plan');
+    // prerequisite order: among the core topics (and among the others) a topic never comes before one that the catalog puts earlier
+    const order = data.planCatalog.sheets[s.sheetSlug];
+    for (const core of [true, false]) {
+      const dsa = plan.items.map((it, index) => ({ it, index })).filter(({ it }) => it.type === 'dsa' && it.core === core && order[it.topicId])
+        .sort((a, b) => a.it.day.localeCompare(b.it.day) || a.index - b.index);
+      let latest = -Infinity;
+      for (const { it } of dsa) {
+        const rank = order[it.topicId].order;
+        if (rank < latest) { bad(`topic ${it.topicId} (order ${rank}) is scheduled after a topic of order ${latest}`); break; }
+        latest = Math.max(latest, rank);
+      }
+    }
     const groups = plan.coverage.byGroup;
     if (groups.reduce((sum, g) => sum + g.placed, 0) !== uniqueCount(plan.items.filter((i) => i.type === 'dsa' || i.type === 'notes'))) bad('coverage groups do not add up');
     for (const g of groups) {

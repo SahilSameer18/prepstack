@@ -79,6 +79,10 @@ Decided 16 Nov: when a waiting task is bigger than the day, Today shows the smal
 - [ ] 8.2 Light theme (B12)
 - [ ] 8.3 Opt-in public profile (B8)
 - [ ] 8.4 CI run of the server tests (B9, optional)
+- [ ] 8.5 Security S3: lower-case the Google email on sign-in, and warn at start when `NODE_ENV=development` (`docs/plans/SECURITY_FIXES_PLAN.md`, about 1 hour)
+- [ ] 8.6 Security S1: require a fresh Google sign-in before a Google-only account sets a password or is deleted (about half a day)
+- [ ] 8.7 Security S2: email confirmation after sign-up without blocking login, and Google sign-in takes over an unverified squatter account (about 1 day)
+- [ ] 8.8 Security S4: login hashing cost, measure on a test deployment first, then cap concurrent hashing or lower the cost with re-hash at login (later)
 
 ## 9. The DSA problems file shared by all sheets (`docs/plans/DSA_PROBLEMS_PLAN.md`)
 
