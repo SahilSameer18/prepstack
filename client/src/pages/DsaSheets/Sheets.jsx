@@ -8,6 +8,8 @@ import { dsaSheet } from "../../api/services/sheetService";
 import { SkeletonCard } from "../../components/ui/Skeletons";
 import { EmptyState } from "../../components/ui/StateComponents";
 import PageBackdrop from "../../components/ui/PageBackdrop";
+import { useAuth } from "../../hooks/useAuth";
+import { getDashboardSummary } from "../../api/services/userService";
 
 const MotionLink = motion.create(Link);
 
@@ -47,8 +49,9 @@ const SHEET_METADATA_MAP = {
   "blind-75": { icon: <CheckSquare weight="duotone" />, highlight: "The essential 75-problem pre-interview checklist", recommended: true, defaultCategoryId: "revision" },
 };
 
-const SheetCard = ({ sheet, index }) => {
+const SheetCard = ({ sheet, index, progress }) => {
   const calm = useReducedMotion();
+  const pct = progress && progress.total > 0 ? Math.round((progress.solved / progress.total) * 100) : 0;
   return (
     <MotionLink
       to={`/dsa/${sheet.slug}`}
@@ -81,6 +84,18 @@ const SheetCard = ({ sheet, index }) => {
         ))}
       </div>
 
+      {progress && (
+        <div className="mt-5">
+          <div className="mb-1.5 flex items-center justify-between font-ui text-xs text-muted">
+            <span>{progress.solved} of {progress.total} solved</span>
+            <span>{pct}%</span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-ink/[0.08]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`Your progress on ${sheet.title}`}>
+            <div className="h-full rounded-full transition-[width] duration-500 ease-out" style={{ width: `${pct}%`, background: 'var(--brand-grad-bottom)' }} />
+          </div>
+        </div>
+      )}
+
       <span className="mt-6 inline-flex items-center gap-2 font-display text-sm font-bold text-brand">
         Open sheet
         <FiArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
@@ -94,6 +109,22 @@ const Sheets = () => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [dbSheets, setDbSheets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading } = useAuth();
+  const [progress, setProgress] = useState({});
+
+  // Your solved counts per sheet. Only asked for when signed in: a signed-out page never calls a personal API.
+  const userId = user?._id || user?.id;
+  useEffect(() => {
+    if (authLoading || !userId) { setProgress({}); return undefined; }
+    let live = true;
+    getDashboardSummary()
+      .then((res) => {
+        if (!live) return;
+        setProgress(Object.fromEntries((res?.data?.dsaSheets || []).map((d) => [d.sheet.slug, { solved: d.solved, total: d.total }])));
+      })
+      .catch(() => {}); // a failed load just shows no bars
+    return () => { live = false; };
+  }, [userId, authLoading]);
 
   useEffect(() => {
     const fetchSheets = async () => {
@@ -238,7 +269,7 @@ const Sheets = () => {
                   <span className="shrink-0 font-ui text-sm text-muted">{cat.sheets.length} {cat.sheets.length === 1 ? "sheet" : "sheets"}</span>
                 </div>
                 <div className="grid gap-5 md:grid-cols-2">
-                  {cat.sheets.map((sheet, i) => <SheetCard key={sheet.slug} sheet={sheet} index={i} />)}
+                  {cat.sheets.map((sheet, i) => <SheetCard key={sheet.slug} sheet={sheet} index={i} progress={progress[sheet.slug]} />)}
                 </div>
               </section>
             ))}
@@ -248,7 +279,7 @@ const Sheets = () => {
             <p className="mb-6 font-ui text-sm text-muted" role="status">{filtered.length} result{filtered.length !== 1 ? "s" : ""} found</p>
             {filtered.length > 0 ? (
               <div className="grid gap-5 md:grid-cols-2">
-                {filtered.map((sheet, i) => <SheetCard key={sheet.slug} sheet={sheet} index={i} />)}
+                {filtered.map((sheet, i) => <SheetCard key={sheet.slug} sheet={sheet} index={i} progress={progress[sheet.slug]} />)}
               </div>
             ) : (
               <EmptyState icon={FaSearch} title="No matching sheets found" text="Try searching for a different pattern name or topic." />

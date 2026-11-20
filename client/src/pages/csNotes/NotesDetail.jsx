@@ -5,9 +5,10 @@ import { useNotes, useNotesSummary } from '../../hooks/useNotes';
 import { useActiveHeading } from '../../hooks/useActiveHeading';
 import { useAuth } from '../../hooks/useAuth';
 import SignInNotice from '../../components/auth/SignInNotice';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { SkeletonNotesDetail } from '../../components/ui/Skeletons';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
+import SelectField from '../../components/ui/SelectField';
 import PageBackdrop from '../../components/ui/PageBackdrop';
 import Accordion from '../../components/ui/Accordion';
 import Quiz from '../../components/notes/Quiz';
@@ -90,7 +91,7 @@ const Heading = ({ id, children }) => <h2 id={id} className="scroll-mt-28 text-2
 const topicId = (name) => 'topic-' + String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 const TopicCard = ({ topic }) => (
-  <article id={topicId(topic.name)} className="scroll-mt-28 rounded-2xl bg-card border border-ink/[0.1] p-5 sm:p-6 text-left space-y-4 shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_12%,transparent),0_16px_30px_-22px_color-mix(in_srgb,var(--shadow)_38%,transparent)]">
+  <article id={topicId(topic.name)} className="scroll-mt-28 rounded-2xl bg-card border border-ink/[0.1] p-5 sm:p-6 text-left space-y-4 shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_12%,transparent),0_16px_30px_-22px_color-mix(in_srgb,var(--shadow)_38%,transparent)] transition-[border-color,box-shadow] duration-200 hover:border-ink/[0.2] hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_22px_38px_-22px_color-mix(in_srgb,var(--shadow)_50%,transparent)]">
     <h3 className="font-display text-xl font-extrabold tracking-tight text-fg">{topic.name}</h3>
     <p className="text-fg-2 text-[17px] leading-[1.75]">{topic.definition}</p>
     <div className="rounded-xl bg-brand/[0.07] border border-brand/[0.2] p-4">
@@ -224,22 +225,23 @@ const ReviewedSection = ({ section }) => {
 };
 
 // The list of sections, with the subject switcher on top. The same list sits in the side column and in the phone drawer.
-const SectionList = ({ subject, subjectTitle, sections, activeId, onPick }) => {
+// slideId: the desktop list and the phone drawer each slide their own highlight
+const SectionList = ({ subject, subjectTitle, sections, activeId, onPick, slideId }) => {
   const navigate = useNavigate();
+  const calm = useReducedMotion();
   const summary = useNotesSummary();
   const subjects = summary ? Object.values(summary) : [];
   return (
     <div className="text-left">
       <label htmlFor="notes-subject" className="mb-1.5 block font-ui text-xs font-bold text-fg-3">Subject</label>
       {subjects.length > 1 ? (
-        <select
+        <SelectField
           id="notes-subject"
           value={subject}
-          onChange={(e) => { onPick?.(); navigate(`/notes/${e.target.value}`); }}
-          className="min-h-[44px] w-full cursor-pointer rounded-xl border border-ink/[0.12] bg-card px-3 text-sm font-semibold text-fg outline-none transition-colors hover:border-ink/[0.22] focus:border-brand"
-        >
-          {subjects.map((s) => <option key={s.subjectSlug} value={s.subjectSlug}>{s.subject || s.subjectSlug}</option>)}
-        </select>
+          options={subjects.map((s) => ({ value: s.subjectSlug, label: s.subject || s.subjectSlug }))}
+          onValueChange={(v) => { onPick?.(); navigate(`/notes/${v}`); }}
+          className="!bg-card font-semibold"
+        />
       ) : (
         <p id="notes-subject" className="min-h-[44px] content-center text-sm font-semibold text-fg">{subjectTitle}</p>
       )}
@@ -255,10 +257,18 @@ const SectionList = ({ subject, subjectTitle, sections, activeId, onPick }) => {
                   onClick={onPick}
                   aria-current={isActive ? 'page' : undefined}
                   title={`${s.title} (${s.readMinutes} min)`}
-                  className={`flex min-h-[44px] items-start gap-3 rounded-xl px-3 py-2.5 text-sm leading-snug transition-colors ${
-                    isActive ? 'bg-brand/12 font-semibold text-brand' : 'text-muted hover:bg-ink/[0.05] hover:text-fg'
+                  className={`relative flex min-h-[44px] items-start gap-3 rounded-xl px-3 py-2.5 text-sm leading-snug transition-colors ${
+                    isActive ? 'font-semibold text-brand' : 'text-muted hover:bg-ink/[0.05] hover:text-fg'
                   }`}
                 >
+                  {isActive && (
+                    <motion.span
+                      aria-hidden="true"
+                      layoutId={calm ? undefined : slideId}
+                      className="absolute inset-0 -z-10 rounded-xl bg-brand/12"
+                      transition={{ type: 'spring', duration: 0.4, bounce: 0.1 }}
+                    />
+                  )}
                   <span className="w-5 shrink-0 text-right font-ui text-xs leading-[1.4rem] opacity-70">{i + 1}</span>
                   <span>{s.title}</span>
                 </Link>
@@ -306,7 +316,7 @@ export default function NotesDetail() {
   const nextSection = section.links?.next ? sections.find((s) => s.id === section.links.next) || null : sections[index + 1] || null;
   const reviewed = Boolean(section.lastChecked);
   const reportHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Mistake in notes: ${section.title} (${section.id})`)}`;
-  const list = <SectionList subject={subject} subjectTitle={subjectTitle} sections={sections} activeId={section.id} onPick={() => setIsSidebarOpen(false)} />;
+  const listProps = { subject, subjectTitle, sections, activeId: section.id, onPick: () => setIsSidebarOpen(false) };
 
   return (
     <div className="relative">
@@ -352,7 +362,7 @@ export default function NotesDetail() {
                     <FiX aria-hidden="true" />
                   </button>
                 </div>
-                {list}
+                <SectionList {...listProps} slideId="section-slide-drawer" />
               </motion.aside>
             </>
           )}
@@ -364,7 +374,7 @@ export default function NotesDetail() {
             <Link to="/notes" className="mb-4 inline-flex min-h-[44px] items-center gap-1.5 text-sm text-muted transition-colors hover:text-fg">
               <FiChevronLeft aria-hidden="true" /> All subjects
             </Link>
-            {list}
+            <SectionList {...listProps} slideId="section-slide-side" />
           </div>
         </aside>
 

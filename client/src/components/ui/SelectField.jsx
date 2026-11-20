@@ -83,7 +83,7 @@ export default function SelectField({
                 key={option.value}
                 value={String(option.value)}
                 disabled={option.disabled}
-                className="relative flex min-h-[44px] cursor-pointer items-center rounded-lg py-2.5 pl-3 pr-9 text-sm text-fg-3 outline-none data-[highlighted]:bg-brand/10 data-[highlighted]:text-brand data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                className="relative flex min-h-[44px] cursor-pointer items-center rounded-lg py-2.5 pl-3 pr-9 text-sm text-fg-3 !outline-none data-[highlighted]:bg-brand/10 data-[highlighted]:text-brand data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
               >
                 <Select.ItemText>
                   <span className="whitespace-normal break-words">{option.label}</span>

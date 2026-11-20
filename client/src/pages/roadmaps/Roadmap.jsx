@@ -14,8 +14,7 @@ const RoadmapCard = ({ r, index }) => {
     <MotionLink
       to={`/roadmaps/${r.slug}`}
       initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 20px, 0)" }}
-      whileInView={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
-      viewport={{ once: true, amount: 0.2 }}
+      animate={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
       transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.07 }}
       className="group relative flex flex-col rounded-2xl border border-ink/[0.1] bg-card p-6 text-left shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_18px_34px_-20px_color-mix(in_srgb,var(--shadow)_42%,transparent)] transition-[transform,box-shadow] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_16%,transparent),0_26px_44px_-20px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
     >
