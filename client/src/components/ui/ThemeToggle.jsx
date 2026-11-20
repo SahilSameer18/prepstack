@@ -33,10 +33,13 @@ export default function ThemeToggle({ className = "" }) {
     const y = box.top + box.height / 2;
     const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
     const transition = document.startViewTransition(change);
+    // never leave the page half-switched: if the circle has not finished in 1.2 s (a slow machine), jump to the end
+    const rescue = setTimeout(() => transition.skipTransition(), 1200);
+    transition.finished.finally(() => clearTimeout(rescue));
     transition.ready.then(() => {
       document.documentElement.animate(
         { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
-        { duration: 500, easing: "cubic-bezier(0.22, 1, 0.36, 1)", pseudoElement: "::view-transition-new(root)" },
+        { duration: 500, easing: "cubic-bezier(0.23, 1, 0.32, 1)", pseudoElement: "::view-transition-new(root)" },
       );
     }, () => {});
     return undefined;

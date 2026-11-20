@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { FiMail, FiCheckCircle } from "react-icons/fi";
+import { Envelope, CheckCircle } from "@phosphor-icons/react";
 import AuthCard from "../../components/auth/AuthCard";
+import AuthField from "../../components/auth/AuthField";
 import { InlineSpinner } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 import { forgotPassword } from "../../api/services/authService";
@@ -8,7 +9,6 @@ import { extractError } from "../../utils/extractError";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [focused, setFocused] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [sentTo, setSentTo] = useState(null);
@@ -31,7 +31,7 @@ const ForgotPassword = () => {
     return (
       <AuthCard title="Check your email">
         <div className="flex items-start gap-3 bg-ok/10 border border-ok/20 rounded-xl p-4 mb-5">
-          <FiCheckCircle className="text-ok text-lg mt-0.5 flex-shrink-0" />
+          <CheckCircle weight="duotone" aria-hidden="true" className="mt-0.5 shrink-0 text-xl text-ok" />
           <p className="text-sm text-fg-3 leading-relaxed">
             If an account with <strong className="text-fg break-all">{sentTo}</strong> exists, we have sent a link to choose a new password.
           </p>
@@ -57,30 +57,16 @@ const ForgotPassword = () => {
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <InlineErrorAlert message={error} onDismiss={() => setError(null)} />
 
-        <div className="space-y-1.5">
-          <label htmlFor="forgot-email" className="text-sm font-medium text-fg-3">Email address</label>
-          <div className={`flex items-center gap-3 w-full bg-canvas border rounded-xl px-4 h-12 transition-colors duration-150 ${focused ? "border-brand shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)]" : "border-ink/[0.08] hover:border-ink/[0.15]"}`}>
-            <FiMail className={`text-lg flex-shrink-0 transition-colors ${focused ? "text-brand" : "text-muted"}`} />
-            <input
-              id="forgot-email"
-              type="email"
-              name="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); if (error) setError(null); }}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              required
-            />
-          </div>
-        </div>
+        <AuthField
+          id="forgot-email" label="Email address" icon={Envelope}
+          type="email" name="email" autoComplete="email" placeholder="you@example.com"
+          value={email} onChange={(e) => { setEmail(e.target.value); if (error) setError(null); }} required
+        />
 
         <button
           type="submit"
           disabled={submitting || !email.trim()}
-          className="amber-specular-button w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="amber-specular-button w-full h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting ? (<><InlineSpinner size={17} color="var(--on-brand)" /><span>Sending...</span></>) : "Send reset link"}
         </button>

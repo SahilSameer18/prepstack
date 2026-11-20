@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { FiLock, FiEye, FiEyeOff, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
+import { Lock, CheckCircle, WarningCircle } from "@phosphor-icons/react";
 import AuthCard from "../../components/auth/AuthCard";
+import AuthField, { PasswordToggle } from "../../components/auth/AuthField";
 import { InlineSpinner } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 import { resetPassword } from "../../api/services/authService";
@@ -42,10 +43,10 @@ const ResetPassword = () => {
     return (
       <AuthCard title="This link does not work">
         <div className="flex items-start gap-3 bg-bad/10 border border-bad/20 rounded-xl p-4 mb-5">
-          <FiAlertCircle className="text-bad text-lg mt-0.5 flex-shrink-0" />
+          <WarningCircle weight="duotone" aria-hidden="true" className="mt-0.5 shrink-0 text-xl text-bad" />
           <p className="text-sm text-fg-3 leading-relaxed">The reset link is missing or incomplete. Open the link from the email again, or ask for a new one.</p>
         </div>
-        <Link to="/forgot-password" className="amber-specular-button w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center">
+        <Link to="/forgot-password" className="amber-specular-button w-full h-12 rounded-xl text-sm font-bold flex items-center justify-center">
           Request a new link
         </Link>
       </AuthCard>
@@ -56,10 +57,10 @@ const ResetPassword = () => {
     return (
       <AuthCard title="Password updated">
         <div className="flex items-start gap-3 bg-ok/10 border border-ok/20 rounded-xl p-4 mb-5">
-          <FiCheckCircle className="text-ok text-lg mt-0.5 flex-shrink-0" />
+          <CheckCircle weight="duotone" aria-hidden="true" className="mt-0.5 shrink-0 text-xl text-ok" />
           <p className="text-sm text-fg-3 leading-relaxed">Your password has been changed and you were signed out on all devices. Log in with your new password.</p>
         </div>
-        <Link to="/login" className="amber-specular-button w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center">
+        <Link to="/login" className="amber-specular-button w-full h-12 rounded-xl text-sm font-bold flex items-center justify-center">
           Go to log in
         </Link>
       </AuthCard>
@@ -95,25 +96,12 @@ const ResetPassword = () => {
           </p>
         )}
 
-        <div className="space-y-1.5">
-          <label htmlFor="new-password" className="text-sm font-medium text-fg-3">New password</label>
-          <div className="flex items-center gap-3 w-full bg-canvas border border-ink/[0.08] hover:border-ink/[0.15] focus-within:border-brand rounded-xl px-4 h-12 transition-colors">
-            <FiLock className="text-lg flex-shrink-0 text-muted" />
-            <input
-              id="new-password"
-              type={show ? "text" : "password"}
-              autoComplete="new-password"
-              className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
-              placeholder="New password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); if (error) setError(null); }}
-              required
-            />
-            <button type="button" onClick={() => setShow(!show)} aria-label={show ? "Hide password" : "Show password"} className="text-muted hover:text-fg-3 transition-colors flex-shrink-0">
-              {show ? <FiEye className="text-lg" /> : <FiEyeOff className="text-lg" />}
-            </button>
-          </div>
-        </div>
+        <AuthField
+          id="new-password" label="New password" icon={Lock}
+          type={show ? "text" : "password"} autoComplete="new-password" placeholder="New password"
+          value={password} onChange={(e) => { setPassword(e.target.value); if (error) setError(null); }} required
+          trailing={<PasswordToggle show={show} onToggle={() => setShow(!show)} />}
+        />
 
         <ul className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs" aria-label="Password rules">
           {RULES.map(([label, test]) => (
@@ -124,28 +112,17 @@ const ResetPassword = () => {
           {tooLong && <li className="text-bad col-span-2">Password cannot exceed 72 characters</li>}
         </ul>
 
-        <div className="space-y-1.5">
-          <label htmlFor="confirm-password" className="text-sm font-medium text-fg-3">Confirm new password</label>
-          <div className="flex items-center gap-3 w-full bg-canvas border border-ink/[0.08] hover:border-ink/[0.15] focus-within:border-brand rounded-xl px-4 h-12 transition-colors">
-            <FiLock className="text-lg flex-shrink-0 text-muted" />
-            <input
-              id="confirm-password"
-              type={show ? "text" : "password"}
-              autoComplete="new-password"
-              className="w-full bg-transparent text-fg placeholder-faint outline-none text-sm"
-              placeholder="Repeat the password"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              required
-            />
-          </div>
-          {confirm.length > 0 && !matches && <p className="text-xs text-bad">The two passwords do not match.</p>}
-        </div>
+        <AuthField
+          id="confirm-password" label="Confirm new password" icon={Lock}
+          type={show ? "text" : "password"} autoComplete="new-password" placeholder="Repeat the password"
+          value={confirm} onChange={(e) => setConfirm(e.target.value)} required
+          hint={confirm.length > 0 && !matches && <p className="text-xs text-bad">The two passwords do not match.</p>}
+        />
 
         <button
           type="submit"
           disabled={submitting || !rulesOk || tooLong || !matches}
-          className="amber-specular-button w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="amber-specular-button w-full h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {submitting ? (<><InlineSpinner size={17} color="var(--on-brand)" /><span>Updating...</span></>) : "Update password"}
         </button>

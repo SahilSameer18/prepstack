@@ -113,7 +113,7 @@ body, #root {
   --ink: #ffffff;
   --scrim: #000000;
   --inset: #000000;
-  --glow: 12%;   /* strength of the warm page glows (Home) */
+  --glow: 24%;   /* strength of the warm page glows (Home) */
   --shadow: #000000;
 
   /* ── text ── */

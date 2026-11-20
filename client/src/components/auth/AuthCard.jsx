@@ -1,30 +1,21 @@
-import { Link } from "react-router-dom";
-import { FiArrowLeft } from "react-icons/fi";
+import PageBackdrop from "../ui/PageBackdrop";
+import { AuthEnter, BackLink, Logo } from "./AuthShell";
 
 /**
- * AuthCard: the plain centred frame used by the password-reset pages (logo, back link, title, content).
+ * AuthCard: the centred frame used by the password-reset pages (logo, back link, title, content).
  * Colors come from the design tokens only.
  */
 const AuthCard = ({ title, subtitle, backTo = "/login", backLabel = "Back to log in", children }) => (
-  <div className="min-h-screen bg-canvas text-body flex flex-col items-center justify-center px-6 py-10">
-    <Link to="/" className="text-xl font-display font-bold tracking-tight text-fg mb-8">
-      Prep<span className="text-brand">Stack</span>
-    </Link>
+  <div className="relative flex min-h-screen flex-col items-center justify-center bg-canvas px-6 py-10 text-body">
+    <PageBackdrop />
+    <div className="relative z-10 mb-8"><Logo className="text-xl" /></div>
 
-    <div className="w-full max-w-md bg-card border border-ink/[0.08] rounded-2xl p-6 sm:p-8">
-      <Link
-        to={backTo}
-        className="inline-flex items-center gap-2 min-h-[44px] text-xs font-ui text-muted hover:text-fg transition-colors mb-2"
-      >
-        <FiArrowLeft className="text-xs" />
-        <span>{backLabel}</span>
-      </Link>
-
-      <h1 className="text-2xl font-bold text-fg mb-1.5">{title}</h1>
-      {subtitle && <p className="text-muted text-sm mb-6">{subtitle}</p>}
-
+    <AuthEnter className="surface-card relative z-10 w-full max-w-md p-6 text-left sm:p-8">
+      <BackLink to={backTo} label={backLabel} />
+      <h1 className="mb-1.5 font-display text-3xl font-black tracking-[-0.04em] text-fg">{title}</h1>
+      {subtitle && <p className="mb-6 text-sm leading-relaxed text-muted">{subtitle}</p>}
       {children}
-    </div>
+    </AuthEnter>
   </div>
 );
 
