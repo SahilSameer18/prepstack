@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
+import { CaretLeft, CaretRight, ChatCircle, Check, CheckCircle, Clock, Flag, Info, List, Warning, X } from "@phosphor-icons/react";
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { FiChevronLeft, FiChevronRight, FiMenu, FiX, FiInfo, FiAlertTriangle, FiCheckCircle, FiMessageSquare, FiClock, FiFlag, FiCheck } from 'react-icons/fi';
 import { useNotes, useNotesSummary } from '../../hooks/useNotes';
 import { useActiveHeading } from '../../hooks/useActiveHeading';
 import { useAuth } from '../../hooks/useAuth';
@@ -42,12 +42,12 @@ const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderCla
 // [topic field, heading, icon, token classes]. Spelled out in full so Tailwind can see every class.
 const NEUTRAL = ['text-fg-3', 'bg-ink/[0.025]', 'border-ink/[0.08]'];
 const LEGACY_BLOCKS = [
-  ['concept', 'Concept', FiInfo, ...NEUTRAL],
-  ['deepInsight', 'Deep Insight', FiInfo, ...NEUTRAL],
+  ['concept', 'Concept', Info, ...NEUTRAL],
+  ['deepInsight', 'Deep Insight', Info, ...NEUTRAL],
   ['why', 'Why it matters', null, ...NEUTRAL],
-  ['realWorld', 'Real World Examples', FiCheckCircle, ...NEUTRAL],
-  ['traps', 'Common Traps / Gotchas', FiAlertTriangle, 'text-bad', 'bg-bad-solid/[0.05]', 'border-bad-solid/[0.18]'],
-  ['interviewAnswer', 'How to Answer in Interview', FiMessageSquare, 'text-brand', 'bg-brand/[0.06]', 'border-brand/[0.2]'],
+  ['realWorld', 'Real World Examples', CheckCircle, ...NEUTRAL],
+  ['traps', 'Common Traps / Gotchas', Warning, 'text-bad', 'bg-bad-solid/[0.05]', 'border-bad-solid/[0.18]'],
+  ['interviewAnswer', 'How to Answer in Interview', ChatCircle, 'text-brand', 'bg-brand/[0.06]', 'border-brand/[0.2]'],
   ['flow', 'Flow Step-by-Step', null, ...NEUTRAL],
   ['conditions', 'Conditions', null, ...NEUTRAL],
   ['pcbContains', 'PCB Contains', null, ...NEUTRAL],
@@ -179,7 +179,7 @@ const ReviewedSection = ({ section }) => {
       <ul className="space-y-3 text-left">
         {section.mistakes.map((m) => (
           <li key={m} className="flex items-start gap-3 text-fg-2 text-base leading-relaxed">
-            <FiAlertTriangle className="text-bad mt-1.5 shrink-0" aria-hidden="true" />
+            <Warning className="text-bad mt-1.5 shrink-0" aria-hidden="true" />
             <span>{m}</span>
           </li>
         ))}
@@ -214,7 +214,7 @@ const ReviewedSection = ({ section }) => {
           <li key={l.key}>
             <Link to={l.path} className="flex items-center justify-between gap-3 rounded-xl bg-card border border-ink/[0.1] hover:border-ink/[0.22] px-4 py-3 min-h-[44px] text-sm text-fg-2 hover:text-fg transition-colors">
               <span className="capitalize">{l.label}</span>
-              <FiChevronRight className="text-muted shrink-0" aria-hidden="true" />
+              <CaretRight className="text-muted shrink-0" aria-hidden="true" />
             </Link>
           </li>
         ))}
@@ -334,7 +334,7 @@ export default function NotesDetail() {
             onClick={() => setIsSidebarOpen(true)}
             className="flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl border border-ink/[0.12] bg-card px-3.5 text-sm font-medium text-fg-2 transition-colors hover:text-fg"
           >
-            <FiMenu className="text-sm" aria-hidden="true" />
+            <List className="text-sm" aria-hidden="true" />
             Sections
           </button>
         </div>
@@ -356,10 +356,10 @@ export default function NotesDetail() {
               >
                 <div className="mb-3 flex items-center justify-between">
                   <Link to="/notes" onClick={() => setIsSidebarOpen(false)} className="flex min-h-[44px] items-center gap-1.5 text-sm text-muted hover:text-fg">
-                    <FiChevronLeft aria-hidden="true" /> All subjects
+                    <CaretLeft aria-hidden="true" /> All subjects
                   </Link>
                   <button type="button" onClick={() => setIsSidebarOpen(false)} aria-label="Close the section list" className="flex h-11 w-11 items-center justify-center rounded-xl text-muted hover:bg-ink/[0.06] hover:text-fg">
-                    <FiX aria-hidden="true" />
+                    <X aria-hidden="true" />
                   </button>
                 </div>
                 <SectionList {...listProps} slideId="section-slide-drawer" />
@@ -372,7 +372,7 @@ export default function NotesDetail() {
         <aside className="hidden lg:block">
           <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pb-6 pr-1 scrollbar-thin">
             <Link to="/notes" className="mb-4 inline-flex min-h-[44px] items-center gap-1.5 text-sm text-muted transition-colors hover:text-fg">
-              <FiChevronLeft aria-hidden="true" /> All subjects
+              <CaretLeft aria-hidden="true" /> All subjects
             </Link>
             <SectionList {...listProps} slideId="section-slide-side" />
           </div>
@@ -383,16 +383,16 @@ export default function NotesDetail() {
           <motion.div key={section.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="max-w-3xl">
             <div className="mb-5 flex items-center gap-1.5 font-ui text-xs text-muted">
               <Link to="/notes" className="transition-colors hover:text-fg-2">{subjectTitle}</Link>
-              <FiChevronRight className="text-xs" aria-hidden="true" />
+              <CaretRight className="text-xs" aria-hidden="true" />
               <span className="truncate text-fg-2">{section.title}</span>
             </div>
 
             <h1 className="mb-4 text-left font-display text-3xl font-black leading-[1.1] tracking-[-0.03em] text-fg md:text-4xl">{section.title}</h1>
 
             <div className="mb-10 flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-ink/[0.1] pb-5 font-ui text-sm text-muted">
-              <span className="flex items-center gap-1.5"><FiClock aria-hidden="true" /> {section.readMinutes} min read</span>
-              {reviewed && <span className="flex items-center gap-1.5"><FiCheck className="text-ok" aria-hidden="true" /> Last checked {formatDate(section.lastChecked)}</span>}
-              <a href={reportHref} className="flex min-h-[44px] items-center gap-1.5 text-fg-3 transition-colors hover:text-brand"><FiFlag aria-hidden="true" /> Report a mistake</a>
+              <span className="flex items-center gap-1.5"><Clock aria-hidden="true" /> {section.readMinutes} min read</span>
+              {reviewed && <span className="flex items-center gap-1.5"><Check className="text-ok" aria-hidden="true" /> Last checked {formatDate(section.lastChecked)}</span>}
+              <a href={reportHref} className="flex min-h-[44px] items-center gap-1.5 text-fg-3 transition-colors hover:text-brand"><Flag aria-hidden="true" /> Report a mistake</a>
             </div>
 
             {reviewed ? <ReviewedSection section={section} /> : <LegacySection section={section} />}
@@ -400,13 +400,13 @@ export default function NotesDetail() {
             <div className="mt-14 grid grid-cols-1 gap-4 border-t border-ink/[0.1] pt-8 sm:grid-cols-2">
               {prevSection ? (
                 <Link to={`/notes/${subject}/${prevSection.id}`} className="group flex flex-col items-start rounded-2xl border border-ink/[0.1] bg-card p-4 text-left transition-[border-color,transform] duration-150 hover:border-ink/[0.22] active:scale-[0.99]">
-                  <span className="mb-1 flex items-center gap-1.5 font-ui text-xs text-muted"><FiChevronLeft className="transition-transform group-hover:-translate-x-0.5" aria-hidden="true" /> Previous section</span>
+                  <span className="mb-1 flex items-center gap-1.5 font-ui text-xs text-muted"><CaretLeft className="transition-transform group-hover:-translate-x-0.5" aria-hidden="true" /> Previous section</span>
                   <span className="w-full text-sm font-semibold text-fg-2 group-hover:text-fg">{prevSection.title}</span>
                 </Link>
               ) : <div />}
               {nextSection ? (
                 <Link to={`/notes/${subject}/${nextSection.id}`} className="group flex flex-col items-end rounded-2xl border border-ink/[0.1] bg-card p-4 text-right transition-[border-color,transform] duration-150 hover:border-brand/40 active:scale-[0.99] sm:col-start-2">
-                  <span className="mb-1 flex items-center gap-1.5 font-ui text-xs text-muted">Next section <FiChevronRight className="text-brand transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+                  <span className="mb-1 flex items-center gap-1.5 font-ui text-xs text-muted">Next section <CaretRight className="text-brand transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
                   <span className="w-full text-sm font-semibold text-fg-2 group-hover:text-fg">{nextSection.title}</span>
                 </Link>
               ) : <div />}

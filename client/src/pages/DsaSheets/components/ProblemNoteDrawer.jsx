@@ -1,12 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiFileText, FiTrash2, FiCheck, FiCpu, FiClock, FiX, FiAlertCircle, FiLoader } from 'react-icons/fi';
+import { Check, CircleNotch, Clock, Cpu, FileText, Trash, WarningCircle, X } from "@phosphor-icons/react";
 import { TIME_COMPLEXITIES, SPACE_COMPLEXITIES, COMMON_PATTERNS, APPROACH_MAX } from '../../../data/problemNoteOptions';
 
 // The drawer's save status, in words (never colour alone)
 const STATUS = {
-  saved: { Icon: FiCheck, text: 'Saved to your account', className: 'text-ok/80' },
-  saving: { Icon: FiLoader, text: 'Saving...', className: 'text-muted' },
-  error: { Icon: FiAlertCircle, text: 'Not saved. Change anything to try again.', className: 'text-bad' },
+  saved: { Icon: Check, text: 'Saved to your account', className: 'text-ok/80' },
+  saving: { Icon: CircleNotch, text: 'Saving...', className: 'text-muted' },
+  error: { Icon: WarningCircle, text: 'Not saved. Change anything to try again.', className: 'text-bad' },
 };
 
 const LABEL_CLASS = 'text-xs font-ui text-muted uppercase tracking-wider';
@@ -55,7 +55,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, saveStatus = 'saved', on
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-ui font-semibold text-warn/90 flex items-center gap-1.5">
-                <FiFileText className="text-warn" />
+                <FileText className="text-warn" />
                 Your notes
               </span>
             </div>
@@ -68,7 +68,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, saveStatus = 'saved', on
                   className="inline-flex items-center gap-1 text-xs font-ui text-muted hover:text-bad transition-colors cursor-pointer"
                   title="Clear note for this problem"
                 >
-                  <FiTrash2 className="text-xs" />
+                  <Trash className="text-xs" />
                   Clear
                 </button>
               )}
@@ -82,7 +82,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, saveStatus = 'saved', on
                 className="text-muted hover:text-fg p-1 rounded hover:bg-ink/[0.05] transition-colors cursor-pointer"
                 title="Close drawer"
               >
-                <FiX className="text-sm" />
+                <X className="text-sm" />
               </button>
             </div>
           </div>
@@ -100,7 +100,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, saveStatus = 'saved', on
           {/* Complexity Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
             <ChipGroup
-              label={<><FiClock className="text-xs text-muted" />Time Complexity</>}
+              label={<><Clock className="text-xs text-muted" />Time Complexity</>}
               labelClassName={`${LABEL_CLASS} flex items-center gap-1`}
               options={TIME_COMPLEXITIES}
               selected={noteData?.timeComplexity}
@@ -108,7 +108,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, saveStatus = 'saved', on
               selectedClass="bg-info-solid/20 border-info-solid/50 text-info font-semibold"
             />
             <ChipGroup
-              label={<><FiCpu className="text-xs text-muted" />Space Complexity</>}
+              label={<><Cpu className="text-xs text-muted" />Space Complexity</>}
               labelClassName={`${LABEL_CLASS} flex items-center gap-1`}
               options={SPACE_COMPLEXITIES}
               selected={noteData?.spaceComplexity}

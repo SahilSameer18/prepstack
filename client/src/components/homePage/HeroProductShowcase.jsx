@@ -1,8 +1,7 @@
 import React, { useState } from "react";
+import { ArrowRight, Check, CheckCircle, Code, Cpu, Database, Play, Shield, Stack, Terminal } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaArrowRight, FaCheck, FaPlay, FaCheckCircle } from "react-icons/fa";
-import { FiCpu, FiCode as FiCodeIcon, FiDatabase, FiTerminal, FiLayers, FiShield } from "react-icons/fi";
 
 const INITIAL_DEMO_PROBLEMS = [
   { id: 1, title: "Two Sum", category: "Arrays & Hashing", time: "O(n)", diff: "Easy", solved: true },
@@ -11,9 +10,9 @@ const INITIAL_DEMO_PROBLEMS = [
 ];
 
 const TABS = [
-  { id: 0, name: "DSA Tracker", icon: <FiCodeIcon className="text-xs" />, file: "Blind75.tracker.ts" },
-  { id: 1, name: "CS Internals", icon: <FiDatabase className="text-xs" />, file: "OS_Memory.spec.md" },
-  { id: 2, name: "System Spec", icon: <FiCpu className="text-xs" />, file: "RateLimiter.arch.yaml" },
+  { id: 0, name: "DSA Tracker", icon: <Code className="text-xs" />, file: "Blind75.tracker.ts" },
+  { id: 1, name: "CS Internals", icon: <Database className="text-xs" />, file: "OS_Memory.spec.md" },
+  { id: 2, name: "System Spec", icon: <Cpu className="text-xs" />, file: "RateLimiter.arch.yaml" },
 ];
 
 const HeroProductShowcase = () => {
@@ -54,7 +53,7 @@ const HeroProductShowcase = () => {
         {/* Workspace status / file path header */}
         <div className="flex items-center gap-2.5">
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-ink/[0.04] text-muted">
-            <FiTerminal className="text-xs text-brand" />
+            <Terminal className="text-xs text-brand" />
             <span className="text-xs font-ui tracking-wider text-fg-3 font-semibold">Demo</span>
           </div>
           <span className="hidden sm:inline-block font-ui text-xs text-muted font-medium">
@@ -158,7 +157,7 @@ const HeroProductShowcase = () => {
                         >
                           {problem.solved && (
                             <motion.span initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", duration: 0.3, bounce: 0.35 }} className="flex">
-                              <FaCheck className="text-xs" />
+                              <Check className="text-xs" />
                             </motion.span>
                           )}
                         </div>
@@ -199,7 +198,7 @@ const HeroProductShowcase = () => {
                     disabled={isRunningTest}
                     className="titanium-button text-xs font-ui py-2.5 sm:py-1.5 px-3.5 sm:px-3 min-h-[44px] sm:min-h-0 rounded-lg flex items-center gap-2 whitespace-nowrap cursor-pointer select-none"
                   >
-                    <FaPlay className={`text-xs text-brand ${isRunningTest ? "animate-spin" : ""}`} />
+                    <Play className={`text-xs text-brand ${isRunningTest ? "animate-spin" : ""}`} />
                     <span>{isRunningTest ? "Running Benchmark..." : "Run Test Benchmark"}</span>
                     <span className="hidden sm:inline-flex"><span className="kbd-capsule">⌘↵</span></span>
                   </button>
@@ -217,7 +216,7 @@ const HeroProductShowcase = () => {
                     className="mt-2.5 p-2.5 rounded-lg bg-ok/25 border border-ok-solid/25 font-ui text-xs text-ok flex flex-wrap items-center justify-between gap-2"
                   >
                     <div className="flex items-center gap-2">
-                      <FaCheckCircle className="text-ok text-xs shrink-0" />
+                      <CheckCircle className="text-ok text-xs shrink-0" />
                       <span>Passed {testResult.casesPassed} test cases</span>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted">
@@ -345,7 +344,7 @@ const HeroProductShowcase = () => {
               <div className="space-y-2 font-ui text-xs">
                 <div className="p-2.5 rounded-xl bg-ink/[0.02] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <FiLayers className="text-brand text-xs" />
+                    <Stack className="text-brand text-xs" />
                     <span className="text-fg-2 text-xs">Edge API Gateway</span>
                   </div>
                   <span className="text-xs text-muted bg-ink/[0.05] px-2 py-0.5 rounded">
@@ -355,7 +354,7 @@ const HeroProductShowcase = () => {
 
                 <div className="p-2.5 rounded-xl bg-elevated/60 border border-brand/30 bg-brand/[0.02] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <FiShield className="text-brand text-xs" />
+                    <Shield className="text-brand text-xs" />
                     <span className="text-fg text-xs font-semibold">Sliding Window Core</span>
                   </div>
                   <span className="text-xs text-brand font-ui">
@@ -365,7 +364,7 @@ const HeroProductShowcase = () => {
 
                 <div className="p-2.5 rounded-xl bg-ink/[0.02] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <FiDatabase className="text-cyan text-xs" />
+                    <Database className="text-cyan text-xs" />
                     <span className="text-fg-2 text-xs">PostgreSQL WAL Logging</span>
                   </div>
                   <span className="text-xs text-muted bg-ink/[0.05] px-2 py-0.5 rounded">
@@ -392,7 +391,7 @@ const HeroProductShowcase = () => {
             className="inline-flex items-center gap-1.5 py-2.5 sm:py-0 min-h-[44px] sm:min-h-0 text-brand hover:text-brand-hover font-semibold transition-colors text-xs shrink-0 whitespace-nowrap select-none group"
           >
             Launch Full Tool{" "}
-            <FaArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-0.5" />
+            <ArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-0.5" />
           </Link>
         </div>
       </div>

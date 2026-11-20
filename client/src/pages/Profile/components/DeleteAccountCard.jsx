@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { Warning, X } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiAlertTriangle, FiX } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
@@ -69,12 +69,10 @@ const DeleteAccountCard = () => {
 
   return (
     <>
-      <div className="bg-bad-solid/[0.02] border border-bad-solid/20 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden shadow-xl">
+      <div className="bg-bad-solid/[0.04] border border-bad-solid/25 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
-          <h3 className="font-display text-sm font-bold text-bad flex items-center gap-2">
-            <FiAlertTriangle /> Delete account
-          </h3>
-          <p className="text-xs font-ui text-muted mt-1 max-w-xl leading-relaxed">
+          <h2 className="font-display text-xl font-extrabold tracking-tight text-bad">Delete account</h2>
+          <p className="text-sm font-ui text-muted mt-1 max-w-xl leading-relaxed">
             Permanently delete your profile, solved-problem progress, problem notes, saved project ideas, role reports, and all current and historical study plans. This action is irreversible.
           </p>
         </div>
@@ -120,7 +118,7 @@ const DeleteAccountCard = () => {
               <div className="flex items-center justify-between border-b border-ink/[0.08] pb-4">
                 <div className="flex items-center gap-2.5 text-bad font-display font-bold text-sm">
                   <div className="w-8 h-8 rounded-lg bg-bad-solid/10 flex items-center justify-center text-base">
-                    <FiAlertTriangle />
+                    <Warning />
                   </div>
                   <span id="delete-account-title">Delete Account Permanently</span>
                 </div>
@@ -131,13 +129,13 @@ const DeleteAccountCard = () => {
                   onClick={() => setShowDeleteModal(false)}
                   className="text-muted hover:text-fg p-1 cursor-pointer transition-colors"
                 >
-                  <FiX className="text-lg" />
+                  <X className="text-lg" />
                 </button>
               </div>
 
-              <div className="text-xs text-fg-3 space-y-2 leading-relaxed">
+              <div className="text-sm text-fg-3 space-y-2 leading-relaxed">
                 <p id="delete-account-description">This action is irreversible. The following data will be permanently wiped:</p>
-                <ul className="list-disc list-inside space-y-1 text-muted pl-1 font-ui text-xs">
+                <ul className="list-disc list-inside space-y-1 text-muted pl-1 font-ui text-sm">
                   <li>All solved DSA problem tracker entries across all sheets.</li>
                   <li>All your notes on DSA problems.</li>
                   <li>All your saved AI project ideas.</li>

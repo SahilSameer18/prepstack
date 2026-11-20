@@ -1,6 +1,6 @@
 import * as Select from '@radix-ui/react-select';
+import { CaretDown, CaretUp, Check } from "@phosphor-icons/react";
 import { useRef, useState } from 'react';
-import { FiCheck, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 // One dropdown for forms and filters. Radix owns focus, keyboard navigation and typeahead.
 // The portal avoids clipped parents; the available-height limit keeps the list inside the screen.
@@ -52,7 +52,7 @@ export default function SelectField({
           <Select.Value placeholder={placeholder}>{selected?.label}</Select.Value>
         </span>
         <Select.Icon asChild>
-          <FiChevronDown className="shrink-0 text-muted" aria-hidden="true" />
+          <CaretDown className="shrink-0 text-muted" aria-hidden="true" />
         </Select.Icon>
       </Select.Trigger>
 
@@ -75,7 +75,7 @@ export default function SelectField({
           }}
         >
           <Select.ScrollUpButton className="flex h-7 items-center justify-center bg-elevated text-muted">
-            <FiChevronUp aria-hidden="true" />
+            <CaretUp aria-hidden="true" />
           </Select.ScrollUpButton>
           <Select.Viewport className="p-1">
             {options.map((option) => (
@@ -89,13 +89,13 @@ export default function SelectField({
                   <span className="whitespace-normal break-words">{option.label}</span>
                 </Select.ItemText>
                 <Select.ItemIndicator className="absolute right-3 text-brand">
-                  <FiCheck aria-hidden="true" />
+                  <Check aria-hidden="true" />
                 </Select.ItemIndicator>
               </Select.Item>
             ))}
           </Select.Viewport>
           <Select.ScrollDownButton className="flex h-7 items-center justify-center bg-elevated text-muted">
-            <FiChevronDown aria-hidden="true" />
+            <CaretDown aria-hidden="true" />
           </Select.ScrollDownButton>
         </Select.Content>
       </Select.Portal>

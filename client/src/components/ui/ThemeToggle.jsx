@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { Moon, Sun } from "@phosphor-icons/react";
 import { flushSync } from "react-dom";
-import { FiSun, FiMoon } from "react-icons/fi";
 import { applyTheme, currentTheme, hasSavedTheme, saveTheme, systemTheme } from "../../utils/theme";
 
 // Sun in the dark theme (switch to light), moon in the light theme. Follows the system until the visitor chooses.
@@ -51,7 +51,7 @@ export default function ThemeToggle({ className = "" }) {
       title={`Switch to ${next} theme`}
       className={`flex h-9 w-9 items-center justify-center rounded-full text-lg text-fg-3 transition-colors hover:bg-ink/[0.07] hover:text-fg ${className}`}
     >
-      {theme === "light" ? <FiMoon aria-hidden="true" /> : <FiSun aria-hidden="true" />}
+      {theme === "light" ? <Moon aria-hidden="true" /> : <Sun aria-hidden="true" />}
     </button>
   );
 }

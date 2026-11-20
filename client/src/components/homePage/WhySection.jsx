@@ -1,6 +1,5 @@
 import React from "react";
-import { FiCheck, FiX } from "react-icons/fi";
-import { CalendarCheck, LinkSimple, PuzzlePiece } from "@phosphor-icons/react";
+import { CalendarCheck, Check, LinkSimple, PuzzlePiece, X } from "@phosphor-icons/react";
 
 // Compared with the usual way of preparing, not with named products: every line here is something the app really does.
 const USUAL = [
@@ -50,7 +49,7 @@ const WhySection = () => (
         <ul className="mt-4 space-y-3">
           {USUAL.map((line) => (
             <li key={line} className="flex items-start gap-3 text-sm sm:text-base text-muted">
-              <FiX aria-hidden="true" className="mt-1 shrink-0 text-faint" />
+              <X aria-hidden="true" className="mt-1 shrink-0 text-faint" />
               {line}
             </li>
           ))}
@@ -62,7 +61,7 @@ const WhySection = () => (
           {WITH_US.map((line) => (
             <li key={line} className="flex items-start gap-3 text-sm sm:text-base text-fg-2">
               <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/20 text-xs text-brand">
-                <FiCheck aria-hidden="true" />
+                <Check aria-hidden="true" />
               </span>
               {line}
             </li>

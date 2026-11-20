@@ -1,10 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import { ArrowRight, BookOpenText, CaretDown, ChatCircle, Code, Cpu, FileText, List, MapTrifold, SignOut, SquaresFour, Target, User, X } from "@phosphor-icons/react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
-import {
-  FiCode, FiMap, FiCpu, FiBook, FiMessageSquare, FiFileText,
-  FiArrowRight, FiLogOut, FiGrid, FiUser, FiTarget
-} from "react-icons/fi";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
@@ -86,17 +82,17 @@ const Navbar = () => {
   }, []);
 
   const mainLinks = [
-    { name: 'My plan', path: '/my-plan', icon: <FiTarget /> },
-    { name: "DSA Sheets", path: "/dsa", icon: <FiCode /> },
-    { name: "Roadmaps", path: "/roadmaps", icon: <FiMap /> },
-    { name: "Role Analyzer", path: "/analyzer", icon: <FiTarget /> },
+    { name: 'My plan', path: '/my-plan', icon: <Target /> },
+    { name: "DSA Sheets", path: "/dsa", icon: <Code /> },
+    { name: "Roadmaps", path: "/roadmaps", icon: <MapTrifold /> },
+    { name: "Role Analyzer", path: "/analyzer", icon: <Target /> },
   ];
 
   const exploreLinks = [
-    { name: "CS Notes", path: "/notes", icon: <FiBook />, desc: "OS, DBMS, Networks, OOPs & System Design" },
-    { name: "AI Projects", path: "/ai-projects", icon: <FiCpu />, desc: "Project ideas for your resume" },
-    { name: "Behavioral Prep", path: "/behavioral", icon: <FiMessageSquare />, desc: "HR & soft skills questions" },
-    { name: "Resume Guide", path: "/resume", icon: <FiFileText />, desc: "Build an ATS-ready resume" },
+    { name: "CS Notes", path: "/notes", icon: <BookOpenText />, desc: "OS, DBMS, Networks, OOPs & System Design" },
+    { name: "AI Projects", path: "/ai-projects", icon: <Cpu />, desc: "Project ideas for your resume" },
+    { name: "Behavioral Prep", path: "/behavioral", icon: <ChatCircle />, desc: "HR & soft skills questions" },
+    { name: "Resume Guide", path: "/resume", icon: <FileText />, desc: "Build an ATS-ready resume" },
   ];
 
   return (
@@ -154,7 +150,7 @@ const Navbar = () => {
                 {!exploreOpen && hoverPill("explore")}
                 Explore
                 <motion.span animate={{ rotate: exploreOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-                  <FaChevronDown className="text-xs" />
+                  <CaretDown className="text-xs" />
                 </motion.span>
               </button>
 
@@ -227,7 +223,7 @@ const Navbar = () => {
                     )}
                   </div>
                   <span className="max-w-28 truncate">{user.username}</span>
-                  <FaChevronDown className="text-xs text-muted" />
+                  <CaretDown className="text-xs text-muted" />
                 </button>
                 <AnimatePresence>
                   {userMenuOpen && (
@@ -249,14 +245,14 @@ const Navbar = () => {
                         onClick={() => setUserMenuOpen(false)}
                         className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-fg-3 hover:text-fg hover:bg-ink/[0.04] transition-colors border-b border-ink/[0.06]"
                       >
-                        <FiUser className="text-xs text-muted" /> Profile
+                        <User className="text-xs text-muted" /> Profile
                       </Link>
                       <Link
                         to="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
                         className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-fg-3 hover:text-fg hover:bg-ink/[0.04] transition-colors"
                       >
-                        <FiGrid className="text-xs text-muted" /> Dashboard
+                        <SquaresFour className="text-xs text-muted" /> Dashboard
                       </Link>
                       <button
                         onClick={logout}
@@ -270,7 +266,7 @@ const Navbar = () => {
                           </>
                         ) : (
                           <>
-                            <FiLogOut /> Sign out
+                            <SignOut /> Sign out
                           </>
                         )}
                       </button>
@@ -283,7 +279,7 @@ const Navbar = () => {
                 to="/login"
                 className="amber-specular-button flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
               >
-                Get Started <FiArrowRight className="text-xs" />
+                Get Started <ArrowRight className="text-xs" />
               </NavLink>
             )}
           </div>
@@ -303,11 +299,11 @@ const Navbar = () => {
             <AnimatePresence mode="wait">
               {mobileOpen ? (
                 <motion.span key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                  <FaTimes />
+                  <X />
                 </motion.span>
               ) : (
                 <motion.span key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                  <FaBars />
+                  <List />
                 </motion.span>
               )}
             </AnimatePresence>
@@ -349,7 +345,7 @@ const Navbar = () => {
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 min-h-[44px] rounded-xl text-sm font-medium text-fg-3 hover:text-fg hover:bg-ink/[0.04] transition-all"
                     >
-                      <FiUser className="text-base text-muted" />
+                      <User className="text-base text-muted" />
                       Profile
                     </Link>
                     <Link
@@ -357,7 +353,7 @@ const Navbar = () => {
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 min-h-[44px] rounded-xl text-sm font-medium text-fg-3 hover:text-fg hover:bg-ink/[0.04] transition-all"
                     >
-                      <FiGrid className="text-base text-muted" />
+                      <SquaresFour className="text-base text-muted" />
                       Dashboard
                     </Link>
                     <button
@@ -372,7 +368,7 @@ const Navbar = () => {
                         </>
                       ) : (
                         <>
-                          <FiLogOut /> Sign out
+                          <SignOut /> Sign out
                         </>
                       )}
                     </button>
@@ -383,7 +379,7 @@ const Navbar = () => {
                     onClick={() => setMobileOpen(false)}
                     className="amber-specular-button flex items-center justify-center gap-2 w-full py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-all"
                   >
-                    Get Started Free <FiArrowRight />
+                    Get Started Free <ArrowRight />
                   </Link>
                 )}
               </div>

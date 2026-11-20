@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FiMail, FiGithub, FiLinkedin } from "react-icons/fi";
+import { Envelope, GithubLogo, LinkedinLogo } from "@phosphor-icons/react";
 import LogoMark from "./ui/LogoMark";
 
 const COLUMNS = [
@@ -31,9 +31,9 @@ const COLUMNS = [
 ];
 
 const SOCIAL = [
-  { icon: <FiGithub className="text-base" />, url: "https://github.com/SahilSameer18", label: "GitHub" },
-  { icon: <FiLinkedin className="text-base" />, url: "https://www.linkedin.com/in/sahil-sameer-siddique/", label: "LinkedIn" },
-  { icon: <FiMail className="text-base" />, url: "mailto:sahilsameer.dev18@gmail.com", label: "Email" },
+  { icon: <GithubLogo className="text-base" />, url: "https://github.com/SahilSameer18", label: "GitHub" },
+  { icon: <LinkedinLogo className="text-base" />, url: "https://www.linkedin.com/in/sahil-sameer-siddique/", label: "LinkedIn" },
+  { icon: <Envelope className="text-base" />, url: "mailto:sahilsameer.dev18@gmail.com", label: "Email" },
 ];
 
 const Footer = () => (

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useId, memo } from "react";
+import { CaretDown } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiChevronDown } from "react-icons/fi";
 
 const TECHNICAL_FAQS = [
   {
@@ -66,7 +66,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
               : "border-ink/[0.08] text-muted group-hover:text-fg"
           }`}
         >
-          <FiChevronDown className="text-sm" />
+          <CaretDown className="text-sm" />
         </motion.div>
       </button>
 

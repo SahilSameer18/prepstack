@@ -1,90 +1,79 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FiSearch, FiChevronDown, FiMessageSquare, FiZap, FiUsers, FiTarget, FiCpu, FiStar, FiAlertTriangle, FiList, FiHeart, FiClock, FiEdit3, FiFlag } from "react-icons/fi";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { MagnifyingGlass, CaretDown, ChatCircleText, ListNumbers, Lightning, Target, UsersThree, Flag, WarningCircle, Star, Clock, Question, PencilSimple, Heart, ArrowRight } from "@phosphor-icons/react";
 import { behavioralQuestions, CATEGORIES as CATEGORY_NAMES } from "../data/behavioralQuestions";
-import { motion, AnimatePresence } from "framer-motion";
 import { EmptyState } from "../components/ui/StateComponents";
+import PageBackdrop from "../components/ui/PageBackdrop";
 
+const iconProps = { weight: "duotone", "aria-hidden": "true" };
 const CATEGORY_ICONS = {
-  Personal: <FiTarget />,
-  Teamwork: <FiUsers />,
-  Conflict: <FiFlag />,
-  "Failure and learning": <FiAlertTriangle />,
-  Leadership: <FiZap />,
-  "Taking responsibility": <FiStar />,
-  "Deadlines and pressure": <FiClock />,
-  "Unclear situations and learning": <FiCpu />,
-  Feedback: <FiEdit3 />,
-  Motivation: <FiHeart />,
+  Personal: <Target {...iconProps} />,
+  Teamwork: <UsersThree {...iconProps} />,
+  Conflict: <Flag {...iconProps} />,
+  "Failure and learning": <WarningCircle {...iconProps} />,
+  Leadership: <Lightning {...iconProps} />,
+  "Taking responsibility": <Star {...iconProps} />,
+  "Deadlines and pressure": <Clock {...iconProps} />,
+  "Unclear situations and learning": <Question {...iconProps} />,
+  Feedback: <PencilSimple {...iconProps} />,
+  Motivation: <Heart {...iconProps} />,
 };
 
-const CATEGORIES = [{ label: "All", icon: <FiStar /> }, ...CATEGORY_NAMES.map((label) => ({ label, icon: CATEGORY_ICONS[label] }))];
+const CATEGORIES = [{ label: "All", icon: <Star {...iconProps} /> }, ...CATEGORY_NAMES.map((label) => ({ label, icon: CATEGORY_ICONS[label] }))];
 
-const CATEGORY_COLORS = {
-  Personal: { text: "text-info", bg: "bg-info-solid/10", border: "border-info-solid/25" },
-  Teamwork: { text: "text-ok", bg: "bg-ok-solid/10", border: "border-ok-solid/25" },
-  Conflict: { text: "text-bad", bg: "bg-bad-solid/10", border: "border-bad-solid/25" },
-  "Failure and learning": { text: "text-warn", bg: "bg-warn-solid/10", border: "border-warn-solid/25" },
-  Leadership: { text: "text-brand", bg: "bg-brand/10", border: "border-brand/25" },
-  "Taking responsibility": { text: "text-violet", bg: "bg-violet-solid/10", border: "border-violet-solid/25" },
-  "Deadlines and pressure": { text: "text-warn", bg: "bg-warn-solid/10", border: "border-warn-solid/25" },
-  "Unclear situations and learning": { text: "text-info", bg: "bg-info-solid/10", border: "border-info-solid/25" },
-  Feedback: { text: "text-ok", bg: "bg-ok-solid/10", border: "border-ok-solid/25" },
-  Motivation: { text: "text-violet", bg: "bg-violet-solid/10", border: "border-violet-solid/25" },
-};
+const STAR = [
+  { letter: "S", name: "Situation", desc: "What was happening" },
+  { letter: "T", name: "Task", desc: "What you had to do" },
+  { letter: "A", name: "Action", desc: "What you did" },
+  { letter: "R", name: "Result", desc: "What happened next" },
+];
+const STAR_LETTERS = STAR.map((s) => s.name);
 
-const STAR_LETTERS = ["Situation", "Task", "Action", "Result"];
+const CARD = "surface-card";
 
 const PartTitle = ({ icon, children, className }) => (
-  <div className="flex items-center gap-2 mb-3">
-    <div aria-hidden="true" className="w-6 h-6 rounded-md bg-ink/[0.06] flex items-center justify-center">{icon}</div>
-    <span className={`text-xs font-ui font-bold uppercase tracking-wider ${className}`}>{children}</span>
-  </div>
+  <p className={`mb-3 flex items-center gap-2 font-ui text-sm font-bold ${className}`}>
+    <span aria-hidden="true" className="text-base">{icon}</span>
+    {children}
+  </p>
 );
 
 const QuestionCard = ({ q }) => {
   const [open, setOpen] = useState(false);
-  const catStyle = CATEGORY_COLORS[q.category] || CATEGORY_COLORS.Personal;
+  const calm = useReducedMotion();
 
   return (
     <div
-      className={`group bg-card border rounded-2xl overflow-hidden transition-colors duration-200 shadow-md text-left
-        ${open ? "border-brand/40" : "border-ink/[0.08] hover:border-ink/[0.18]"}`}
+      className={`group overflow-hidden rounded-2xl border bg-card text-left transition-[border-color,box-shadow] duration-200 ${
+        open ? "border-ink/[0.16] shadow-[0_18px_34px_-24px_color-mix(in_srgb,var(--shadow)_45%,transparent)]" : "border-ink/[0.1] hover:border-ink/[0.2]"
+      }`}
     >
       <h3 className="m-0">
-      <button
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-        aria-controls={`answer-${q.id}`}
-        className="w-full text-left px-5 sm:px-6 py-5 flex items-start gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer"
-      >
-        <span className="flex-shrink-0 mt-0.5 w-8 h-8 rounded-lg bg-ink/[0.04] border border-ink/[0.08] flex items-center justify-center text-xs font-ui font-bold text-muted">
-          {String(q.id).padStart(2, "0")}
-        </span>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className={`text-xs font-ui font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${catStyle.text} ${catStyle.bg} ${catStyle.border}`}>
-              {q.category}
-            </span>
-          </div>
-          <span className={`block text-base font-semibold leading-snug transition-colors duration-200 ${open ? "text-brand" : "text-fg-1 group-hover:text-fg"}`}>
-            {q.question}
-          </span>
-        </div>
-
-        <motion.div
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ type: "spring", damping: 20, stiffness: 320 }}
-          className={`flex-shrink-0 mt-1 w-8 h-8 rounded-lg border flex items-center justify-center transition-colors duration-200
-            ${open ? "bg-brand/15 border-brand/30 text-brand" : "bg-ink/[0.04] border-ink/[0.08] text-muted group-hover:text-fg"}`}
+        <button
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-controls={`answer-${q.id}`}
+          className="flex w-full cursor-pointer items-start gap-4 px-5 py-5 text-left focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand sm:px-6"
         >
-          <FiChevronDown aria-hidden="true" className="text-sm" />
-        </motion.div>
-      </button>
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-ink/[0.1] font-ui text-xs font-bold text-muted">
+            {String(q.id).padStart(2, "0")}
+          </span>
+
+          <span className="min-w-0 flex-1">
+            <span className="mb-1 block font-ui text-xs font-semibold text-brand">{q.category}</span>
+            <span className={`block font-display text-base font-extrabold leading-snug tracking-tight transition-colors duration-200 sm:text-lg ${open ? "text-brand" : "text-fg"}`}>
+              {q.question}
+            </span>
+          </span>
+
+          <span className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm transition-[transform,color] duration-200 ${open ? "rotate-180 border-brand/30 bg-brand/10 text-brand" : "border-ink/[0.1] text-muted"}`}>
+            <CaretDown aria-hidden="true" />
+          </span>
+        </button>
       </h3>
 
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {open && (
           <motion.div
             key="content"
@@ -94,38 +83,38 @@ const QuestionCard = ({ q }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", damping: 30, stiffness: 350 }}
+            transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.45, bounce: 0 }, opacity: { duration: 0.25, delay: 0.05 } }}
             className="overflow-hidden"
           >
-            <div className="border-t border-ink/[0.06] px-5 sm:px-6 py-6 bg-card space-y-4">
-              <div className="rounded-xl bg-brand/[0.03] border border-brand/20 p-5">
-                <PartTitle icon={<FiZap className="text-brand text-xs" />} className="text-brand">What the interviewer is looking for</PartTitle>
-                <p className="text-fg-3 text-sm leading-relaxed">{q.checks}</p>
+            <div className="space-y-4 border-t border-ink/[0.08] px-5 py-6 sm:px-6">
+              <div className="rounded-xl border border-brand/20 bg-brand/[0.05] p-5">
+                <PartTitle icon={<Lightning weight="duotone" />} className="text-brand">What the interviewer is looking for</PartTitle>
+                <p className="text-sm leading-relaxed text-fg-3">{q.checks}</p>
               </div>
 
-              <div className="rounded-xl bg-card-hover border border-ink/[0.08] p-5">
-                <PartTitle icon={<FiList className="text-muted text-xs" />} className="text-muted">Plan your answer (STAR)</PartTitle>
-                <p className="text-xs text-muted mb-3">If the question does not ask about one past event, use the four steps as a guide and give an example from your own life.</p>
+              <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5">
+                <PartTitle icon={<ListNumbers weight="duotone" />} className="text-fg-3">Plan your answer (STAR)</PartTitle>
+                <p className="mb-3 text-sm leading-relaxed text-muted">If the question does not ask about one past event, use the four steps as a guide and give an example from your own life.</p>
                 <ol className="space-y-2">
                   {q.star.map((hint, i) => (
-                    <li key={STAR_LETTERS[i]} className="text-sm text-fg-3 leading-relaxed">
-                      <span className="font-ui font-bold text-brand mr-1.5">{STAR_LETTERS[i]}:</span>
+                    <li key={STAR_LETTERS[i]} className="text-sm leading-relaxed text-fg-3">
+                      <span className="mr-1.5 font-ui font-bold text-brand">{STAR_LETTERS[i]}:</span>
                       {hint}
                     </li>
                   ))}
                 </ol>
               </div>
 
-              <div className="rounded-xl bg-ok-solid/[0.03] border border-ok-solid/20 p-5">
-                <PartTitle icon={<FiMessageSquare className="text-ok text-xs" />} className="text-ok">Example answer (made up: use your own true story, do not copy it)</PartTitle>
-                <p className="text-fg-3 text-sm leading-relaxed italic">"{q.exampleAnswer}"</p>
+              <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5">
+                <PartTitle icon={<ChatCircleText weight="duotone" />} className="text-fg-3">Example answer (made up: use your own true story, do not copy it)</PartTitle>
+                <p className="border-l-2 border-brand/40 pl-4 text-sm italic leading-relaxed text-fg-3">"{q.exampleAnswer}"</p>
               </div>
 
-              <div className="rounded-xl bg-bad-solid/[0.03] border border-bad-solid/20 p-5">
-                <PartTitle icon={<FiAlertTriangle className="text-bad text-xs" />} className="text-bad">Mistakes to avoid</PartTitle>
-                <ul className="space-y-1.5 list-disc pl-5">
+              <div className="rounded-xl border border-bad-solid/20 bg-bad-solid/[0.04] p-5">
+                <PartTitle icon={<WarningCircle weight="duotone" />} className="text-bad">Mistakes to avoid</PartTitle>
+                <ul className="list-disc space-y-1.5 pl-5">
                   {q.mistakes.map((m) => (
-                    <li key={m} className="text-sm text-fg-3 leading-relaxed">{m}</li>
+                    <li key={m} className="text-sm leading-relaxed text-fg-3">{m}</li>
                   ))}
                 </ul>
               </div>
@@ -151,98 +140,90 @@ const Behavioral = () => {
     cat === "All" ? behavioralQuestions.length : behavioralQuestions.filter((q) => q.category === cat).length;
 
   return (
-    <div className="px-4 sm:px-6 pb-12 max-w-4xl mx-auto page-enter text-left">
-      <div className="mb-8 pt-2">
-        <div className="inline-flex items-center gap-2 text-xs font-ui text-muted mb-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-          <span className="tracking-wider font-semibold text-fg-3">
+    <div className="relative">
+      <PageBackdrop />
+      <div className="relative z-10 mx-auto max-w-4xl px-4 pb-16 text-left sm:px-6">
+        <div className="mb-10 pt-2">
+          <p className="mb-3 font-ui text-sm font-semibold text-fg-3">
             {behavioralQuestions.length} questions in {CATEGORY_NAMES.length} groups
-          </span>
+          </p>
+          <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl lg:text-6xl">
+            Behavioral <span className="text-brand">interview prep.</span>
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">
+            Behavioral questions ask about things you did in the past, like working in a team or fixing a mistake. For each question you get what the interviewer is looking for, a plan for your answer, an example and mistakes to avoid.
+          </p>
+          <Link to="/analyzer" className="group mt-4 inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">
+            Get questions picked for a specific job with the Role Analyzer
+            <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+          </Link>
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-fg tracking-[-0.035em] mb-2.5">
-          Behavioral Interview Prep
-        </h1>
-        <p className="text-muted max-w-2xl text-sm sm:text-base leading-relaxed">
-          Behavioral questions ask about things you did in the past, like working in a team or fixing a mistake. For each question you get what the interviewer is looking for, a plan for your answer, an example and mistakes to avoid.
-        </p>
-        <Link to="/analyzer" className="inline-block mt-3 text-sm text-brand hover:underline">Get questions picked for a specific job with the Role Analyzer &rarr;</Link>
-      </div>
 
-      <div className="bg-card border border-ink/[0.08] rounded-2xl p-5 sm:p-6 mb-8 shadow-xl">
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-brand/10 border border-brand/25 flex items-center justify-center">
-            <FiStar className="text-brand text-lg" />
+        {/* The STAR method */}
+        <div className={`${CARD} mb-10 p-5 sm:p-7`}>
+          <h2 className="font-display text-xl font-extrabold tracking-tight text-fg">The STAR way to answer</h2>
+          <p className="mt-2 text-sm leading-relaxed text-fg-3">
+            Tell one real, true story in four parts. Spend most of your time on the Action, the part that shows what you did. Use "I" for your own part, keep it to about one to two minutes, and add a number to the result when you can (for example, "the page loaded in half the time").
+          </p>
+          <ol className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {STAR.map((s) => (
+              <li key={s.name} className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-4">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand/25 bg-brand/10 font-display text-sm font-black text-brand">{s.letter}</span>
+                <p className="mt-3 font-display text-sm font-extrabold tracking-tight text-fg">{s.name}</p>
+                <p className="mt-0.5 text-sm leading-snug text-muted">{s.desc}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="mb-8 flex flex-col gap-4">
+          <div className="relative w-full">
+            <MagnifyingGlass aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
+            <input
+              type="text"
+              aria-label="Search questions"
+              placeholder="Search questions..."
+              className="w-full rounded-xl border border-ink/[0.1] bg-card py-3 pl-11 pr-4 font-ui text-sm text-fg placeholder-faint outline-none transition-colors hover:border-ink/[0.18] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
-          <div>
-            <p className="font-display font-bold text-fg text-base mb-1">The STAR way to answer</p>
-            <p className="text-fg-3 text-xs sm:text-sm leading-relaxed">
-              Tell one real, true story in four parts: <strong className="text-fg font-ui">Situation → Task → Action → Result</strong>. Spend most of your time on the Action, the part that shows what you did. Use "I" for your own part, keep it to about one to two minutes, and add a number to the result when you can (for example, "the page loaded in half the time").
-            </p>
-            <div className="flex flex-wrap gap-2 mt-3.5">
-              {[
-                { name: "Situation", desc: "What was happening" },
-                { name: "Task", desc: "What you had to do" },
-                { name: "Action", desc: "What you did" },
-                { name: "Result", desc: "What happened next" },
-              ].map((s) => (
-                <div key={s.name} className="px-3 py-1.5 rounded-lg bg-card-hover border border-ink/[0.08] text-xs">
-                  <span className="font-ui font-bold text-brand mr-1.5">{s.name}:</span>
-                  <span className="text-muted">{s.desc}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="flex flex-col gap-3.5 mb-8">
-        <div className="relative w-full">
-          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-muted text-sm" />
-          <input
-            type="text"
-            aria-label="Search questions"
-            placeholder="Search questions..."
-            className="w-full bg-card border border-ink/[0.08] hover:border-ink/[0.15] focus:border-brand rounded-xl py-3 pl-11 pr-4 outline-none transition-colors text-sm text-fg placeholder-faint font-ui"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {CATEGORIES.map((cat) => {
-            const isActive = selectedCategory === cat.label;
-            return (
-              <button
-                key={cat.label}
-                onClick={() => setSelectedCategory(cat.label)}
-                aria-pressed={isActive}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-ui font-semibold border transition-all duration-150 active:scale-95 cursor-pointer min-h-[44px]
-                  ${isActive
-                    ? "bg-brand text-on-brand border-brand"
-                    : "bg-card border-ink/[0.08] text-muted hover:border-ink/[0.18] hover:text-fg"
+          <div className="flex flex-wrap gap-2">
+            {CATEGORIES.map((cat) => {
+              const isActive = selectedCategory === cat.label;
+              return (
+                <button
+                  key={cat.label}
+                  onClick={() => setSelectedCategory(cat.label)}
+                  aria-pressed={isActive}
+                  className={`flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-2 font-ui text-sm font-semibold transition-colors duration-150 active:scale-[0.97] ${
+                    isActive
+                      ? "amber-specular-button border-transparent text-on-brand"
+                      : "border-ink/[0.1] bg-card text-muted hover:border-ink/[0.2] hover:text-fg"
                   }`}
-              >
-                {cat.icon}
-                <span>{cat.label}</span>
-                <span className={`text-xs font-ui font-bold px-1.5 py-0.5 rounded-md
-                  ${isActive ? "bg-scrim/20 text-on-brand" : "bg-ink/[0.06] text-muted"}`}>
-                  {totalByCategory(cat.label)}
-                </span>
-              </button>
-            );
-          })}
+                >
+                  <span className="text-base">{cat.icon}</span>
+                  <span>{cat.label}</span>
+                  <span className={`rounded-md px-1.5 py-0.5 text-xs font-bold ${isActive ? "bg-scrim/20 text-on-brand" : "bg-ink/[0.06] text-muted"}`}>
+                    {totalByCategory(cat.label)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      <p className="sr-only" aria-live="polite">{filteredQuestions.length} questions shown</p>
-      <div className="space-y-3">
-        {filteredQuestions.map((q) => (
-          <QuestionCard key={q.id} q={q} />
-        ))}
+        <p className="sr-only" aria-live="polite">{filteredQuestions.length} questions shown</p>
+        <div className="space-y-3">
+          {filteredQuestions.map((q) => (
+            <QuestionCard key={q.id} q={q} />
+          ))}
 
-        {filteredQuestions.length === 0 && (
-          <EmptyState icon={FiSearch} title="No questions match" text="Try different search words or another group." />
-        )}
+          {filteredQuestions.length === 0 && (
+            <EmptyState icon={MagnifyingGlass} title="No questions match" text="Try different search words or another group." />
+          )}
+        </div>
       </div>
     </div>
   );

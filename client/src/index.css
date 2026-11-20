@@ -793,3 +793,24 @@ input:-webkit-autofill:active {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-grad-top) 55%, transparent); }
   100% { box-shadow: 0 0 0 14px transparent; }
 }
+
+/* One card look for every page. surface-card-link adds the hover lift (uses the separate translate/scale
+   properties, so it does not fight the entrance animation, which uses transform). */
+@layer components {
+  .surface-card {
+    border-radius: 1rem;
+    border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+    background: var(--card);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 14%, transparent), 0 18px 34px -22px color-mix(in srgb, var(--shadow) 40%, transparent);
+  }
+  .surface-card-link {
+    transition: translate 200ms, scale 200ms, box-shadow 200ms;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .surface-card-link:hover {
+      translate: 0 -2px;
+      box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 16%, transparent), 0 26px 44px -20px color-mix(in srgb, var(--shadow) 55%, transparent);
+    }
+  }
+  .surface-card-link:active { scale: 0.99; }
+}

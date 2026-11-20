@@ -1,7 +1,7 @@
 import React from "react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { FiArrowRight } from "react-icons/fi";
 import { roadmaps } from "../../data/roadmaps.js";
 import { iconMap } from "./roadmapIcons";
 import PageBackdrop from "../../components/ui/PageBackdrop";
@@ -16,7 +16,7 @@ const RoadmapCard = ({ r, index }) => {
       initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 20px, 0)" }}
       animate={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
       transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.07 }}
-      className="group relative flex flex-col rounded-2xl border border-ink/[0.1] bg-card p-6 text-left shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_18px_34px_-20px_color-mix(in_srgb,var(--shadow)_42%,transparent)] transition-[transform,box-shadow] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_16%,transparent),0_26px_44px_-20px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
+      className="group relative flex flex-col surface-card p-6 text-left surface-card-link"
     >
       <div className="flex items-start justify-between gap-3">
         <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-3xl text-brand">{iconMap[r.icon]}</span>
@@ -27,10 +27,10 @@ const RoadmapCard = ({ r, index }) => {
       <p className="mt-1.5 font-ui text-sm text-fg-3">{r.duration} · {r.level}</p>
       <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{r.desc}</p>
 
-      <p className="mt-4 font-ui text-xs text-muted">{r.steps.length} steps</p>
+      <p className="mt-4 font-ui text-sm text-muted">{r.steps.length} steps</p>
       <span className="mt-4 inline-flex items-center gap-2 font-display text-sm font-bold text-brand">
         Open roadmap
-        <FiArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+        <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
       </span>
     </MotionLink>
   );

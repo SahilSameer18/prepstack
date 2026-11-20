@@ -1,60 +1,79 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaLink, FaCode, FaBriefcase, FaGraduationCap, FaUser, FaTrophy } from "react-icons/fa";
-import { FiCheck, FiX, FiExternalLink, FiCompass, FiDownload, FiArrowRight } from "react-icons/fi";
+import { User, GraduationCap, Code, Briefcase, Rocket, Trophy, Compass, DownloadSimple, ArrowRight, Check, X, ArrowUpRight } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import { InlineSpinner } from "../components/ui/Skeletons";
 import Accordion from "../components/ui/Accordion";
+import PageBackdrop from "../components/ui/PageBackdrop";
+import { useActiveHeading } from "../hooks/useActiveHeading";
 import { sections, basics, roleVariants, exampleResume, goodHabits, commonProblems, tools } from "../data/resumeGuide";
 
-// Icon and colour of each section card (the text itself is in data/resumeGuide.js)
-const SECTION_LOOK = {
-  contact: { icon: <FaUser />, color: "text-warn", bg: "bg-warn-solid/10" },
-  education: { icon: <FaGraduationCap />, color: "text-info", bg: "bg-info-solid/10" },
-  skills: { icon: <FaCode />, color: "text-ok", bg: "bg-ok-solid/10" },
-  experience: { icon: <FaBriefcase />, color: "text-violet", bg: "bg-violet-solid/10" },
-  projects: { icon: <FaCode />, color: "text-bad", bg: "bg-bad-solid/10" },
-  honors: { icon: <FaTrophy />, color: "text-cyan", bg: "bg-cyan-solid/10" },
+// One icon per section card (the text itself is in data/resumeGuide.js)
+const SECTION_ICON = {
+  contact: <User weight="duotone" aria-hidden="true" />,
+  education: <GraduationCap weight="duotone" aria-hidden="true" />,
+  skills: <Code weight="duotone" aria-hidden="true" />,
+  experience: <Briefcase weight="duotone" aria-hidden="true" />,
+  projects: <Rocket weight="duotone" aria-hidden="true" />,
+  honors: <Trophy weight="duotone" aria-hidden="true" />,
 };
 
+const OUTLINE = [
+  { id: "basics", label: "Before you write" },
+  { id: "sections", label: "Section by section" },
+  { id: "roles", label: "For a specific role" },
+  { id: "example", label: "A complete example" },
+  { id: "habits", label: "Habits and problems" },
+  { id: "tools", label: "Tools you can use" },
+];
+
+const CARD = "surface-card";
+
 const Label = ({ children, className = "text-brand" }) => (
-  <p className={`font-ui text-xs uppercase tracking-wider font-semibold mb-2 ${className}`}>{children}</p>
+  <p className={`mb-2 font-ui text-sm font-bold ${className}`}>{children}</p>
 );
 
 const Example = ({ text }) => (
-  <pre className="bg-inset/60 border border-ink/[0.08] rounded-xl p-4 text-fg-3 text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap font-ui selection:bg-brand/30">{text}</pre>
+  <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl border border-ink/[0.08] bg-ink/[0.03] p-4 font-ui text-xs leading-relaxed text-fg-3 selection:bg-brand/30">{text}</pre>
+);
+
+const SectionHeading = ({ id, title, text }) => (
+  <>
+    <h2 id={id} className="scroll-mt-24 font-display text-2xl font-extrabold tracking-tight text-fg sm:text-3xl">{title}</h2>
+    {text && <p className="mb-6 mt-1.5 text-sm leading-relaxed text-muted">{text}</p>}
+  </>
 );
 
 const SectionCard = ({ section }) => (
-  <Accordion title={section.title} look={SECTION_LOOK[section.id]}>
-    <div className="rounded-xl bg-brand/[0.04] border border-brand/20 p-4">
+  <Accordion title={section.title} icon={SECTION_ICON[section.id]}>
+    <div className="rounded-xl border border-brand/20 bg-brand/[0.05] p-4">
       <Label>What recruiters often look for</Label>
-      <p className="text-fg-3 text-sm leading-relaxed">{section.recruiterScan}</p>
+      <p className="text-sm leading-relaxed text-fg-3">{section.recruiterScan}</p>
     </div>
 
     <ul className="space-y-2.5">
       {section.tips.map((tip) => (
-        <li key={tip} className="flex items-start gap-2.5 text-fg-3 text-sm">
-          <FiCheck className="text-brand mt-1 flex-shrink-0 text-xs" />
+        <li key={tip} className="flex items-start gap-2.5 text-sm text-fg-3">
+          <Check weight="bold" className="mt-1 shrink-0 text-xs text-brand" aria-hidden="true" />
           <span>{tip}</span>
         </li>
       ))}
     </ul>
 
     <div>
-      <Label>Weak and strong</Label>
+      <Label className="text-fg-3">Weak and strong</Label>
       <div className="space-y-4">
         {section.beforeAfter.map((pair) => (
           <div key={pair.weak} className="space-y-2">
-            <div className="rounded-xl bg-bad-solid/[0.04] border border-bad-solid/15 p-3">
-              <p className="text-xs font-ui font-semibold text-bad mb-1">Weak</p>
-              <p className="text-fg-3 text-sm whitespace-pre-wrap">{pair.weak}</p>
+            <div className="rounded-xl border border-bad-solid/15 bg-bad-solid/[0.04] p-3">
+              <p className="mb-1 font-ui text-xs font-semibold text-bad">Weak</p>
+              <p className="whitespace-pre-wrap text-sm text-fg-3">{pair.weak}</p>
             </div>
-            <div className="rounded-xl bg-ok-solid/[0.04] border border-ok-solid/15 p-3">
-              <p className="text-xs font-ui font-semibold text-ok mb-1">Strong</p>
-              <p className="text-fg-2 text-sm whitespace-pre-wrap">{pair.strong}</p>
+            <div className="rounded-xl border border-ok-solid/15 bg-ok-solid/[0.04] p-3">
+              <p className="mb-1 font-ui text-xs font-semibold text-ok">Strong</p>
+              <p className="whitespace-pre-wrap text-sm text-fg-2">{pair.strong}</p>
             </div>
-            <p className="text-muted text-xs leading-relaxed">{pair.why}</p>
+            <p className="text-sm leading-relaxed text-muted">{pair.why}</p>
           </div>
         ))}
       </div>
@@ -64,8 +83,8 @@ const SectionCard = ({ section }) => (
       <Label className="text-bad">Common mistakes</Label>
       <ul className="space-y-2">
         {section.mistakes.map((m) => (
-          <li key={m} className="flex items-start gap-2.5 text-fg-3 text-sm">
-            <FiX className="text-bad mt-1 flex-shrink-0 text-xs" />
+          <li key={m} className="flex items-start gap-2.5 text-sm text-fg-3">
+            <X weight="bold" className="mt-1 shrink-0 text-xs text-bad" aria-hidden="true" />
             <span>{m}</span>
           </li>
         ))}
@@ -73,13 +92,13 @@ const SectionCard = ({ section }) => (
     </div>
 
     <div>
-      <Label>Example (invented for illustration)</Label>
+      <Label className="text-fg-3">Example (invented for illustration)</Label>
       <Example text={section.example} />
     </div>
 
-    <p className="text-muted text-xs leading-relaxed">
+    <p className="text-sm leading-relaxed text-muted">
       {section.analyzerNote}{" "}
-      <Link to="/analyzer" className="text-brand hover:underline inline-flex items-center gap-1">Check yours with the Role Analyzer <FiArrowRight className="text-xs" /></Link>
+      <Link to="/analyzer" className="inline-flex items-center gap-1 font-semibold text-brand hover:underline">Check yours with the Role Analyzer <ArrowRight className="text-xs" aria-hidden="true" /></Link>
     </p>
   </Accordion>
 );
@@ -87,21 +106,43 @@ const SectionCard = ({ section }) => (
 const BasicCard = ({ item }) => (
   <Accordion title={item.title}>
     {item.paragraphs.map((p) => (
-      <p key={p} className="text-fg-3 text-sm leading-relaxed">{p}</p>
+      <p key={p} className="text-sm leading-relaxed text-fg-3">{p}</p>
     ))}
     {item.steps && (
       <ol className="space-y-2">
         {item.steps.map((step, i) => (
           <li key={step} className="flex items-start gap-3 text-sm text-fg-3">
-            <span className="w-5 h-5 rounded-full bg-brand/10 text-brand text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/10 text-xs font-bold text-brand">{i + 1}</span>
             <span>{step}</span>
           </li>
         ))}
       </ol>
     )}
-    {item.afterSteps && <p className="text-fg-3 text-sm leading-relaxed">{item.afterSteps}</p>}
+    {item.afterSteps && <p className="text-sm leading-relaxed text-fg-3">{item.afterSteps}</p>}
   </Accordion>
 );
+
+const OnThisPage = () => {
+  const active = useActiveHeading(OUTLINE.map((o) => o.id));
+  return (
+    <nav aria-label="On this page" className="text-left">
+      <p className="mb-2 font-ui text-xs font-bold text-fg-3">On this page</p>
+      <ol className="space-y-0.5 border-l border-ink/[0.1] pl-3">
+        {OUTLINE.map((o) => (
+          <li key={o.id}>
+            <a
+              href={`#${o.id}`}
+              aria-current={active === o.id ? "location" : undefined}
+              className={`block py-1 text-sm leading-snug transition-colors ${active === o.id ? "font-semibold text-brand" : "text-muted hover:text-fg"}`}
+            >
+              {o.label}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+};
 
 const Resume = () => {
   const [downloading, setDownloading] = useState(false);
@@ -119,137 +160,145 @@ const Resume = () => {
   };
 
   return (
-    <div className="px-4 sm:px-6 pb-12 max-w-5xl mx-auto page-enter">
-      {/* Header */}
-      <div className="mb-10 pt-2">
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-fg tracking-[-0.035em] mb-3">
-          Resume guide for software roles
-        </h1>
-        <p className="text-muted text-base sm:text-lg max-w-2xl font-normal leading-relaxed">
-          A step-by-step guide to a clear resume for a software job or internship, with weak and strong examples for every section. It is advice, not a promise of results.
-        </p>
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mt-3">
-          <Link to="/analyzer" className="inline-flex items-center gap-1 text-sm text-brand hover:underline min-h-[44px]">Check your resume against a real job with the Role Analyzer <FiArrowRight className="text-xs" /></Link>
-          <button
-            type="button"
-            onClick={downloadChecklist}
-            disabled={downloading}
-            className="inline-flex items-center gap-2 text-sm text-fg-3 hover:text-fg min-h-[44px] cursor-pointer disabled:cursor-not-allowed"
-          >
-            {downloading ? <InlineSpinner size={14} color="currentColor" /> : <FiDownload />} {downloading ? "Preparing..." : "Download the one-page checklist (PDF)"}
-          </button>
-        </div>
-      </div>
-
-      {/* Principle */}
-      <div className="luxury-glass p-5 rounded-2xl mb-12 flex items-start gap-4">
-        <div className="w-9 h-9 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand flex-shrink-0 mt-0.5">
-          <FiCompass className="text-base" />
-        </div>
-        <div>
-          <h3 className="font-display text-sm sm:text-base font-bold text-fg mb-1">One idea to keep in mind</h3>
-          <p className="text-fg-3 text-xs sm:text-sm leading-relaxed">
-            Your resume is a short proof of what you can do, not your life story. Each line should show something you built or changed, using tools you can explain.
-          </p>
-        </div>
-      </div>
-
-      {/* Basics */}
-      <div className="mb-14">
-        <h2 className="font-display text-2xl font-bold text-fg tracking-tight mb-1">Before you write</h2>
-        <p className="text-muted text-xs sm:text-sm mb-6">Five short rules that apply to the whole resume.</p>
-        <div className="space-y-4">
-          {basics.map((item) => <BasicCard key={item.id} item={item} />)}
-        </div>
-      </div>
-
-      {/* Section-by-section guide */}
-      <div className="mb-14">
-        <h2 className="font-display text-2xl font-bold text-fg tracking-tight mb-1">Section by section</h2>
-        <p className="text-muted text-xs sm:text-sm mb-6">Open a section for tips, weak and strong examples, and common mistakes.</p>
-        <div className="space-y-4">
-          {sections.map((s) => <SectionCard key={s.id} section={s} />)}
-        </div>
-      </div>
-
-      {/* Role variants */}
-      <div className="mb-14">
-        <h2 className="font-display text-2xl font-bold text-fg tracking-tight mb-1">If you are aiming for a specific role</h2>
-        <p className="text-muted text-xs sm:text-sm mb-6">The same resume, with a different focus.</p>
-        <div className="grid sm:grid-cols-2 gap-4">
-          {roleVariants.map((v) => (
-            <div key={v.role} className="luxury-card rounded-2xl p-5">
-              <h3 className="font-display text-base font-bold text-fg mb-3">{v.role}</h3>
-              <p className="text-xs font-ui font-semibold text-brand mb-1">Skills section</p>
-              <p className="text-fg-3 text-sm leading-relaxed mb-3">{v.skills}</p>
-              <p className="text-xs font-ui font-semibold text-brand mb-1">Projects</p>
-              <p className="text-fg-3 text-sm leading-relaxed">{v.projects}</p>
+    <div className="relative">
+      <PageBackdrop />
+      <div className="relative z-10 mx-auto max-w-6xl px-4 pb-16 text-left sm:px-6 xl:grid xl:grid-cols-[minmax(0,1fr)_14rem] xl:gap-12">
+        <div className="min-w-0">
+          {/* Header */}
+          <div className="mb-10 pt-2">
+            <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl lg:text-6xl">
+              Resume guide for <span className="text-brand">software roles.</span>
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">
+              A step-by-step guide to a clear resume for a software job or internship, with weak and strong examples for every section. It is advice, not a promise of results.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Link to="/analyzer" className="amber-specular-button inline-flex min-h-[44px] items-center gap-2 rounded-xl px-5 text-sm font-bold">
+                Check your resume with the Role Analyzer <ArrowRight aria-hidden="true" />
+              </Link>
+              <button
+                type="button"
+                onClick={downloadChecklist}
+                disabled={downloading}
+                className="titanium-button inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl px-4 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {downloading ? <InlineSpinner size={14} color="currentColor" /> : <DownloadSimple aria-hidden="true" />} {downloading ? "Preparing..." : "One-page checklist (PDF)"}
+              </button>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Example resume */}
-      <div className="mb-14">
-        <h2 className="font-display text-2xl font-bold text-fg tracking-tight mb-1">A complete example</h2>
-        <p className="text-muted text-xs sm:text-sm mb-4">This resume is fictional. The name, college, company and numbers are all invented.</p>
-        <Accordion title="Show the example resume">
-          <Example text={exampleResume} />
-        </Accordion>
-      </div>
-
-      {/* Good habits and common problems */}
-      <div className="mb-14">
-        <h2 className="font-display text-2xl font-bold text-fg tracking-tight mb-6">Good habits and common problems</h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="luxury-card rounded-2xl p-6 border-ok-solid/20">
-            <h3 className="font-display text-base font-bold text-ok mb-4 flex items-center gap-2"><FiCheck className="text-ok text-sm" /> Good habits</h3>
-            <ul className="space-y-3">
-              {goodHabits.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-fg-3 text-xs sm:text-sm leading-relaxed">
-                  <FiCheck className="text-ok flex-shrink-0 mt-1 text-xs" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
           </div>
-          <div className="luxury-card rounded-2xl p-6 border-bad-solid/20">
-            <h3 className="font-display text-base font-bold text-bad mb-4 flex items-center gap-2"><FiX className="text-bad text-sm" /> Common problems</h3>
-            <ul className="space-y-3">
-              {commonProblems.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-fg-3 text-xs sm:text-sm leading-relaxed">
-                  <FiX className="text-bad flex-shrink-0 mt-1 text-xs" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
 
-      {/* Tools */}
-      <div className="luxury-glass p-7 sm:p-8 rounded-2xl relative overflow-hidden">
-        <div className="max-w-xl mx-auto text-center mb-8">
-          <h3 className="font-display text-xl sm:text-2xl font-bold text-fg mb-2">Tools you can use</h3>
-          <p className="text-muted text-xs sm:text-sm">Two options, not endorsements. Whichever you use, open the exported PDF and check it yourself.</p>
-        </div>
-        <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-          {tools.map((tool) => (
-            <a
-              key={tool.name}
-              href={tool.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-4 rounded-xl bg-ink/[0.02] border border-ink/[0.08] hover:border-brand/50 hover:bg-ink/[0.04] transition-all group"
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-display text-sm font-bold text-fg group-hover:text-brand transition-colors">{tool.name}</span>
-                <FiExternalLink className="text-xs text-muted group-hover:text-fg transition-colors" />
+          {/* Principle */}
+          <div className={`${CARD} mb-14 flex items-start gap-4 p-5 sm:p-6`}>
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-xl text-brand">
+              <Compass weight="duotone" aria-hidden="true" />
+            </span>
+            <div>
+              <p className="mb-1 font-display text-base font-extrabold tracking-tight text-fg">One idea to keep in mind</p>
+              <p className="text-sm leading-relaxed text-fg-3">
+                Your resume is a short proof of what you can do, not your life story. Each line should show something you built or changed, using tools you can explain.
+              </p>
+            </div>
+          </div>
+
+          {/* Basics */}
+          <div className="mb-14">
+            <SectionHeading id="basics" title="Before you write" text="Five short rules that apply to the whole resume." />
+            <div className="space-y-3">
+              {basics.map((item) => <BasicCard key={item.id} item={item} />)}
+            </div>
+          </div>
+
+          {/* Section-by-section guide */}
+          <div className="mb-14">
+            <SectionHeading id="sections" title="Section by section" text="Open a section for tips, weak and strong examples, and common mistakes." />
+            <div className="space-y-3">
+              {sections.map((s) => <SectionCard key={s.id} section={s} />)}
+            </div>
+          </div>
+
+          {/* Role variants */}
+          <div className="mb-14">
+            <SectionHeading id="roles" title="If you are aiming for a specific role" text="The same resume, with a different focus." />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {roleVariants.map((v) => (
+                <div key={v.role} className={`${CARD} p-5`}>
+                  <h3 className="mb-3 font-display text-lg font-extrabold tracking-tight text-fg">{v.role}</h3>
+                  <p className="mb-1 font-ui text-xs font-bold text-brand">Skills section</p>
+                  <p className="mb-3 text-sm leading-relaxed text-fg-3">{v.skills}</p>
+                  <p className="mb-1 font-ui text-xs font-bold text-brand">Projects</p>
+                  <p className="text-sm leading-relaxed text-fg-3">{v.projects}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Example resume */}
+          <div className="mb-14">
+            <SectionHeading id="example" title="A complete example" text="This resume is fictional. The name, college, company and numbers are all invented." />
+            <Accordion title="Show the example resume">
+              <Example text={exampleResume} />
+            </Accordion>
+          </div>
+
+          {/* Good habits and common problems */}
+          <div className="mb-14">
+            <SectionHeading id="habits" title="Good habits and common problems" />
+            <div className="mt-6 grid gap-5 md:grid-cols-2">
+              <div className={`${CARD} p-6`}>
+                <h3 className="mb-4 flex items-center gap-2 font-display text-lg font-extrabold tracking-tight text-ok"><Check weight="bold" className="text-base" aria-hidden="true" /> Good habits</h3>
+                <ul className="space-y-3">
+                  {goodHabits.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-fg-3">
+                      <Check weight="bold" className="mt-1 shrink-0 text-xs text-ok" aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <p className="text-xs text-muted leading-relaxed font-sans">{tool.desc}</p>
-            </a>
-          ))}
+              <div className={`${CARD} p-6`}>
+                <h3 className="mb-4 flex items-center gap-2 font-display text-lg font-extrabold tracking-tight text-bad"><X weight="bold" className="text-base" aria-hidden="true" /> Common problems</h3>
+                <ul className="space-y-3">
+                  {commonProblems.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-fg-3">
+                      <X weight="bold" className="mt-1 shrink-0 text-xs text-bad" aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Tools */}
+          <div className={`${CARD} p-6 sm:p-8`}>
+            <h2 id="tools" className="scroll-mt-24 font-display text-2xl font-extrabold tracking-tight text-fg">Tools you can use</h2>
+            <p className="mb-6 mt-1.5 text-sm text-muted">Two options, not endorsements. Whichever you use, open the exported PDF and check it yourself.</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {tools.map((tool) => (
+                <a
+                  key={tool.name}
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-4 transition-colors hover:border-ink/[0.22]"
+                >
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className="font-display text-sm font-bold text-fg transition-colors group-hover:text-brand">{tool.name}</span>
+                    <ArrowUpRight className="text-sm text-muted transition-colors group-hover:text-brand" aria-hidden="true" />
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted">{tool.desc}</p>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
+
+        {/* Wide screens: the parts of the page, with the one being read highlighted */}
+        <aside className="hidden xl:block">
+          <div className="sticky top-24 pt-14">
+            <OnThisPage />
+          </div>
+        </aside>
       </div>
     </div>
   );

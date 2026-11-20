@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { ArrowLeft, ArrowRight, ArrowSquareOut, CaretDown, Check, Clock, Flag, Wrench } from "@phosphor-icons/react";
 import { useParams, useLocation, Link, Navigate } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { FiArrowLeft, FiClock, FiCheck, FiExternalLink, FiChevronDown, FiFlag, FiTool, FiArrowRight } from "react-icons/fi";
 import { roadmaps } from "../../data/roadmaps.js";
 import { iconMap } from "./roadmapIcons";
 import { practiceLink, projectLink } from "./roadmapLinks";
@@ -21,13 +21,13 @@ const StepExtras = ({ step }) => (
     )}
     {(step.time || step.topics) && (
       <div className="rounded-xl border border-ink/[0.08] bg-ink/[0.025] p-4">
-        {step.time && <p className="mb-3 flex items-center gap-1.5 font-ui text-sm font-semibold text-fg-3"><FiClock aria-hidden="true" /> {step.time}</p>}
+        {step.time && <p className="mb-3 flex items-center gap-1.5 font-ui text-sm font-semibold text-fg-3"><Clock aria-hidden="true" /> {step.time}</p>}
         {step.topics && (
           <>
             <p className={`${LABEL} text-fg-3`}>What you will learn</p>
             <ul className="grid gap-x-5 gap-y-2 sm:grid-cols-2">
               {step.topics.map((topic) => (
-                <li key={topic} className="flex items-start gap-2.5 text-base leading-snug text-fg-2"><FiCheck className="mt-1 shrink-0 text-brand" aria-hidden="true" />{topic}</li>
+                <li key={topic} className="flex items-start gap-2.5 text-base leading-snug text-fg-2"><Check className="mt-1 shrink-0 text-brand" aria-hidden="true" />{topic}</li>
               ))}
             </ul>
           </>
@@ -42,7 +42,7 @@ const StepExtras = ({ step }) => (
             const l = practiceLink(entry);
             return (
               <Link key={entry.target} to={l.path} className="titanium-button inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-3.5 text-sm font-medium">
-                {l.label} <FiArrowRight className="text-xs" aria-hidden="true" />
+                {l.label} <ArrowRight className="text-xs" aria-hidden="true" />
               </Link>
             );
           })}
@@ -51,7 +51,7 @@ const StepExtras = ({ step }) => (
     )}
     {step.checkpoint && (
       <div className="rounded-xl border border-ink/[0.08] bg-ink/[0.025] p-4">
-        <p className={`${LABEL} flex items-center gap-1.5 text-fg-3`}><FiFlag aria-hidden="true" /> Checkpoint</p>
+        <p className={`${LABEL} flex items-center gap-1.5 text-fg-3`}><Flag aria-hidden="true" /> Checkpoint</p>
         <ul className="space-y-2">
           {step.checkpoint.map((c) => <li key={c} className="text-base leading-relaxed text-fg-2">{c}</li>)}
         </ul>
@@ -59,7 +59,7 @@ const StepExtras = ({ step }) => (
     )}
     {step.project && (
       <div className="rounded-xl border border-ink/[0.08] bg-ink/[0.025] p-4">
-        <p className={`${LABEL} flex items-center gap-1.5 text-fg-3`}><FiTool aria-hidden="true" /> Mini-project</p>
+        <p className={`${LABEL} flex items-center gap-1.5 text-fg-3`}><Wrench aria-hidden="true" /> Mini-project</p>
         <p className="mb-4 text-base leading-relaxed text-fg-2">{step.project.brief}</p>
         <Link to={projectLink(step.project)} className="amber-specular-button inline-flex min-h-[44px] items-center gap-2 rounded-xl px-4 text-sm font-bold">Generate an idea with {step.project.stack}</Link>
       </div>
@@ -124,7 +124,7 @@ const RoadmapDetail = () => {
       <div className="relative z-10 mx-auto max-w-6xl px-4 pb-16 text-left sm:px-6 xl:grid xl:grid-cols-[minmax(0,1fr)_15rem] xl:gap-12">
         <div className="min-w-0">
           <Link to="/roadmaps" className="group mb-4 inline-flex min-h-[44px] items-center gap-2 text-sm text-muted transition-colors hover:text-fg">
-            <FiArrowLeft className="transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
+            <ArrowLeft className="transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
             Back to roadmaps
           </Link>
 
@@ -167,10 +167,10 @@ const RoadmapDetail = () => {
                       <span className="min-w-0">
                         <span className="block font-display text-lg font-extrabold tracking-tight text-fg">{detail.title}</span>
                         <span className="mt-1 block text-sm font-normal leading-relaxed text-muted">{detail.desc}</span>
-                        {detail.time && !isOpen && <span className="mt-2 flex items-center gap-1.5 font-ui text-xs font-medium text-fg-3"><FiClock aria-hidden="true" /> {detail.time}</span>}
+                        {detail.time && !isOpen && <span className="mt-2 flex items-center gap-1.5 font-ui text-xs font-medium text-fg-3"><Clock aria-hidden="true" /> {detail.time}</span>}
                       </span>
                       <span className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm transition-[transform,color] duration-200 ${isOpen ? "rotate-180 border-brand/30 bg-brand/10 text-brand" : "border-ink/[0.1] text-muted"}`}>
-                        <FiChevronDown aria-hidden="true" />
+                        <CaretDown aria-hidden="true" />
                       </span>
                     </button>
                   </h3>
@@ -200,7 +200,7 @@ const RoadmapDetail = () => {
                                 rel="noopener noreferrer"
                                 className="group/res flex min-h-[44px] items-start gap-2.5 rounded-xl border border-ink/[0.1] bg-card p-3 transition-colors hover:border-ink/[0.22]"
                               >
-                                <FiExternalLink className="mt-0.5 shrink-0 text-sm text-brand" aria-hidden="true" />
+                                <ArrowSquareOut className="mt-0.5 shrink-0 text-sm text-brand" aria-hidden="true" />
                                 <span className="text-sm font-medium leading-snug text-fg-3 transition-colors group-hover/res:text-fg">{res.label}</span>
                               </a>
                             ))}

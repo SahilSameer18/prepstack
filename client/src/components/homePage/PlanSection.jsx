@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { FiCheck } from "react-icons/fi";
-import { CalendarCheck } from "@phosphor-icons/react";
+import { CalendarCheck, Check } from "@phosphor-icons/react";
 
 const POINTS = [
   "Tell it your goal, your weeks and your hours. It builds a day-by-day schedule.",
@@ -29,7 +28,7 @@ const PlanSection = () => (
         {POINTS.map((point) => (
           <li key={point} className="flex items-start gap-3 text-sm sm:text-base text-fg-3">
             <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/15 text-xs text-brand">
-              <FiCheck aria-hidden="true" />
+              <Check aria-hidden="true" />
             </span>
             {point}
           </li>

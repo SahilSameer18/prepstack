@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { FaSearch } from "react-icons/fa";
-import { FiArrowRight } from "react-icons/fi";
-import { BookOpenText, CheckSquare, CodeBlock, Lightning, Stack, Star, Target } from "@phosphor-icons/react";
+import { ArrowRight, BookOpenText, CheckSquare, CodeBlock, Lightning, MagnifyingGlass, Stack, Star, Target } from "@phosphor-icons/react";
 import { dsaSheet } from "../../api/services/sheetService";
 import { SkeletonCard } from "../../components/ui/Skeletons";
 import { EmptyState } from "../../components/ui/StateComponents";
 import PageBackdrop from "../../components/ui/PageBackdrop";
 import { useAuth } from "../../hooks/useAuth";
+import { useRevealed } from "../../hooks/useRevealed";
 import { getDashboardSummary } from "../../api/services/userService";
 
 const MotionLink = motion.create(Link);
@@ -51,15 +50,17 @@ const SHEET_METADATA_MAP = {
 
 const SheetCard = ({ sheet, index, progress }) => {
   const calm = useReducedMotion();
+  const ref = useRef(null);
+  const seen = useRevealed(ref);
   const pct = progress && progress.total > 0 ? Math.round((progress.solved / progress.total) * 100) : 0;
   return (
     <MotionLink
       to={`/dsa/${sheet.slug}`}
       initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 20px, 0)" }}
-      whileInView={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
-      viewport={{ once: true, amount: 0.2 }}
+      ref={ref}
+      animate={seen ? { opacity: 1, transform: "translate3d(0, 0, 0)" } : undefined}
       transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: (index % 2) * 0.07 }}
-      className="group relative flex flex-col rounded-2xl border border-ink/[0.1] bg-card p-6 text-left shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_18px_34px_-20px_color-mix(in_srgb,var(--shadow)_42%,transparent)] transition-[transform,box-shadow] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_16%,transparent),0_26px_44px_-20px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
+      className="group relative flex flex-col surface-card p-6 text-left surface-card-link"
     >
       <div className="flex items-start justify-between gap-3">
         <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-3xl text-brand">
@@ -86,7 +87,7 @@ const SheetCard = ({ sheet, index, progress }) => {
 
       {progress && (
         <div className="mt-5">
-          <div className="mb-1.5 flex items-center justify-between font-ui text-xs text-muted">
+          <div className="mb-1.5 flex items-center justify-between font-ui text-sm text-muted">
             <span>{progress.solved} of {progress.total} solved</span>
             <span>{pct}%</span>
           </div>
@@ -98,7 +99,7 @@ const SheetCard = ({ sheet, index, progress }) => {
 
       <span className="mt-6 inline-flex items-center gap-2 font-display text-sm font-bold text-brand">
         Open sheet
-        <FiArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+        <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
       </span>
     </MotionLink>
   );
@@ -222,7 +223,7 @@ const Sheets = () => {
         {/* ── SEARCH & FILTER CONTROLS ── */}
         <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center">
           <div className="relative w-full md:w-80">
-            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-muted text-sm" />
+            <MagnifyingGlass className="absolute left-4 top-1/2 -translate-y-1/2 text-muted text-sm" />
             <input
               type="text"
               placeholder="Search sheets or patterns"
@@ -282,7 +283,7 @@ const Sheets = () => {
                 {filtered.map((sheet, i) => <SheetCard key={sheet.slug} sheet={sheet} index={i} progress={progress[sheet.slug]} />)}
               </div>
             ) : (
-              <EmptyState icon={FaSearch} title="No matching sheets found" text="Try searching for a different pattern name or topic." />
+              <EmptyState icon={MagnifyingGlass} title="No matching sheets found" text="Try searching for a different pattern name or topic." />
             )}
           </div>
         )}

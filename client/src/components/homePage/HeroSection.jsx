@@ -1,7 +1,6 @@
 import React from "react";
+import { ArrowRight, CalendarBlank, Shield } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
-import { FaArrowRight } from "react-icons/fa";
-import { FiCalendar, FiShield } from "react-icons/fi";
 import { useAuth } from "../../hooks/useAuth";
 import HeroProductShowcase from "./HeroProductShowcase";
 import Reveal from "../ui/Reveal";
@@ -34,7 +33,7 @@ const HeroSection = () => {
               className="amber-specular-button inline-flex items-center gap-2 font-bold px-6 py-3.5 rounded-xl text-xs sm:text-sm font-display tracking-tight cursor-pointer select-none group"
             >
               Build my study plan{" "}
-              <FaArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-1" />
+              <ArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-1" />
             </Link>
 
             {user ? (
@@ -60,7 +59,7 @@ const HeroSection = () => {
           {/* Target Placement Ticker */}
           <div className="pt-2 flex flex-wrap items-center gap-2 font-ui text-xs text-muted">
             <span className="text-fg-3 font-semibold flex items-center gap-1">
-              <FiShield className="text-brand" /> What's covered:
+              <Shield className="text-brand" /> What's covered:
             </span>
             <span className="text-fg-3 font-medium">Blind 75 · NeetCode 150 · Striver SDE · Low-Level CS</span>
           </div>
@@ -86,7 +85,7 @@ const HeroSection = () => {
           </Reveal>
           <Reveal onLoad spring y={-14} delay={0.7} className="hidden xl:block absolute -top-7 -right-5 w-56 rounded-2xl border border-ink/[0.1] bg-card p-4 shadow-[0_2px_4px_color-mix(in_srgb,var(--shadow)_18%,transparent),0_28px_50px_-18px_color-mix(in_srgb,var(--shadow)_75%,transparent)]">
             <div className="flex items-center justify-between text-xs text-muted">
-              <span className="flex items-center gap-1.5 font-semibold text-fg-3"><FiCalendar className="text-brand" /> Today</span>
+              <span className="flex items-center gap-1.5 font-semibold text-fg-3"><CalendarBlank className="text-brand" /> Today</span>
               <span className="rounded-md bg-ink/[0.06] px-1.5 py-0.5">Example</span>
             </div>
             <p className="mt-2 font-display text-sm font-bold text-fg">3 tasks, about 1 h 20 min</p>

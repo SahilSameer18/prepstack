@@ -1,7 +1,6 @@
 import { useState } from "react";
+import { Check, Eye, EyeSlash, GoogleLogo, Lock } from "@phosphor-icons/react";
 import { AnimatePresence } from "framer-motion";
-import { FiLock, FiCheck, FiShield, FiEye, FiEyeOff } from "react-icons/fi";
-import { FaGoogle } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../../../hooks/useAuth";
@@ -103,21 +102,18 @@ const SecurityCard = () => {
   };
 
   return (
-    <div className="titanium-card rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
-      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />
+    <div className="surface-card p-6 sm:p-8 space-y-6">
       <div className="pb-4 border-b border-ink/[0.06]">
-        <h2 className="font-display text-lg font-bold text-fg flex items-center gap-2">
-          <FiShield className="text-brand" /> Sign-in & security
-        </h2>
-        <p className="text-xs font-ui text-muted mt-1">Link your Google account and manage your password.</p>
+        <h2 className="font-display text-xl font-extrabold tracking-tight text-fg">Sign-in and security</h2>
+        <p className="text-sm font-ui text-muted mt-1">Link your Google account and manage your password.</p>
       </div>
 
       <div className="space-y-4">
         {/* Google Provider Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-card-hover gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-ink/[0.1] bg-ink/[0.02] gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-xl bg-ink/[0.04] flex items-center justify-center text-fg-3 text-lg">
-              <FaGoogle />
+              <GoogleLogo />
             </div>
             <div>
               <p className="text-sm font-semibold text-fg">Google account</p>
@@ -129,7 +125,7 @@ const SecurityCard = () => {
 
           {isGoogleLinked ? (
             <div className="text-xs font-ui font-semibold px-3 py-1 rounded-full bg-ok-solid/10 text-ok border border-ok-solid/25 self-start sm:self-auto flex items-center gap-1.5">
-              <FiCheck /> Linked & Verified
+              <Check /> Linked & Verified
             </div>
           ) : (
             <div className="self-start sm:self-auto" style={{ colorScheme: "light" }}>
@@ -144,11 +140,11 @@ const SecurityCard = () => {
         </div>
 
         {/* Password Row */}
-        <div className="p-4 rounded-xl bg-card-hover space-y-4">
+        <div className="p-4 rounded-xl border border-ink/[0.1] bg-ink/[0.02] space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
               <div className="w-10 h-10 rounded-xl bg-ink/[0.04] flex items-center justify-center text-fg-3 text-lg">
-                <FiLock />
+                <Lock />
               </div>
               <div>
                 <p className="text-sm font-semibold text-fg">Account Password</p>
@@ -198,7 +194,7 @@ const SecurityCard = () => {
                         onClick={() => setShowCurrentPw(!showCurrentPw)}
                         className="absolute right-3 text-muted hover:text-fg cursor-pointer"
                       >
-                        {showCurrentPw ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
+                        {showCurrentPw ? <EyeSlash className="text-sm" /> : <Eye className="text-sm" />}
                       </button>
                     </div>
                   </div>
@@ -224,7 +220,7 @@ const SecurityCard = () => {
                         onClick={() => setShowNewPw(!showNewPw)}
                         className="absolute right-3 text-muted hover:text-fg cursor-pointer"
                       >
-                        {showNewPw ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
+                        {showNewPw ? <EyeSlash className="text-sm" /> : <Eye className="text-sm" />}
                       </button>
                     </div>
                   </div>

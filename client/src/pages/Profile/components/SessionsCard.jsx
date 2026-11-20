@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FiMonitor, FiSmartphone, FiTablet, FiRefreshCw, FiTrash2 } from "react-icons/fi";
+import { ArrowsClockwise, DeviceMobile, DeviceTablet, Monitor, Trash } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
@@ -71,23 +71,19 @@ const SessionsCard = () => {
   };
 
   return (
-    <div className="titanium-card rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-xl">
-      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />
+    <div className="surface-card p-6 sm:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-ink/[0.06]">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-brand/10 text-brand flex items-center justify-center text-base border border-brand/20">
-            <FiMonitor />
-          </div>
           <div>
-            <h3 className="font-display text-sm font-bold text-fg flex items-center gap-2">
+            <h2 className="font-display text-xl font-extrabold tracking-tight text-fg flex flex-wrap items-center gap-2">
               Devices signed in to your account
               {sessions.length > 0 && (
                 <span className="text-xs font-ui px-2 py-0.5 rounded-full bg-ink/[0.06] text-fg-3 border border-ink/[0.08]">
                   {sessions.length} {sessions.length === 1 ? 'device' : 'devices'}
                 </span>
               )}
-            </h3>
-            <p className="text-xs font-ui text-muted mt-0.5">
+            </h2>
+            <p className="text-sm font-ui text-muted mt-1">
               Sign out any device you don't use or recognise.
             </p>
           </div>
@@ -100,7 +96,7 @@ const SessionsCard = () => {
           className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-ink/[0.04] text-xs font-ui font-medium text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 min-h-[44px]"
           title="Refresh active sessions"
         >
-          <FiRefreshCw className={loadingSessions ? "animate-spin text-brand" : "text-muted"} />
+          <ArrowsClockwise className={loadingSessions ? "animate-spin text-brand" : "text-muted"} />
           <span>{loadingSessions ? "Refreshing..." : "Refresh"}</span>
         </button>
       </div>
@@ -135,8 +131,8 @@ const SessionsCard = () => {
                 key={session.id}
                 className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border transition-colors ${
                   session.isCurrent
-                    ? "bg-brand/[0.02] border-brand/30"
-                    : "bg-card-hover border-ink/[0.08] hover:border-ink/[0.15]"
+                    ? "bg-brand/[0.04] border-brand/30"
+                    : "bg-card border-ink/[0.1] hover:border-ink/[0.15]"
                 }`}
               >
                 <div className="flex items-start sm:items-center gap-3.5 min-w-0">
@@ -145,7 +141,7 @@ const SessionsCard = () => {
                       ? "bg-ok-solid/10 text-ok border border-ok-solid/25"
                       : "bg-ink/[0.04] text-muted border border-ink/[0.08]"
                   }`}>
-                    {isTablet ? <FiTablet /> : isMobile ? <FiSmartphone /> : <FiMonitor />}
+                    {isTablet ? <DeviceTablet /> : isMobile ? <DeviceMobile /> : <Monitor />}
                   </div>
 
                   <div className="min-w-0">
@@ -165,7 +161,7 @@ const SessionsCard = () => {
                       )}
                     </div>
 
-                    <p className="text-xs font-ui text-muted mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+                    <p className="text-sm font-ui text-muted mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
                       <span className="text-fg-3">IP: {session.ip}</span>
                       <span className="text-muted">•</span>
                       <span>{formatRelativeTime(session.lastActive)}</span>
@@ -188,7 +184,7 @@ const SessionsCard = () => {
                       {revokingSessionId === session.id ? (
                         <InlineSpinner size={12} color="var(--bad)" />
                       ) : (
-                        <FiTrash2 className="text-xs" />
+                        <Trash className="text-xs" />
                       )}
                       {revokingSessionId === session.id ? "Signing out..." : "Sign out device"}
                     </button>

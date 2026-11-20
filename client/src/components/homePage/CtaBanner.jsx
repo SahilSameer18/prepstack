@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiArrowRight } from "react-icons/fi";
-import { Trophy } from "@phosphor-icons/react";
+import { ArrowRight, Trophy } from "@phosphor-icons/react";
 import { useAuth } from "../../hooks/useAuth";
 
 const CtaBanner = () => {
@@ -24,7 +23,7 @@ const CtaBanner = () => {
         className="amber-specular-button group inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold"
       >
         {user ? "Open My plan" : "Get started free"}
-        <FiArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+        <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
       </Link>
     </section>
   );

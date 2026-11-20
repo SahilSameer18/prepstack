@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
-import { FaChevronDown, FaExternalLinkAlt } from 'react-icons/fa';
-import { Article, CheckCircle, Circle, YoutubeLogo } from '@phosphor-icons/react';
-import { FiFileText } from 'react-icons/fi';
+import { ArrowSquareOut, Article, CaretDown, CheckCircle, Circle, FileText, YoutubeLogo } from "@phosphor-icons/react";
 import ProblemNoteDrawer from './ProblemNoteDrawer';
 
 // ── Platform icon resolver ─────────────────────────────────────────────────
@@ -17,7 +15,7 @@ const getPlatformIcon = (link) => {
   if (!link) return null;
   const l = link.toLowerCase();
   const found = PLATFORMS.find(([host]) => l.includes(host)) || (l.includes('tuf') ? PLATFORMS[3] : null);
-  if (!found) return <FaExternalLinkAlt className="text-muted text-xs" />;
+  if (!found) return <ArrowSquareOut className="text-muted text-xs" />;
   return <span className="font-ui text-xs font-semibold text-fg-3">{found[1]}</span>;
 };
 
@@ -151,14 +149,14 @@ const ProblemRow = ({
                 : 'bg-ink/[0.04] border-ink/[0.08] text-muted hover:text-fg-2 hover:border-ink/15'
             }`}
           >
-            <FiFileText className={`text-xs ${hasNote ? 'text-brand' : 'text-muted'}`} />
+            <FileText className={`text-xs ${hasNote ? 'text-brand' : 'text-muted'}`} />
             <span className="hidden sm:inline">{hasNote ? 'Notes' : '+ Note'}</span>
             <motion.span
               animate={{ rotate: isDrawerOpen ? 180 : 0 }}
               transition={{ type: "spring", damping: 20, stiffness: 320 }}
               className="text-xs"
             >
-              <FaChevronDown />
+              <CaretDown />
             </motion.span>
           </button>
 

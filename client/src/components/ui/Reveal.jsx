@@ -1,5 +1,6 @@
-import { createElement } from "react";
+import { useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { useRevealed } from "../../hooks/useRevealed";
 
 const EASE = [0.22, 1, 0.36, 1];
 const at = (x, y) => `translate3d(${x}px, ${y}px, 0)`;
@@ -9,19 +10,23 @@ const at = (x, y) => `translate3d(${x}px, ${y}px, 0)`;
 // The full transform string (not the x/y shorthands) keeps it on the GPU while the page is busy.
 export default function Reveal({ as = "div", children, delay = 0, x = 0, y = 18, onLoad = false, spring = false, className }) {
   const calm = useReducedMotion();
+  const ref = useRef(null);
+  const seen = useRevealed(ref);
   const shown = { opacity: 1, transform: at(0, 0) };
   let transition = { duration: 0.45, ease: EASE, delay };
   if (onLoad) transition = { duration: 0.6, ease: EASE, delay };
   if (spring) transition = { type: "spring", duration: 0.7, bounce: 0.15, delay };
   if (calm) transition = { duration: 0.2, delay: 0 };
-  return createElement(
-    motion[as],
-    {
-      className,
-      initial: calm ? { opacity: 0 } : { opacity: 0, transform: at(x, y) },
-      ...(onLoad ? { animate: shown } : { whileInView: shown, viewport: { once: true, amount: 0.15 } }),
-      transition,
-    },
-    children,
+  const Tag = motion[as];
+  return (
+    <Tag
+      ref={ref}
+      className={className}
+      initial={calm ? { opacity: 0 } : { opacity: 0, transform: at(x, y) }}
+      animate={onLoad || seen ? shown : undefined}
+      transition={transition}
+    >
+      {children}
+    </Tag>
   );
 }

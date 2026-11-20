@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiArrowRight, FiExternalLink } from 'react-icons/fi';
+import { ArrowRight, ArrowSquareOut } from "@phosphor-icons/react";
 import ProgressRing from './ProgressRing';
 
 const LEVELS = [
@@ -18,7 +18,7 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
       {hasNext ? (
         <button type="button" onClick={onContinue} className="amber-specular-button group inline-flex min-h-[44px] items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold">
           {totalSolvedCount > 0 ? 'Continue where you left off' : 'Start the first problem'}
-          <FiArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+          <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
         </button>
       ) : (
         totalProblems > 0 && <span className="text-sm font-semibold text-ok">You have solved every problem on this sheet.</span>
@@ -29,12 +29,12 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
       {meta.sourceUrl && meta.sourceUrl !== '#' && (
         <a href={meta.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center gap-1.5 px-1 text-sm text-muted transition-colors hover:text-fg">
           Source: {meta.sourceName}
-          <FiExternalLink aria-hidden="true" className="text-xs" />
+          <ArrowSquareOut aria-hidden="true" className="text-xs" />
         </a>
       )}
     </div>
 
-    <div className="mt-8 flex flex-col gap-6 rounded-2xl border border-ink/[0.1] bg-card p-5 sm:flex-row sm:items-center sm:p-6 shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_18px_34px_-22px_color-mix(in_srgb,var(--shadow)_42%,transparent)]">
+    <div className="mt-8 flex flex-col gap-6 surface-card p-5 sm:flex-row sm:items-center sm:p-6">
       <div className="flex justify-center sm:justify-start">
         <ProgressRing percentage={progressPercentage} solved={totalSolvedCount} total={totalProblems} />
       </div>

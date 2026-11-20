@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { FiSearch, FiArrowRight } from "react-icons/fi";
-import { Blueprint, Cpu, Cube, Database, ShareNetwork } from "@phosphor-icons/react";
+import { ArrowRight, Blueprint, Cpu, Cube, Database, MagnifyingGlass, ShareNetwork } from "@phosphor-icons/react";
 import { useNotesSummary } from '../../hooks/useNotes';
 import { SkeletonStat } from '../../components/ui/Skeletons';
 import { formatDate } from '../../utils/formatDate';
@@ -32,7 +31,7 @@ const NoteCard = ({ s, stats, index }) => {
       initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 20px, 0)" }}
       animate={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
       transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.07 }}
-      className="group relative flex flex-col rounded-2xl border border-ink/[0.1] bg-card p-6 text-left shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_18px_34px_-20px_color-mix(in_srgb,var(--shadow)_42%,transparent)] transition-[transform,box-shadow] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_16%,transparent),0_26px_44px_-20px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
+      className="group relative flex flex-col surface-card p-6 text-left surface-card-link"
     >
       <div className="flex items-start justify-between gap-3">
         <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-3xl text-brand">{s.icon}</span>
@@ -58,7 +57,7 @@ const NoteCard = ({ s, stats, index }) => {
 
       <span className="mt-5 inline-flex items-center gap-2 font-display text-sm font-bold text-brand">
         Study notes
-        <FiArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+        <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
       </span>
     </MotionLink>
   );
@@ -88,7 +87,7 @@ const Notes = () => {
 
         {/* ── SEARCH ── */}
         <div className="relative mb-10 w-full md:w-96">
-          <FiSearch aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
+          <MagnifyingGlass aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
           <input
             type="text"
             placeholder="Search subjects"
@@ -106,7 +105,7 @@ const Notes = () => {
           ))}
 
           {filtered.length === 0 && (
-            <EmptyState className="col-span-full" icon={FiSearch} title="No subjects found" text="Try a different search query." />
+            <EmptyState className="col-span-full" icon={MagnifyingGlass} title="No subjects found" text="Try a different search query." />
           )}
         </div>
       </div>

@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { ArrowLeft, CaretDown, MagnifyingGlass } from "@phosphor-icons/react";
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { getSheetBySlug, getSheetProgress, toggleProblem } from '../../api/services/sheetService';
-import { FaChevronDown, FaSearch } from 'react-icons/fa';
-import { FiArrowLeft } from 'react-icons/fi';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
 import { SkeletonSheetDetail } from '../../components/ui/Skeletons';
 import PageBackdrop from '../../components/ui/PageBackdrop';
@@ -177,7 +176,7 @@ const SheetsDetail = () => {
       <PageBackdrop />
       <div className="relative z-10 mx-auto max-w-5xl px-4 md:px-6 pb-12 pt-2 text-fg">
         <Link to="/dsa" className="group mb-3 inline-flex min-h-[44px] items-center gap-2 text-sm text-muted transition-colors hover:text-fg">
-          <FiArrowLeft className="transition-transform group-hover:-translate-x-0.5" />
+          <ArrowLeft className="transition-transform group-hover:-translate-x-0.5" />
           Back to sheets
         </Link>
 
@@ -224,7 +223,7 @@ const SheetsDetail = () => {
               Hide solved
             </button>
             <div className="relative ml-auto w-full sm:w-56">
-              <FaSearch aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-muted" />
+              <MagnifyingGlass aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-muted" />
               <input
                 type="text"
                 value={query}
@@ -284,7 +283,7 @@ const SheetsDetail = () => {
                       transition={{ type: 'spring', damping: 20, stiffness: 320 }}
                       className="shrink-0 text-xs text-muted"
                     >
-                      <FaChevronDown />
+                      <CaretDown />
                     </motion.span>
                   )}
                 </button>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiLogOut, FiShield } from "react-icons/fi";
+import { Shield, SignOut } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
@@ -41,12 +41,10 @@ const SignOutCard = () => {
   };
 
   return (
-    <div className="bg-card border border-ink/[0.08] rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
+    <div className="surface-card p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
       <div>
-        <h3 className="font-display text-sm font-bold text-fg flex items-center gap-2">
-          <FiLogOut className="text-brand" /> Sign out
-        </h3>
-        <p className="text-xs font-ui text-muted mt-0.5">Sign out here, or sign out of every device at once.</p>
+        <h2 className="font-display text-xl font-extrabold tracking-tight text-fg">Sign out</h2>
+        <p className="text-sm font-ui text-muted mt-1">Sign out here, or sign out of every device at once.</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -55,7 +53,7 @@ const SignOutCard = () => {
           disabled={isLoggingOut || isLoggingOutAll}
           className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-ink/[0.04] text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors font-ui font-medium text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50 min-h-[44px]"
         >
-          {isLoggingOut ? <InlineSpinner size={14} color="var(--fg)" /> : <FiLogOut />}
+          {isLoggingOut ? <InlineSpinner size={14} color="var(--fg)" /> : <SignOut />}
           {isLoggingOut ? "Signing out..." : "Sign Out (This Device)"}
         </button>
 
@@ -64,7 +62,7 @@ const SignOutCard = () => {
           disabled={isLoggingOut || isLoggingOutAll}
           className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-bad-solid/10 border border-bad-solid/25 text-bad hover:bg-bad-solid/20 hover:border-bad-solid/40 transition-colors font-ui font-semibold text-xs cursor-pointer flex-1 sm:flex-initial disabled:opacity-50 min-h-[44px]"
         >
-          {isLoggingOutAll ? <InlineSpinner size={14} color="var(--bad)" /> : <FiShield />}
+          {isLoggingOutAll ? <InlineSpinner size={14} color="var(--bad)" /> : <Shield />}
           {isLoggingOutAll ? "Revoking all..." : "Sign Out All Devices"}
         </button>
       </div>
