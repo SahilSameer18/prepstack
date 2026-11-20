@@ -1,49 +1,27 @@
 import { motion } from 'framer-motion';
-import { FaCheckCircle, FaRegCircle, FaChevronDown, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaChevronDown, FaExternalLinkAlt } from 'react-icons/fa';
+import { Article, CheckCircle, Circle, YoutubeLogo } from '@phosphor-icons/react';
 import { FiFileText } from 'react-icons/fi';
 import ProblemNoteDrawer from './ProblemNoteDrawer';
 
 // ── Platform icon resolver ─────────────────────────────────────────────────
+const PLATFORMS = [
+  ['leetcode.com', 'LC'],
+  ['geeksforgeeks.org', 'GFG'],
+  ['codingninjas.com', 'CN'],
+  ['takeuforward.org', 'TUF'],
+  ['interviewbit.com', 'IB'],
+];
+
 const getPlatformIcon = (link) => {
   if (!link) return null;
   const l = link.toLowerCase();
-  if (l.includes('leetcode.com')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-ui font-semibold bg-brand/10 text-brand border border-brand/20">
-        LC
-      </span>
-    );
-  }
-  if (l.includes('geeksforgeeks.org')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-ui font-semibold bg-ok-solid/10 text-ok border border-ok-solid/20">
-        GFG
-      </span>
-    );
-  }
-  if (l.includes('codingninjas.com')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-ui font-semibold bg-warn-solid/10 text-warn border border-warn-solid/20">
-        CN
-      </span>
-    );
-  }
-  if (l.includes('takeuforward.org') || l.includes('tuf')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-ui font-semibold bg-bad-solid/10 text-bad border border-bad-solid/20">
-        TUF
-      </span>
-    );
-  }
-  if (l.includes('interviewbit.com')) {
-    return (
-      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-ui font-semibold bg-info-solid/10 text-info border border-info-solid/20">
-        IB
-      </span>
-    );
-  }
-  return <FaExternalLinkAlt className="text-muted text-xs" />;
+  const found = PLATFORMS.find(([host]) => l.includes(host)) || (l.includes('tuf') ? PLATFORMS[3] : null);
+  if (!found) return <FaExternalLinkAlt className="text-muted text-xs" />;
+  return <span className="font-ui text-xs font-semibold text-fg-3">{found[1]}</span>;
 };
+
+const LEARN_LINK = 'inline-flex min-h-[32px] items-center gap-1.5 rounded-lg border border-ink/[0.1] bg-card px-2 font-ui text-xs font-medium text-fg-3 transition-colors hover:border-ink/[0.22] hover:text-fg cursor-pointer';
 
 const getDifficultyColor = (diff) => {
   if (!diff) return 'text-muted';
@@ -65,6 +43,7 @@ const getDifficultyBg = (diff) => {
 
 // ── One problem in a topic: solved toggle, title, quick-note badges, tags, difficulty, notes drawer, platform link ──
 const ProblemRow = ({
+  anchorId,
   problem,
   index,
   isCompleted,
@@ -83,8 +62,9 @@ const ProblemRow = ({
 
   return (
     <div
-      className={`border-b border-ink/[0.03] last:border-b-0 transition-colors ${
-        isCompleted ? 'bg-ok-solid/[0.02]' : ''
+      id={anchorId}
+      className={`border-b border-ink/[0.06] last:border-b-0 transition-colors ${
+        isCompleted ? 'bg-brand/[0.04]' : ''
       }`}
     >
       <div
@@ -96,11 +76,12 @@ const ProblemRow = ({
           {/* Toggle */}
           <button
             onClick={(e) => onToggleSolved(e, problem.link)}
-            className="flex-shrink-0 text-lg text-muted hover:text-fg-3 hover:scale-110 transition-all cursor-pointer"
-            style={isCompleted ? { color: 'var(--data-green)' } : {}}
+            className={`flex h-11 w-11 -m-2.5 flex-shrink-0 items-center justify-center text-2xl transition-[transform,color] duration-150 active:scale-90 cursor-pointer ${isCompleted ? 'text-brand' : 'text-faint hover:text-fg-3'}`}
+            aria-pressed={isCompleted}
+            aria-label={isCompleted ? `Mark ${problem.title} as unsolved` : `Mark ${problem.title} as solved`}
             title={isCompleted ? 'Mark as unsolved' : 'Mark as solved'}
           >
-            {isCompleted ? <FaCheckCircle /> : <FaRegCircle />}
+            {isCompleted ? <CheckCircle weight="fill" /> : <Circle weight="regular" />}
           </button>
 
           {/* Title */}
@@ -116,12 +97,12 @@ const ProblemRow = ({
         <div className="flex items-center flex-wrap gap-2.5 pl-9 md:pl-0 flex-shrink-0">
           {/* Quick Note Badges if note exists */}
           {noteData?.pattern && (
-            <span className="text-xs font-ui font-medium text-warn/90 bg-warn-solid/10 border border-warn-solid/25 px-2 py-0.5 rounded-md">
+            <span className="text-xs font-ui font-medium text-fg-3 bg-ink/[0.05] border border-ink/[0.1] px-2 py-0.5 rounded-md">
               {noteData.pattern}
             </span>
           )}
           {noteData?.timeComplexity && (
-            <span className="text-xs font-ui font-medium text-info/90 bg-info-solid/10 border border-info-solid/25 px-1.5 py-0.5 rounded-md">
+            <span className="text-xs font-ui font-medium text-fg-3 bg-ink/[0.05] border border-ink/[0.1] px-1.5 py-0.5 rounded-md">
               {noteData.timeComplexity}
             </span>
           )}
@@ -164,13 +145,13 @@ const ProblemRow = ({
             title={hasNote ? 'View or edit approach & invariant notes' : 'Add approach notes'}
             className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-ui font-medium border transition-all cursor-pointer ${
               hasNote
-                ? 'bg-warn-solid/15 border-warn-solid/35 text-warn hover:bg-warn-solid/25'
+                ? 'bg-brand/10 border-brand/30 text-brand hover:bg-brand/15'
                 : isDrawerOpen
                 ? 'bg-ink/[0.08] border-ink/20 text-fg'
                 : 'bg-ink/[0.04] border-ink/[0.08] text-muted hover:text-fg-2 hover:border-ink/15'
             }`}
           >
-            <FiFileText className={`text-xs ${hasNote ? 'text-warn' : 'text-muted'}`} />
+            <FiFileText className={`text-xs ${hasNote ? 'text-brand' : 'text-muted'}`} />
             <span className="hidden sm:inline">{hasNote ? 'Notes' : '+ Note'}</span>
             <motion.span
               animate={{ rotate: isDrawerOpen ? 180 : 0 }}
@@ -181,13 +162,27 @@ const ProblemRow = ({
             </motion.span>
           </button>
 
+          {/* The author's own learning links, when the sheet has them */}
+          {problem.video && (
+            <a href={problem.video} target="_blank" rel="noopener noreferrer" title="Watch the video lecture (takeUforward)" aria-label={`Watch the video lecture for ${problem.title}, on takeUforward`} className={LEARN_LINK}>
+              <YoutubeLogo weight="duotone" className="text-base" aria-hidden="true" />
+              <span className="hidden lg:inline">Watch</span>
+            </a>
+          )}
+          {problem.article && (
+            <a href={problem.article} target="_blank" rel="noopener noreferrer" title="Read the article (takeUforward)" aria-label={`Read the article for ${problem.title}, on takeUforward`} className={LEARN_LINK}>
+              <Article weight="duotone" className="text-base" aria-hidden="true" />
+              <span className="hidden lg:inline">Read</span>
+            </a>
+          )}
+
           {/* Platform Link */}
           <a
             href={problem.link}
             target="_blank"
             rel="noopener noreferrer"
-            title="View Problem on External Platform"
-            className="flex items-center justify-center p-1.5 rounded-lg bg-ink/[0.04] border border-ink/[0.08] hover:bg-ink/[0.08] hover:border-ink/20 transition-all cursor-pointer"
+            title="Open this problem on its own site"
+            className="flex min-h-[32px] min-w-[32px] items-center justify-center rounded-lg border border-ink/[0.1] bg-card px-1.5 transition-colors hover:border-ink/[0.22] cursor-pointer"
           >
             {getPlatformIcon(problem.link)}
           </a>

@@ -17,23 +17,23 @@ const SHEET_META = {
     sourceUrl: 'https://neetcode.io/practice'
   },
   'striver-sde': {
-    description: 'Striver\'s legendary SDE sheet - 191 handpicked problems to take you from beginner to job-ready. Follows a structured topic-by-topic progression, perfect for systematic interview prep.',
+    description: 'Striver\'s SDE sheet as published on takeUforward: handpicked problems in parts, each with its practice page and, for most, his video lecture and an article. A structured path for systematic interview prep.',
     badge: 'Most Popular',
     badgeColor: 'text-brand bg-brand/10 border-brand/20',
     accentColor: 'var(--brand)',
     sourceName: 'takeUforward',
-    sourceUrl: 'https://takeuforward.org/interviews/strivers-sde-sheet-top-coding-interview-problems/'
+    sourceUrl: 'https://takeuforward.org/prep-hub/strivers-sde-sheet'
   },
   'striver-a2z': {
-    description: 'The ultimate A-to-Z DSA course by Striver covering 450+ problems from absolute basics to advanced. Best for those starting from scratch and building a rock-solid foundation.',
+    description: 'Striver\'s A-to-Z DSA course as problems, from absolute basics to advanced, in his module order. Each problem has its practice page and, for most, his video lecture and an article. Best for starting from scratch.',
     badge: 'Beginner Friendly',
     badgeColor: 'text-ok bg-ok-solid/10 border-ok-solid/20',
     accentColor: 'var(--data-green)',
     sourceName: 'takeUforward',
-    sourceUrl: 'https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/'
+    sourceUrl: 'https://takeuforward.org/prep-hub/strivers-a2z-dsa-sheet'
   },
   'love-babbar': {
-    description: 'Love Babbar\'s comprehensive 450-problem DSA sheet - a thorough grind ensuring complete coverage of every data structure and algorithm needed to crack top tech companies.',
+    description: 'Love Babbar\'s DSA sheet: as GeeksforGeeks publishes it: a long, thorough list that covers every data structure and algorithm needed for placements and tech interviews, each question with its article and practice link. A few questions appear under more than one topic and count once.',
     badge: 'Complete Coverage',
     badgeColor: 'text-pink bg-pink-solid/10 border-pink-solid/20',
     accentColor: 'var(--data-pink)',

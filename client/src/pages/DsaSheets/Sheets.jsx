@@ -1,135 +1,93 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { FaSearch, FaStar, FaCode, FaCheckCircle, FaExternalLinkAlt } from "react-icons/fa";
-import { FiBook, FiTarget, FiZap, FiLayers } from "react-icons/fi";
+import { motion, useReducedMotion } from "framer-motion";
+import { FaSearch } from "react-icons/fa";
+import { FiArrowRight } from "react-icons/fi";
+import { BookOpenText, CheckSquare, CodeBlock, Lightning, Stack, Star, Target } from "@phosphor-icons/react";
 import { dsaSheet } from "../../api/services/sheetService";
 import { SkeletonCard } from "../../components/ui/Skeletons";
 import { EmptyState } from "../../components/ui/StateComponents";
+import PageBackdrop from "../../components/ui/PageBackdrop";
 
+const MotionLink = motion.create(Link);
+
+// Three groups, one accent colour: the groups differ by their words, not by colour.
 const CATEGORY_DEFINITIONS = [
   {
     id: "foundation",
-    label: "Foundation Tracks",
-    icon: <FiBook className="text-base" />,
-    color: "text-cyan",
-    bg: "bg-cyan-solid/10",
-    border: "border-cyan-solid/20",
-    activeBorder: "border-cyan",
-    badge: "bg-cyan-solid/10 text-cyan border-cyan-solid/20",
-    desc: "Comprehensive topic-by-topic curriculums to master data structures and algorithms from ground up.",
+    label: "Foundation tracks",
+    chip: "Foundation",
+    icon: <BookOpenText weight="duotone" />,
+    desc: "Topic-by-topic courses that teach data structures and algorithms from the ground up.",
     slugs: ["love-babbar", "striver-a2z"],
   },
   {
     id: "product",
-    label: "Product & FAANG Core",
-    icon: <FiTarget className="text-base" />,
-    color: "text-brand",
-    bg: "bg-brand/10",
-    border: "border-brand/20",
-    activeBorder: "border-brand",
-    badge: "bg-brand/10 text-brand border-brand/20",
-    desc: "Handpicked algorithmic pattern sets targeting high-bar technical interviews at top tier tech firms.",
+    label: "Product and FAANG core",
+    chip: "FAANG core",
+    icon: <Target weight="duotone" />,
+    desc: "Handpicked pattern sets for high-bar interviews at top tech companies.",
     slugs: ["striver-sde", "neetcode-150"],
   },
   {
     id: "revision",
-    label: "Rapid Interview Sprint",
-    icon: <FiZap className="text-base" />,
-    color: "text-bad",
-    bg: "bg-bad-solid/10",
-    border: "border-bad-solid/20",
-    activeBorder: "border-bad",
-    badge: "bg-bad-solid/10 text-bad border-bad-solid/20",
-    desc: "Compact high-signal sheets designed for fast 30-day review cycles before scheduled interviews.",
+    label: "Rapid interview sprint",
+    chip: "Rapid sprint",
+    icon: <Lightning weight="duotone" />,
+    desc: "A short, high-signal sheet for a fast review in the last 30 days.",
     slugs: ["blind-75"],
   },
 ];
 
 const SHEET_METADATA_MAP = {
-  "love-babbar": {
-    icon: <FaStar className="text-warn" />,
-    highlight: "Comprehensive 450-question complete coverage",
-    recommended: false,
-    defaultCategoryId: "foundation",
-  },
-  "striver-a2z": {
-    icon: <FiLayers className="text-cyan" />,
-    highlight: "Structured topic-by-topic algorithmic progression",
-    recommended: true,
-    defaultCategoryId: "foundation",
-  },
-  "striver-sde": {
-    icon: <FiTarget className="text-brand" />,
-    highlight: "191 handpicked problems for core tech rounds",
-    recommended: true,
-    defaultCategoryId: "product",
-  },
-  "neetcode-150": {
-    icon: <FaCode className="text-ok" />,
-    highlight: "Pattern-based FAANG preparation superset",
-    recommended: false,
-    defaultCategoryId: "product",
-  },
-  "blind-75": {
-    icon: <FaCheckCircle className="text-bad" />,
-    highlight: "The essential 75 pattern pre-interview checklist",
-    recommended: true,
-    defaultCategoryId: "revision",
-  },
+  "love-babbar": { icon: <Star weight="duotone" />, highlight: "Thorough coverage of the data structures and algorithms", recommended: false, defaultCategoryId: "foundation" },
+  "striver-a2z": { icon: <Stack weight="duotone" />, highlight: "Basics to advanced, in Striver's module order", recommended: true, defaultCategoryId: "foundation" },
+  "striver-sde": { icon: <Target weight="duotone" />, highlight: "Handpicked problems for core tech rounds", recommended: true, defaultCategoryId: "product" },
+  "neetcode-150": { icon: <CodeBlock weight="duotone" />, highlight: "Pattern-based preparation for big-tech interviews", recommended: false, defaultCategoryId: "product" },
+  "blind-75": { icon: <CheckSquare weight="duotone" />, highlight: "The essential 75-problem pre-interview checklist", recommended: true, defaultCategoryId: "revision" },
 };
 
-const SheetCard = ({ sheet, cat }) => (
-  <div className="group titanium-card rounded-2xl p-6 sm:p-7 transition-all duration-200 hover:-translate-y-1 relative overflow-hidden flex flex-col justify-between text-left">
-    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent group-hover:via-brand/50 transition-all" />
-    
-    {sheet.recommended && (
-      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-brand/10 border border-brand/30 rounded-full px-2.5 py-0.5 shadow-[0_0_10px_color-mix(in_srgb,var(--brand)_15%,transparent)]">
-        <span className="w-1.5 h-1.5 rounded-full bg-brand shadow-[0_0_6px_var(--brand)]" />
-        <span className="text-brand text-xs font-ui font-semibold uppercase tracking-wider">Top Pick</span>
-      </div>
-    )}
-
-    <div>
-      <div className="flex items-center gap-3 mb-4">
-        <div className={`p-2.5 rounded-xl w-fit ${cat.bg} border ${cat.border} transition-transform duration-200 group-hover:scale-105`}>
+const SheetCard = ({ sheet, index }) => {
+  const calm = useReducedMotion();
+  return (
+    <MotionLink
+      to={`/dsa/${sheet.slug}`}
+      initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 20px, 0)" }}
+      whileInView={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: (index % 2) * 0.07 }}
+      className="group relative flex flex-col rounded-2xl border border-ink/[0.1] bg-card p-6 text-left shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_18px_34px_-20px_color-mix(in_srgb,var(--shadow)_42%,transparent)] transition-[transform,box-shadow] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_16%,transparent),0_26px_44px_-20px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-3xl text-brand">
           {sheet.icon}
-        </div>
-        <span className={`text-xs font-ui font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${cat.badge}`}>
-          {cat.label.split(" ")[0]}
         </span>
+        {sheet.recommended && (
+          <span className="rounded-full border border-brand/30 bg-brand/10 px-2.5 py-0.5 font-ui text-xs font-semibold text-brand">Top pick</span>
+        )}
       </div>
 
-      <h3 className="font-display text-xl font-bold text-fg mb-1.5 group-hover:text-brand transition-colors">
-        {sheet.title}
-      </h3>
-      <p className="text-xs text-muted mb-4 leading-relaxed line-clamp-2">
-        {sheet.highlight}
+      <h3 className="mt-5 font-display text-xl font-extrabold tracking-tight text-fg">{sheet.title}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-muted">{sheet.highlight}</p>
+
+      <p className="mt-4 font-ui text-sm text-fg-3">
+        <span className="font-bold text-fg">{sheet.count} problems</span>
+        <span className="text-muted"> · {sheet.difficulty}</span>
       </p>
 
-      <div className="flex items-center gap-2 mb-4 font-ui text-xs">
-        <span className="text-fg font-bold">{sheet.count} Problems</span>
-        <span className="text-muted">·</span>
-        <span className="text-muted">{sheet.difficulty}</span>
-      </div>
-
-      <div className="flex flex-wrap gap-1.5 mb-6">
-        {(sheet.tags || []).map((tag, idx) => (
-          <span key={idx} className="text-xs font-ui px-2 py-0.5 rounded-md bg-elevated/90 border border-ink/[0.08] text-muted">
-            {tag}
-          </span>
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        {sheet.tags.slice(0, 3).map((tag) => (
+          <span key={tag} className="rounded-md border border-ink/[0.08] bg-ink/[0.03] px-2 py-0.5 font-ui text-xs text-muted">{tag}</span>
         ))}
       </div>
-    </div>
 
-    <Link
-      to={`/dsa/${sheet.slug}`}
-      className="w-full py-3 rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-fg-2 group-hover:amber-specular-button font-bold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm select-none"
-    >
-      <span>Launch Sheet</span>
-      <FaExternalLinkAlt className="text-xs" />
-    </Link>
-  </div>
-);
+      <span className="mt-6 inline-flex items-center gap-2 font-display text-sm font-bold text-brand">
+        Open sheet
+        <FiArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+      </span>
+    </MotionLink>
+  );
+};
 
 const Sheets = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -156,15 +114,15 @@ const Sheets = () => {
   const enrichedSheets = useMemo(() => {
     const source = dbSheets.length > 0 ? dbSheets : [
       { name: "Love Babbar DSA Sheet", slug: "love-babbar", totalProblems: 450, difficulty: "Beginner → Intermediate", tags: ["Comprehensive", "GFG Based"] },
-      { name: "Striver A2Z Sheet", slug: "striver-a2z", totalProblems: 455, difficulty: "Beginner → Advanced", tags: ["Structured", "Pattern-based"] },
-      { name: "Striver SDE Sheet", slug: "striver-sde", totalProblems: 191, difficulty: "Intermediate → Advanced", tags: ["FAANG Patterns", "Must Solve"] },
+      { name: "Striver A2Z Sheet", slug: "striver-a2z", totalProblems: 453, difficulty: "Beginner → Advanced", tags: ["Structured", "Pattern-based"] },
+      { name: "Striver SDE Sheet", slug: "striver-sde", totalProblems: 179, difficulty: "Intermediate → Advanced", tags: ["FAANG Patterns", "Must Solve"] },
       { name: "NeetCode 150", slug: "neetcode-150", totalProblems: 150, difficulty: "Advanced", tags: ["LeetCode Patterns", "Concise"] },
       { name: "Blind 75", slug: "blind-75", totalProblems: 75, difficulty: "Intermediate → Advanced", tags: ["Essential", "Time-boxed"] },
     ];
 
     return source.map((sheet) => {
       const meta = SHEET_METADATA_MAP[sheet.slug] || {
-        icon: <FaCode className="text-brand" />,
+        icon: <CodeBlock weight="duotone" />,
         highlight: sheet.description || "Structured interview prep sheet",
         recommended: false,
         defaultCategoryId: "foundation",
@@ -216,103 +174,88 @@ const Sheets = () => {
   }, [categories, activeCategory]);
 
   return (
-    <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto page-enter text-left">
-      {/* ── HEADER ── */}
-      <div className="mb-10 pt-2">
-        <div className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-brand bg-brand/10 border border-brand/20 rounded-full px-3 py-1 mb-4">
-          <FaCode /> {totalProblemCount > 0 ? `${totalProblemCount}+ Problems` : "1,200+ Problems"}
+    <div className="relative">
+      <PageBackdrop />
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 pb-12 text-left">
+        {/* ── HEADER ── */}
+        <div className="mb-10 pt-2">
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-[-0.04em] leading-[1.04] text-fg">
+            DSA problem <span className="text-brand">sheets.</span>
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">
+            {totalProblemCount > 0 ? `${totalProblemCount} problems in ${enrichedSheets.length} curated sheets.` : "Curated problem sheets."}{" "}
+            Pick a long course to learn from the ground up, or a short sheet for a fast review before an interview.
+          </p>
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-fg tracking-tight mb-3">
-          DSA Problem <span className="text-brand">Sheets</span>
-        </h1>
-        <p className="text-muted max-w-2xl text-sm sm:text-base leading-relaxed font-normal">
-          Curated algorithmic patterns organized by your preparation timeline, from zero-to-one fundamentals to fast pre-interview review sprints.
-        </p>
-      </div>
 
-      {/* ── SEARCH & FILTER CONTROLS ── */}
-      <div className="flex flex-col md:flex-row gap-4 mb-10">
-        <div className="relative w-full md:w-80">
-          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-muted text-sm" />
-          <input
-            type="text"
-            placeholder="Search sheets or patterns..."
-            className="w-full bg-card border border-ink/[0.08] hover:border-ink/[0.15] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_10%,transparent)] rounded-xl py-3 pl-12 pr-4 outline-none transition-colors text-sm text-fg placeholder-faint font-normal"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        {/* ── SEARCH & FILTER CONTROLS ── */}
+        <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center">
+          <div className="relative w-full md:w-80">
+            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-muted text-sm" />
+            <input
+              type="text"
+              placeholder="Search sheets or patterns"
+              aria-label="Search sheets or patterns"
+              className="w-full bg-card border border-ink/[0.1] hover:border-ink/[0.18] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)] rounded-xl py-3 pl-12 pr-4 outline-none transition-colors text-sm text-fg placeholder-faint font-normal"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[{ id: "all", chip: "All sheets", icon: null }, ...categories].map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setActiveCategory(c.id)}
+                aria-pressed={activeCategory === c.id}
+                className={`flex min-h-[44px] items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-medium transition-[transform,color,background-color] duration-150 cursor-pointer select-none ${
+                  activeCategory === c.id ? "amber-specular-button font-bold" : "titanium-button text-muted hover:text-fg"
+                }`}
+              >
+                {c.icon && <span className="text-lg">{c.icon}</span>}
+                {c.chip}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={() => setActiveCategory("all")}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-95 border cursor-pointer select-none ${
-              activeCategory === "all"
-                ? "amber-specular-button font-bold text-on-brand border-brand"
-                : "titanium-button text-muted hover:text-fg"
-            }`}
-          >
-            All sheets
-          </button>
-          {categories.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setActiveCategory(c.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-150 active:scale-95 border cursor-pointer select-none ${
-                activeCategory === c.id
-                  ? `${c.bg} ${c.color} ${c.activeBorder} shadow-sm font-bold`
-                  : "titanium-button text-muted hover:text-fg"
-              }`}
-            >
-              {c.icon} {c.label}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      {/* ── CONTENT GRID ── */}
-      {loading ? (
-        <div className="grid md:grid-cols-2 gap-5">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
-      ) : searchTerm === "" ? (
-        <div className="space-y-14">
-          {visibleCategories.map((cat) => (
-            <div key={cat.id}>
-              <div className={`flex items-center gap-4 p-5 rounded-2xl border ${cat.border} ${cat.bg} mb-6 relative overflow-hidden`}>
-                <div className={`w-10 h-10 rounded-xl bg-ink/[0.05] border border-ink/[0.08] flex items-center justify-center ${cat.color} flex-shrink-0`}>
-                  {cat.icon}
+        {/* ── CONTENT GRID ── */}
+        {loading ? (
+          <div className="grid md:grid-cols-2 gap-5">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        ) : searchTerm === "" ? (
+          <div className="space-y-14">
+            {visibleCategories.map((cat) => (
+              <section key={cat.id} aria-labelledby={`sheets-${cat.id}`}>
+                <div className="mb-5 flex items-end justify-between gap-4 border-b border-ink/[0.1] pb-4">
+                  <div className="min-w-0">
+                    <h2 id={`sheets-${cat.id}`} className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-fg">{cat.label}</h2>
+                    <p className="mt-1 text-sm text-muted">{cat.desc}</p>
+                  </div>
+                  <span className="shrink-0 font-ui text-sm text-muted">{cat.sheets.length} {cat.sheets.length === 1 ? "sheet" : "sheets"}</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h2 className={`font-display text-lg font-bold ${cat.color}`}>{cat.label}</h2>
-                  <p className="text-muted text-xs sm:text-sm mt-0.5 leading-relaxed">{cat.desc}</p>
+                <div className="grid gap-5 md:grid-cols-2">
+                  {cat.sheets.map((sheet, i) => <SheetCard key={sheet.slug} sheet={sheet} index={i} />)}
                 </div>
-                <div className={`hidden sm:flex items-center gap-1.5 text-xs font-ui font-semibold px-3 py-1 rounded-full border ${cat.badge} shrink-0`}>
-                  {cat.sheets.length} {cat.sheets.length === 1 ? "track" : "tracks"}
-                </div>
+              </section>
+            ))}
+          </div>
+        ) : (
+          <div>
+            <p className="mb-6 font-ui text-sm text-muted" role="status">{filtered.length} result{filtered.length !== 1 ? "s" : ""} found</p>
+            {filtered.length > 0 ? (
+              <div className="grid gap-5 md:grid-cols-2">
+                {filtered.map((sheet, i) => <SheetCard key={sheet.slug} sheet={sheet} index={i} />)}
               </div>
-              <div className="grid md:grid-cols-2 gap-6">
-                {cat.sheets.map((sheet, i) => <SheetCard key={i} sheet={sheet} cat={cat} />)}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div>
-          <p className="text-muted font-ui text-sm mb-6">{filtered.length} result{filtered.length !== 1 ? "s" : ""} found</p>
-          {filtered.length > 0 ? (
-            <div className="grid md:grid-cols-2 gap-6">
-              {filtered.map((sheet, i) => {
-                const cat = categories.find((c) => c.id === sheet.categoryId) || categories[0];
-                return <SheetCard key={i} sheet={sheet} cat={cat} />;
-              })}
-            </div>
-          ) : (
-            <EmptyState icon={FaSearch} title="No matching sheets found" text="Try searching for a different pattern name or topic." />
-          )}
-        </div>
-      )}
+            ) : (
+              <EmptyState icon={FaSearch} title="No matching sheets found" text="Try searching for a different pattern name or topic." />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

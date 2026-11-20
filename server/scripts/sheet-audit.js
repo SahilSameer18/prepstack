@@ -5,8 +5,8 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const DIR = path.join(__dirname, '../src/modules/sheets/seeds/sheetSeeds');
-// The size each sheet's own page states (checked 20 Nov 2026): Striver's 180 page reports 179 problems; the A2Z page reports 495 topics, of which 453 are problems and 42 are theory lessons.
-const STATED = { 'blind-75': 75, 'neetcode-150': 150, 'striver-sde': 179, 'striver-a2z': 453, 'love-babbar': 450 };
+// The size each sheet's own page states (checked 20 Nov 2026): Striver's 180 page reports 179 problems; GeeksforGeeks' Love Babbar page is headed 450 but lists 445 questions; the A2Z page reports 495 topics, of which 453 are problems and 42 are theory lessons.
+const STATED = { 'blind-75': 75, 'neetcode-150': 150, 'striver-sde': 179, 'striver-a2z': 453, 'love-babbar': 445 };
 
 // Each seed file holds one `const something = { ... };` data object; read it without running the seeding code.
 function readData(file) {
@@ -54,6 +54,7 @@ for (const file of fs.readdirSync(DIR).filter((f) => f.endsWith('.js'))) {
   console.log(`\n== ${sheet.name} (${sheet.slug})`);
   console.log(`entries ${all.length} | unique links ${links.size} | topics ${(sheet.topics || []).length} | stated by its author ${stated ?? '?'} | gap ${stated ? stated - links.size : '?'}`);
   console.log('difficulty', JSON.stringify(levels));
+  console.log(`with a video ${all.filter((p) => p.video).length} | with an article ${all.filter((p) => p.article).length}`);
   console.log('link hosts', JSON.stringify(hosts));
   if (emptyTopics.length) console.log('empty topics:', emptyTopics.join(', '));
   console.log(`same link used more than once: ${dupLinks.length} | same title more than once: ${dupTitles.length}`);

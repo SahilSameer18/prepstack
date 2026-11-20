@@ -302,8 +302,10 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
   const notesMinutesAll = ['os', 'dbms', 'cn', 'oops'].flatMap((s) => data.notes[s]).reduce((n, s) => n + 3 * s.readMinutes + 5, 0);
 
   it('the syllabus is 150 problems and 41 notes sections, worked out by hand', () => {
-    assert.deepEqual([perDifficulty('Easy'), perDifficulty('Medium'), perDifficulty('Hard')], [27, 102, 21]);
-    assert.equal(dsaMinutes, 10740);
+    // 20 Nov 2026: NeetCode's own page counts 28 Easy, 101 Medium and 21 Hard; six labels in our seed were corrected to match it (it was 27, 102, 21).
+    // By hand: 28 x 40 + 101 x 70 + 21 x 120 = 1,120 + 7,070 + 2,520 = 10,710 minutes (it was 10,740).
+    assert.deepEqual([perDifficulty('Easy'), perDifficulty('Medium'), perDifficulty('Hard')], [28, 101, 21]);
+    assert.equal(dsaMinutes, 10710);
     assert.equal(['os', 'dbms', 'cn', 'oops'].flatMap((s) => data.notes[s]).length, 41);
     const plan = generatePlan({ ...input, weeks: 12 }, data);
     assert.equal(plan.coverage.syllabusMinutes, dsaMinutes + notesMinutesAll);
@@ -316,14 +318,15 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
     assert.equal(sum(week.map((d) => ({ plannedMinutes: d.plannedCap }))), 17 * 60);
     assert.equal(sum(plan.days.map((d) => ({ plannedMinutes: d.newCap }))), 168 * 60);
   });
-  // The planned minutes and the left-out count come from running the generator once; they were checked by hand: planned + left out = the syllabus (12,109),
+  // The planned minutes and the left-out count come from running the generator once; they were checked by hand: planned + left out = the syllabus (12,079; it was 12,109 before the NeetCode labels were corrected on 20 Nov 2026),
   // planned is below the room for new items (weeks x 14 h), the first week (Friday 126 + Saturday 210 minutes of room) holds 330, and the mock and behavioral minutes are 90 and 10 each.
   // Since 15 Nov 2026 a short plan shares its time (every topic and subject keeps a floor) instead of cutting the tail, so the planned minutes are a little lower
   // than the old tail-cut plans (8718, 5865 and 4380) because the choice is made again until nothing is left over after the days are filled.
   // 19 Nov 2026: a gap in a day is now filled only from the same topic or the NEXT one (never from topics further ahead), so a topic never starts early by more than one place.
   // The packing got slightly better (8454, 5653 and 4306 became 8749, 6013 and 4524 planned minutes; 47, 90 and 111 became 42, 84 and 108 items left out); the same checks hold.
+  // 20 Nov 2026: after the NeetCode difficulty labels were corrected the 12 and 8 week plans moved from 8749 to 8841 and from 6013 to 6003 planned minutes (42 to 39 and 84 to 83 items left out); the 6 week plan did not change. The checks below still hold: planned + left out = the syllabus, and planned stays between 80 and 100 percent of the room.
   // The last Saturday's mock block is gone from each of the three plans (9, 5 and 3 became 8, 4 and 2): the last days hold only CS notes now, and a mock needs unsolved core problems after it.
-  for (const [weeks, mocks, behavioral, planned, leftOut] of [[12, 8, 12, 8749, 42], [8, 4, 12, 6013, 84], [6, 2, 12, 4524, 108]]) {
+  for (const [weeks, mocks, behavioral, planned, leftOut] of [[12, 8, 12, 8841, 39], [8, 4, 12, 6003, 83], [6, 2, 12, 4524, 108]]) {
     it(`${weeks} weeks: fair share, no day above 85 percent, ${mocks} mock blocks, ${behavioral} behavioral questions, nothing silently lost`, () => {
       const plan = generatePlan({ ...input, weeks }, data);
       const c = plan.coverage;

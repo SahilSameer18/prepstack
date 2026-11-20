@@ -112,7 +112,7 @@ Paste a job description and add your resume (PDF or pasted text). You get a repo
 
 ### Dynamic DSA Trackers
 
-- **Industry Sheets:** Tracks Blind 75, NeetCode 150, Striver A2Z, Striver SDE, and Love Babbar 450.
+- **Industry Sheets:** Tracks Blind 75, NeetCode 150, Striver A2Z, Striver SDE, and Love Babbar 450. Problems link to their practice pages; the Striver sheets also show his video lecture and article beside each problem. Filter by difficulty, hide solved problems, search, and continue from your next unsolved problem.
 - **Live Sync:** Problem completions toggle asynchronously, instantly refreshing dashboard metrics.
 
 ### CS Fundamentals Library
@@ -763,6 +763,10 @@ With Redis on, cached public reads can show content up to about 15 minutes old a
 | Script | Description |
 |---|---|
 | `node scripts/plan-fuzz.js [count] [seed]` | Runs the real planner on generated plan requests and checks its rules; prints the violations and how many plans cut work (writes nothing) |
+| `node scripts/sheet-audit.js` | Reads the five DSA sheet seed files (no database) and prints, per sheet, the problem and unique-link counts, difficulty mix, link hosts, repeated links and any missing fields |
+| `node scripts/add-neetcode-videos.js` | Adds NeetCode's YouTube video to Blind 75, NeetCode 150 and Love Babbar problems that have none, after asking YouTube that the video is NeetCode's and names the problem; needs internet, safe to run again |
+| `node scripts/add-takeuforward-resources.js` | Adds takeUforward's video lecture and article to the Blind 75, NeetCode 150 and Love Babbar seed problems that are also on his pages (matched by the exact LeetCode address); needs internet, safe to run again |
+| `node scripts/build-takeuforward-seeds.js` | Rebuilds the Striver A2Z and Striver SDE seed files from takeUforward's own sheet pages (problem names, practice pages, video and article links); needs internet, writes no database, then run the master seed |
 | `npm run load:test` | Starts the real server on an in-memory database and measures requests per second and latency at 10, 50 and 100 at once; `PROFILE=1` adds a CPU profile, `ONLY=` one request kind, `CLUSTER=4` four copies |
 | `npm run benchmark:analyzer` | Runs the real Role Analyzer on labelled resume and job pairs (the 12-pair starter set by default) and prints precision, recall and F1 per status, false reassurance, quote checks, score error, run-to-run and per-model spread with 95% intervals, next to a keyword baseline. `-- --baseline-only` needs no AI; `--split dev` or `--split holdout`; `--data <file>` for your own pairs (real AI calls otherwise; see [docs/research/ANALYZER_BENCHMARK.md](docs/research/ANALYZER_BENCHMARK.md)) |
 | `node scripts/student-check-report.js <usernames>` | Read-only counts for the student check (tasks done, days active, reviews); never prints emails (see [docs/research/STUDENT_CHECK.md](docs/research/STUDENT_CHECK.md)) |

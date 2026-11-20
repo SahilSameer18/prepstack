@@ -1067,342 +1067,154 @@ export default {
   ],
   "striver-sde": [
    {
-    "title": "Arrays - I",
-    "problems": 6
+    "title": "Arrays",
+    "problems": 12
    },
    {
-    "title": "Arrays - II",
-    "problems": 6
-   },
-   {
-    "title": "Arrays - III",
-    "problems": 6
-   },
-   {
-    "title": "Arrays - IV",
-    "problems": 6
-   },
-   {
-    "title": "Linked List - I",
-    "problems": 6
-   },
-   {
-    "title": "Linked List - II",
-    "problems": 6
-   },
-   {
-    "title": "Linked List and Arrays",
-    "problems": 6
-   },
-   {
-    "title": "Greedy",
-    "problems": 6
-   },
-   {
-    "title": "Recursion",
-    "problems": 6
-   },
-   {
-    "title": "Recursion and Backtracking",
-    "problems": 6
+    "title": "Hashing",
+    "problems": 5
    },
    {
     "title": "Binary Search",
+    "problems": 13
+   },
+   {
+    "title": "Sliding Window and Two Pointers",
+    "problems": 9
+   },
+   {
+    "title": "Recursion and Backtracking",
+    "problems": 10
+   },
+   {
+    "title": "Linked List",
+    "problems": 16
+   },
+   {
+    "title": "Stack and Queues",
+    "problems": 14
+   },
+   {
+    "title": "Greedy Algorithms",
     "problems": 8
    },
    {
     "title": "Heaps",
-    "problems": 6
+    "problems": 5
    },
    {
-    "title": "Stack and Queue - I",
-    "problems": 7
+    "title": "Binary Trees",
+    "problems": 15
    },
    {
-    "title": "Stack and Queue - II",
+    "title": "Binary Search Trees",
     "problems": 10
    },
    {
-    "title": "String - I",
-    "problems": 6
+    "title": "Graphs",
+    "problems": 29
    },
    {
-    "title": "String - II",
-    "problems": 6
+    "title": "Dynamic Programming",
+    "problems": 19
    },
    {
-    "title": "Binary Tree - I",
-    "problems": 8
+    "title": "Tries",
+    "problems": 5
    },
    {
-    "title": "Binary Tree - II",
-    "problems": 8
+    "title": "Strings",
+    "problems": 4
    },
    {
-    "title": "Binary Tree - III",
-    "problems": 8
+    "title": "Bit Manipulation",
+    "problems": 4
    },
    {
-    "title": "Binary Search Tree - I",
-    "problems": 8
-   },
-   {
-    "title": "Binary Search Tree - II",
-    "problems": 8
-   },
-   {
-    "title": "Graph - I",
-    "problems": 9
-   },
-   {
-    "title": "Graph - II",
-    "problems": 6
-   },
-   {
-    "title": "Dynamic Programming - I",
-    "problems": 7
-   },
-   {
-    "title": "Dynamic Programming - II",
-    "problems": 8
-   },
-   {
-    "title": "Dynamic Programming - III",
-    "problems": 7
-   },
-   {
-    "title": "Trie",
-    "problems": 7
-   },
-   {
-    "title": "Segment Tree / Binary Indexed Tree",
-    "problems": 6
+    "title": "Mathematics",
+    "problems": 1
    }
   ],
   "striver-a2z": [
    {
-    "title": "Basics – Things to Know in C++/Java/Python",
-    "problems": 9
+    "title": "Beginner Problems",
+    "problems": 60
    },
    {
-    "title": "Basics – Build-up Mathematical Thinking",
+    "title": "Sorting",
     "problems": 7
    },
    {
-    "title": "Basics – Learn STL / Collections",
-    "problems": 3
+    "title": "Arrays",
+    "problems": 32
    },
    {
-    "title": "Basics – Basic Recursion",
-    "problems": 9
+    "title": "Hashing",
+    "problems": 5
    },
    {
-    "title": "Basics – Basic Hashing",
-    "problems": 2
+    "title": "Binary Search",
+    "problems": 32
    },
    {
-    "title": "Step 2.1 – Sorting-I",
-    "problems": 3
+    "title": "Strings (Basic and Medium)",
+    "problems": 7
    },
    {
-    "title": "Step 2.2 – Sorting-II",
-    "problems": 4
+    "title": "Recursion",
+    "problems": 21
    },
    {
-    "title": "Array – Easy Array Problems",
-    "problems": 14
+    "title": "Linked-List",
+    "problems": 43
    },
    {
-    "title": "Array – Medium Array Problems",
+    "title": "Bit Manipulation",
     "problems": 13
    },
    {
-    "title": "Array – Hard Array Problems",
+    "title": "Greedy Algorithms",
+    "problems": 14
+   },
+   {
+    "title": "Sliding Window / 2 Pointer",
     "problems": 12
    },
    {
-    "title": "Binary Search – Binary Search on 1D Arrays",
-    "problems": 13
+    "title": "Stack / Queues",
+    "problems": 30
    },
    {
-    "title": "Binary Search – Binary Search on Answers",
+    "title": "Binary Trees",
+    "problems": 31
+   },
+   {
+    "title": "Binary Search Trees",
     "problems": 14
    },
    {
-    "title": "Binary Search – Binary Search on 2D Arrays",
-    "problems": 5
+    "title": "Heaps",
+    "problems": 19
    },
    {
-    "title": "Strings – Basic String Problems",
-    "problems": 7
+    "title": "Graphs",
+    "problems": 44
    },
    {
-    "title": "Strings – Medium String Problems",
-    "problems": 8
+    "title": "Dynamic Programming",
+    "problems": 52
    },
    {
-    "title": "Strings – Hard String Problems",
-    "problems": 8
-   },
-   {
-    "title": "Linked List – Learning Linked List",
-    "problems": 5
-   },
-   {
-    "title": "Linked List – Learn Doubly LinkedList",
-    "problems": 4
-   },
-   {
-    "title": "Linked List – Medium Problems of LL",
-    "problems": 14
-   },
-   {
-    "title": "Linked List – Hard Problems of LL",
-    "problems": 5
-   },
-   {
-    "title": "Recursion – Get a Strong Hold",
-    "problems": 5
-   },
-   {
-    "title": "Recursion – Subsequences Pattern",
-    "problems": 11
-   },
-   {
-    "title": "Recusrion – Trying out all Combos / Hard",
-    "problems": 8
-   },
-   {
-    "title": "Learn Bit Manipulation",
-    "problems": 8
-   },
-   {
-    "title": "Bit Manipulation – Interview Problems",
-    "problems": 5
-   },
-   {
-    "title": "Bit Manipulation – Advanced Maths",
-    "problems": 5
-   },
-   {
-    "title": "Stack and Queues – Learning",
-    "problems": 8
-   },
-   {
-    "title": "Prefix, Infix, PostFix Conversion Problems",
+    "title": "Tries",
     "problems": 6
    },
    {
-    "title": "Monotonic Stack/Queue Problems",
-    "problems": 11
-   },
-   {
-    "title": "Stack and Queue – Implementation Problems",
-    "problems": 5
-   },
-   {
-    "title": "Sliding Window & Two Pointers – Medium Problems",
+    "title": "Strings (Advanced Algo)",
     "problems": 8
    },
    {
-    "title": "Sliding Window & Two Pointers – Hard Problems",
-    "problems": 4
-   },
-   {
-    "title": "Heaps – Learning",
-    "problems": 4
-   },
-   {
-    "title": "Heaps – Medium Problems",
-    "problems": 7
-   },
-   {
-    "title": "Heaps – Hard Problems",
-    "problems": 6
-   },
-   {
-    "title": "Greedy Algo – Easy Problems",
-    "problems": 5
-   },
-   {
-    "title": "Greedy Algo – Medium/Hard Problems",
-    "problems": 10
-   },
-   {
-    "title": "Binary Trees – Traversals",
-    "problems": 11
-   },
-   {
-    "title": "Binary Trees – Medium Problems",
-    "problems": 12
-   },
-   {
-    "title": "Binary Trees – Hard Problems",
-    "problems": 14
-   },
-   {
-    "title": "Binary Search Tree – Concept",
+    "title": "Maths",
     "problems": 3
-   },
-   {
-    "title": "Binary Search Tree – Practice Problems",
-    "problems": 13
-   },
-   {
-    "title": "Graphs – Learning",
-    "problems": 5
-   },
-   {
-    "title": "Graphs – Problems on BFS/DFS",
-    "problems": 14
-   },
-   {
-    "title": "Graphs – Topo Sort and Problems",
-    "problems": 11
-   },
-   {
-    "title": "Graphs – Shortest Path Algorithms",
-    "problems": 11
-   },
-   {
-    "title": "Graphs – Minimum Spanning Tree/Disjoint Set",
-    "problems": 10
-   },
-   {
-    "title": "Graphs – Other Algorithms",
-    "problems": 4
-   },
-   {
-    "title": "Introduction to DP",
-    "problems": 6
-   },
-   {
-    "title": "2D/3D DP and DP on Grids",
-    "problems": 7
-   },
-   {
-    "title": "DP on Subsequences",
-    "problems": 11
-   },
-   {
-    "title": "DP on Strings",
-    "problems": 10
-   },
-   {
-    "title": "DP on Stocks",
-    "problems": 6
-   },
-   {
-    "title": "DP on LIS",
-    "problems": 7
-   },
-   {
-    "title": "MCM DP / Interval DP",
-    "problems": 9
-   },
-   {
-    "title": "Tries – Theory",
-    "problems": 7
    }
   ],
   "love-babbar": [
@@ -1420,11 +1232,11 @@ export default {
    },
    {
     "title": "Searching & Sorting",
-    "problems": 36
+    "problems": 35
    },
    {
     "title": "Linked List",
-    "problems": 36
+    "problems": 35
    },
    {
     "title": "Stacks & Queues",
@@ -1448,7 +1260,7 @@ export default {
    },
    {
     "title": "Dynamic Programming",
-    "problems": 59
+    "problems": 60
    },
    {
     "title": "Heap",
@@ -1460,7 +1272,7 @@ export default {
    },
    {
     "title": "Trie",
-    "problems": 10
+    "problems": 6
    },
    {
     "title": "Bit Manipulation",

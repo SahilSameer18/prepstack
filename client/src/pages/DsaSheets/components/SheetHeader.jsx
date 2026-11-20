@@ -1,86 +1,62 @@
-import { motion } from 'framer-motion';
-import { FaExternalLinkAlt } from 'react-icons/fa';
-import { FiTarget, FiAward } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { FiArrowRight, FiExternalLink } from 'react-icons/fi';
 import ProgressRing from './ProgressRing';
 
-// ── Header Card: sheet title, badge, solved/remaining stats, source link and the progress ring ──
-const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPercentage }) => (
-  <div className="relative bg-card border border-ink/[0.08] rounded-2xl p-6 md:p-8 mb-8 overflow-hidden shadow-2xl">
-    {/* Subtle glow blob */}
-    <div
-      className="absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-10 blur-3xl pointer-events-none"
-      style={{ background: meta.accentColor }}
-    />
+const LEVELS = [
+  { key: 'Easy', color: 'text-ok' },
+  { key: 'Medium', color: 'text-yellow' },
+  { key: 'Hard', color: 'text-bad' },
+];
 
-    <div className="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between relative z-10">
-      {/* Left: info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className={`text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border ${meta.badgeColor}`}>
-            {meta.badge}
-          </span>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-ink/[0.04] border border-ink/[0.08] text-fg-3 font-ui">
-            {totalProblems} Problems
-          </span>
-        </div>
+// ── Header: title, description, source, the way into your plan, the progress ring and the Easy/Medium/Hard split ──
+const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPercentage, byLevel, hasNext, onContinue }) => (
+  <div className="mb-8">
+    <h1 className="font-display text-4xl sm:text-5xl font-black tracking-[-0.04em] leading-[1.04] text-fg">{name}</h1>
+    <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{meta.description}</p>
 
-        <h1 className="text-3xl md:text-4xl font-display font-bold mb-3 leading-tight tracking-tight text-fg">
-          {name}
-        </h1>
+    <div className="mt-6 flex flex-wrap items-center gap-3">
+      {hasNext ? (
+        <button type="button" onClick={onContinue} className="amber-specular-button group inline-flex min-h-[44px] items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold">
+          {totalSolvedCount > 0 ? 'Continue where you left off' : 'Start the first problem'}
+          <FiArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+        </button>
+      ) : (
+        totalProblems > 0 && <span className="text-sm font-semibold text-ok">You have solved every problem on this sheet.</span>
+      )}
+      <Link to="/my-plan" className="titanium-button inline-flex min-h-[44px] items-center rounded-xl px-5 py-2.5 text-sm font-medium">
+        Plan this sheet in My plan
+      </Link>
+      {meta.sourceUrl && meta.sourceUrl !== '#' && (
+        <a href={meta.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center gap-1.5 px-1 text-sm text-muted transition-colors hover:text-fg">
+          Source: {meta.sourceName}
+          <FiExternalLink aria-hidden="true" className="text-xs" />
+        </a>
+      )}
+    </div>
 
-        <p className="text-muted text-sm leading-relaxed max-w-2xl mb-5">
-          {meta.description}
-        </p>
-
-        {/* Stats row & Source */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-5 flex-wrap">
-            <div className="flex items-center gap-2">
-              <FiTarget className="text-sm" style={{ color: meta.accentColor }} />
-              <span className="text-sm text-fg-2 font-medium">{totalSolvedCount} solved</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <FiAward className="text-sm text-muted" />
-              <span className="text-sm text-muted">{totalProblems - totalSolvedCount} remaining</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="h-1.5 w-24 md:w-32 bg-ink/[0.06] rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercentage}%` }}
-                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                  style={{ background: meta.accentColor }}
-                />
-              </div>
-              <span className="text-xs font-ui font-medium text-fg-3">{progressPercentage}%</span>
-            </div>
-          </div>
-
-          {/* SOURCE LINK (Downside of status bar) */}
-          {meta.sourceUrl && meta.sourceUrl !== '#' && (
-            <a
-              href={meta.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2.5 sm:py-1.5 rounded-lg bg-ink/[0.04] border border-ink/[0.08] text-muted hover:text-fg hover:bg-ink/[0.08] hover:border-ink/[0.15] transition-all w-max shadow-sm"
-            >
-              <span>Official Source: {meta.sourceName}</span>
-              <FaExternalLinkAlt className="text-xs text-muted" />
-            </a>
-          )}
-        </div>
+    <div className="mt-8 flex flex-col gap-6 rounded-2xl border border-ink/[0.1] bg-card p-5 sm:flex-row sm:items-center sm:p-6 shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_18px_34px_-22px_color-mix(in_srgb,var(--shadow)_42%,transparent)]">
+      <div className="flex justify-center sm:justify-start">
+        <ProgressRing percentage={progressPercentage} solved={totalSolvedCount} total={totalProblems} />
       </div>
-
-      {/* Right: circular progress */}
-      <div className="flex flex-col items-center gap-2 flex-shrink-0">
-        <ProgressRing
-          percentage={progressPercentage}
-          solved={totalSolvedCount}
-          total={totalProblems}
-          accentColor={meta.accentColor}
-        />
-        <span className="text-xs font-ui text-muted">Progress</span>
+      <div className="min-w-0 flex-1">
+        <p className="font-ui text-sm text-muted">Overall progress</p>
+        <p className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-fg">
+          {totalSolvedCount} <span className="text-muted">/ {totalProblems}</span>
+        </p>
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-ink/[0.08]" role="progressbar" aria-valuenow={progressPercentage} aria-valuemin={0} aria-valuemax={100} aria-label="Overall progress">
+          <div className="h-full rounded-full transition-[width] duration-500 ease-out" style={{ width: `${progressPercentage}%`, background: 'var(--brand-grad-bottom)' }} />
+        </div>
+        <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-ink/[0.08] pt-4">
+          {LEVELS.map(({ key, color }) => (
+            <div key={key}>
+              <dt className={`font-ui text-xs font-semibold ${color}`}>{key}</dt>
+              <dd className="mt-0.5 font-display text-lg font-extrabold text-fg">
+                {byLevel[key].solved}
+                <span className="text-sm font-medium text-muted"> / {byLevel[key].total}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </div>
   </div>
