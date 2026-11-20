@@ -1,34 +1,39 @@
 import React from "react";
 import HeroSection from "../components/homePage/HeroSection";
-import MetricsStrip from "../components/homePage/MetricsStrip";
+import BenefitStrip from "../components/homePage/BenefitStrip";
 import PlanSection from "../components/homePage/PlanSection";
-import EngineeringContrast from "../components/homePage/EngineeringContrast";
-import BentoGrid from "../components/homePage/BentoGrid";
+import Reveal from "../components/ui/Reveal";
+import SuiteSection from "../components/homePage/SuiteSection";
+import CtaBanner from "../components/homePage/CtaBanner";
 import FAQ from "../components/homePage/FAQ";
 
 const Home = () => {
   return (
     <div className="relative min-h-screen bg-canvas text-fg-2 selection:bg-brand/25 selection:text-fg overflow-x-hidden">
-      {/* ── LUXURY AMBIENT HORIZON BEAM ── */}
+      {/* Page backdrop: fading grid paper plus two warm glows. Colours are tokens, strength is --glow. */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[480px] pointer-events-none -z-10 opacity-70 transform-gpu"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 40% at 50% 0%, color-mix(in srgb, var(--brand-deep) 9%, transparent) 0%, color-mix(in srgb, var(--brand-deep) 1.5%, transparent) 55%, transparent 80%)",
-        }}
-      />
-
-      {/* ── ARCHITECTURAL TOP BORDER HIGHLIGHT ── */}
-      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent pointer-events-none" />
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-[820px] pointer-events-none z-0 transform-gpu"
+        style={{ maskImage: "radial-gradient(ellipse 70% 80% at 60% 18%, var(--ink) 20%, transparent 75%)", WebkitMaskImage: "radial-gradient(ellipse 70% 80% at 60% 18%, var(--ink) 20%, transparent 75%)" }}
+      >
+        <div className="absolute inset-0 bg-line-grid" />
+        <div
+          className="absolute inset-0 animate-glow"
+          style={{
+            background:
+              "radial-gradient(ellipse 45% 55% at 78% 22%, color-mix(in srgb, var(--brand-grad-top) var(--glow), transparent) 0%, transparent 70%), radial-gradient(ellipse 40% 45% at 8% 4%, color-mix(in srgb, var(--brand-grad-top) calc(var(--glow) * 0.5), transparent) 0%, transparent 70%)",
+          }}
+        />
+      </div>
 
       {/* ── LUXURY CONTAINER ── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-36 relative z-10 space-y-28 sm:space-y-36">
         <HeroSection />
-        <MetricsStrip />
-        <PlanSection />
-        <EngineeringContrast />
-        <BentoGrid />
-        <FAQ />
+        <Reveal><BenefitStrip /></Reveal>
+        <SuiteSection />
+        <Reveal><PlanSection /></Reveal>
+        <Reveal><CtaBanner /></Reveal>
+        <Reveal><FAQ /></Reveal>
       </div>
     </div>
   );

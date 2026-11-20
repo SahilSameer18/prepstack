@@ -42,7 +42,7 @@ describe('light theme contrast', () => {
     }
   });
   it('defines every colour the dark theme defines (nothing falls back to a dark value)', () => {
-    const skip = new Set(['font-display', 'font-mono', 'font-sans', 'logo-top', 'logo-bottom']);
+    const skip = new Set(['font-display', 'font-mono', 'font-sans', 'font-hand', 'logo-top', 'logo-bottom']);
     const missing = Object.keys(dark).filter((k) => !skip.has(k) && !dark[k].startsWith('var(') && !dark[k].startsWith('color-mix') && !dark[k].startsWith('inset') && !(k in light));
     expect(missing).toEqual([]);
   });

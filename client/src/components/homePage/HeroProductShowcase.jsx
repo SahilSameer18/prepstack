@@ -63,7 +63,7 @@ const HeroProductShowcase = () => {
         </div>
 
         {/* ── SILKY SEGMENTED CONTROL ── */}
-        <div className="relative flex items-center w-full sm:w-auto bg-inset/60 p-1 rounded-xl">
+        <div className="relative flex items-center w-full sm:w-auto overflow-x-auto bg-inset/60 p-1 rounded-xl">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
