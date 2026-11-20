@@ -1,75 +1,60 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
+import { motion, useReducedMotion } from "framer-motion";
+import { FiArrowRight } from "react-icons/fi";
 import { roadmaps } from "../../data/roadmaps.js";
 import { iconMap } from "./roadmapIcons";
+import PageBackdrop from "../../components/ui/PageBackdrop";
 
-const Roadmap = () => {
+const MotionLink = motion.create(Link);
+
+const RoadmapCard = ({ r, index }) => {
+  const calm = useReducedMotion();
   return (
-    <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto page-enter">
-      {/* Header */}
+    <MotionLink
+      to={`/roadmaps/${r.slug}`}
+      initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 20px, 0)" }}
+      whileInView={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.07 }}
+      className="group relative flex flex-col rounded-2xl border border-ink/[0.1] bg-card p-6 text-left shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_18px_34px_-20px_color-mix(in_srgb,var(--shadow)_42%,transparent)] transition-[transform,box-shadow] duration-200 active:scale-[0.99] hover:-translate-y-0.5 hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_16%,transparent),0_26px_44px_-20px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-3xl text-brand">{iconMap[r.icon]}</span>
+        {r.recommended && <span className="rounded-full border border-brand/30 bg-brand/10 px-2.5 py-0.5 font-ui text-xs font-semibold text-brand">Core track</span>}
+      </div>
+
+      <h2 className="mt-5 font-display text-xl font-extrabold tracking-tight text-fg">{r.title}</h2>
+      <p className="mt-1.5 font-ui text-sm text-fg-3">{r.duration} · {r.level}</p>
+      <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{r.desc}</p>
+
+      <p className="mt-4 font-ui text-xs text-muted">{r.steps.length} steps</p>
+      <span className="mt-4 inline-flex items-center gap-2 font-display text-sm font-bold text-brand">
+        Open roadmap
+        <FiArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+      </span>
+    </MotionLink>
+  );
+};
+
+const Roadmap = () => (
+  <div className="relative">
+    <PageBackdrop />
+    <div className="relative z-10 mx-auto max-w-6xl px-4 pb-12 text-left sm:px-6">
       <div className="mb-10 pt-2">
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-fg tracking-[-0.035em] mb-3">
-          Engineering Career Roadmaps
+        <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl lg:text-6xl">
+          Learning <span className="text-brand">roadmaps.</span>
         </h1>
-        <p className="text-muted max-w-2xl text-base sm:text-lg leading-relaxed font-normal">
-          Structured, syllabus-grade tracks designed around tier-1 software engineering interview benchmarks and modern production stacks.
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">
+          Step-by-step paths for the skills interviews and first jobs ask for. Each step says what to learn, how long it takes, what to practise and how to know you are done.
         </p>
       </div>
 
-      {/* Grid */}
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-16">
-        {roadmaps.map((r, i) => (
-          <div
-            key={i}
-            className="titanium-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between group transition-all duration-200 hover:-translate-y-1"
-          >
-            <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent group-hover:via-brand/40 transition-all" />
-
-            {/* Top metadata row */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-11 h-11 rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-xl text-brand flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
-                {iconMap[r.icon]}
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                {r.recommended && (
-                  <span className="font-ui text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-brand/10 border border-brand/30 text-brand">
-                    Core Track
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Title & Body */}
-            <div>
-              <h3 className="font-display text-lg sm:text-xl font-bold text-fg mb-2 group-hover:text-brand transition-colors">
-                {r.title}
-              </h3>
-
-              <div className="flex items-center gap-2 font-ui text-xs text-muted mb-3">
-                <span>{r.duration}</span>
-                <span className="text-fg/20">/</span>
-                <span>{r.level}</span>
-              </div>
-
-              <p className="text-muted text-sm leading-relaxed mb-6 font-normal">
-                {r.desc}
-              </p>
-            </div>
-
-            {/* CTA */}
-            <Link
-              to={`/roadmaps/${r.slug}`}
-              className="w-full py-2.5 px-4 min-h-[44px] rounded-xl text-xs sm:text-sm font-display font-semibold flex items-center justify-center gap-2 bg-ink/[0.04] border border-ink/[0.08] text-fg-2 hover:amber-specular-button transition-all duration-200 select-none"
-            >
-              Explore roadmap <FiArrowRight className="text-xs group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        ))}
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {roadmaps.map((r, i) => <RoadmapCard key={r.slug} r={r} index={i} />)}
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export default Roadmap;

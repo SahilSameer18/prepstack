@@ -1,33 +1,36 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight, FiMenu, FiX, FiInfo, FiAlertTriangle, FiCheckCircle, FiMessageSquare, FiClock, FiFlag, FiCheck } from 'react-icons/fi';
-import { useNotes } from '../../hooks/useNotes';
+import { useNotes, useNotesSummary } from '../../hooks/useNotes';
+import { useActiveHeading } from '../../hooks/useActiveHeading';
 import { useAuth } from '../../hooks/useAuth';
 import SignInNotice from '../../components/auth/SignInNotice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SkeletonNotesDetail } from '../../components/ui/Skeletons';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
+import PageBackdrop from '../../components/ui/PageBackdrop';
 import Accordion from '../../components/ui/Accordion';
 import Quiz from '../../components/notes/Quiz';
 import Diagram from '../../components/notes/Diagram';
 import { formatDate } from '../../utils/formatDate';
 import { CONTACT_EMAIL } from '../../data/contact';
 
-// ── Sections written before the new template (no lastChecked): their topics keep the old blocks ──────────────────────
+// ── Sections written before the new template (no lastChecked): their topics keep the old blocks ────────────────
+// One neutral look for every block; amber marks the interview answer and red the traps, as everywhere else in the app.
 const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderClass }) => {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className={`mb-6 p-5 sm:p-6 rounded-2xl border ${bgClass} ${borderClass} shadow-sm text-left`}>
-      <h4 className={`flex items-center gap-2 text-xs font-ui font-bold mb-3 uppercase tracking-wider ${colorClass}`}>
+    <div className={`mb-6 p-5 sm:p-6 rounded-2xl border ${bgClass} ${borderClass} text-left`}>
+      <h4 className={`flex items-center gap-2 text-sm font-ui font-bold mb-3 ${colorClass}`}>
         {Icon && <Icon className="text-sm" />}
         {title}
       </h4>
       <ul className="space-y-2.5">
         {items.map((item, idx) => (
           <li key={idx} className="flex items-start gap-3 text-fg-2">
-            <span className={`mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0 ${colorClass.replace('text-', 'bg-')}`} />
-            <span className="leading-[1.7] text-[14.5px] sm:text-[15px]">{item}</span>
+            <span className={`mt-2.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${colorClass.replace('text-', 'bg-')}`} />
+            <span className="leading-[1.75] text-[15px] sm:text-base">{item}</span>
           </li>
         ))}
       </ul>
@@ -36,32 +39,33 @@ const SectionBlock = ({ title, items, icon: Icon, colorClass, bgClass, borderCla
 };
 
 // [topic field, heading, icon, token classes]. Spelled out in full so Tailwind can see every class.
+const NEUTRAL = ['text-fg-3', 'bg-ink/[0.025]', 'border-ink/[0.08]'];
 const LEGACY_BLOCKS = [
-  ['concept', 'Concept', FiInfo, 'text-info', 'bg-info-solid/[0.04]', 'border-info-solid/[0.12]'],
-  ['deepInsight', 'Deep Insight', FiInfo, 'text-violet', 'bg-violet-solid/[0.04]', 'border-violet-solid/[0.12]'],
-  ['why', 'Why it matters', null, 'text-warn', 'bg-warn-solid/[0.04]', 'border-warn-solid/[0.12]'],
-  ['realWorld', 'Real World Examples', FiCheckCircle, 'text-ok', 'bg-ok-solid/[0.04]', 'border-ok-solid/[0.12]'],
-  ['traps', 'Common Traps / Gotchas', FiAlertTriangle, 'text-bad', 'bg-bad-solid/[0.04]', 'border-bad-solid/[0.12]'],
-  ['interviewAnswer', 'How to Answer in Interview', FiMessageSquare, 'text-brand', 'bg-brand/[0.04]', 'border-brand/[0.12]'],
-  ['flow', 'Flow Step-by-Step', null, 'text-cyan', 'bg-cyan-solid/[0.04]', 'border-cyan-solid/[0.12]'],
-  ['conditions', 'Conditions', null, 'text-yellow', 'bg-yellow-solid/[0.04]', 'border-yellow-solid/[0.12]'],
-  ['pcbContains', 'PCB Contains', null, 'text-cyan', 'bg-cyan-solid/[0.04]', 'border-cyan-solid/[0.12]'],
-  ['solution', 'Solution Concept', null, 'text-ok', 'bg-ok-solid/[0.04]', 'border-ok-solid/[0.12]'],
-  ['list', 'Key Takeaways', null, 'text-fg-3', 'bg-ink/[0.02]', 'border-ink/[0.08]'],
+  ['concept', 'Concept', FiInfo, ...NEUTRAL],
+  ['deepInsight', 'Deep Insight', FiInfo, ...NEUTRAL],
+  ['why', 'Why it matters', null, ...NEUTRAL],
+  ['realWorld', 'Real World Examples', FiCheckCircle, ...NEUTRAL],
+  ['traps', 'Common Traps / Gotchas', FiAlertTriangle, 'text-bad', 'bg-bad-solid/[0.05]', 'border-bad-solid/[0.18]'],
+  ['interviewAnswer', 'How to Answer in Interview', FiMessageSquare, 'text-brand', 'bg-brand/[0.06]', 'border-brand/[0.2]'],
+  ['flow', 'Flow Step-by-Step', null, ...NEUTRAL],
+  ['conditions', 'Conditions', null, ...NEUTRAL],
+  ['pcbContains', 'PCB Contains', null, ...NEUTRAL],
+  ['solution', 'Solution Concept', null, ...NEUTRAL],
+  ['list', 'Key Takeaways', null, ...NEUTRAL],
 ];
 
 const LegacyTopic = ({ topic }) => (
   <section className="mb-12">
-    <h2 className="text-xl md:text-2xl font-display font-bold text-fg mb-5 text-left">{topic.name}</h2>
+    <h2 className="text-2xl font-display font-extrabold tracking-tight text-fg mb-5 text-left">{topic.name}</h2>
     {LEGACY_BLOCKS.map(([field, title, icon, colorClass, bgClass, borderClass]) => (
       <SectionBlock key={field} title={title} items={topic[field]} icon={icon} colorClass={colorClass} bgClass={bgClass} borderClass={borderClass} />
     ))}
     {topic.followUps && (
       <div className="mt-8 pt-6 border-t border-ink/[0.08] text-left">
-        <h4 className="text-xs font-ui font-bold text-muted mb-3.5">Interview Follow-up Questions</h4>
+        <h4 className="text-sm font-ui font-bold text-muted mb-3.5">Interview Follow-up Questions</h4>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {topic.followUps.map((q, idx) => (
-            <li key={idx} className="bg-card border border-ink/[0.08] p-4 rounded-xl text-fg-3 text-xs sm:text-sm leading-relaxed hover:border-ink/[0.15] transition-colors">{q}</li>
+            <li key={idx} className="bg-card border border-ink/[0.08] p-4 rounded-xl text-fg-3 text-sm leading-relaxed hover:border-ink/[0.15] transition-colors">{q}</li>
           ))}
         </ul>
       </div>
@@ -72,7 +76,7 @@ const LegacyTopic = ({ topic }) => (
 const LegacySection = ({ section }) => (
   <>
     {section.overview?.length > 0 && (
-      <div className="mb-8 space-y-2 text-fg-3 text-sm md:text-base leading-relaxed text-left">
+      <div className="mb-8 space-y-3 text-fg-2 text-[17px] leading-[1.75] text-left">
         {section.overview.map((line, i) => <p key={i}>{line}</p>)}
       </div>
     )}
@@ -81,23 +85,25 @@ const LegacySection = ({ section }) => (
 );
 
 // ── Sections written to the template (they have lastChecked) ──────────────────────────────────────────────────────────
-const Heading = ({ children }) => <h2 className="text-xl md:text-2xl font-display font-bold text-fg mb-4 text-left">{children}</h2>;
+const Heading = ({ id, children }) => <h2 id={id} className="scroll-mt-28 text-2xl font-display font-extrabold tracking-tight text-fg mb-5 text-left">{children}</h2>;
+
+const topicId = (name) => 'topic-' + String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 const TopicCard = ({ topic }) => (
-  <article className="rounded-2xl bg-card border border-ink/[0.08] p-5 sm:p-6 text-left space-y-3">
-    <h3 className="font-display text-lg font-bold text-fg">{topic.name}</h3>
-    <p className="text-fg-2 text-[15px] leading-[1.7]">{topic.definition}</p>
-    <div className="rounded-xl bg-warn-solid/[0.04] border border-warn-solid/[0.12] p-4">
-      <p className="text-xs font-ui font-bold uppercase tracking-wider text-warn mb-1.5">Why it matters</p>
-      <p className="text-fg-3 text-sm leading-relaxed">{topic.why}</p>
+  <article id={topicId(topic.name)} className="scroll-mt-28 rounded-2xl bg-card border border-ink/[0.1] p-5 sm:p-6 text-left space-y-4 shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_12%,transparent),0_16px_30px_-22px_color-mix(in_srgb,var(--shadow)_38%,transparent)]">
+    <h3 className="font-display text-xl font-extrabold tracking-tight text-fg">{topic.name}</h3>
+    <p className="text-fg-2 text-[17px] leading-[1.75]">{topic.definition}</p>
+    <div className="rounded-xl bg-brand/[0.07] border border-brand/[0.2] p-4">
+      <p className="text-sm font-ui font-bold text-brand mb-1.5">Why it matters</p>
+      <p className="text-fg-2 text-base leading-relaxed">{topic.why}</p>
     </div>
-    <div className="rounded-xl bg-ok-solid/[0.04] border border-ok-solid/[0.12] p-4">
-      <p className="text-xs font-ui font-bold uppercase tracking-wider text-ok mb-1.5">Example</p>
-      <p className="text-fg-3 text-sm leading-relaxed whitespace-pre-wrap">{topic.example}</p>
+    <div className="rounded-xl bg-ink/[0.03] border border-ink/[0.08] p-4">
+      <p className="text-sm font-ui font-bold text-fg-3 mb-1.5">Example</p>
+      <p className="text-fg-2 text-base leading-relaxed whitespace-pre-wrap">{topic.example}</p>
     </div>
-    <div className="rounded-xl bg-bad-solid/[0.04] border border-bad-solid/[0.12] p-4">
-      <p className="text-xs font-ui font-bold uppercase tracking-wider text-bad mb-1.5">How it fails</p>
-      <p className="text-fg-3 text-sm leading-relaxed">{topic.failure}</p>
+    <div className="rounded-xl bg-bad-solid/[0.05] border border-bad-solid/[0.18] p-4">
+      <p className="text-sm font-ui font-bold text-bad mb-1.5">How it fails</p>
+      <p className="text-fg-2 text-base leading-relaxed">{topic.failure}</p>
     </div>
   </article>
 );
@@ -108,33 +114,71 @@ const relatedLinks = (links) => [
   ...links.roadmapSteps.map((target) => { const [slug, step] = target.split(':'); return { key: target, path: `/roadmaps/${slug}#${step}`, label: `Roadmap: ${slug.replace(/-/g, ' ')}` }; }),
 ];
 
+// The headings of a reviewed section, for the "On this page" list: [{ id, label, sub?: [{ id, label }] }]
+const outlineOf = (section) => [
+  { id: 'topics', label: 'Topics', sub: section.topics.map((t) => ({ id: topicId(t.name), label: t.name })) },
+  ...(section.diagrams?.length > 0 ? [{ id: 'diagrams', label: 'Diagrams' }] : []),
+  { id: 'mistakes', label: 'Common mistakes' },
+  { id: 'questions', label: 'Interview questions' },
+  { id: 'quiz', label: 'Check yourself' },
+  { id: 'keep-going', label: 'Keep going' },
+];
+
+const OnThisPage = ({ outline }) => {
+  const ids = outline.flatMap((o) => [o.id, ...(o.sub || []).map((s) => s.id)]);
+  const active = useActiveHeading(ids);
+  const link = (item, small) => (
+    <a
+      key={item.id}
+      href={`#${item.id}`}
+      aria-current={active === item.id ? 'location' : undefined}
+      className={`block py-1 leading-snug transition-colors ${small ? 'pl-3 text-[13px]' : 'text-sm font-semibold'} ${active === item.id ? 'text-brand' : 'text-muted hover:text-fg'}`}
+    >
+      {item.label}
+    </a>
+  );
+  return (
+    <nav aria-label="On this page" className="text-left">
+      <p className="mb-2 font-ui text-xs font-bold text-fg-3">On this page</p>
+      <ul className="space-y-0.5 border-l border-ink/[0.1] pl-3">
+        {outline.map((o) => (
+          <li key={o.id}>
+            {link(o)}
+            {o.sub && <div>{o.sub.map((s) => link(s, true))}</div>}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+};
+
 const ReviewedSection = ({ section }) => {
   const { user, loading: authLoading } = useAuth();
   const [quizDone, setQuizDone] = useState(false);
   return (
-  <div className="space-y-12">
-    <div className="space-y-2 text-fg-2 text-[15px] md:text-base leading-[1.75] text-left">
+  <div className="space-y-14">
+    <div className="space-y-3 text-fg-2 text-[17px] leading-[1.75] text-left">
       {section.overview.map((line, i) => <p key={i}>{line}</p>)}
     </div>
 
     <div>
-      <Heading>Topics</Heading>
+      <Heading id="topics">Topics</Heading>
       <div className="space-y-5">{section.topics.map((topic) => <TopicCard key={topic.name} topic={topic} />)}</div>
     </div>
 
     {section.diagrams?.length > 0 && (
       <div>
-        <Heading>Diagrams</Heading>
+        <Heading id="diagrams">Diagrams</Heading>
         <div className="space-y-5">{section.diagrams.map((d) => <Diagram key={d.caption} diagram={d} />)}</div>
       </div>
     )}
 
     <div>
-      <Heading>Common mistakes</Heading>
-      <ul className="space-y-2.5 text-left">
+      <Heading id="mistakes">Common mistakes</Heading>
+      <ul className="space-y-3 text-left">
         {section.mistakes.map((m) => (
-          <li key={m} className="flex items-start gap-3 text-fg-3 text-sm md:text-[15px] leading-relaxed">
-            <FiAlertTriangle className="text-bad mt-1 shrink-0" />
+          <li key={m} className="flex items-start gap-3 text-fg-2 text-base leading-relaxed">
+            <FiAlertTriangle className="text-bad mt-1.5 shrink-0" aria-hidden="true" />
             <span>{m}</span>
           </li>
         ))}
@@ -142,18 +186,18 @@ const ReviewedSection = ({ section }) => {
     </div>
 
     <div>
-      <Heading>Interview questions</Heading>
+      <Heading id="questions">Interview questions</Heading>
       <div className="space-y-3 text-left">
         {section.questions.map((q) => (
           <Accordion key={q.question} title={q.question}>
-            <p className="text-fg-3 text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap">{q.answer}</p>
+            <p className="text-fg-2 text-base leading-relaxed whitespace-pre-wrap">{q.answer}</p>
           </Accordion>
         ))}
       </div>
     </div>
 
     <div>
-      <Heading>Check yourself</Heading>
+      <Heading id="quiz">Check yourself</Heading>
       <Quiz quiz={section.quiz} onComplete={(correct) => setQuizDone(correct !== null)} />
       {quizDone && !user && !authLoading && (
         <div className="mt-4">
@@ -163,19 +207,67 @@ const ReviewedSection = ({ section }) => {
     </div>
 
     <div>
-      <Heading>Keep going</Heading>
+      <Heading id="keep-going">Keep going</Heading>
       <ul className="grid sm:grid-cols-2 gap-3">
         {relatedLinks(section.links).map((l) => (
           <li key={l.key}>
-            <Link to={l.path} className="flex items-center justify-between gap-3 rounded-xl bg-card border border-ink/[0.08] hover:border-ink/[0.2] px-4 py-3 min-h-[44px] text-sm text-fg-2 hover:text-fg transition-colors">
+            <Link to={l.path} className="flex items-center justify-between gap-3 rounded-xl bg-card border border-ink/[0.1] hover:border-ink/[0.22] px-4 py-3 min-h-[44px] text-sm text-fg-2 hover:text-fg transition-colors">
               <span className="capitalize">{l.label}</span>
-              <FiChevronRight className="text-muted shrink-0" />
+              <FiChevronRight className="text-muted shrink-0" aria-hidden="true" />
             </Link>
           </li>
         ))}
       </ul>
     </div>
   </div>
+  );
+};
+
+// The list of sections, with the subject switcher on top. The same list sits in the side column and in the phone drawer.
+const SectionList = ({ subject, subjectTitle, sections, activeId, onPick }) => {
+  const navigate = useNavigate();
+  const summary = useNotesSummary();
+  const subjects = summary ? Object.values(summary) : [];
+  return (
+    <div className="text-left">
+      <label htmlFor="notes-subject" className="mb-1.5 block font-ui text-xs font-bold text-fg-3">Subject</label>
+      {subjects.length > 1 ? (
+        <select
+          id="notes-subject"
+          value={subject}
+          onChange={(e) => { onPick?.(); navigate(`/notes/${e.target.value}`); }}
+          className="min-h-[44px] w-full cursor-pointer rounded-xl border border-ink/[0.12] bg-card px-3 text-sm font-semibold text-fg outline-none transition-colors hover:border-ink/[0.22] focus:border-brand"
+        >
+          {subjects.map((s) => <option key={s.subjectSlug} value={s.subjectSlug}>{s.subject || s.subjectSlug}</option>)}
+        </select>
+      ) : (
+        <p id="notes-subject" className="min-h-[44px] content-center text-sm font-semibold text-fg">{subjectTitle}</p>
+      )}
+      <p className="mb-2 mt-5 font-ui text-xs font-bold text-fg-3">{sections.length} sections</p>
+      <nav aria-label="Sections">
+        <ol className="space-y-0.5">
+          {sections.map((s, i) => {
+            const isActive = s.id === activeId;
+            return (
+              <li key={s.id}>
+                <Link
+                  to={`/notes/${subject}/${s.id}`}
+                  onClick={onPick}
+                  aria-current={isActive ? 'page' : undefined}
+                  title={`${s.title} (${s.readMinutes} min)`}
+                  className={`flex min-h-[44px] items-start gap-3 rounded-xl px-3 py-2.5 text-sm leading-snug transition-colors ${
+                    isActive ? 'bg-brand/12 font-semibold text-brand' : 'text-muted hover:bg-ink/[0.05] hover:text-fg'
+                  }`}
+                >
+                  <span className="w-5 shrink-0 text-right font-ui text-xs leading-[1.4rem] opacity-70">{i + 1}</span>
+                  <span>{s.title}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+    </div>
   );
 };
 
@@ -190,9 +282,9 @@ export default function NotesDetail() {
     return () => { document.body.style.overflow = ''; };
   }, [isSidebarOpen]);
 
-  // A new section starts at the top of the reading area
+  // A new section starts at the top of the page
   useEffect(() => {
-    document.getElementById('notes-content-container')?.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0 });
   }, [subject, sectionId]);
 
   if (loading) {
@@ -214,142 +306,112 @@ export default function NotesDetail() {
   const nextSection = section.links?.next ? sections.find((s) => s.id === section.links.next) || null : sections[index + 1] || null;
   const reviewed = Boolean(section.lastChecked);
   const reportHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Mistake in notes: ${section.title} (${section.id})`)}`;
+  const list = <SectionList subject={subject} subjectTitle={subjectTitle} sections={sections} activeId={section.id} onPick={() => setIsSidebarOpen(false)} />;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)] -mt-6">
+    <div className="relative">
+      <PageBackdrop />
+      <div className="relative z-10 mx-auto max-w-7xl lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[16rem_minmax(0,1fr)_13rem]">
 
-      {/* ── Mobile Top Bar ── */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 border-b border-ink/[0.08] bg-card sticky top-0 z-40">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link to="/notes" aria-label="Back to all subjects" className="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-lg bg-ink/5 text-muted hover:text-fg hover:bg-ink/10 transition-colors">
-            <FiChevronLeft className="text-base" />
-          </Link>
+        {/* ── Phone: the section list opens as a drawer ── */}
+        <div className="lg:hidden sticky top-16 z-30 -mx-4 mb-6 flex items-center justify-between gap-3 border-b border-ink/[0.1] bg-canvas/85 px-4 py-2 backdrop-blur-xl">
           <div className="min-w-0 text-left">
-            <p className="text-xs text-muted font-ui font-semibold">{subjectTitle}</p>
-            <p className="text-sm font-semibold text-fg truncate">{section.title}</p>
+            <p className="font-ui text-xs font-semibold text-muted">{subjectTitle}</p>
+            <p className="truncate text-sm font-semibold text-fg">{section.title}</p>
           </div>
-        </div>
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className="flex-shrink-0 flex items-center gap-1.5 px-3.5 min-h-[44px] rounded-lg bg-ink/[0.06] border border-ink/[0.08] text-fg-2 hover:text-fg text-xs font-medium transition-colors"
-        >
-          <FiMenu className="text-sm" />
-          Sections
-        </button>
-      </div>
-
-      {/* ── Mobile Sidebar Backdrop ── */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => setIsSidebarOpen(false)}
-            className="fixed inset-0 bg-scrim/70 z-40 md:hidden backdrop-blur-sm"
-          />
-        )}
-      </AnimatePresence>
-
-      {/* ── Sidebar: the sections of this subject ── */}
-      <div
-        className={`
-          fixed left-0 md:left-auto md:sticky top-0 md:top-[80px]
-          h-screen md:h-[calc(100vh-80px)]
-          w-[280px] md:w-64
-          bg-card
-          border-r border-ink/[0.08]
-          z-50 md:z-auto
-          flex flex-col
-          transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] text-left
-          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        `}
-      >
-        <div className="flex items-center justify-between px-4 py-4 border-b border-ink/[0.08] flex-shrink-0">
-          <Link to="/notes" className="flex items-center gap-2 min-h-[44px] text-muted hover:text-fg transition-colors text-sm group">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-ink/5 group-hover:bg-ink/10 transition-colors">
-              <FiChevronLeft className="text-sm" />
-            </div>
-            <span className="font-medium">All Subjects</span>
-          </Link>
           <button
-            onClick={() => setIsSidebarOpen(false)}
-            aria-label="Close the section list"
-            className="md:hidden flex items-center justify-center w-11 h-11 rounded-lg text-muted hover:text-fg hover:bg-ink/10 transition-colors"
+            type="button"
+            onClick={() => setIsSidebarOpen(true)}
+            className="flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl border border-ink/[0.12] bg-card px-3.5 text-sm font-medium text-fg-2 transition-colors hover:text-fg"
           >
-            <FiX className="text-sm" />
+            <FiMenu className="text-sm" aria-hidden="true" />
+            Sections
           </button>
         </div>
 
-        <div className="px-4 pt-4 pb-3 border-b border-ink/[0.06] flex-shrink-0">
-          <h2 className="font-display text-base font-bold text-fg mb-0.5">{subjectTitle}</h2>
-          <p className="font-ui text-xs text-muted">{sections.length} sections</p>
-        </div>
-
-        <nav aria-label="Sections" className="flex-1 overflow-y-auto py-3 scrollbar-thin">
-          <ul className="px-3 space-y-0.5">
-            {sections.map((s) => {
-              const isActive = s.id === section.id;
-              return (
-                <li key={s.id}>
-                  <Link
-                    to={`/notes/${subject}/${s.id}`}
-                    onClick={() => setIsSidebarOpen(false)}
-                    aria-current={isActive ? 'page' : undefined}
-                    className={`w-full text-left px-3 py-2.5 min-h-[44px] rounded-lg text-[13px] font-medium transition-colors duration-150 flex items-center justify-between gap-2 ${
-                      isActive
-                        ? 'bg-brand/10 text-brand border border-brand/25 font-semibold'
-                        : 'text-muted hover:bg-ink/[0.04] hover:text-fg-2 border border-transparent'
-                    }`}
-                  >
-                    <span className="truncate">{s.title}</span>
-                    <span className="flex items-center gap-1.5 shrink-0 text-xs text-muted">
-                      {s.lastChecked && <FiCheck className="text-ok" aria-label="Checked" />}
-                      {s.readMinutes} min
-                    </span>
+        <AnimatePresence>
+          {isSidebarOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setIsSidebarOpen(false)}
+                className="fixed inset-0 z-40 bg-scrim/60 backdrop-blur-sm lg:hidden"
+              />
+              <motion.aside
+                initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+                transition={{ type: 'spring', duration: 0.35, bounce: 0 }}
+                className="fixed bottom-0 left-0 top-16 z-50 w-[300px] max-w-[88vw] overflow-y-auto border-r border-ink/[0.1] bg-card p-4 lg:hidden"
+                aria-label="Sections"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <Link to="/notes" onClick={() => setIsSidebarOpen(false)} className="flex min-h-[44px] items-center gap-1.5 text-sm text-muted hover:text-fg">
+                    <FiChevronLeft aria-hidden="true" /> All subjects
                   </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </div>
+                  <button type="button" onClick={() => setIsSidebarOpen(false)} aria-label="Close the section list" className="flex h-11 w-11 items-center justify-center rounded-xl text-muted hover:bg-ink/[0.06] hover:text-fg">
+                    <FiX aria-hidden="true" />
+                  </button>
+                </div>
+                {list}
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>
 
-      {/* ── Main Content: one section ── */}
-      <div id="notes-content-container" className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-4 py-6 md:px-8 md:py-10">
-          <motion.div key={section.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}>
-            <div className="flex items-center gap-1.5 text-xs text-muted mb-5 font-ui">
-              <Link to="/notes" className="hover:text-fg-2 transition-colors">{subjectTitle}</Link>
-              <FiChevronRight className="text-xs text-muted" />
-              <span className="text-fg-2 truncate">{section.title}</span>
+        {/* ── Desktop: the section list stays beside the article ── */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pb-6 pr-1 scrollbar-thin">
+            <Link to="/notes" className="mb-4 inline-flex min-h-[44px] items-center gap-1.5 text-sm text-muted transition-colors hover:text-fg">
+              <FiChevronLeft aria-hidden="true" /> All subjects
+            </Link>
+            {list}
+          </div>
+        </aside>
+
+        {/* ── The article: one section ── */}
+        <div className="min-w-0 pb-4">
+          <motion.div key={section.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="max-w-3xl">
+            <div className="mb-5 flex items-center gap-1.5 font-ui text-xs text-muted">
+              <Link to="/notes" className="transition-colors hover:text-fg-2">{subjectTitle}</Link>
+              <FiChevronRight className="text-xs" aria-hidden="true" />
+              <span className="truncate text-fg-2">{section.title}</span>
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-display font-bold text-fg mb-4 leading-tight text-left">{section.title}</h1>
+            <h1 className="mb-4 text-left font-display text-3xl font-black leading-[1.1] tracking-[-0.03em] text-fg md:text-4xl">{section.title}</h1>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-ui text-muted mb-8 pb-4 border-b border-ink/[0.08]">
-              <span className="flex items-center gap-1.5"><FiClock /> {section.readMinutes} min read</span>
-              {reviewed && <span className="flex items-center gap-1.5"><FiCheck className="text-ok" /> Last checked {formatDate(section.lastChecked)}</span>}
-              <a href={reportHref} className="flex items-center gap-1.5 min-h-[44px] text-fg-3 hover:text-brand transition-colors"><FiFlag /> Report a mistake</a>
+            <div className="mb-10 flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-ink/[0.1] pb-5 font-ui text-sm text-muted">
+              <span className="flex items-center gap-1.5"><FiClock aria-hidden="true" /> {section.readMinutes} min read</span>
+              {reviewed && <span className="flex items-center gap-1.5"><FiCheck className="text-ok" aria-hidden="true" /> Last checked {formatDate(section.lastChecked)}</span>}
+              <a href={reportHref} className="flex min-h-[44px] items-center gap-1.5 text-fg-3 transition-colors hover:text-brand"><FiFlag aria-hidden="true" /> Report a mistake</a>
             </div>
 
             {reviewed ? <ReviewedSection section={section} /> : <LegacySection section={section} />}
 
-            <div className="mt-12 pt-8 border-t border-ink/[0.08] grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="mt-14 grid grid-cols-1 gap-4 border-t border-ink/[0.1] pt-8 sm:grid-cols-2">
               {prevSection ? (
-                <Link to={`/notes/${subject}/${prevSection.id}`} className="group flex flex-col items-start p-4 rounded-xl border border-ink/[0.08] bg-card hover:border-ink/[0.2] transition-colors text-left">
-                  <span className="flex items-center gap-1.5 text-xs text-muted font-ui mb-1"><FiChevronLeft className="group-hover:-translate-x-0.5 transition-transform" /> Previous section</span>
-                  <span className="text-sm font-semibold text-fg-2 group-hover:text-fg truncate w-full">{prevSection.title}</span>
+                <Link to={`/notes/${subject}/${prevSection.id}`} className="group flex flex-col items-start rounded-2xl border border-ink/[0.1] bg-card p-4 text-left transition-[border-color,transform] duration-150 hover:border-ink/[0.22] active:scale-[0.99]">
+                  <span className="mb-1 flex items-center gap-1.5 font-ui text-xs text-muted"><FiChevronLeft className="transition-transform group-hover:-translate-x-0.5" aria-hidden="true" /> Previous section</span>
+                  <span className="w-full text-sm font-semibold text-fg-2 group-hover:text-fg">{prevSection.title}</span>
                 </Link>
               ) : <div />}
               {nextSection ? (
-                <Link to={`/notes/${subject}/${nextSection.id}`} className="group flex flex-col items-end p-4 rounded-xl border border-ink/[0.08] bg-card hover:border-brand/30 transition-colors text-right sm:col-start-2">
-                  <span className="flex items-center gap-1.5 text-xs text-muted font-ui mb-1">Next section <FiChevronRight className="group-hover:translate-x-0.5 transition-transform text-brand" /></span>
-                  <span className="text-sm font-semibold text-fg-2 group-hover:text-fg truncate w-full">{nextSection.title}</span>
+                <Link to={`/notes/${subject}/${nextSection.id}`} className="group flex flex-col items-end rounded-2xl border border-ink/[0.1] bg-card p-4 text-right transition-[border-color,transform] duration-150 hover:border-brand/40 active:scale-[0.99] sm:col-start-2">
+                  <span className="mb-1 flex items-center gap-1.5 font-ui text-xs text-muted">Next section <FiChevronRight className="text-brand transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
+                  <span className="w-full text-sm font-semibold text-fg-2 group-hover:text-fg">{nextSection.title}</span>
                 </Link>
               ) : <div />}
             </div>
           </motion.div>
         </div>
+
+        {/* ── Wide screens: the headings of this section ── */}
+        {reviewed && (
+          <aside className="hidden xl:block">
+            <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pb-6 scrollbar-thin">
+              <OnThisPage key={section.id} outline={outlineOf(section)} />
+            </div>
+          </aside>
+        )}
       </div>
     </div>
   );
