@@ -1,119 +1,107 @@
 import { Link } from "react-router-dom";
-import { FiMail, FiGithub, FiLinkedin, FiInstagram, FiTerminal } from "react-icons/fi";
+import { FiMail, FiGithub, FiLinkedin } from "react-icons/fi";
 import LogoMark from "./ui/LogoMark";
 
-const Footer = () => {
-  const resources = [
-    { name: 'My plan', url: '/my-plan' },
-    { name: "DSA Sheets", url: "/dsa" },
-    { name: "CS Notes", url: "/notes" },
-    { name: "Roadmaps", url: "/roadmaps" },
-    { name: "AI Projects", url: "/ai-projects" },
-    { name: "Role Analyzer", url: "/analyzer" },
-    { name: "Behavioral Prep", url: "/behavioral" },
-    { name: "Resume Guide", url: "/resume" },
-  ];
+const COLUMNS = [
+  {
+    title: "Learn",
+    links: [
+      { name: "My plan", url: "/my-plan" },
+      { name: "DSA Sheets", url: "/dsa" },
+      { name: "CS Notes", url: "/notes" },
+      { name: "Roadmaps", url: "/roadmaps" },
+    ],
+  },
+  {
+    title: "Tools",
+    links: [
+      { name: "Role Analyzer", url: "/analyzer" },
+      { name: "AI Projects", url: "/ai-projects" },
+      { name: "Behavioral Prep", url: "/behavioral" },
+      { name: "Resume Guide", url: "/resume" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { name: "Privacy Policy", url: "/privacy" },
+      { name: "Terms of Service", url: "/terms" },
+    ],
+  },
+];
 
-  const social = [
-    { icon: <FiGithub className="text-base" />, url: "https://github.com/SahilSameer18", label: "GitHub" },
-    { icon: <FiLinkedin className="text-base" />, url: "https://www.linkedin.com/in/sahil-sameer-siddique/", label: "LinkedIn" },
-    { icon: <FiInstagram className="text-base" />, url: "https://instagram.com/yourprofile", label: "Instagram" },
-    { icon: <FiMail className="text-base" />, url: "mailto:sahilsameer.dev18@gmail.com", label: "Email" },
-  ];
+const SOCIAL = [
+  { icon: <FiGithub className="text-base" />, url: "https://github.com/SahilSameer18", label: "GitHub" },
+  { icon: <FiLinkedin className="text-base" />, url: "https://www.linkedin.com/in/sahil-sameer-siddique/", label: "LinkedIn" },
+  { icon: <FiMail className="text-base" />, url: "mailto:sahilsameer.dev18@gmail.com", label: "Email" },
+];
 
-  return (
-    <footer className="mt-24 border-t border-ink/[0.08] bg-canvas">
-      <div className="max-w-7xl mx-auto px-6 py-14">
-        <div className="grid md:grid-cols-[1.2fr_1fr_auto] gap-10 pb-12 border-b border-ink/[0.06]">
-          {/* Brand Column */}
-          <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2.5 min-h-[44px] group" aria-label="PrepStack home">
-              <LogoMark className="w-8 h-8 shrink-0" />
-              <span className="font-display text-xl font-bold tracking-tight text-fg group-hover:opacity-90 transition-opacity">
-                Prep<span className="text-brand">Stack</span>
-              </span>
-            </Link>
-
-            <p className="text-muted text-sm leading-relaxed max-w-sm font-sans">
-              A free interview preparation workspace for software engineers: DSA sheets, CS notes, roadmaps and AI project ideas.
-            </p>
-
-            {/* Social icons with 44px touch targets */}
-            <div className="flex items-center gap-2.5 pt-2">
-              {social.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.label}
-                  className="w-11 h-11 rounded-xl bg-ink/[0.03] border border-ink/[0.08] flex items-center justify-center text-muted hover:text-fg hover:bg-ink/[0.08] hover:border-ink/[0.18] transition-all cursor-pointer"
-                >
-                  {s.icon}
-                </a>
-              ))}
-            </div>
+const Footer = () => (
+  <footer className="relative mt-24 border-t border-ink/[0.08] bg-canvas">
+    {/* the same grid paper as the home page, fading out downward */}
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 bg-line-grid"
+      style={{ maskImage: "linear-gradient(to bottom, var(--ink), transparent 70%)", WebkitMaskImage: "linear-gradient(to bottom, var(--ink), transparent 70%)" }}
+    />
+    <div className="relative mx-auto max-w-7xl px-6 py-14">
+      <div className="grid gap-10 border-b border-ink/[0.08] pb-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div>
+          <Link to="/" className="group flex min-h-[44px] items-center gap-2.5" aria-label="PrepStack home">
+            <LogoMark className="h-8 w-8 shrink-0" />
+            <span className="font-display text-xl font-bold tracking-tight text-fg transition-opacity group-hover:opacity-90">
+              Prep<span className="text-brand">Stack</span>
+            </span>
+          </Link>
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted">
+            Free interview prep for software engineers. No card needed.
+          </p>
+          <p aria-hidden="true" className="mt-4 -rotate-2 font-hand text-2xl text-fg-2">
+            <span className="draw-underline">Prepare. Build. Excel.</span>
+          </p>
+          <div className="mt-5 flex items-center gap-2.5">
+            {SOCIAL.map((s) => (
+              <a
+                key={s.label}
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-ink/[0.1] bg-card text-muted transition-colors hover:border-ink/[0.2] hover:text-fg"
+              >
+                {s.icon}
+              </a>
+            ))}
           </div>
+        </div>
 
-          {/* Resources Column */}
-          <div>
-            <h4 className="font-display text-xs uppercase tracking-widest text-fg-3 font-bold mb-4">
-              Learn
-            </h4>
-            <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
-              {resources.map((r) => (
-                <li key={r.name}>
-                  <Link
-                    to={r.url}
-                    className="text-sm text-muted hover:text-brand transition-colors py-3 sm:py-1 inline-block"
-                  >
-                    {r.name}
+        {COLUMNS.map((column) => (
+          <nav key={column.title} aria-label={column.title}>
+            <h2 className="mb-3 font-display text-sm font-bold text-fg">{column.title}</h2>
+            <ul className="space-y-1">
+              {column.links.map((link) => (
+                <li key={link.name}>
+                  <Link to={link.url} className="inline-block py-2 text-sm text-muted transition-colors hover:text-brand sm:py-1">
+                    {link.name}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
-
-          {/* Legal & Status Column */}
-          <div className="space-y-6">
-            <div>
-              <h4 className="font-display text-xs uppercase tracking-widest text-fg-3 font-bold mb-4">
-                Legal
-              </h4>
-              <ul className="space-y-2.5">
-                {[
-                  { name: "Privacy Policy", url: "/privacy" },
-                  { name: "Terms of Service", url: "/terms" },
-                ].map((l) => (
-                  <li key={l.name}>
-                    <Link
-                      to={l.url}
-                      className="text-sm text-muted hover:text-brand transition-colors py-3 sm:py-1 inline-block"
-                    >
-                      {l.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-xs text-muted font-sans">
-          <p className="flex items-center gap-2">
-            <span>© {new Date().getFullYear()} PrepStack. All rights reserved.</span>
-          </p>
-          <p className="font-ui text-xs text-muted">
-            Engineered by{" "}
-            <a href="https://www.linkedin.com/in/sahil-sameer-siddique/" target="_blank" rel="noopener noreferrer" className="text-fg-3 hover:text-fg underline underline-offset-2 transition-colors">
-              Sahil Sameer
-            </a>
-          </p>
-        </div>
+          </nav>
+        ))}
       </div>
-    </footer>
-  );
-};
+
+      <div className="flex flex-col items-center justify-between gap-4 pt-8 text-xs text-muted sm:flex-row">
+        <p>© {new Date().getFullYear()} PrepStack. All rights reserved.</p>
+        <p className="font-ui">
+          Engineered by{" "}
+          <a href="https://www.linkedin.com/in/sahil-sameer-siddique/" target="_blank" rel="noopener noreferrer" className="text-fg-3 underline underline-offset-2 transition-colors hover:text-fg">
+            Sahil Sameer
+          </a>
+        </p>
+      </div>
+    </div>
+  </footer>
+);
 
 export default Footer;

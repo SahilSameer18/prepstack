@@ -3,9 +3,9 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import {
   FiCode, FiMap, FiCpu, FiBook, FiMessageSquare, FiFileText,
-  FiArrowRight, FiZap, FiLogOut, FiGrid, FiUser, FiTarget
+  FiArrowRight, FiLogOut, FiGrid, FiUser, FiTarget
 } from "react-icons/fi";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import { InlineSpinner } from "../components/ui/Skeletons";
@@ -24,6 +24,25 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const { user, handleLogout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  // The hover highlight slides between the desktop links. Mouse only; with reduced motion it just fades.
+  const [hovered, setHovered] = useState(null);
+  const calm = useReducedMotion();
+  const hoverIn = (name) => (event) => { if (event.pointerType === "mouse") setHovered(name); };
+  const hoverPill = (name) => (
+    <AnimatePresence>
+      {hovered === name && (
+        <motion.span
+          aria-hidden="true"
+          layoutId={calm ? undefined : "navbarHover"}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ type: "spring", duration: 0.35, bounce: 0.1 }}
+          className="absolute inset-0 -z-10 rounded-lg bg-ink/[0.06]"
+        />
+      )}
+    </AnimatePresence>
+  );
 
   const logout = async () => {
     setIsLoggingOut(true);
@@ -69,19 +88,19 @@ const Navbar = () => {
   const mainLinks = [
     { name: 'My plan', path: '/my-plan', icon: <FiTarget /> },
     { name: "DSA Sheets", path: "/dsa", icon: <FiCode /> },
-    { name: "AI Projects", path: "/ai-projects", icon: <FiCpu /> },
+    { name: "Roadmaps", path: "/roadmaps", icon: <FiMap /> },
     { name: "Role Analyzer", path: "/analyzer", icon: <FiTarget /> },
   ];
 
   const exploreLinks = [
     { name: "CS Notes", path: "/notes", icon: <FiBook />, desc: "OS, DBMS, Networks, OOPs & System Design" },
-    { name: "Roadmaps", path: "/roadmaps", icon: <FiMap />, desc: "Step-by-step learning paths" },
+    { name: "AI Projects", path: "/ai-projects", icon: <FiCpu />, desc: "Project ideas for your resume" },
     { name: "Behavioral Prep", path: "/behavioral", icon: <FiMessageSquare />, desc: "HR & soft skills questions" },
     { name: "Resume Guide", path: "/resume", icon: <FiFileText />, desc: "Build an ATS-ready resume" },
   ];
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-colors duration-200 ${scrolled ? 'bg-canvas/95 backdrop-blur-md border-b border-ink/[0.08] shadow-[0_10px_30px_color-mix(in_srgb,var(--shadow)_80%,transparent)]' : 'bg-canvas/80 backdrop-blur-sm border-b border-ink/[0.05]'}`}>
+    <nav className={`fixed top-0 w-full z-50 border-b backdrop-blur-xl backdrop-saturate-150 transition-colors duration-200 ${scrolled ? 'bg-canvas/80 border-ink/[0.08]' : 'bg-canvas/60 border-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
 
@@ -94,14 +113,15 @@ const Navbar = () => {
           </NavLink>
 
           {/* ── Desktop Nav ── */}
-          <div className="hidden xl:flex items-center gap-1">
+          <div className="hidden xl:flex items-center gap-1" onPointerLeave={() => setHovered(null)}>
             {mainLinks.map((link) => (
               <NavLink
                 key={link.path}
                 to={link.path}
+                onPointerEnter={hoverIn(link.path)}
                 className={({ isActive }) =>
-                  `relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                    isActive ? "text-brand" : "text-fg-3 hover:text-fg hover:bg-ink/[0.05]"
+                  `relative flex items-center px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                    isActive ? "text-brand" : "text-fg-3 hover:text-fg"
                   }`
                 }
               >
@@ -110,11 +130,11 @@ const Navbar = () => {
                     {isActive && (
                       <motion.div
                         layoutId="navbarActiveIndicator"
-                        className="absolute inset-0 bg-brand/10 border border-brand/30 rounded-lg -z-10 shadow-sm"
+                        className="absolute inset-0 bg-brand/12 rounded-lg -z-10"
                         transition={{ type: "spring", stiffness: 450, damping: 35 }}
                       />
                     )}
-                    <span className="text-base">{link.icon}</span>
+                    {!isActive && hoverPill(link.path)}
                     <span>{link.name}</span>
                   </>
                 )}
@@ -128,8 +148,10 @@ const Navbar = () => {
                 aria-expanded={exploreOpen}
                 aria-controls="navbar-explore"
                 onClick={() => setExploreOpen(!exploreOpen)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${exploreOpen ? "text-fg bg-ink/[0.08]" : "text-fg-3 hover:text-fg hover:bg-ink/[0.05]"}`}
+                onPointerEnter={hoverIn("explore")}
+                className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${exploreOpen ? "text-fg bg-ink/[0.08]" : "text-fg-3 hover:text-fg"}`}
               >
+                {!exploreOpen && hoverPill("explore")}
                 Explore
                 <motion.span animate={{ rotate: exploreOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
                   <FaChevronDown className="text-xs" />
@@ -169,11 +191,6 @@ const Navbar = () => {
                           </div>
                         </NavLink>
                       ))}
-                    </div>
-                    <div className="m-2 mt-0 bg-gradient-to-r from-brand/10 to-orange-solid/5 border border-brand/15 rounded-xl px-3 py-2.5 flex items-center gap-2">
-                      <FiZap className="text-brand text-sm flex-shrink-0" />
-                      <p className="text-xs text-fg-3">Try the <span className="text-brand font-semibold">AI Project Generator</span></p>
-                      <FiArrowRight className="text-brand text-xs ml-auto flex-shrink-0" />
                     </div>
                   </motion.div>
                 )}
@@ -280,7 +297,7 @@ const Navbar = () => {
             aria-expanded={mobileOpen}
             aria-controls="navbar-mobile"
             aria-label="Toggle Navigation Menu"
-            className="w-11 h-11 flex items-center justify-center rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-fg-3 hover:text-fg hover:bg-ink/[0.08] transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-xl text-fg-3 hover:text-fg hover:bg-ink/[0.06] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             <AnimatePresence mode="wait">
