@@ -20,7 +20,10 @@ const dsaProblemSchema = new mongoose.Schema({
   tags: [{
     type: String,
     trim: true
-  }]
+  }],
+  // Optional learning links shown beside the problem: the author's video lecture and article. Web links only, because they become buttons.
+  video: { type: String, trim: true, match: /^https?:\/\//i },
+  article: { type: String, trim: true, match: /^https?:\/\//i }
 });
 
 // schema for dsa topic

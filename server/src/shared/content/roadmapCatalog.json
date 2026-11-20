@@ -975,8 +975,8 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:array-easy-array-problems",
-      "label": "Striver A2Z: Easy array problems"
+      "target": "striver-a2z:arrays",
+      "label": "Striver A2Z: Arrays"
      }
     ],
     "project": {
@@ -1014,7 +1014,7 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:sliding-window-two-pointers-medium-problems",
+      "target": "striver-a2z:sliding-window-and-2-pointer",
       "label": "Striver A2Z: Sliding window and two pointers"
      }
     ],
@@ -1043,18 +1043,13 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:binary-search-binary-search-on-1d-arrays",
-      "label": "Striver A2Z: Binary search on lists"
+      "target": "striver-a2z:binary-search",
+      "label": "Striver A2Z: Binary search"
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:binary-search-binary-search-on-answers",
-      "label": "Striver A2Z: Binary search on answers"
-     },
-     {
-      "kind": "sheet",
-      "target": "striver-a2z:step-2-1-sorting-i",
-      "label": "Striver A2Z: Sorting I (simple sorts only)"
+      "target": "striver-a2z:sorting",
+      "label": "Striver A2Z: Sorting"
      }
     ],
     "project": {
@@ -1092,13 +1087,8 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:stack-queues-learning",
+      "target": "striver-a2z:stack-and-queues",
       "label": "Striver A2Z: Stacks and queues"
-     },
-     {
-      "kind": "sheet",
-      "target": "striver-a2z:monotonic-stack-queue-problems",
-      "label": "Striver A2Z: Monotonic stack and queue (a harder follow-up)"
      }
     ],
     "project": {
@@ -1136,13 +1126,13 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:binary-trees-traversals",
-      "label": "Striver A2Z: Tree traversals"
+      "target": "striver-a2z:binary-trees",
+      "label": "Striver A2Z: Binary trees"
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:binary-search-tree-concept",
-      "label": "Striver A2Z: Binary search tree"
+      "target": "striver-a2z:binary-search-trees",
+      "label": "Striver A2Z: Binary search trees"
      }
     ],
     "project": {
@@ -1180,7 +1170,7 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:heaps-learning",
+      "target": "striver-a2z:heaps",
       "label": "Striver A2Z: Heaps"
      },
      {
@@ -1214,17 +1204,12 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:recursion-get-a-strong-hold",
+      "target": "striver-a2z:recursion",
       "label": "Striver A2Z: Recursion"
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:recursion-subsequences-pattern",
-      "label": "Striver A2Z: Subsequences"
-     },
-     {
-      "kind": "sheet",
-      "target": "striver-sde:recursion-backtracking",
+      "target": "striver-sde:recursion-and-backtracking",
       "label": "Striver SDE: Recursion and backtracking"
      }
     ],
@@ -1258,18 +1243,8 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:graphs-learning",
+      "target": "striver-a2z:graph",
       "label": "Striver A2Z: Graphs"
-     },
-     {
-      "kind": "sheet",
-      "target": "striver-a2z:graphs-problems-on-bfs-dfs",
-      "label": "Striver A2Z: BFS and DFS problems"
-     },
-     {
-      "kind": "sheet",
-      "target": "striver-a2z:graphs-topo-sort-problems",
-      "label": "Striver A2Z: Topological sort"
      }
     ],
     "project": {
@@ -1292,18 +1267,13 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:graphs-shortest-path-algorithms",
-      "label": "Striver A2Z: Shortest paths"
+      "target": "striver-a2z:graph",
+      "label": "Striver A2Z: Graphs"
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:graphs-minimum-spanning-tree-disjoint-set",
-      "label": "Striver A2Z: Spanning trees and disjoint sets"
-     },
-     {
-      "kind": "sheet",
-      "target": "striver-sde:graph-ii",
-      "label": "Striver SDE: Graph II"
+      "target": "striver-sde:graphs",
+      "label": "Striver SDE: Graphs"
      }
     ],
     "project": {
@@ -1341,8 +1311,8 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:greedy-algo-easy-problems",
-      "label": "Striver A2Z: Easy greedy"
+      "target": "striver-a2z:greedy-algorithms",
+      "label": "Striver A2Z: Greedy algorithms"
      }
     ],
     "project": {
@@ -1380,13 +1350,8 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:introduction-to-dp",
-      "label": "Striver A2Z: Introduction to DP"
-     },
-     {
-      "kind": "sheet",
-      "target": "striver-a2z:dp-on-subsequences",
-      "label": "Striver A2Z: DP on subsequences"
+      "target": "striver-a2z:dynamic-programming",
+      "label": "Striver A2Z: Dynamic programming"
      }
     ],
     "project": {
@@ -1419,7 +1384,7 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:learn-bit-manipulation",
+      "target": "striver-a2z:bit-manipulation",
       "label": "Striver A2Z: Bit manipulation"
      }
     ],
@@ -1448,8 +1413,8 @@
      },
      {
       "kind": "sheet",
-      "target": "striver-a2z:graphs-problems-on-bfs-dfs",
-      "label": "Striver A2Z: BFS and DFS problems"
+      "target": "striver-a2z:graph",
+      "label": "Striver A2Z: Graphs"
      }
     ],
     "project": {

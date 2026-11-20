@@ -34,7 +34,7 @@ describe('planCatalog.json (order and core or extra for every DSA sheet topic)',
       const ids = sheet(slug).topics.map((t) => t.id);
       assert.deepEqual(Object.keys(planCatalog.sheets[slug]).sort(), [...ids].sort(), slug);
     }
-    assert.equal(Object.values(planCatalog.sheets).reduce((n, s) => n + Object.keys(s).length, 0), 134);
+    assert.equal(Object.values(planCatalog.sheets).reduce((n, s) => n + Object.keys(s).length, 0), 87);
   });
   it('puts every topic on a step of our DSA roadmap, and the order is that step\'s place in the roadmap', () => {
     const dsa = roadmapCatalog.find((r) => r.slug === 'dsa').steps.map((s) => s.id);

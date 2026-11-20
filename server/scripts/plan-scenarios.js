@@ -8,7 +8,7 @@ const { loadPlanData } = require(path.join(__dirname, '../src/modules/plan/planD
 
 const SUBJECTS = ['os', 'dbms', 'cn', 'oops'];
 const GOALS = [['bigtech', 'neetcode-150'], ['bigtech', 'striver-sde'], ['placements', 'striver-a2z'], ['placements', 'blind-75'], ['placements', 'love-babbar']];
-const group = (title) => String(title || '').replace(/ - [IVX]+$/, '');
+const group = gen.groupTitle;
 
 (async () => {
   let data = loadPlanData();

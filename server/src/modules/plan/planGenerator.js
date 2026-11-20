@@ -368,7 +368,9 @@ const baseId = (it) => [it.ref, it.link ? problemIdentity(it.link) : it.stepId |
 // group keeps about the same part of its own content, core topics and subjects first and extra (non-core) topics with what is left.
 // Inside a group Hard problems are trimmed first, then the last ones. The order of the list (dependency order, notes between topics) is never changed.
 // "Arrays - I", "Arrays - II" and so on are one group, as on the screens (the label is the topic title without its Roman numeral)
-const groupKey = (it) => (it.type === 'notes' ? `notes:${it.subject}` : `dsa:${it.sheet}:${String(it.topicTitle || it.unitId).replace(/ - [IVX]+$/, '')}`);
+// Numbered parts of one subject count as one group: "Arrays - II" (NeetCode, Striver SDE before 2026) and "Arrays Part-II" (Striver SDE now).
+const groupTitle = (title) => String(title || '').trim().replace(/ - [IVX]+$| [Pp]art-[IVX]+$/, '');
+const groupKey = (it) => (it.type === 'notes' ? `notes:${it.subject}` : `dsa:${it.sheet}:${groupTitle(it.topicTitle || it.unitId)}`);
 const selectForCapacity = (sequence, capacity, keep) => {
   if (sumMinutes(sequence) <= capacity) return { chosen: sequence, dropped: [], trimmed: [], spread: false };
   const groups = new Map(); // first appearance order = the order of the list
@@ -409,7 +411,7 @@ const selectForCapacity = (sequence, capacity, keep) => {
 };
 
 // The coverage of every DSA topic group and chosen subject: what was asked for, what the plan holds. "Arrays - I" and "Arrays - II" count as one group.
-const groupLabel = (it) => (it.type === 'notes' ? SUBJECT_LABELS[it.subject] || it.subject : String(it.topicTitle || '').replace(/ - [IVX]+$/, ''));
+const groupLabel = (it) => (it.type === 'notes' ? SUBJECT_LABELS[it.subject] || it.subject : groupTitle(it.topicTitle));
 const coverageByGroup = (content, placed) => {
   const map = new Map();
   const kind = (it) => (it.type === 'notes' ? 'notes' : 'dsa');
@@ -624,6 +626,7 @@ const previewPlan = (input, data) => {
 };
 
 module.exports = {
+  groupTitle,
   generatePlan, previewPlan, groupByWeek, onTrack, isComplete, validateInput, lighterDaysErrors, baseId, dayBudget, todayIst, dayNumber, ymdOf, weekdayOf, PlanInputError,
   MINUTES_BY_DIFFICULTY, PACES, DEFAULT_PACE, FLOOR_SECTIONS, FLOOR_PROBLEMS, MOCK_MINUTES, BEHAVIORAL_MINUTES, GOALS, STYLES, DEFAULT_SUBJECTS, notesMinutes, problemMinutes,
 };

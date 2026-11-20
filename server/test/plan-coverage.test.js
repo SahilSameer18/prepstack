@@ -282,14 +282,14 @@ describe('the real data over many goals, lengths and hours', () => {
   // Below 4 weeks the floors of 16 to 18 topic groups and 4 subjects do not all fit the room; those short plans wait for the owner's list of patterns (decision 8 in the plan file).
   it('big-tech plans of 4 weeks or more at 2 hours or more keep every subject (3 sections) and every topic group (1 problem)', () => {
     for (const sheet of ['neetcode-150', 'striver-sde']) {
-      const groups = new Set(data.sheets[sheet].topics.map((t) => String(t.title).trim().replace(/ - [IVX]+$/, '')));
+      const groups = new Set(data.sheets[sheet].topics.map((t) => gen.groupTitle(t.title)));
       for (const weeks of [4, 6, 8, 9, 12, 16]) {
         for (const h of [2, 3, 5]) {
           for (const style of ['one-topic', 'mixed']) {
             const p = run('bigtech', sheet, weeks, h, { style });
             const tag = `${sheet} ${weeks}w ${h}h ${style}`;
             for (const s of SUBJECTS) assert.ok(p.items.filter((i) => i.type === 'notes' && i.subject === s).length >= 3, `${tag}: ${s} below 3 sections`);
-            const planned = new Set(p.items.filter((i) => i.type === 'dsa').map((i) => String(i.topicTitle).replace(/ - [IVX]+$/, '')));
+            const planned = new Set(p.items.filter((i) => i.type === 'dsa').map((i) => gen.groupTitle(i.topicTitle)));
             assert.deepEqual([...groups].filter((g) => !planned.has(g)), [], `${tag}: topic groups missing`);
           }
         }

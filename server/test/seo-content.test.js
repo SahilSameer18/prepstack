@@ -33,8 +33,7 @@ describe('generated SEO content', () => {
     const total = (slug) => body.sheets[slug].reduce((n, t) => n + t.problems, 0);
     assert.equal(total('blind-75'), 75);
     assert.equal(total('neetcode-150'), 150);
-    assert.ok(pages.includes('191 Interview Problems') && total('striver-sde') >= 191);
-    assert.ok(pages.includes('440+ problems') && total('striver-a2z') >= 440);
-    assert.ok(!pages.includes('450+ problems'), 'Striver A2Z has 444 problems, not 450 or more');
+    assert.ok(pages.includes('179 Interview Problems') && total('striver-sde') >= 179);
+    assert.ok(pages.includes('450+ problems') && total('striver-a2z') >= 450);
   });
 });
