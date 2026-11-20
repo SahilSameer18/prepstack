@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { FiArrowRight, FiCheck } from "react-icons/fi";
-import Reveal from "../ui/Reveal";
 import { BookOpenText, ChatsCircle, CodeBlock, MapTrifold, Robot, Target } from "@phosphor-icons/react";
 
 const CHECKS = [
@@ -28,7 +27,7 @@ const SuiteSection = () => {
   const calm = useReducedMotion();
   return (
   <section aria-labelledby="home-suite-heading" className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 text-left">
-    <Reveal className="lg:col-span-5 min-w-0">
+    <div className="lg:col-span-5 min-w-0">
       <h2 id="home-suite-heading" className="font-display text-4xl sm:text-5xl font-black tracking-[-0.04em] leading-[1.04] text-fg">
         A complete preparation suite,
         <span className="block text-brand">in one place.</span>
@@ -46,18 +45,18 @@ const SuiteSection = () => {
           </li>
         ))}
       </ul>
-    </Reveal>
+    </div>
 
     <div className="lg:col-span-7 min-w-0 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 gap-3.5">
       {TILES.map((tile, i) => (
         <MotionLink
           key={tile.to}
           to={tile.to}
-          initial={calm ? false : { opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 24px, 0)" }}
+          whileInView={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: i * 0.07 }}
-          className="group relative flex min-h-[176px] flex-col overflow-hidden rounded-2xl border border-ink/[0.1] bg-card p-4 shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_16px_30px_-18px_color-mix(in_srgb,var(--shadow)_40%,transparent)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_16%,transparent),0_24px_40px_-18px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
+          transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: i * 0.07 }}
+          className="group relative flex min-h-[176px] flex-col overflow-hidden rounded-2xl border border-ink/[0.1] bg-card p-4 shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_16px_30px_-18px_color-mix(in_srgb,var(--shadow)_40%,transparent)] transition-[transform,box-shadow] duration-200 active:scale-[0.98] hover:-translate-y-0.5 hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_16%,transparent),0_24px_40px_-18px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
         >
           <span aria-hidden="true" className="absolute bottom-3.5 right-3.5 text-[52px] leading-none text-brand">
             {tile.icon}

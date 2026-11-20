@@ -2,20 +2,25 @@ import { createElement } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1];
+const at = (x, y) => `translate3d(${x}px, ${y}px, 0)`;
 
-// Fades and slides its content in: when it scrolls into view, or on page load with onLoad.
-// With "reduce motion" on, it is just the plain element, so nothing moves.
-export default function Reveal({ as = "div", children, delay = 0, x = 0, y = 18, onLoad = false, className }) {
+// Fades and slides its content in on page load (onLoad) or when it scrolls into view.
+// spring: a small bounce for things that should feel alive. Reduce motion: a short fade, no movement.
+// The full transform string (not the x/y shorthands) keeps it on the GPU while the page is busy.
+export default function Reveal({ as = "div", children, delay = 0, x = 0, y = 18, onLoad = false, spring = false, className }) {
   const calm = useReducedMotion();
-  if (calm) return createElement(as, { className }, children);
-  const shown = { opacity: 1, x: 0, y: 0 };
+  const shown = { opacity: 1, transform: at(0, 0) };
+  let transition = { duration: 0.45, ease: EASE, delay };
+  if (onLoad) transition = { duration: 0.6, ease: EASE, delay };
+  if (spring) transition = { type: "spring", duration: 0.7, bounce: 0.15, delay };
+  if (calm) transition = { duration: 0.2, delay: 0 };
   return createElement(
     motion[as],
     {
       className,
-      initial: { opacity: 0, x, y },
+      initial: calm ? { opacity: 0 } : { opacity: 0, transform: at(x, y) },
       ...(onLoad ? { animate: shown } : { whileInView: shown, viewport: { once: true, amount: 0.15 } }),
-      transition: { duration: 0.6, ease: EASE, delay },
+      transition,
     },
     children,
   );

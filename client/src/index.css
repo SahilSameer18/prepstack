@@ -774,17 +774,7 @@ input:-webkit-autofill:active {
 }
 
 /* ---------------- HOME PAGE MOTION ----------------
-   Slow drift of the warm glow, the tagline underline drawing itself, and one soft pulse on the example Start
-   button. The reduced-motion rule above shortens all of them to nothing. */
-@keyframes glow-drift {
-  from { transform: translate3d(0, 0, 0) scale(1); }
-  to { transform: translate3d(-2.5%, 2%, 0) scale(1.05); }
-}
-
-.animate-glow {
-  animation: glow-drift 18s ease-in-out infinite alternate;
-}
-
+   The tagline underline drawing itself and one soft pulse on the example Start button. The reduced-motion rule above shortens all of them to nothing. */
 .draw-underline {
   padding-bottom: 3px;
   background: linear-gradient(var(--brand-grad-top), var(--brand-grad-top)) no-repeat 0 100% / 0 3px;

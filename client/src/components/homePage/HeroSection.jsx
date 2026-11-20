@@ -77,14 +77,14 @@ const HeroSection = () => {
             <span aria-hidden="true" className="draw-underline">Prepare. Build. Excel.</span>
           </Reveal>
           {/* decoration from the design reference: a tilted code chip, amber on a dark plate in both themes */}
-          <Reveal onLoad y={-14} delay={0.85} className="hidden xl:block absolute -bottom-[68px] right-14 -rotate-3 rounded-xl border border-brand-grad-top/25 bg-scrim px-4 py-2.5 font-code text-xs leading-relaxed shadow-[0_24px_40px_-16px_color-mix(in_srgb,var(--shadow)_75%,transparent)]">
+          <Reveal onLoad spring y={-14} delay={0.85} className="hidden xl:block absolute -bottom-[68px] right-14 -rotate-3 rounded-xl border border-brand-grad-top/25 bg-scrim px-4 py-2.5 font-code text-xs leading-relaxed shadow-[0_24px_40px_-16px_color-mix(in_srgb,var(--shadow)_75%,transparent)]">
             <p className="text-brand-grad-top">
               <span className="opacity-60">while</span> (preparing) <span className="opacity-60">{"{"}</span>
             </p>
             <p className="pl-4 text-brand-grad-hover-top">level++;</p>
             <p className="text-brand-grad-top opacity-60">{"}"}</p>
           </Reveal>
-          <Reveal onLoad y={-14} delay={0.7} className="hidden xl:block absolute -top-7 -right-5 w-56 rounded-2xl border border-ink/[0.1] bg-card p-4 shadow-[0_2px_4px_color-mix(in_srgb,var(--shadow)_18%,transparent),0_28px_50px_-18px_color-mix(in_srgb,var(--shadow)_75%,transparent)]">
+          <Reveal onLoad spring y={-14} delay={0.7} className="hidden xl:block absolute -top-7 -right-5 w-56 rounded-2xl border border-ink/[0.1] bg-card p-4 shadow-[0_2px_4px_color-mix(in_srgb,var(--shadow)_18%,transparent),0_28px_50px_-18px_color-mix(in_srgb,var(--shadow)_75%,transparent)]">
             <div className="flex items-center justify-between text-xs text-muted">
               <span className="flex items-center gap-1.5 font-semibold text-fg-3"><FiCalendar className="text-brand" /> Today</span>
               <span className="rounded-md bg-ink/[0.06] px-1.5 py-0.5">Example</span>

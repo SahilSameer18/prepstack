@@ -142,7 +142,7 @@ const HeroProductShowcase = () => {
                     <div
                       key={problem.id}
                       onClick={() => toggleDemoProblem(problem.id)}
-                      className={`group flex items-center justify-between p-2.5 sm:p-3 rounded-xl border transition-all duration-150 cursor-pointer select-none ${
+                      className={`group flex items-center justify-between p-2.5 sm:p-3 rounded-xl border transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.985] cursor-pointer select-none ${
                         problem.solved
                           ? "bg-ink/[0.03] border-ink/[0.08] opacity-85"
                           : "bg-ink/[0.015] border-ink/[0.06] hover:border-ink/[0.14] hover:bg-ink/[0.025]"
@@ -150,13 +150,17 @@ const HeroProductShowcase = () => {
                     >
                       <div className="flex items-center gap-3 min-w-0 mr-2">
                         <div
-                          className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all flex-shrink-0 ${
+                          className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors flex-shrink-0 ${
                             problem.solved
                               ? "bg-brand border-brand text-on-brand shadow-[0_0_10px_color-mix(in_srgb,var(--brand)_40%,transparent)]"
                               : "border-ink/25 group-hover:border-ink/50"
                           }`}
                         >
-                          {problem.solved && <FaCheck className="text-xs" />}
+                          {problem.solved && (
+                            <motion.span initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", duration: 0.3, bounce: 0.35 }} className="flex">
+                              <FaCheck className="text-xs" />
+                            </motion.span>
+                          )}
                         </div>
                         <span
                           className={`text-xs sm:text-sm font-medium transition-colors truncate ${
