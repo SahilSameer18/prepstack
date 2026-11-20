@@ -182,7 +182,7 @@ const RoadmapDetail = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.45, bounce: 0 }, opacity: { duration: 0.25, delay: 0.05 } }}
+                      transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.3, bounce: 0 }, opacity: { duration: 0.2 } }}
                       className="overflow-hidden"
                     >
                     <div className="space-y-6 border-t border-ink/[0.08] px-5 pb-6 pt-5">

@@ -33,7 +33,7 @@ const Tile = ({ tile, index }) => {
       ref={ref}
       initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 24px, 0)" }}
       animate={seen ? { opacity: 1, transform: "translate3d(0, 0, 0)" } : undefined}
-      transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.07 }}
+      transition={calm ? { duration: 0.2 } : { duration: 0.45, ease: [0.23, 1, 0.32, 1], delay: index * 0.06 }}
       className="group relative flex min-h-[176px] flex-col overflow-hidden surface-card p-4 surface-card-link"
     >
       <span aria-hidden="true" className="absolute bottom-3.5 right-3.5 text-[52px] leading-none text-brand">

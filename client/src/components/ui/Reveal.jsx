@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useRevealed } from "../../hooks/useRevealed";
 
-const EASE = [0.22, 1, 0.36, 1];
+const EASE = [0.23, 1, 0.32, 1];
 const at = (x, y) => `translate3d(${x}px, ${y}px, 0)`;
 
 // Fades and slides its content in on page load (onLoad) or when it scrolls into view.

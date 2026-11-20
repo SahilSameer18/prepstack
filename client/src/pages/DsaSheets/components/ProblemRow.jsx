@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowSquareOut, Article, CaretDown, CheckCircle, Circle, FileText, YoutubeLogo } from "@phosphor-icons/react";
 import ProblemNoteDrawer from './ProblemNoteDrawer';
 
@@ -54,6 +55,9 @@ const ProblemRow = ({
   onClearNote,
   onCloseDrawer,
 }) => {
+  const calm = useReducedMotion();
+  // counts only the ticks the user makes now, so rows that load already solved do not pop
+  const [tickPops, setTickPops] = useState(0);
   const hasNote = Boolean(
     noteData && (noteData.approach || noteData.pattern || noteData.timeComplexity || noteData.spaceComplexity)
   );
@@ -73,13 +77,17 @@ const ProblemRow = ({
         <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Toggle */}
           <button
-            onClick={(e) => onToggleSolved(e, problem.link)}
+            onClick={(e) => { if (!isCompleted) setTickPops((n) => n + 1); onToggleSolved(e, problem.link); }}
             className={`flex h-11 w-11 -m-2.5 flex-shrink-0 items-center justify-center text-2xl transition-[transform,color] duration-150 active:scale-90 cursor-pointer ${isCompleted ? 'text-brand' : 'text-faint hover:text-fg-3'}`}
             aria-pressed={isCompleted}
             aria-label={isCompleted ? `Mark ${problem.title} as unsolved` : `Mark ${problem.title} as solved`}
             title={isCompleted ? 'Mark as unsolved' : 'Mark as solved'}
           >
-            {isCompleted ? <CheckCircle weight="fill" /> : <Circle weight="regular" />}
+            {isCompleted ? (
+              <motion.span key={tickPops} className="flex" initial={tickPops && !calm ? { scale: 0.55 } : false} animate={{ scale: 1 }} transition={{ type: 'spring', duration: 0.3, bounce: 0.4 }}>
+                <CheckCircle weight="fill" />
+              </motion.span>
+            ) : <Circle weight="regular" />}
           </button>
 
           {/* Title */}

@@ -72,7 +72,7 @@ const Profile = () => {
                           aria-hidden="true"
                           layoutId={calm ? undefined : "profile-tab-slide"}
                           className="absolute inset-0 -z-10 rounded-xl bg-brand/12"
-                          transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
+                          transition={{ type: "spring", duration: 0.3, bounce: 0 }}
                         />
                       )}
                       <Icon weight="duotone" className="text-lg" aria-hidden="true" />

@@ -23,7 +23,7 @@ const ProgressRing = ({ percentage, solved, total }) => {
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
-          style={{ stroke: 'var(--brand-grad-bottom)', transition: 'stroke-dashoffset 0.6s ease' }}
+          style={{ stroke: 'var(--brand-grad-bottom)', transition: 'stroke-dashoffset 400ms cubic-bezier(0.23, 1, 0.32, 1)' }}
         />
       </svg>
       {/* Center label */}

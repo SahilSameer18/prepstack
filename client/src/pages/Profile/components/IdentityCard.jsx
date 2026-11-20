@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowsClockwise, Check, Copy, Envelope, FloppyDisk, User } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
@@ -14,6 +15,10 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileError, setProfileError] = useState(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
+  const calm = useReducedMotion();
+  // the icon pops in when the state changes (not on first paint)
+  const pop = (key, show) => ({ key, initial: show && !calm ? { scale: 0.5, opacity: 0 } : false, animate: { scale: 1, opacity: 1 }, transition: { type: 'spring', duration: 0.25, bounce: 0.3 }, className: 'flex' });
 
   // Is profile form dirty (modified by user)?
   const isProfileDirty = useMemo(() => {
@@ -74,6 +79,8 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
       if (updatedUser) {
         setUser(updatedUser);
         toast.success("Profile updated successfully!");
+        setJustSaved(true);
+        setTimeout(() => setJustSaved(false), 1800);
       }
     } catch (err) {
       setProfileError(
@@ -133,7 +140,7 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
                 className="flex items-center gap-1.5 px-2.5 py-1.5 min-h-[44px] sm:min-h-0 rounded-lg bg-ink/[0.05] hover:bg-ink/[0.1] text-fg-3 hover:text-fg text-xs font-ui transition-colors shrink-0 cursor-pointer min-h-[36px]"
                 title="Copy Email"
               >
-                {copiedEmail ? <Check className="text-ok text-xs" /> : <Copy className="text-xs" />}
+                <motion.span {...pop(copiedEmail ? "ok" : "copy", copiedEmail)}>{copiedEmail ? <Check className="text-ok text-xs" /> : <Copy className="text-xs" />}</motion.span>
                 <span>{copiedEmail ? "Copied" : "Copy"}</span>
               </button>
             </div>
@@ -190,8 +197,8 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
                 : "bg-ink/[0.04] border border-ink/[0.08] text-muted cursor-not-allowed"
             }`}
           >
-            {isSavingProfile ? <InlineSpinner size={16} color="var(--on-brand)" /> : <FloppyDisk />}
-            {isSavingProfile ? "Saving..." : "Save changes"}
+            {isSavingProfile ? <InlineSpinner size={16} color="var(--on-brand)" /> : justSaved ? <motion.span {...pop("saved", true)}><Check className="text-ok" /></motion.span> : <FloppyDisk />}
+            {isSavingProfile ? "Saving..." : justSaved ? "Saved" : "Save changes"}
           </button>
         </div>
       </form>

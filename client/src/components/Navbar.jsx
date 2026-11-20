@@ -33,7 +33,7 @@ const Navbar = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ type: "spring", duration: 0.35, bounce: 0.1 }}
+          transition={{ type: "spring", duration: 0.3, bounce: 0 }}
           className="absolute inset-0 -z-10 rounded-lg bg-ink/[0.06]"
         />
       )}

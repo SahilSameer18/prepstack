@@ -28,9 +28,9 @@ const NoteCard = ({ s, stats, index }) => {
   return (
     <MotionLink
       to={`/notes/${s.slug}`}
-      initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 20px, 0)" }}
+      initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 12px, 0)" }}
       animate={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
-      transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.07 }}
+      transition={calm ? { duration: 0.2 } : { duration: 0.35, ease: [0.23, 1, 0.32, 1], delay: (index % 3) * 0.04 }}
       className="group relative flex flex-col surface-card p-6 text-left surface-card-link"
     >
       <div className="flex items-start justify-between gap-3">

@@ -67,7 +67,7 @@ export default function SelectField({
               event.preventDefault();
             }
           }}
-          className="z-[100] overflow-hidden rounded-xl border border-ink/[0.15] bg-elevated text-fg shadow-2xl"
+          className="select-content z-[100] overflow-hidden rounded-xl border border-ink/[0.15] bg-elevated text-fg shadow-2xl"
           style={{
             width: 'var(--radix-select-trigger-width)',
             maxWidth: 'calc(100vw - 2rem)',

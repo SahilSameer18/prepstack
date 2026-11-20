@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, BookOpenText, CheckSquare, CodeBlock, Lightning, MagnifyingGlass, Stack, Star, Target } from "@phosphor-icons/react";
@@ -7,7 +7,6 @@ import { SkeletonCard } from "../../components/ui/Skeletons";
 import { EmptyState } from "../../components/ui/StateComponents";
 import PageBackdrop from "../../components/ui/PageBackdrop";
 import { useAuth } from "../../hooks/useAuth";
-import { useRevealed } from "../../hooks/useRevealed";
 import { getDashboardSummary } from "../../api/services/userService";
 
 const MotionLink = motion.create(Link);
@@ -50,16 +49,13 @@ const SHEET_METADATA_MAP = {
 
 const SheetCard = ({ sheet, index, progress }) => {
   const calm = useReducedMotion();
-  const ref = useRef(null);
-  const seen = useRevealed(ref);
   const pct = progress && progress.total > 0 ? Math.round((progress.solved / progress.total) * 100) : 0;
   return (
     <MotionLink
       to={`/dsa/${sheet.slug}`}
-      initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 20px, 0)" }}
-      ref={ref}
-      animate={seen ? { opacity: 1, transform: "translate3d(0, 0, 0)" } : undefined}
-      transition={calm ? { duration: 0.2 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: (index % 2) * 0.07 }}
+      initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 12px, 0)" }}
+      animate={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
+      transition={calm ? { duration: 0.2 } : { duration: 0.35, ease: [0.23, 1, 0.32, 1], delay: (index % 2) * 0.04 }}
       className="group relative flex flex-col surface-card p-6 text-left surface-card-link"
     >
       <div className="flex items-start justify-between gap-3">
@@ -92,7 +88,7 @@ const SheetCard = ({ sheet, index, progress }) => {
             <span>{pct}%</span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-ink/[0.08]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`Your progress on ${sheet.title}`}>
-            <div className="h-full rounded-full transition-[width] duration-500 ease-out" style={{ width: `${pct}%`, background: 'var(--brand-grad-bottom)' }} />
+            <div className="bar-fill h-full w-full rounded-full" style={{ transform: `scaleX(${pct / 100})`, background: 'var(--brand-grad-bottom)' }} />
           </div>
         </div>
       )}

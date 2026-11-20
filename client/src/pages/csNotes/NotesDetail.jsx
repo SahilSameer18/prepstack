@@ -266,7 +266,7 @@ const SectionList = ({ subject, subjectTitle, sections, activeId, onPick, slideI
                       aria-hidden="true"
                       layoutId={calm ? undefined : slideId}
                       className="absolute inset-0 -z-10 rounded-xl bg-brand/12"
-                      transition={{ type: 'spring', duration: 0.4, bounce: 0.1 }}
+                      transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
                     />
                   )}
                   <span className="w-5 shrink-0 text-right font-ui text-xs leading-[1.4rem] opacity-70">{i + 1}</span>
