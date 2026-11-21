@@ -1,14 +1,8 @@
 import SelectField from "../../components/ui/SelectField";
 import React, { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  FiCpu,
-  FiPlus,
-  FiTrash2,
-  FiExternalLink,
-  FiSearch,
-} from "react-icons/fi";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Cpu, Plus, Trash, MagnifyingGlass } from "@phosphor-icons/react";
 import { useProject } from "../../hooks/useProject";
 import { SkeletonProjectCard, InlineSpinner } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
@@ -19,7 +13,7 @@ import { EmptyState } from "../../components/ui/StateComponents";
 const ProjectDash = () => {
   const { projects, projectsTotal, hasMoreProjects, loadingMoreProjects, loadMoreProjects, deleteProjectById, loading: projectsLoading } =
     useProject();
-  const navigate = useNavigate();
+  const calm = useReducedMotion();
 
   // Filters
   const [projectSort, setProjectSort] = useState("newest");
@@ -102,25 +96,29 @@ const ProjectDash = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => !isDeleting && setDeletingId(null)}
-              className="absolute inset-0 bg-scrim/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-scrim/50 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              transition={{ type: "spring", damping: 26, stiffness: 360 }}
-              className="relative w-full max-w-md bg-card border border-ink/[0.1] rounded-2xl p-6 sm:p-8 shadow-2xl text-left"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Delete project idea"
+              initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 12px, 0) scale(0.97)" }}
+              animate={{ opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+              className="surface-card relative w-full max-w-md p-6 text-left shadow-2xl sm:p-8"
             >
-              <div className="w-12 h-12 rounded-xl bg-bad-solid/10 border border-bad-solid/20 flex items-center justify-center mb-5">
-                <FiTrash2 className="text-xl text-bad" />
-              </div>
-              <h3 className="font-display text-lg font-bold text-fg mb-2">
+              <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-bad-solid/25 bg-bad-solid/10 text-2xl text-bad">
+                <Trash weight="duotone" aria-hidden="true" />
+              </span>
+              <h3 className="mb-2 font-display text-2xl font-extrabold tracking-tight text-fg">
                 Delete this project idea?
               </h3>
-              <p className="text-muted text-xs sm:text-sm leading-relaxed mb-6">
+              <p className="mb-6 text-sm leading-relaxed text-muted">
                 Are you sure you want to permanently delete{" "}
-                <span className="text-fg font-semibold font-ui">
+                <span className="font-semibold text-fg">
                   "{selectedProject?.title}"
                 </span>
                 ? This specification cannot be recovered.
@@ -139,14 +137,14 @@ const ProjectDash = () => {
                 <button
                   disabled={isDeleting}
                   onClick={() => setDeletingId(null)}
-                  className="flex-1 py-2.5 h-11 rounded-xl bg-ink/[0.04] border border-ink/[0.08] text-fg-3 font-medium text-xs sm:text-sm hover:bg-ink/[0.08] transition-colors disabled:opacity-50 cursor-pointer"
+                  className="titanium-button h-11 flex-1 cursor-pointer rounded-xl text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   disabled={isDeleting}
                   onClick={confirmDelete}
-                  className="flex-1 py-2.5 h-11 rounded-xl bg-bad-solid text-fg font-semibold text-xs sm:text-sm hover:bg-bad-solid transition-colors shadow-lg shadow-bad-solid/20 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="flex h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-bad-solid text-sm font-bold text-fg shadow-lg shadow-bad-solid/20 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isDeleting ? (
                     <InlineSpinner size={14} color="currentColor" />
@@ -163,38 +161,25 @@ const ProjectDash = () => {
       {/* ── Section ─────────────────────────────────────────────────────── */}
       <section className="text-left">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand/10 border border-brand/25 flex items-center justify-center">
-              <FiCpu className="text-brand text-lg" />
-            </div>
-            <div>
-              <h2 className="text-xl font-display font-bold text-fg">Project ideas</h2>
-              <p className="text-xs font-ui text-muted mt-0.5">
-                Project ideas you generated and saved
-              </p>
-            </div>
-          </div>
-          <Link
-            to="/ai-projects"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl amber-specular-button text-on-brand font-bold text-xs sm:text-sm self-start sm:self-auto min-h-[44px]"
-          >
-            <FiPlus className="text-sm" />
-            <span>Generate idea</span>
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Project ideas</h2>
+          <Link to="/ai-projects" className="group inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">
+            <Plus aria-hidden="true" /> Generate idea
           </Link>
         </div>
 
         {/* Filters & Search */}
         {projects.length > 0 && (
-          <div className="mb-6 flex flex-col md:flex-row gap-3 md:items-center">
+          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center">
             <div className="relative flex-1">
-              <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted text-sm" />
+              <MagnifyingGlass aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="text"
+                aria-label="Search project ideas"
                 placeholder="Search ideas by title or stack..."
                 value={projectSearch}
                 onChange={(e) => setProjectSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl bg-card border border-ink/[0.08] text-xs sm:text-sm text-fg placeholder-faint focus:outline-none focus:border-brand transition-colors"
+                className="w-full rounded-xl border border-ink/[0.14] bg-card py-3 pl-11 pr-4 text-sm text-fg outline-none transition-[border-color,box-shadow] duration-150 placeholder-faint hover:border-ink/[0.24] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]"
               />
             </div>
             <div className="grid min-w-0 grid-cols-2 gap-2 md:w-80">
@@ -226,107 +211,69 @@ const ProjectDash = () => {
         {/* Empty state */}
         {!projectsLoading && projects.length === 0 ? (
           <EmptyState
-            icon={FiCpu}
+            icon={Cpu}
             title="No project ideas yet"
             text="Generate a project idea for your tech stack and level, with real-world challenges to solve."
             action={{ label: "Generate your first idea", to: "/ai-projects" }}
           />
         ) : projectsLoading && projects.length === 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <SkeletonProjectCard key={i} />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence>
               {filteredProjects.length > 0 ? (
                 filteredProjects.map((project) => (
-                  <div
-                    key={project._id}
-                    onClick={() => navigate(`/ai-projects/${project._id}`)}
-                    className="group relative titanium-card rounded-2xl p-6 cursor-pointer transition-all duration-200 hover:-translate-y-1 flex flex-col h-full shadow-lg overflow-hidden"
-                  >
-                    <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent group-hover:via-brand/40 transition-all" />
-                    {/* Complexity badge */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      {(project.techStack || project.domain) && (
-                        <div className="flex flex-wrap gap-1.5">
-                          {project.techStack && (
-                            <span className="text-xs font-ui font-bold tracking-wider text-brand bg-brand/10 border border-brand/25 rounded px-2 py-0.5 uppercase">
-                              {project.techStack}
-                            </span>
-                          )}
-                          {project.domain && (
-                            <span className="text-xs font-ui font-semibold tracking-wider text-violet bg-violet-solid/10 border border-violet-solid/20 rounded px-2 py-0.5">
-                              {project.domain}
-                            </span>
-                          )}
-                        </div>
-                      )}
+                  <div key={project._id} className="surface-card surface-card-link relative flex h-full flex-col p-6">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="min-w-0 truncate font-ui text-sm font-semibold text-brand">
+                        {[project.techStack, project.domain].filter(Boolean).join(" · ")}
+                      </span>
                       <span
-                        className={`text-xs font-ui uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md border ml-auto ${
+                        className={`shrink-0 rounded-full border px-2.5 py-0.5 font-ui text-xs font-semibold ${
                           project.difficulty === "Beginner"
-                            ? "text-ok border-ok-solid/25 bg-ok-solid/10"
+                            ? "border-ok-solid/30 text-ok"
                             : project.difficulty === "Intermediate"
-                              ? "text-warn border-warn-solid/25 bg-warn-solid/10"
-                              : "text-bad border-bad-solid/25 bg-bad-solid/10"
+                              ? "border-warn-solid/30 text-warn"
+                              : "border-bad-solid/30 text-bad"
                         }`}
                       >
                         {project.difficulty}
                       </span>
                     </div>
 
-                    {/* Content */}
-                    <div className="mb-4 flex-1">
-                      <h3 className="text-base sm:text-lg font-display font-bold text-fg group-hover:text-fg-1 transition-colors mb-1 truncate">
+                    <h3 className="mt-4 font-display text-xl font-extrabold leading-snug tracking-tight text-fg">
+                      <Link to={`/ai-projects/${project._id}`} className="after:absolute after:inset-0 after:rounded-2xl">
                         {project.title}
-                      </h3>
-                      <p className="text-muted text-xs line-clamp-1 mb-4">
-                        {project.tagline}
-                      </p>
+                      </Link>
+                    </h3>
+                    {project.tagline && <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-muted">{project.tagline}</p>}
 
-                      {project.features?.length > 0 && (
-                        <div className="space-y-2 mb-4">
-                          {project.features.slice(0, 2).map((feature, idx) => (
-                            <div key={idx} className="flex items-start gap-2 text-xs text-fg-3">
-                              <span className="w-1.5 h-1.5 rounded-full bg-brand flex-shrink-0 mt-1.5" />
-                              <span className="line-clamp-1 leading-snug">
-                                {feature}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Footer */}
-                    <div className="mt-auto pt-4 border-t border-ink/[0.06] flex items-center justify-between">
-                      <p className="text-xs font-ui text-muted">
+                    <div className="mt-6 flex items-center justify-between border-t border-ink/[0.08] pt-4">
+                      <p className="text-sm text-muted">
                         {new Date(project.createdAt).toLocaleDateString(
                           undefined,
                           { month: "short", day: "numeric", year: "numeric" },
                         )}
                       </p>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={(e) => openDeleteModal(e, project)}
-                          className="w-11 h-11 sm:w-8 sm:h-8 rounded-lg bg-bad-solid/5 border border-bad-solid/15 flex items-center justify-center text-bad hover:bg-bad-solid hover:text-fg transition-colors cursor-pointer"
-                          title="Delete project idea"
-                        >
-                          <FiTrash2 className="text-xs" />
-                        </button>
-                        <div className="px-3 py-1.5 h-8 rounded-lg bg-ink/[0.04] border border-ink/[0.08] group-hover:border-ink/[0.2] flex items-center gap-1.5 text-xs font-ui font-semibold text-fg-3 group-hover:text-fg transition-colors">
-                          VIEW <FiExternalLink className="text-xs" />
-                        </div>
-                      </div>
+                      <button
+                        onClick={(e) => openDeleteModal(e, project)}
+                        className="relative z-10 flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg text-xl text-muted transition-colors hover:bg-bad-solid/10 hover:text-bad sm:h-9 sm:w-9"
+                        title="Delete project idea"
+                        aria-label={`Delete project idea ${project.title}`}
+                      >
+                        <Trash aria-hidden="true" />
+                      </button>
                     </div>
                   </div>
                 ))
               ) : (
                 <EmptyState
                   className="col-span-full"
-                  icon={FiSearch}
+                  icon={MagnifyingGlass}
                   title="No matching ideas"
                   text="No project ideas match your search or filters."
                 />
@@ -338,7 +285,7 @@ const ProjectDash = () => {
         {/* How many are shown, and the button for the next 20 */}
         {projects.length > 0 && (
           <div className="mt-6 flex flex-col items-center gap-3">
-            <p className="text-xs font-ui text-muted text-center">
+            <p className="text-center text-sm text-muted">
               Showing {projects.length} of {projectsTotal ?? projects.length} ideas
               {hasMoreProjects && (projectSearch || projectFilter !== "all") ? ". Search and filters work on the ideas shown so far." : ""}
             </p>
@@ -347,7 +294,7 @@ const ProjectDash = () => {
                 type="button"
                 onClick={handleLoadMore}
                 disabled={loadingMoreProjects}
-                className="titanium-button inline-flex items-center justify-center gap-2 px-6 min-h-[44px] rounded-xl text-sm font-semibold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                className="titanium-button inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loadingMoreProjects ? (<><InlineSpinner size={14} color="currentColor" /><span>Loading...</span></>) : "Load more"}
               </button>

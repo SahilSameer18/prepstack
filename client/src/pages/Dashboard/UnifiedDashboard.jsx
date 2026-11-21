@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { FiActivity, FiTrendingUp } from "react-icons/fi";
-import { FaCheckCircle, FaFire } from "react-icons/fa";
+import { motion, useReducedMotion } from "framer-motion";
+import { CheckCircle, Flame, ListChecks, ChartLineUp } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../hooks/useAuth";
 import { useProject } from "../../hooks/useProject";
@@ -12,8 +12,10 @@ import DSADash from "./DsaDash";
 import ProjectDash from "./ProjectDash";
 import ReportsDash from "../../components/analyzer/ReportsDash";
 import { PageErrorState } from "../../components/ui/ErrorComponents";
-import { SectionLoader } from "../../components/ui/Skeletons";
+import { SectionLoader, Skeleton } from "../../components/ui/Skeletons";
+import PageBackdrop from "../../components/ui/PageBackdrop";
 import { useStudyPlan } from '../../hooks/useStudyPlan';
+import { useLoadingGate } from '../../hooks/useLoadingGate';
 import MyPlanStudy from '../MyPlanStudy';
 import FirstStepCard from "../../components/plan/FirstStepCard";
 
@@ -26,6 +28,7 @@ const UnifiedDashboard = () => {
   const { user } = useAuth();
   const { getProjects, projectsTotal } = useProject();
   const planModel = useStudyPlan();
+  const calm = useReducedMotion();
   const plan = planModel.data?.plan;
   const defaultTab = plan || planModel.data?.pausedPlans?.length ? 'plan' : 'dsa';
   const tabs = plan
@@ -59,6 +62,7 @@ const UnifiedDashboard = () => {
     streak: 0,
   });
   const [loading, setLoading] = useState(true);
+  const gate = useLoadingGate(loading);
   const [dashboardError, setDashboardError] = useState(null);
   const [reports, setReports] = useState(null);
   const [reportTotal, setReportTotal] = useState(0);
@@ -140,83 +144,93 @@ const UnifiedDashboard = () => {
   const counts = { dsa: dsaData.length ? `${dsaData.length} sheets` : "", projects: projectsLoaded ? projectsTotal : "", reports: reports ? reportTotal : "" };
 
   const dsaStats = [
-    { label: "Problems solved", value: stats.totalSolved, sub: "Across all sheets", icon: <FaCheckCircle className="text-ok text-sm" />, color: "text-fg" },
-    { label: "Current streak", value: `${stats.streak} ${stats.streak === 1 ? "day" : "days"}`, sub: stats.streak > 0 ? "Days in a row" : "Solve one today to start", icon: <FaFire className="text-orange text-sm" />, color: "text-fg" },
-    { label: "Sheets in progress", value: stats.sheetsInProgress, sub: "Active sheets", icon: <FiActivity className="text-info text-sm" />, color: "text-fg" },
-    { label: "Overall progress", value: `${stats.overallPct}%`, sub: "Of all problems", icon: <FiTrendingUp className="text-violet text-sm" />, color: "text-brand" },
+    { label: "Problems solved", value: stats.totalSolved, sub: "Across all sheets", icon: CheckCircle },
+    { label: "Current streak", value: `${stats.streak} ${stats.streak === 1 ? "day" : "days"}`, sub: stats.streak > 0 ? "Days in a row" : "Solve one today to start", icon: Flame },
+    { label: "Sheets in progress", value: stats.sheetsInProgress, sub: "Active sheets", icon: ListChecks },
+    { label: "Overall progress", value: `${stats.overallPct}%`, sub: "Of all problems", icon: ChartLineUp },
   ];
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto page-enter text-fg text-left">
-      <h1 className="mb-4 break-words font-display text-2xl font-bold tracking-tight text-fg sm:text-3xl">
-        {greeting}, {user?.username || "Engineer"}
-      </h1>
+    <div className="relative">
+      <PageBackdrop />
+      <div className="relative z-10 mx-auto max-w-7xl px-0 pb-16 text-left text-fg sm:px-6">
+        <h1 className="mb-6 break-words font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+          {greeting}, {user?.username || "Engineer"}
+        </h1>
 
-      {/* ── Tabs ──────────────────────────────────────────────────────────── */}
-      <div role="tablist" aria-label="Dashboard sections" className="flex gap-1 border-b border-ink/[0.08] overflow-x-auto mb-6">
-        {tabs.map(([key, label]) => (
-          <button
-            key={key} id={`dashboard-tab-${key}`} role="tab" aria-selected={tab === key}
-            aria-controls="dashboard-panel" tabIndex={tab === key ? 0 : -1}
-            onKeyDown={navigateTabs} onClick={() => openTab(key)}
-            className={`flex-1 shrink-0 px-2 py-3 min-h-[44px] text-sm whitespace-nowrap border-b-2 cursor-pointer transition-colors sm:flex-none sm:px-4 ${tab === key ? "border-brand text-fg font-semibold" : "border-transparent text-muted hover:text-fg-2"}`}
-          >
-            {label} <span className="hidden text-xs text-muted font-normal sm:inline">{counts[key]}</span>
-          </button>
-        ))}
-      </div>
-
-      <div id="dashboard-panel" role="tabpanel" aria-labelledby={`dashboard-tab-${tab}`}>
-        {tab === 'plan' && <MyPlanStudy embedded planModel={planModel} />}
-        {tab === "dsa" && (
-          dashboardError ? (
-            <PageErrorState message={dashboardError} onRetry={fetchDashboard} backTo="/" backLabel="Go Home" />
-          ) : (
-            <>
-              <h2 className="mb-4 font-display text-xl font-bold text-fg">DSA progress</h2>
-              {isNew && <FirstStepCard />}
-              {!loading && stats.totalSolved === 0 && (
-                <p data-testid="dsa-empty-hint" className="mb-6 rounded-xl border border-ink/[0.08] bg-card px-4 py-3 text-sm text-fg-3">
-                  You have not solved anything yet. <Link to="/dsa" className="font-semibold text-brand">Start with a DSA sheet</Link>.
-                </p>
+        {/* ── Tabs ──────────────────────────────────────────────────────────── */}
+        <div role="tablist" aria-label="Dashboard sections" className="mb-8 flex gap-1 overflow-x-auto sm:gap-1.5">
+          {tabs.map(([key, label]) => (
+            <button
+              key={key} id={`dashboard-tab-${key}`} role="tab" aria-selected={tab === key}
+              aria-controls="dashboard-panel" tabIndex={tab === key ? 0 : -1}
+              onKeyDown={navigateTabs} onClick={() => openTab(key)}
+              className={`relative flex min-h-[44px] flex-1 shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl px-2 text-sm transition-colors sm:flex-none sm:px-4 ${tab === key ? "font-semibold text-brand" : "text-muted hover:bg-ink/[0.05] hover:text-fg"}`}
+            >
+              {tab === key && (
+                <motion.span
+                  aria-hidden="true"
+                  layoutId={calm ? undefined : "dashboard-tab-slide"}
+                  className="absolute inset-0 -z-10 rounded-xl bg-brand/12"
+                  transition={{ type: "spring", duration: 0.3, bounce: 0 }}
+                />
               )}
-              <section className="mb-10">
-                <div className="titanium-card rounded-2xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
-                  <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-ink/[0.08]">
-                    {loading ? (
-                      Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="p-4 flex flex-col gap-2">
-                          <div className="w-20 h-3 rounded bg-ink/[0.06] animate-pulse" />
-                          <div className="w-16 h-8 rounded bg-ink/[0.06] animate-pulse" />
-                          <div className="w-24 h-2 rounded bg-ink/[0.04] animate-pulse" />
-                        </div>
-                      ))
-                    ) : (
-                      dsaStats.map((stat, i) => (
-                        <div key={stat.label} className={`flex flex-col justify-between group p-2 sm:p-3 rounded-xl transition-all duration-200 hover:bg-ink/[0.02] ${i > 0 ? "pt-4 sm:pt-0 sm:pl-6" : ""}`}>
-                          <div className="flex items-center justify-between gap-2 mb-3">
-                            <span className="text-xs font-ui text-muted group-hover:text-fg-2 transition-colors font-semibold">{stat.label}</span>
-                            <div className="w-7 h-7 rounded-lg bg-ink/[0.03] border border-ink/[0.08] flex items-center justify-center group-hover:border-ink/[0.2] transition-colors">{stat.icon}</div>
+              {label} <span className="hidden text-sm font-normal text-muted sm:inline">{counts[key]}</span>
+            </button>
+          ))}
+        </div>
+
+        <div id="dashboard-panel" role="tabpanel" aria-labelledby={`dashboard-tab-${tab}`}>
+          {tab === 'plan' && <MyPlanStudy embedded planModel={planModel} />}
+          {tab === "dsa" && (
+            dashboardError ? (
+              <PageErrorState message={dashboardError} onRetry={fetchDashboard} backTo="/" backLabel="Go Home" />
+            ) : (
+              <>
+                <h2 className="sr-only">DSA progress</h2>
+                {isNew && <FirstStepCard />}
+                {!loading && stats.totalSolved === 0 && (
+                  <p data-testid="dsa-empty-hint" className="mb-6 rounded-xl border border-ink/[0.1] bg-card px-4 py-3 text-sm text-fg-3">
+                    You have not solved anything yet. <Link to="/dsa" className="font-semibold text-brand">Start with a DSA sheet</Link>.
+                  </p>
+                )}
+                {gate === "blank" ? (
+                  <div className="min-h-[40vh]" />
+                ) : (
+                  <>
+                    <div className="surface-card grid grid-cols-2 lg:grid-cols-4">
+                      {gate === "skeleton" ? (
+                        Array.from({ length: 4 }).map((_, i) => (
+                          <div key={i} aria-hidden="true" className="space-y-3 p-6">
+                            <Skeleton className="h-4 w-28 rounded-md" />
+                            <Skeleton className="h-9 w-20 rounded-md" />
+                            <Skeleton className="h-3 w-24 rounded-md" />
                           </div>
-                          <div>
-                            <div className={`font-ui text-2xl sm:text-3xl font-bold tracking-tight mb-1 ${stat.color}`}>{stat.value}</div>
-                            <p className="text-xs font-ui text-muted transition-colors truncate">{stat.sub}</p>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </section>
-              <DSADash dsaData={dsaData} loading={loading} stats={stats} />
-            </>
-          )
-        )}
-        {tab === "projects" && (projectsError ? <PageErrorState title="Could not load your project ideas" message={projectsError} onRetry={loadProjects} backTo="/" backLabel="Go Home" /> : <ProjectDash />)}
-        {tab === "reports" && (reportsError
-          ? <PageErrorState title="Could not load your role reports" message={reportsError} onRetry={loadReports} backTo="/" backLabel="Go Home" />
-          : reports ? <ReportsDash reports={reports} onDelete={removeReport} /> : <SectionLoader message="Loading your reports..." />)}
+                        ))
+                      ) : (
+                        dsaStats.map((stat, i) => {
+                          const Icon = stat.icon;
+                          return (
+                            <div key={stat.label} className={`p-6 border-ink/[0.08] ${i > 1 ? "border-t lg:border-t-0" : ""} ${i % 2 === 1 ? "border-l" : ""} ${i === 2 ? "lg:border-l" : ""}`}>
+                              <p className="flex items-center gap-2 font-ui text-sm text-muted"><Icon weight="duotone" aria-hidden="true" className="text-lg text-brand" />{stat.label}</p>
+                              <p className="mt-3 font-display text-4xl font-extrabold tracking-tight text-fg">{stat.value}</p>
+                              <p className="mt-1 truncate text-sm text-muted">{stat.sub}</p>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                    <DSADash dsaData={dsaData} loading={gate === "skeleton"} />
+                  </>
+                )}
+              </>
+            )
+          )}
+          {tab === "projects" && (projectsError ? <PageErrorState title="Could not load your project ideas" message={projectsError} onRetry={loadProjects} backTo="/" backLabel="Go Home" /> : <ProjectDash />)}
+          {tab === "reports" && (reportsError
+            ? <PageErrorState title="Could not load your role reports" message={reportsError} onRetry={loadReports} backTo="/" backLabel="Go Home" />
+            : reports ? <ReportsDash reports={reports} onDelete={removeReport} /> : <SectionLoader message="Loading your reports..." />)}
+        </div>
       </div>
     </div>
   );
