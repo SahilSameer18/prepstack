@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { createReport, listReports, deleteReport } from "../../api/services/analyzerService";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 import { InlineSpinner } from "../../components/ui/Skeletons";
+import LongWait from "../../components/ui/LongWait";
 import { UsageNotice } from "../../components/ui/StateComponents";
 import { useUsage } from "../../hooks/useUsage";
 import { extractError } from "../../utils/extractError";
@@ -156,6 +157,7 @@ const Analyzer = () => {
         >
           {loading ? <><InlineSpinner size={16} color="currentColor" /> Reading your resume. This can take up to a minute...</> : <><FiTarget /> Analyze my resume</>}
         </button>
+        {loading && <LongWait shape="report" title="Reading your resume" note="This can take up to a minute." />}
         <UsageNotice usage={usage?.reports} noun="reports" />
       </form>
 

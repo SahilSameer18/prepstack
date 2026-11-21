@@ -1,3 +1,4 @@
+import LongWait from "../../components/ui/LongWait";
 import React, { useState, useEffect } from "react";
 import { FiCpu, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiList } from "react-icons/fi";
 import { useProject } from '../../hooks/useProject'
@@ -301,17 +302,7 @@ const AIProjectIdeas = () => {
             </div>
           )}
 
-          {loading && (
-            <div className="h-full min-h-[500px] flex flex-col items-center justify-center bg-card border border-ink/[0.08] rounded-2xl p-10 text-center">
-              <div className="relative w-16 h-16 mb-4">
-                <div className="w-16 h-16 rounded-full bg-brand/10 border border-brand/30 flex items-center justify-center">
-                  <FiCpu className="text-2xl text-brand animate-pulse" />
-                </div>
-              </div>
-              <p className="font-display text-fg font-semibold text-base mb-1">Generating your project idea...</p>
-              <p className="font-ui text-muted text-xs">[SYSTEM_ARCH] Formulating data schemas and concurrency controls</p>
-            </div>
-          )}
+          {loading && <LongWait shape="idea" title="Generating your project idea" note="This can take a little while." className="min-h-[500px]" />}
 
           {project && !loading && (
             <div className="bg-card border border-ink/[0.08] rounded-2xl overflow-hidden shadow-2xl">

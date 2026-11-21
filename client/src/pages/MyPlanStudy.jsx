@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { motion, useReducedMotion } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import { useStudyPlan } from "../hooks/useStudyPlan";
@@ -40,6 +41,18 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
   const [params, setParams] = useSearchParams();
   const calm = useReducedMotion();
   const gate = useLoadingGate(!!model.loading);
+
+  // When the last task of the day is completed, say so once. It is a short toast: the Today screen itself gets nothing added.
+  // The Today view moves on to the next study day (or empties) once the day's tasks are done.
+  const todayView = model.data?.today;
+  const dayDone = !!todayView && (!todayView.isToday || todayView.items.length === 0);
+  const justCompleted = useRef(false);
+  useEffect(() => {
+    if (justCompleted.current && dayDone) {
+      justCompleted.current = false;
+      toast.success("That is today's plan done. Well done.");
+    }
+  }, [dayDone]);
   const [dialog, setDialog] = useState(null);
   const [round, setRound] = useState(null);
   const [roundIndex, setRoundIndex] = useState(0);
@@ -108,6 +121,10 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
       return recordPlanResult(selected.id, payload);
     });
     if (!result) return;
+    if (mode === "task") {
+      justCompleted.current = true;
+      setTimeout(() => { justCompleted.current = false; }, 4000);
+    }
     setStudyParams({ tab });
     if (result.offerRecode)
       setNotice({
