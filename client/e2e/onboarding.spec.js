@@ -126,6 +126,19 @@ test("a failed reports read leaves a neutral greeting and offers retry", async (
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Welcome, ${username}`);
 });
 
+test("a signed-in person is not sent to log in when the server cannot be reached", async ({ page }) => {
+  const username = await signUp(page, "offline");
+  const sessionCheck = /\/api\/auth\/current-user$/;
+  await page.route(sessionCheck, (route) => route.abort());
+  await page.goto("/dashboard");
+  await expect(page.getByRole("heading", { name: "Can't reach the server" })).toBeVisible();
+  await expect(page).not.toHaveURL(/\/login/);
+
+  await page.unroute(sessionCheck);
+  await page.getByRole("button", { name: /try again/i }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(username);
+});
+
 test("the home page and a new user's dashboard fit a phone", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 800 });
   await signUp(page, "phone");

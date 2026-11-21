@@ -53,7 +53,7 @@ const Profile = () => {
 
         <div className="mt-8 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-10">
           <nav aria-label="Profile sections" className="-mx-4 mb-6 overflow-x-auto px-4 sm:mx-0 sm:px-0 lg:sticky lg:top-24 lg:mb-0 lg:self-start lg:overflow-visible">
-            <ul className="flex gap-1.5 lg:flex-col lg:gap-1">
+            <ul className="grid grid-cols-2 gap-1.5 sm:flex lg:flex-col lg:gap-1">
               {TABS.map(({ id, label, icon }) => {
                 const Icon = icon;
                 const active = tab === id;

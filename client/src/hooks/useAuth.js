@@ -7,7 +7,7 @@ import { signOut } from "../utils/signOut";
 export const useAuth = () => {
   const context = useContext(AuthContext);
 
-  const { user, setUser, loading, setLoading, isLoggingOut, setIsLoggingOut } = context;
+  const { user, setUser, loading, setLoading, authError, retrySession, isLoggingOut, setIsLoggingOut } = context;
 
   const handleLogin = async (email, password) => {
     try {
@@ -106,6 +106,8 @@ export const useAuth = () => {
     setUser,
     loading,
     setLoading,
+    authError,
+    retrySession,
     isLoggingOut,
     setIsLoggingOut,
     handleLogin,
