@@ -5,7 +5,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../../hooks/useAuth";
 import { InlineSpinner } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
-import AuthShell, { BackLink } from "../../components/auth/AuthShell";
+import AuthShell, { BackLink, Item } from "../../components/auth/AuthShell";
 import AuthField, { PasswordToggle } from "../../components/auth/AuthField";
 import { extractError } from "../../utils/extractError";
 import { safeReturnTo } from '../../utils/planBuilder';
@@ -96,15 +96,18 @@ const Register = () => {
   return (
     <AuthShell aside={aside}>
       <div className="text-left">
-        <BackLink />
-        <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg">
-          Create your <span className="text-brand">account.</span>
-        </h1>
-        <p className="mb-6 mt-2 text-sm text-muted">Get started for free</p>
+        <Item><BackLink /></Item>
+        <Item>
+          <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg">
+            Create your <span className="text-brand">account.</span>
+          </h1>
+          <p className="mb-6 mt-2 text-sm text-muted">Get started for free</p>
+        </Item>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <InlineErrorAlert message={error} onDismiss={() => setError(null)} />
 
+          <Item>
           <AuthField
             id="register-username" label="Username" icon={User}
             type="text" name="username" placeholder="e.g. coder_sahil" autoComplete="username"
@@ -112,13 +115,17 @@ const Register = () => {
             trailing={formData.username.length >= 4 ? <Check aria-hidden="true" className="shrink-0 text-lg text-ok" /> : null}
             hint={<p className="pl-1 font-ui text-xs text-muted">4–30 characters</p>}
           />
+          </Item>
 
+          <Item>
           <AuthField
             id="register-email" label="Email address" icon={Envelope}
             type="email" name="email" placeholder="you@example.com" autoComplete="email"
             value={formData.email} onChange={handleChange} required
           />
+          </Item>
 
+          <Item>
           <AuthField
             id="register-password" label="Password" icon={Lock}
             type={showPassword ? "text" : "password"} name="password" placeholder="Min. 8 chars, uppercase & number" autoComplete="new-password"
@@ -137,13 +144,17 @@ const Register = () => {
               </div>
             )}
           />
+          </Item>
 
+          <Item>
           <p className="text-xs leading-relaxed text-muted">
             By creating an account, you agree to our{" "}
             <Link to="/terms" className="text-brand hover:underline">Terms of Use</Link> and{" "}
             <Link to="/privacy" className="text-brand hover:underline">Privacy Policy</Link>.
           </p>
+          </Item>
 
+          <Item>
           <button
             type="submit"
             disabled={loading}
@@ -155,7 +166,9 @@ const Register = () => {
               "Create Free Account"
             )}
           </button>
+          </Item>
 
+          <Item>
           <div className="flex items-center gap-3 py-2">
             <div className="h-px flex-1 bg-ink/[0.1]" />
             <span className="text-xs text-muted">or</span>
@@ -171,13 +184,16 @@ const Register = () => {
               text="continue_with"
             />
           </div>
+          </Item>
 
+          <Item>
           <p className="text-center text-sm text-muted">
             Already have an account?{" "}
             <Link to={`/login?returnTo=${encodeURIComponent(returnTo)}`} className="font-semibold text-brand transition-colors hover:text-brand-hover">
               Log in here
             </Link>
           </p>
+          </Item>
         </form>
       </div>
     </AuthShell>

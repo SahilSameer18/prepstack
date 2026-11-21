@@ -1,60 +1,25 @@
-import React from "react";
+import { useEffect, useState } from "react";
 
+// The calm full-page loader (the session check, a page waiting for the signed-in user).
+// One slow ring around the mark, and nothing at all for the first 150 ms.
 const PageLoader = ({ message = "Loading..." }) => {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setShow(true), 150);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center bg-card relative overflow-hidden py-16">
-
-      {/* Background glows */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand/5 rounded-full blur-[120px] animate-pulse" />
-      <div
-        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-orange-solid/4 rounded-full blur-[100px] animate-pulse"
-        style={{ animationDelay: "1.5s" }}
-      />
-
-      {/* Main loader content */}
-      <div className="relative z-10 flex flex-col items-center gap-6">
-
-        {/* Animated logo mark */}
-        <div className="relative">
-          {/* Outer spinning ring */}
-          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-brand animate-spin" style={{ width: 72, height: 72 }} />
-          {/* Middle pulsing ring */}
-          <div className="absolute inset-[6px] rounded-full border border-brand/20 animate-ping" />
-          {/* Inner icon container */}
-          <div className="w-[72px] h-[72px] rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center">
-            <span className="text-2xl font-black text-brand">P</span>
-          </div>
+    <div role="status" aria-live="polite" className="flex min-h-[60vh] flex-col items-center justify-center py-16">
+      {show && (
+        <div className="fade-in flex flex-col items-center gap-5">
+          <span className="relative flex h-14 w-14 items-center justify-center">
+            <span aria-hidden="true" className="loader-ring absolute inset-0 rounded-2xl border border-brand/50" />
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 font-display text-2xl font-black text-brand">P</span>
+          </span>
+          <p className="font-ui text-sm text-muted">{message}</p>
         </div>
-
-        {/* Brand name */}
-        <div className="text-center">
-          <p className="text-fg font-bold text-xl tracking-tight">
-            Prep<span className="text-brand">Stack</span>
-          </p>
-          <p className="text-muted text-sm mt-1 animate-pulse">{message}</p>
-        </div>
-
-        {/* Dot loader bar */}
-        <div className="flex items-center gap-1.5">
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="w-1.5 h-1.5 rounded-full bg-brand/60"
-              style={{
-                animation: "dotBounce 1.2s ease-in-out infinite",
-                animationDelay: `${i * 0.15}s`,
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes dotBounce {
-          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-          40% { transform: scale(1.2); opacity: 1; }
-        }
-      `}</style>
+      )}
     </div>
   );
 };

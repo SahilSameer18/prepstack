@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, BookOpenText, CheckSquare, CodeBlock, Lightning, MagnifyingGlass, Stack, Star, Target } from "@phosphor-icons/react";
 import { dsaSheet } from "../../api/services/sheetService";
-import { SkeletonCard } from "../../components/ui/Skeletons";
+import { SkeletonSheetList } from "../../components/ui/Skeletons";
+import { useLoadingGate } from "../../hooks/useLoadingGate";
 import { EmptyState } from "../../components/ui/StateComponents";
 import PageBackdrop from "../../components/ui/PageBackdrop";
 import { useAuth } from "../../hooks/useAuth";
@@ -108,6 +109,7 @@ const Sheets = () => {
   const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
   const [progress, setProgress] = useState({});
+  const gate = useLoadingGate(loading);
 
   // Your solved counts per sheet. Only asked for when signed in: a signed-out page never calls a personal API.
   const userId = user?._id || user?.id;
@@ -248,14 +250,12 @@ const Sheets = () => {
         </div>
 
         {/* ── CONTENT GRID ── */}
-        {loading ? (
-          <div className="grid md:grid-cols-2 gap-5">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
+        {gate === "blank" ? (
+          <div className="min-h-[40vh]" />
+        ) : gate === "skeleton" ? (
+          <SkeletonSheetList />
         ) : searchTerm === "" ? (
-          <div className="space-y-14">
+          <div className="fade-in space-y-14">
             {visibleCategories.map((cat) => (
               <section key={cat.id} aria-labelledby={`sheets-${cat.id}`}>
                 <div className="mb-5 flex items-end justify-between gap-4 border-b border-ink/[0.1] pb-4">
@@ -272,7 +272,7 @@ const Sheets = () => {
             ))}
           </div>
         ) : (
-          <div>
+          <div className="fade-in">
             <p className="mb-6 font-ui text-sm text-muted" role="status">{filtered.length} result{filtered.length !== 1 ? "s" : ""} found</p>
             {filtered.length > 0 ? (
               <div className="grid gap-5 md:grid-cols-2">

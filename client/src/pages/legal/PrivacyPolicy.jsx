@@ -1,37 +1,31 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FiArrowLeft, FiShield, FiLock, FiDatabase, FiUserCheck, FiMail } from "react-icons/fi";
+import LegalLayout from "./LegalLayout";
+import { ShieldCheck, Lock, Database, UserCheck, Envelope } from "@phosphor-icons/react";
+
+const OUTLINE = [
+  { id: "s1", label: "Overview & Purpose" },
+  { id: "s2", label: "Information We Collect" },
+  { id: "s3", label: "How Your Data is Used" },
+  { id: "s4", label: "Cookies & Browser Storage" },
+  { id: "s5", label: "Security Architecture" },
+  { id: "s6", label: "Third-Party Service Providers" },
+  { id: "s7", label: "Your Rights & Self-Service Account Erasure (GDPR Article 17)" },
+  { id: "contact", label: "Questions or requests" },
+];
 
 const PrivacyPolicy = () => {
   return (
-    <div className="min-h-screen text-fg-3 py-8 px-4 sm:px-6 max-w-4xl mx-auto">
-      {/* Back navigation */}
-      <Link
-        to="/"
-        className="inline-flex items-center gap-2 min-h-[44px] text-xs font-ui text-muted hover:text-brand transition-colors mb-4"
-      >
-        <FiArrowLeft /> Back to PrepStack
-      </Link>
-
-      {/* Header */}
-      <div className="border-b border-ink/[0.08] pb-8 mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/20 text-brand text-xs font-ui mb-4">
-          <FiShield /> Legal & Governance
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-fg tracking-tight mb-3">
-          Privacy Policy
-        </h1>
-        <p className="text-sm text-muted">
-          Last updated: November 2026 · Effective for all registered students and visitors
-        </p>
-      </div>
-
-      {/* Content Sections */}
-      <div className="space-y-10 text-sm leading-relaxed">
+    <LegalLayout
+      eyebrow="Legal and governance"
+      title="Privacy"
+      accent="policy."
+      updated="Last updated: November 2026 · Effective for all registered students and visitors"
+      outline={OUTLINE}
+    >
         {/* Section 1 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">1.</span> Overview & Purpose
+        <section id="s1" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">1.</span> Overview & Purpose
           </h2>
           <p>
             PrepStack (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) operates an engineered interview preparation platform designed to help engineering students and software developers prepare for technical rounds, DSA assessments, and behavioral interviews.
@@ -42,48 +36,48 @@ const PrivacyPolicy = () => {
         </section>
 
         {/* Section 2 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">2.</span> Information We Collect
+        <section id="s2" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">2.</span> Information We Collect
           </h2>
           <div className="grid sm:grid-cols-2 gap-4 pt-2">
-            <div className="bg-card-hover border border-ink/[0.08] rounded-xl p-4 space-y-2">
-              <div className="flex items-center gap-2 text-fg font-semibold text-xs">
-                <FiUserCheck className="text-brand" /> Account Details
+            <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2">
+              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+                <UserCheck className="text-brand" /> Account Details
               </div>
-              <p className="text-xs text-muted">
+              <p className="text-sm text-muted">
                 When registering, we collect your username, email address, and a securely salted bcrypt hash (12 rounds) of your password. If you sign in with Google, we receive your verified email, your Google account ID and your profile picture link. Your avatar is stored as an image link (an auto-generated avatar by default). If you ask to reset your password, we keep a one-way hash of the one-time link (never the link itself) for up to 1 hour, and a short-lived record that a reset was requested.
               </p>
             </div>
-            <div className="bg-card-hover border border-ink/[0.08] rounded-xl p-4 space-y-2">
-              <div className="flex items-center gap-2 text-fg font-semibold text-xs">
-                <FiDatabase className="text-cyan" /> Practice & Learning Progress
+            <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2">
+              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+                <Database className="text-brand" /> Practice & Learning Progress
               </div>
-              <p className="text-xs text-muted">
+              <p className="text-sm text-muted">
                 We store which DSA problems you have marked as solved on each sheet, the notes you write on those problems (pattern, complexity and your own text), the AI project ideas generated for you (title, description, features, tech stack, difficulty, time estimate and the domain you chose), and your Role Analyzer reports (the job description you pasted and the report: score, skill gaps, questions and study plan, including short quotes from your resume), so your progress is available on all your devices.
               </p>
             </div>
-            <div className="bg-card-hover border border-ink/[0.08] rounded-xl p-4 space-y-2 sm:col-span-2">
-              <div className="flex items-center gap-2 text-fg font-semibold text-xs">
-                <FiShield className="text-ok" /> Devices & active sessions
+            <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2 sm:col-span-2">
+              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+                <ShieldCheck className="text-brand" /> Devices & active sessions
               </div>
-              <p className="text-xs text-muted">
+              <p className="text-sm text-muted">
                 To protect against unauthorized access and power your Active Devices & Sessions Manager, we record your browser name, operating system and device type (taken from your User-Agent), your IP address and the time of last activity alongside a hashed session token. This is used for authentication security and account fraud prevention. A session record is kept until you sign out, revoke that device, or it expires (7 days after its last renewal).
               </p>
             </div>
-            <div className="bg-card-hover border border-ink/[0.08] rounded-xl p-4 space-y-2">
-              <div className="flex items-center gap-2 text-fg font-semibold text-xs">
-                <FiLock className="text-violet" /> Your Problem Notes
+            <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2">
+              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+                <Lock className="text-brand" /> Your Problem Notes
               </div>
-              <p className="text-xs text-muted">
+              <p className="text-sm text-muted">
                 The approach notes you write on DSA problems (pattern, complexity, free text, up to 5,000 characters each) are saved to your account so they appear on every device you sign in on. They are deleted with your account. Notes you wrote before this change were kept only in your browser and are moved to your account the next time you sign in.
               </p>
             </div>
-            <div className="bg-card-hover border border-ink/[0.08] rounded-xl p-4 space-y-2">
-              <div className="flex items-center gap-2 text-fg font-semibold text-xs">
-                <FiDatabase className="text-warn" /> Server Logs
+            <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2">
+              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+                <Database className="text-brand" /> Server Logs
               </div>
-              <p className="text-xs text-muted">
+              <p className="text-sm text-muted">
                 Our server writes a short log line for each request: the method, the page address without any query string, the status code and how long it took. Request bodies, passwords and tokens are not logged. Our hosting providers may also keep standard connection logs, which include IP addresses.
               </p>
             </div>
@@ -91,9 +85,9 @@ const PrivacyPolicy = () => {
         </section>
 
         {/* Section 3 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">3.</span> How Your Data is Used
+        <section id="s3" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">3.</span> How Your Data is Used
           </h2>
           <ul className="list-disc pl-5 space-y-2 text-muted">
             <li>To authenticate your sessions and manage secure token renewal across up to 10 concurrent devices.</li>
@@ -108,9 +102,9 @@ const PrivacyPolicy = () => {
         </section>
 
         {/* Section 4 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">4.</span> Cookies & Browser Storage
+        <section id="s4" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">4.</span> Cookies & Browser Storage
           </h2>
           <p>
             We use only the cookies needed to keep you signed in. We do not use advertising or analytics cookies.
@@ -124,14 +118,14 @@ const PrivacyPolicy = () => {
         </section>
 
         {/* Section 5 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">5.</span> Security Architecture
+        <section id="s5" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">5.</span> Security Architecture
           </h2>
           <p>
             We implement defense-in-depth security standards across all application layers:
           </p>
-          <div className="bg-card border border-ink/[0.06] rounded-xl p-4 space-y-2 text-xs font-ui text-muted">
+          <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2 text-sm font-ui text-muted">
             <div className="text-ok font-semibold">Security Highlights:</div>
             <div>• Passwords salted and hashed with bcrypt (12 rounds)</div>
             <div>• Refresh tokens cryptographically hashed with SHA-256 at rest (zero plaintext storage)</div>
@@ -144,9 +138,9 @@ const PrivacyPolicy = () => {
         </section>
 
         {/* Section 6 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">6.</span> Third-Party Service Providers
+        <section id="s6" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">6.</span> Third-Party Service Providers
           </h2>
           <p>
             We rely on trusted third-party services to deliver PrepStack:
@@ -161,42 +155,41 @@ const PrivacyPolicy = () => {
             <li><strong className="text-fg">DiceBear (api.dicebear.com):</strong> generates the default avatar image. Your browser requests it directly, and the request contains your username as the image seed.</li>
             <li><strong className="text-fg">Google Fonts:</strong> your browser loads page fonts from Google&apos;s font servers.</li>
           </ul>
-          <p className="text-xs text-muted">
+          <p className="text-sm text-muted">
             Problem links on DSA sheets open third-party websites (such as LeetCode, GeeksforGeeks and takeUforward). Those sites have their own privacy practices.
           </p>
         </section>
 
         {/* Section 7 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">7.</span> Your Rights & Self-Service Account Erasure (GDPR Article 17)
+        <section id="s7" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">7.</span> Your Rights & Self-Service Account Erasure (GDPR Article 17)
           </h2>
           <p>
             You have full ownership of your data under GDPR Article 17 (Right to Erasure). You can permanently and irreversibly delete your account, solved DSA problem history, problem notes, Role Analyzer reports and generated projects at any moment directly from your <strong className="text-fg">Profile &gt; Delete Account</strong> dashboard.
           </p>
-          <p className="text-xs text-muted">
+          <p className="text-sm text-muted">
             Upon confirmation, our backend deletes your account record, solved-problem history, problem notes, saved AI project ideas, Role Analyzer reports (with their study-plan ticks), all current, paused and historical study plans and all session records from our database in one operation, and clears your authentication cookies.
           </p>
-          <p className="text-xs text-muted">
+          <p className="text-sm text-muted">
             Notes that were never moved to your account (for example, you did not sign in again after this change) are still only in your browser, and account deletion cannot remove them. Clear your browser&apos;s site data to remove them.
           </p>
         </section>
 
         {/* Contact */}
-        <section className="pt-6 border-t border-ink/[0.08]">
-          <h3 className="text-fg font-semibold mb-2">Questions or Privacy Requests?</h3>
+        <section id="contact" className="surface-card scroll-mt-24 p-6">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg mb-2">Questions or Privacy Requests?</h2>
           <p className="text-muted mb-3">
             If you have any questions about this policy or your account data, please reach out directly:
           </p>
           <a
             href="mailto:sahilsameer.dev18@gmail.com"
-            className="inline-flex items-center gap-2 min-h-[44px] text-sm text-brand hover:underline"
+            className="inline-flex items-center gap-2 min-h-[44px] text-base text-brand hover:underline"
           >
-            <FiMail /> sahilsameer.dev18@gmail.com
+            <Envelope /> sahilsameer.dev18@gmail.com
           </a>
         </section>
-      </div>
-    </div>
+    </LegalLayout>
   );
 };
 

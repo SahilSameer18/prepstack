@@ -77,7 +77,7 @@ const Footer = () => (
 
         {COLUMNS.map((column) => (
           <nav key={column.title} aria-label={column.title}>
-            <h2 className="mb-3 font-display text-sm font-bold text-fg">{column.title}</h2>
+            <p className="mb-3 font-display text-sm font-bold text-fg">{column.title}</p>
             <ul className="space-y-1">
               {column.links.map((link) => (
                 <li key={link.name}>

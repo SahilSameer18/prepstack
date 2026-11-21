@@ -1,5 +1,5 @@
 import React from "react";
-import { FiAlertCircle, FiX, FiAlertTriangle, FiRefreshCw } from "react-icons/fi";
+import { WarningCircle, X, ArrowClockwise } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -12,23 +12,23 @@ export const InlineErrorAlert = ({ message, onDismiss, className = "" }) => {
   if (!message) return null;
   return (
     <motion.div
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.25 }}
+      initial={{ opacity: 0, transform: "translate3d(0, -8px, 0)" }}
+      animate={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
+      exit={{ opacity: 0, transform: "translate3d(0, -8px, 0)" }}
+      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
       role="alert"
-      className={`flex items-start gap-3 bg-bad-solid/10 border border-bad-solid/25 rounded-xl px-4 py-3 ${className}`}
+      className={`flex items-start gap-3 rounded-xl border border-bad-solid/25 bg-bad-solid/10 px-4 py-3 ${className}`}
     >
-      <FiAlertCircle className="text-bad flex-shrink-0 mt-0.5 text-base" />
-      <p className="text-bad text-sm leading-snug flex-1">{message}</p>
+      <WarningCircle weight="duotone" aria-hidden="true" className="mt-0.5 shrink-0 text-lg text-bad" />
+      <p className="flex-1 text-sm leading-snug text-bad">{message}</p>
       {onDismiss && (
         <button
           type="button"
           onClick={onDismiss}
           aria-label="Dismiss error"
-          className="text-bad hover:text-bad transition-colors flex-shrink-0"
+          className="shrink-0 text-bad transition-colors hover:text-fg"
         >
-          <FiX className="text-sm" />
+          <X aria-hidden="true" className="text-sm" />
         </button>
       )}
     </motion.div>
@@ -37,7 +37,7 @@ export const InlineErrorAlert = ({ message, onDismiss, className = "" }) => {
 
 /**
  * PageErrorState
- * A full-page centered error state for data-fetch failures.
+ * A centred card for a page whose data could not be loaded, with the same card and buttons as the rest of the app.
  * Usage: <PageErrorState message="..." backTo="/somewhere" backLabel="Go Back" onRetry={fn} />
  */
 export const PageErrorState = ({
@@ -47,31 +47,32 @@ export const PageErrorState = ({
   backLabel = "Go Back",
   onRetry,
 }) => (
-  <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5 px-4 text-center">
-    <div className="w-20 h-20 rounded-2xl bg-bad-solid/10 border border-bad-solid/20 flex items-center justify-center">
-      <FiAlertTriangle className="text-4xl text-bad" />
-    </div>
-    <div>
-      <h2 className="text-xl font-bold text-fg mb-2">{title}</h2>
-      <p className="text-muted text-sm max-w-sm">{message}</p>
-    </div>
-    <div className="flex items-center gap-3">
-      {onRetry && (
-        <button
-          onClick={onRetry}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand text-on-brand font-semibold text-sm hover:bg-brand-hover transition-all"
-        >
-          <FiRefreshCw className="text-sm" /> Try Again
-        </button>
-      )}
-      {backTo && (
-        <Link
-          to={backTo}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-ink/[0.06] border border-ink/[0.1] text-fg-3 font-semibold text-sm hover:text-fg hover:bg-ink/[0.1] transition-all"
-        >
-          {backLabel}
-        </Link>
-      )}
+  <div className="flex min-h-[60vh] items-center justify-center px-4">
+    <div role="alert" className="surface-card fade-in w-full max-w-md p-8 text-center">
+      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-bad-solid/25 bg-bad-solid/10 text-3xl text-bad">
+        <WarningCircle weight="duotone" aria-hidden="true" />
+      </span>
+      <h2 className="mt-5 font-display text-2xl font-extrabold tracking-tight text-fg">{title}</h2>
+      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">{message}</p>
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        {onRetry && (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="amber-specular-button inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl px-5 text-sm font-bold"
+          >
+            <ArrowClockwise aria-hidden="true" /> Try again
+          </button>
+        )}
+        {backTo && (
+          <Link
+            to={backTo}
+            className="titanium-button inline-flex min-h-[44px] items-center rounded-xl px-5 text-sm font-medium"
+          >
+            {backLabel}
+          </Link>
+        )}
+      </div>
     </div>
   </div>
 );

@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 import SignInNotice from '../../components/auth/SignInNotice';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { SkeletonNotesDetail } from '../../components/ui/Skeletons';
+import { useLoadingGate } from '../../hooks/useLoadingGate';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
 import SelectField from '../../components/ui/SelectField';
 import PageBackdrop from '../../components/ui/PageBackdrop';
@@ -284,6 +285,7 @@ const SectionList = ({ subject, subjectTitle, sections, activeId, onPick, slideI
 export default function NotesDetail() {
   const { subject, sectionId } = useParams();
   const { data: noteConfig, loading, error } = useNotes(subject);
+  const gate = useLoadingGate(loading);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Lock body scroll when mobile sidebar is open
@@ -297,9 +299,8 @@ export default function NotesDetail() {
     window.scrollTo({ top: 0 });
   }, [subject, sectionId]);
 
-  if (loading) {
-    return <SkeletonNotesDetail />;
-  }
+  if (gate === 'blank') return <div className="min-h-[60vh]" />;
+  if (gate === 'skeleton') return <SkeletonNotesDetail />;
 
   if (error || !noteConfig) {
     return <PageErrorState title="Failed to load notes" message={error || "Notes not found"} backTo="/notes" />;

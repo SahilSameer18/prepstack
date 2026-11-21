@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
-import PageLoader from "../components/ui/PageLoader";
+import { RouteFallback } from "../components/ui/TopProgress";
 import RouteSeo from "../seo/Seo";
 
 const MainLayout = () => {
@@ -33,7 +33,7 @@ const MainLayout = () => {
       <Navbar />
       <main className="flex-grow pt-20 sm:pt-24 px-4 pb-12 overflow-x-clip relative z-10">
         <div className="max-w-7xl mx-auto">
-          <Suspense fallback={<PageLoader />}>
+          <Suspense fallback={<RouteFallback />}>
             <Outlet /> {/* Render the child route pages here */}
           </Suspense>
         </div>

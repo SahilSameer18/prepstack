@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { getSheetBySlug, getSheetProgress, toggleProblem } from '../../api/services/sheetService';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
 import { SkeletonSheetDetail } from '../../components/ui/Skeletons';
+import { useLoadingGate } from '../../hooks/useLoadingGate';
 import PageBackdrop from '../../components/ui/PageBackdrop';
 import { getSheetMeta } from '../../data/sheetMeta';
 import { useProblemNotes } from '../../hooks/useProblemNotes';
@@ -29,6 +30,7 @@ const SheetsDetail = () => {
   const calm = useReducedMotion();
   const [sheet, setSheet] = useState(null);
   const [loading, setLoading] = useState(true);
+  const gate = useLoadingGate(loading);
   const [fetchError, setFetchError] = useState(null);
   const [solved, setSolved] = useState([]);
   const [openTopics, setOpenTopics] = useState(new Set());
@@ -147,7 +149,8 @@ const SheetsDetail = () => {
     setTimeout(() => document.getElementById(`p-${ti}-${pi}`)?.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'center' }), 350);
   };
 
-  if (loading) return <SkeletonSheetDetail />;
+  if (gate === 'blank') return <div className="min-h-[60vh]" />;
+  if (gate === 'skeleton') return <SkeletonSheetDetail />;
 
   if (fetchError) return (
     <PageErrorState

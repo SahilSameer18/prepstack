@@ -634,13 +634,17 @@ a.btn:active,
   }
 }
 
+/* The one shimmer for every placeholder: a warm tint with a slow, soft sweep. The ink colour adapts to both themes. */
 .skeleton-shine {
-  background: linear-gradient(90deg,
-      color-mix(in srgb, var(--ink) 4%, transparent) 25%,
-      color-mix(in srgb, var(--ink) 9%, transparent) 50%,
-      color-mix(in srgb, var(--ink) 4%, transparent) 75%);
-  background-size: 600px 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
+  background-color: color-mix(in srgb, var(--ink) 6%, transparent);
+  background-image: linear-gradient(100deg, transparent 20%, color-mix(in srgb, var(--ink) 9%, transparent) 50%, transparent 80%);
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-sweep 1.8s var(--ease-in-out) infinite;
+}
+@keyframes skeleton-sweep {
+  from { background-position: 160% 0; }
+  to { background-position: -60% 0; }
 }
 
 /* ---------------- PAGE TRANSITIONS ---------------- */
@@ -670,7 +674,7 @@ a.btn:active,
 }
 
 .fade-in {
-  animation: fadeIn 0.25s ease forwards;
+  animation: fadeIn 0.25s var(--ease-out) both;
 }
 
 /* ---------------- BUTTON PRESS EFFECT ---------------- */
@@ -756,14 +760,6 @@ input:-webkit-autofill:active {
 
 :root[data-theme="light"] .glass {
   background: color-mix(in srgb, var(--card) 70%, transparent);
-}
-
-:root[data-theme="light"] .skeleton-shine {
-  background: linear-gradient(90deg,
-      color-mix(in srgb, var(--ink) 5%, transparent) 25%,
-      color-mix(in srgb, var(--ink) 10%, transparent) 50%,
-      color-mix(in srgb, var(--ink) 5%, transparent) 75%);
-  background-size: 600px 100%;
 }
 
 :root[data-theme="light"] ::-webkit-scrollbar-thumb {
@@ -856,4 +852,21 @@ input:-webkit-autofill:active {
 @keyframes sheet-done-glow {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 45%, transparent); }
   100% { box-shadow: 0 0 0 22px color-mix(in srgb, var(--brand) 0%, transparent); }
+}
+
+/* Loading: the thin top line while a page downloads, and the one slow ring around the loader mark. */
+.top-progress-bar {
+  transform-origin: left center;
+  animation: top-progress 8s cubic-bezier(0.1, 0.7, 0.2, 1) forwards;
+}
+@keyframes top-progress {
+  from { transform: scaleX(0.04); }
+  to { transform: scaleX(0.92); }
+}
+.loader-ring {
+  animation: loader-ring 2.2s var(--ease-out) infinite;
+}
+@keyframes loader-ring {
+  from { transform: scale(1); opacity: 0.7; }
+  to { transform: scale(1.55); opacity: 0; }
 }

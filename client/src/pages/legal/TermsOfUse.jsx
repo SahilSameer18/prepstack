@@ -1,37 +1,30 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FiArrowLeft, FiFileText, FiAlertCircle, FiCheckSquare, FiMail } from "react-icons/fi";
+import LegalLayout from "./LegalLayout";
+import { Envelope } from "@phosphor-icons/react";
+
+const OUTLINE = [
+  { id: "s1", label: "Acceptance of Terms" },
+  { id: "s2", label: "Educational Mission & License" },
+  { id: "s3", label: "Intellectual Property & Third-Party Content" },
+  { id: "s4", label: "Acceptable Use & Session Integrity" },
+  { id: "s5", label: "Disclaimer of Placement Guarantee" },
+  { id: "s6", label: "Account Termination & Self-Service Erasure" },
+  { id: "contact", label: "Questions about the terms" },
+];
 
 const TermsOfUse = () => {
   return (
-    <div className="min-h-screen text-fg-3 py-8 px-4 sm:px-6 max-w-4xl mx-auto">
-      {/* Back navigation */}
-      <Link
-        to="/"
-        className="inline-flex items-center gap-2 min-h-[44px] text-xs font-ui text-muted hover:text-brand transition-colors mb-4"
-      >
-        <FiArrowLeft /> Back to PrepStack
-      </Link>
-
-      {/* Header */}
-      <div className="border-b border-ink/[0.08] pb-8 mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/20 text-brand text-xs font-ui mb-4">
-          <FiFileText /> Agreement
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-fg tracking-tight mb-3">
-          Terms of Use
-        </h1>
-        <p className="text-sm text-muted">
-          Last updated: March 2026 · Governing all access and usage of PrepStack
-        </p>
-      </div>
-
-      {/* Content Sections */}
-      <div className="space-y-10 text-sm leading-relaxed">
+    <LegalLayout
+      eyebrow="Agreement"
+      title="Terms of"
+      accent="use."
+      updated="Last updated: March 2026 · Governing all access and usage of PrepStack"
+      outline={OUTLINE}
+    >
         {/* Section 1 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">1.</span> Acceptance of Terms
+        <section id="s1" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">1.</span> Acceptance of Terms
           </h2>
           <p>
             By accessing or creating an account on PrepStack, you agree to comply with and be bound by these Terms of Use. If you do not agree with any part of these terms, you may not use the platform.
@@ -39,9 +32,9 @@ const TermsOfUse = () => {
         </section>
 
         {/* Section 2 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">2.</span> Educational Mission & License
+        <section id="s2" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">2.</span> Educational Mission & License
           </h2>
           <p>
             PrepStack is provided as a 100% free educational platform created to democratize interview preparation for software engineering candidates. You are granted a personal, non-exclusive, non-transferable license to access our curated roadmaps, CS cheat-sheets, and interactive problem trackers for personal learning purposes.
@@ -49,9 +42,9 @@ const TermsOfUse = () => {
         </section>
 
         {/* Section 3 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">3.</span> Intellectual Property & Third-Party Content
+        <section id="s3" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">3.</span> Intellectual Property & Third-Party Content
           </h2>
           <p>
             DSA problem descriptions, problem titles, and external links are curated from publicly recognized problem sets (such as LeetCode, Striver A2Z, NeetCode 150, and Love Babbar 450). Original copyrights and trademarks for those respective problems remain the property of their original creators and platforms.
@@ -62,9 +55,9 @@ const TermsOfUse = () => {
         </section>
 
         {/* Section 4 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">4.</span> Acceptable Use & Session Integrity
+        <section id="s4" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">4.</span> Acceptable Use & Session Integrity
           </h2>
           <p>You agree not to:</p>
           <ul className="list-disc pl-5 space-y-1 text-muted">
@@ -74,15 +67,15 @@ const TermsOfUse = () => {
             <li>Use the AI generation endpoints to produce malicious, fraudulent, or harmful code.</li>
             <li>Upload another person's resume or personal details to the Role Analyzer without their permission. Its reports are AI-written advice and do not promise an interview or a job.</li>
           </ul>
-          <p className="text-xs text-muted pt-1">
+          <p className="text-sm text-muted pt-1">
             <strong className="text-fg">User Session Responsibility:</strong> You are responsible for safeguarding your credentials and monitoring your active logins. We provide an in-app <strong className="text-fg">Active Devices & Sessions Manager</strong> allowing you to inspect logged-in devices and revoke remote sessions at any time.
           </p>
         </section>
 
         {/* Section 5 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">5.</span> Disclaimer of Placement Guarantee
+        <section id="s5" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">5.</span> Disclaimer of Placement Guarantee
           </h2>
           <p>
             While PrepStack is engineered to provide top-tier preparation material modeled after FAANG and top product company placement interviews, we do not guarantee specific employment offers or placement results. Final outcomes depend on candidate preparation, interview performance, and company hiring discretion.
@@ -90,9 +83,9 @@ const TermsOfUse = () => {
         </section>
 
         {/* Section 6 */}
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-fg flex items-center gap-2">
-            <span className="text-brand">6.</span> Account Termination & Self-Service Erasure
+        <section id="s6" className="scroll-mt-24 space-y-3">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+            <span className="font-ui text-lg text-brand">6.</span> Account Termination & Self-Service Erasure
           </h2>
           <p>
             <strong className="text-fg">Voluntary User Termination:</strong> You may permanently terminate your account and erase all associated data at any time via the self-service <strong className="text-fg">Delete Account</strong> feature in your Profile settings.
@@ -103,20 +96,19 @@ const TermsOfUse = () => {
         </section>
 
         {/* Contact */}
-        <section className="pt-6 border-t border-ink/[0.08]">
-          <h3 className="text-fg font-semibold mb-2">Inquiries Regarding Terms</h3>
+        <section id="contact" className="surface-card scroll-mt-24 p-6">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg mb-2">Inquiries Regarding Terms</h2>
           <p className="text-muted mb-3">
             For questions or enterprise usage inquiries, contact the creator:
           </p>
           <a
             href="mailto:sahilsameer.dev18@gmail.com"
-            className="inline-flex items-center gap-2 min-h-[44px] text-sm text-brand hover:underline"
+            className="inline-flex items-center gap-2 min-h-[44px] text-base text-brand hover:underline"
           >
-            <FiMail /> sahilsameer.dev18@gmail.com
+            <Envelope /> sahilsameer.dev18@gmail.com
           </a>
         </section>
-      </div>
-    </div>
+    </LegalLayout>
   );
 };
 

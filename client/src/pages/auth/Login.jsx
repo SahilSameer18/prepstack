@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from "../../hooks/useAuth";
 import { InlineSpinner } from "../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
-import AuthShell, { BackLink } from "../../components/auth/AuthShell";
+import AuthShell, { BackLink, Item } from "../../components/auth/AuthShell";
 import AuthField, { PasswordToggle } from "../../components/auth/AuthField";
 import { extractError } from "../../utils/extractError";
 import { safeReturnTo } from '../../utils/planBuilder';
@@ -108,36 +108,43 @@ const Login = () => {
   return (
     <AuthShell aside={aside}>
       <div className="text-left">
-        <BackLink />
-        <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg">
-          Welcome <span className="text-brand">back.</span>
-        </h1>
-        <p className="mb-6 mt-2 text-sm text-muted">Log in to continue your preparation journey.</p>
+        <Item><BackLink /></Item>
+        <Item>
+          <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg">
+            Welcome <span className="text-brand">back.</span>
+          </h1>
+          <p className="mb-6 mt-2 text-sm text-muted">Log in to continue your preparation journey.</p>
+        </Item>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <InlineErrorAlert message={error} onDismiss={() => setError(null)} />
 
+          <Item>
           <AuthField
             id="login-email" label="Email address" icon={Envelope}
             type="email" name="email" placeholder="you@example.com" autoComplete="email"
             value={formData.email} onChange={handleChange} required
           />
+          </Item>
 
+          <Item>
           <AuthField
             id="login-password" label="Password" icon={Lock}
             type={showPassword ? "text" : "password"} name="password" placeholder="Enter your password" autoComplete="current-password"
             value={formData.password} onChange={handleChange} required
             trailing={<PasswordToggle show={showPassword} onToggle={() => setShowPassword(!showPassword)} />}
           />
+          </Item>
 
           {!linkingMode && (
-            <div className="-mt-1 flex justify-end">
+            <Item className="-mt-1 flex justify-end">
               <Link to="/forgot-password" className="inline-flex min-h-[44px] items-center text-sm text-muted transition-colors hover:text-brand">
                 Forgot password?
               </Link>
-            </div>
+            </Item>
           )}
 
+          <Item>
           <button
             type="submit"
             disabled={loading}
@@ -149,9 +156,10 @@ const Login = () => {
               linkingMode ? "Link Google Account" : "Log In to PrepStack"
             )}
           </button>
+          </Item>
 
           {!linkingMode && (
-            <>
+            <Item>
               <div className="flex items-center gap-3 py-2">
                 <div className="h-px flex-1 bg-ink/[0.1]" />
                 <span className="text-xs text-muted">or</span>
@@ -167,15 +175,17 @@ const Login = () => {
                   text="continue_with"
                 />
               </div>
-            </>
+            </Item>
           )}
 
+          <Item>
           <p className="text-center text-sm text-muted">
             Don&apos;t have an account?{" "}
             <Link to={`/register?returnTo=${encodeURIComponent(returnTo)}`} className="font-semibold text-brand transition-colors hover:text-brand-hover">
               Create one for free
             </Link>
           </p>
+          </Item>
         </form>
       </div>
     </AuthShell>
