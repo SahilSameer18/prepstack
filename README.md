@@ -398,6 +398,7 @@ The Redis plan and the interview-oriented notes are in [docs/plans/REDIS_PLAN.md
 | Vite                | 7       | Build tooling & HMR                         |
 | Tailwind CSS        | v4      | Utility-first styling engine, light and dark themes from colour tokens |
 | Phosphor Icons      | v2      | Icons on every page |
+| Geist, Geist Mono   | variable | Headings, body text and numbers (self-hosted with @fontsource-variable) |
 | Framer Motion       | 12      | Fluid UI transitions & animations           |
 | React Router DOM    | 7       | Client routing layer                        |
 | Axios               | latest  | Configured HTTP client (with credentials)   |

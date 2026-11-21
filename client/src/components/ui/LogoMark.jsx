@@ -1,6 +1,6 @@
 import { useId } from "react";
 
-// The PrepStack mark: a bold "P" on an amber tile with three stacked layers. Same shape as /favicon.svg.
+// The PrepStack mark: a bold "P" on an amber tile with three stacked layers. Same shape as /favicon.svg. The glyph is shifted so it sits centred in the tile.
 const LogoMark = ({ className = "w-7 h-7" }) => {
   const gradientId = useId(); // unique per instance, so the navbar and footer copies never share an id
   return (
@@ -12,7 +12,7 @@ const LogoMark = ({ className = "w-7 h-7" }) => {
         </linearGradient>
       </defs>
       <rect width="512" height="512" rx="112" fill={`url(#${gradientId})`} />
-      <g style={{ fill: "var(--card)" }}>
+      <g transform="translate(-10 -19)" style={{ fill: "var(--card)" }}>
         <path
           fillRule="evenodd"
           d="M150 104H304A104 104 0 0 1 304 312H200V390A18 18 0 0 1 182 408H150A18 18 0 0 1 132 390V122A18 18 0 0 1 150 104ZM200 164H300A44 44 0 0 1 300 252H200Z"

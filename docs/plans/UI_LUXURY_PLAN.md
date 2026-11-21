@@ -2,7 +2,16 @@
 
 Source: the honest audit of 21 Nov 2026 (overall 6.5 of 10 against "million dollar, futuristic, luxury, not generic"; distinctiveness 5, futuristic 4, luxury 5.5, typography 6, colour 6, cards 6.5), plus a second opinion from another agent that the owner pasted (adopted in part, see "Second opinion").
 
+## Brand idea (owner, 21 Nov 2026): precise, calm, ambitious
+Goal: the site should feel like a product from a high-end design studio, not a template. Check every choice against these three words.
+- **Precise:** aligned numbers, one type scale, thin lines, no decoration that carries no meaning.
+- **Calm:** soft tones, slow motion, flat quiet buttons (no gloss or glow), space instead of boxes.
+- **Ambitious:** a heavy, confident second headline line, one memorable signature visual, real numbers.
+- **Type decided 21 Nov:** Geist (headings and body) and Geist Mono (numbers and small labels), self-hosted with @fontsource-variable. Caveat stays for the one handwritten tagline.
+- **Batches:** 1 fonts and plan (done), 2 buttons and inputs, 3 signature visual (3 pictured options, owner picks), 4 detail pass (logo, footer, empty states, 404 copy) then one test pass, then an outside review by 3 to 5 students or a designer.
+
 ## Status (updated 21 Nov 2026)
+- **Brand batches 1 to 4 done (21 Nov).** Fonts Geist and Geist Mono; button in the Soft style (a flat version was tried and reverted as too flat); hero demo kept (signature visual options A, B, C were drawn and the owner kept the current demo); logo glyph centred, icons, maskable icon and sharing card redrawn with Geist; calmer 404 wording. One test pass: lint, unit, server, build and SEO, e2e (exit 0). Still to do: outside review with 3 to 5 students or a designer.
 - **Phase 0 done.** Three directions were drawn; the owner chose to **keep the current colours** and said the worry is **structure**. Colours and fonts stay as they are unless the owner asks (the fonts, Plus Jakarta Sans, Inter, JetBrains Mono and Caveat, are common defaults: a heading-font change is an open owner decision, to be picked from pictures).
 - **Home page built (Phase 4 below), looked at in light and dark, not tested.** The old comparison, handwriting and the tilted `while (preparing)` chip are kept; numbers row (static, from `homeFacts.json`, no server call, full width), "How it works", "What is inside" as lines, a Role Analyzer section with an example report, plain FAQ rows. The hero demo is now about the plan (Your hours, Today, Missed days), one fixed height on all tabs, no "example" labels. The orange last word is gone on the home page only.
 - **Phase 5 built, then reviewed and fixed page by page from real screenshots (21 Nov).** Done and looked at in light and dark: DSA list, sheet page (signed in and out), roadmaps list, roadmap page (opened step), behavioral prep. **Resume guide: looked at (signed in, light and dark) and aligned. Phase 5 is complete.** A first version of Phase 5 was built from pictures with short made-up text and looked cluttered with real content; the fixes below came from that.
@@ -146,7 +155,7 @@ Rule: a real-content screenshot, light and dark, is looked at before anything is
 - Unused-code cleanup: capsule styles and roadmap icons are removed; nothing else known.
 
 ## Decisions that are the owner's (recommendation in brackets)
-1. Heading font: keep Plus Jakarta Sans, or change (recommend: look at three pictured options for the home hero before deciding; change only the heading font).
+1. Heading font: **decided 21 Nov, Geist + Geist Mono** (picked from three pictured options).
 2. The home demo about the plan: **decided yes (21 Nov)**, built.
 2b. The fake "G → D" keyboard capsule on the signed-in hero Dashboard button: **removed 21 Nov** (nothing handled those keys). A real keyboard shortcut can come back together with the Ctrl+K box in Phase 8.
 3. Whether the Ctrl+K "jump to" box is included in Phase 8 (recommend yes, last).

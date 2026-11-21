@@ -80,16 +80,16 @@ const NotFound = () => (
 
     <AuthEnter className="relative z-10 mx-auto flex min-h-[70vh] max-w-3xl flex-col items-center justify-center px-2 pb-12 pt-6 text-center">
       <Item>
-        <p className="font-ui text-sm font-semibold text-fg-3">Error 404</p>
+        <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">Error 404</p>
       </Item>
       <Item>
-        <h1 className="mt-3 font-display text-5xl font-black leading-[1.02] tracking-[-0.04em] text-fg sm:text-6xl lg:text-7xl">
+        <h1 className="mt-3 font-display text-5xl font-bold leading-[1.02] tracking-[-0.04em] text-fg sm:text-6xl lg:text-7xl">
           Page not found.
         </h1>
       </Item>
       <Item>
         <p className="mx-auto mt-5 max-w-md text-base leading-relaxed text-muted">
-          Looks like you took a wrong turn. The page you&apos;re looking for doesn&apos;t exist or might have been moved.
+          This page doesn&apos;t exist, or it has moved. Try search, or start from one of these.
         </p>
       </Item>
       <Item className="mt-8 flex flex-wrap justify-center gap-3">

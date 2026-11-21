@@ -13,6 +13,8 @@
     "build:app": "vite build"
   },
   "dependencies": {
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-select": "^2.4.1",
     "@react-oauth/google": "^0.13.5",

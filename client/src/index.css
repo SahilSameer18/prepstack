@@ -204,9 +204,9 @@ body, #root {
   --lc-muted: var(--muted);
 
   /* ── TYPOGRAPHY STACK ── */
-  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Geist Variable', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, SFMono-Regular, monospace;
+  --font-sans: 'Geist Variable', system-ui, -apple-system, sans-serif;
   --font-hand: 'Caveat', 'Segoe Script', cursive;   /* the handwritten tagline only */
 
   color-scheme: dark;
@@ -291,7 +291,6 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   letter-spacing: -0.011em;
   line-height: 1.55;
   font-optical-sizing: auto;
@@ -322,7 +321,7 @@ h2 {
   line-height: 1.2;
 }
 
-/* Code and numbers only: JetBrains Mono with aligned digits. Labels and buttons use the normal UI font (font-ui = no change). */
+/* Code and numbers only: Geist Mono with aligned digits. Labels and buttons use the normal UI font (font-ui = no change). */
 .font-code {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
@@ -357,23 +356,20 @@ kbd {
   -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 85%);
 }
 
+/* Soft amber button (owner pick, 21 Nov): gentle gradient, thin edge, tiny shadow, no glow. */
 .amber-specular-button {
-  background: linear-gradient(180deg, var(--brand-grad-top) 0%, var(--brand-grad-bottom) 100%);
+  background: linear-gradient(180deg, var(--brand-grad-hover-top) 0%, var(--brand-grad-hover-bottom) 100%);
   color: var(--on-grad);
-  box-shadow: 0 8px 24px -4px color-mix(in srgb, var(--brand-deep) 38%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 40%, transparent);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease;
-  will-change: transform;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand-deep) 35%, transparent), 0 1px 2px color-mix(in srgb, var(--brand-deep) 25%, transparent);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
 }
 
 .amber-specular-button:hover {
-  background: linear-gradient(180deg, var(--brand-grad-hover-top) 0%, var(--brand-grad-hover-bottom) 100%);
-  box-shadow: 0 12px 28px -3px color-mix(in srgb, var(--brand-deep) 48%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 50%, transparent);
-  transform: translateY(-1px);
+  filter: brightness(1.05);
 }
 
 .amber-specular-button:active {
-  transform: scale(0.97);
-  box-shadow: 0 4px 12px -2px color-mix(in srgb, var(--brand-deep) 30%, transparent);
+  transform: scale(0.98);
 }
 
 .titanium-button {
