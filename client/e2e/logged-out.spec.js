@@ -106,3 +106,28 @@ test("the sign-in message fits a phone", async ({ page }) => {
   expect(box.x + box.width).toBeLessThanOrEqual(375);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
 });
+
+test("Ctrl+K opens the jump-to box on any page, finds a page, goes there, and Escape returns focus", async ({ page }) => {
+  await page.goto("/roadmaps");
+  await page.getByRole("link", { name: "Roadmaps" }).first().focus();
+  await page.keyboard.press("Control+k");
+  const box = page.getByRole("dialog", { name: "Jump to a page" });
+  await expect(box).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(box).toBeHidden();
+  await expect(page.getByRole("link", { name: "Roadmaps" }).first()).toBeFocused();
+
+  await page.keyboard.press("Control+k");
+  await page.getByRole("combobox", { name: "Jump to a page" }).fill("blind");
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/dsa\/blind-75/);
+  await expect(box).toBeHidden();
+});
+
+test("with reduced motion the home numbers show their final value at once", async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: "reduce" });
+  const page = await context.newPage();
+  await page.goto("/");
+  await expect(page.getByText("1,276", { exact: true })).toBeVisible({ timeout: 1000 });
+  await context.close();
+});

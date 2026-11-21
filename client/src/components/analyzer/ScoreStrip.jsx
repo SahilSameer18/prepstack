@@ -1,5 +1,7 @@
 // The evidence match: the number, and one mark per requirement from the job (matched, partly, missing).
 // The number is worked out on the server from the requirement marks, never by the AI; every mark is a real requirement.
+import CountUp from "../ui/CountUp";
+
 const MARK = { met: "bg-ok-solid", partial: "bg-warn-solid", missing: "bg-bad-solid" };
 
 const ScoreStrip = ({ score, reqs }) => {
@@ -8,7 +10,7 @@ const ScoreStrip = ({ score, reqs }) => {
   return (
     <>
       <div className="flex items-baseline gap-2" role="img" aria-label={`Evidence match ${score} out of 100`}>
-        <span className="font-display text-7xl font-black leading-none tracking-tight text-fg">{score}</span>
+        <span className="font-display text-7xl font-black leading-none tracking-tight text-fg"><CountUp value={score} duration={1.1} /></span>
         <span className="text-muted">out of 100</span>
       </div>
       <div className="min-w-0">

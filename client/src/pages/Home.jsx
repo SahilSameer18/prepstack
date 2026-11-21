@@ -8,6 +8,7 @@ import AnalyzerShowcase from "../components/homePage/AnalyzerShowcase";
 import WhySection from "../components/homePage/WhySection";
 import CtaBanner from "../components/homePage/CtaBanner";
 import FAQ from "../components/homePage/FAQ";
+import Reveal from "../components/ui/Reveal";
 
 const Home = () => {
   return (
@@ -16,13 +17,13 @@ const Home = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-28 relative z-10 space-y-14 sm:space-y-16">
         <HeroSection />
-        <StatsRow />
-        <HowItWorks />
-        <SuiteSection />
-        <AnalyzerShowcase />
-        <WhySection />
-        <CtaBanner />
-        <FAQ />
+        <Reveal><StatsRow /></Reveal>
+        <Reveal><HowItWorks /></Reveal>
+        <Reveal><SuiteSection /></Reveal>
+        <Reveal><AnalyzerShowcase /></Reveal>
+        <Reveal><WhySection /></Reveal>
+        <Reveal><CtaBanner /></Reveal>
+        <Reveal><FAQ /></Reveal>
       </div>
     </div>
   );

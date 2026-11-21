@@ -51,7 +51,7 @@ Source: the honest audit of 21 Nov 2026 (overall 6.5 of 10 against "million doll
 | 5. List and detail pages | DSA sheets list and sheet page as rows with progress marks, roadmaps list and page, behavioral, resume guide. | **Done 21 Nov** (all six pages built, looked at in light and dark; not tested) |
 | 6. Reading and planning screens (**built 21 Nov**, notes page, notes list and Plan tab) | The notes reading page (quiet backdrop, clear explanation, example, mistake and exercise blocks, narrow-screen diagrams and code) and the My plan Plan tab (controls grouped by purpose: schedule changes, task management, recovery, plan management). Draw each with real data first. | Open |
 | 7. App pages to the same look (**built 21 Nov except auth, which the owner keeps**; profile Security/Devices/Sign out cards not restyled) | Dashboard (smaller greeting, clear selected section), AI projects, Role Analyzer, profile, login and register; confirmation dialogs the same everywhere. | Open (they are close already) |
-| 8. Motion | One system: press feedback, tab movement, disclosure, dialogs, gentle page entry, a "task done" moment; consistent reduced motion; optional Ctrl+K "jump to" box (needs the owner's yes). | Open |
+| 8. Motion (**built 21 Nov**, parts not done, see PROJECT_STATUS) | One system: press feedback, tab movement, disclosure, dialogs, gentle page entry, a "task done" moment; consistent reduced motion; optional Ctrl+K "jump to" box (needs the owner's yes). | Open |
 | 9. Verify | Whole e2e suite, server tests, build and SEO check, light, dark and 375 px captures, slow network, accessibility checklist (touch targets, keyboard and focus, Escape and focus return, names for icon buttons, text as well as colour for errors, larger text and long labels, reduced motion and transparency, dialogs with the phone keyboard open); docs and README. | Open (when the owner asks) |
 
 ## Phase 6 in detail (looked at on real pages, 21 Nov 2026)
@@ -115,6 +115,29 @@ Rule: a real-content screenshot, light and dark, is looked at before anything is
 6. Mono for counts and times that are still in the main font: Analyzer days number, plan preview totals.
 **Not changed:** the Analyzer score and requirement strip (already marks), roadmap step numbers (already mono), round check icons used as status (matched, partly, missing), which are status, not ticks.
 **Size:** about 1 day. **Risk:** the Tick change touches the sheet row and the plan checklist, so the e2e tick tests run after.
+
+## Phase 8 in detail: motion (planned 21 Nov, from the code)
+**What exists:** 23 files use framer-motion, 17 handle reduced motion, 6 do not (FAQ, hero demo, error components, the sheet note drawer, the profile delete and security cards). Durations are mixed (0.15, 0.2, 0.25, 0.3 s) with four different spring settings. A global reduced-motion rule exists in index.css. Sliding tab highlights are already one pattern (spring 0.3 s, no bounce) in 7 places. 5 pages use `page-enter`; 4 places use `active:scale`.
+**Rules (one set, written once)**
+1. Timing: 0.15 s for press and hover, 0.25 s for opening and closing, 0.3 s spring (no bounce) for moving highlights. No other durations. Easing is the site curve already in the CSS.
+2. Press: every button and row-link gets the same small press (scale 0.98) and returns on release.
+3. Disclosure (accordions, week lines, FAQ, sheet topics, notes questions): one height-and-fade pattern, the same everywhere.
+4. Dialogs and drawers: fade the scrim, slide or scale the panel a few pixels; Escape closes; focus returns to the opener (checked, fixed where missing).
+5. Page entry: one gentle fade-up on page content (already `page-enter`); not replayed on tab changes inside a page.
+6. Reduced motion: every motion file honours it (fade only, no movement); the 6 files that do not get fixed.
+7. No motion on the My plan Today screen except the tick and the done moment below.
+**Owner addition (21 Nov): motion physics, micro-interactions, and slow where slow is right, not always fast.** The timing rule above is replaced by three speeds, chosen by how important the moment is:
+- **Quick (0.12 to 0.2 s)**: press, hover, focus rings, toggles. The user is acting and must feel an instant answer.
+- **Medium (0.25 to 0.4 s)**: opening and closing, tab highlight, dialogs, drawers.
+- **Slow (0.5 to 0.9 s)**: moments that should be noticed and enjoyed: the first page reveal (staggered, about 60 ms between items), progress marks filling in one after another, the score and big numbers counting up once, the task-done squeeze and day glow, the empty-state glow, the report score strip drawing in.
+**Physics:** three spring presets in one file, used everywhere instead of ad-hoc numbers: **snappy** (stiffness 420, damping 34: toggles, ticks), **smooth** (stiffness 260, damping 30: highlights, panels), **soft** (stiffness 120, damping 22, mass 1.1: large reveals and fills, a small gentle overshoot). Rules: springs for things the user moves or toggles, eased tweens for fades; motion can be interrupted mid-way and reverses from where it is; nothing bounces on the Today screen except the tick.
+**Micro-interactions (each small, none decorative):** buttons lift 1 px and brighten on hover, press to 0.98; arrows in "Open" links slide 4 px; tick squeezes then fills; progress marks fill in sequence when a page first shows them (and one mark pops when you add progress); numbers count up once on first view; a tab highlight slides between tabs; chevrons rotate with the panel; inputs get a soft focus ring that grows in; a successful save shows the check morphing in; copy buttons swap their icon with a small pop; list rows slide in 8 px with a stagger on first load only; toasts slide in and out. Reduced motion: all of these become a plain fade or nothing.
+**Slow motion guard:** slow motion plays once per visit per element (not on every tab switch or refilter), never blocks input, and the Today screen stays calm.
+
+**The signature moment: task done.** Ticking a task (plan checklist, sheet row, Today) does a short squeeze-and-fill on the tick (about 0.3 s, already close in the sheet row), and when the last task of a day is ticked the day line gets one soft glow, like the sheet-complete glow that exists. Nothing loud, no confetti, no sound.
+**Optional, needs the owner's yes:** a Ctrl+K "jump to" box (the 404 page already has a working jump-to list we could reuse). New feature, about 1 day, with its own keyboard and focus tests. Recommendation: yes, last, after the rest of Phase 8.
+**Order:** (a) shared motion constants and the 6 reduced-motion fixes, (b) unify disclosure and press, (c) dialogs and focus return, (d) the task-done moment, (e) look at real pages with reduced motion on and off, (f) optional Ctrl+K.
+**Risk:** animations cannot be judged from screenshots; I can check that nothing breaks, that reduced motion removes movement and that focus returns, but how it feels is for the owner to try on a real device. Size: 2 to 3 days (plus 1 for Ctrl+K).
 
 ## To do later (owner, 21 Nov)
 - The gap above the footer on short pages (no clear fix found yet).

@@ -6,6 +6,7 @@ import { SkeletonStat } from '../../components/ui/Skeletons';
 import { formatDate } from '../../utils/formatDate';
 import { EmptyState } from "../../components/ui/StateComponents";
 import PageBackdrop from '../../components/ui/PageBackdrop';
+import Reveal from '../../components/ui/Reveal';
 
 // One line per subject, told apart by name.
 const subjects = [
@@ -86,7 +87,7 @@ const Notes = () => {
         {/* ── SUBJECTS ── */}
         <div className="border-t border-ink">
           {filtered.map((s, i) => (
-            <NoteRow key={s.slug} s={s} stats={summary && summary[s.slug]} index={i} />
+            <Reveal key={s.slug} y={10} delay={Math.min(i, 5) * 0.06}><NoteRow s={s} stats={summary && summary[s.slug]} index={i} /></Reveal>
           ))}
         </div>
         {filtered.length === 0 && (

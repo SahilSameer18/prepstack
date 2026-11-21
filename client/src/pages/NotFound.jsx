@@ -3,28 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { House, MagnifyingGlass, ArrowRight, CalendarCheck, ListChecks, BookOpenText, MapTrifold } from "@phosphor-icons/react";
 import PageBackdrop from "../components/ui/PageBackdrop";
 import { AuthEnter, Item } from "../components/auth/AuthShell";
-import { roadmaps } from "../data/roadmaps";
-
-// Every place a lost visitor might want, so the "Jump to" box can find it by a few letters.
-const DESTINATIONS = [
-  { label: "My plan", to: "/my-plan" },
-  { label: "DSA sheets", to: "/dsa" },
-  ...[["Blind 75", "blind-75"], ["NeetCode 150", "neetcode-150"], ["Striver SDE", "striver-sde"], ["Striver A2Z", "striver-a2z"], ["Love Babbar", "love-babbar"]]
-    .map(([name, slug]) => ({ label: `DSA sheet: ${name}`, to: `/dsa/${slug}` })),
-  { label: "CS notes", to: "/notes" },
-  ...[["Operating Systems", "os"], ["DBMS", "dbms"], ["Computer Networks", "cn"], ["OOP in Java", "oops"], ["System Design", "hld"]]
-    .map(([name, slug]) => ({ label: `Notes: ${name}`, to: `/notes/${slug}` })),
-  { label: "Roadmaps", to: "/roadmaps" },
-  ...roadmaps.map((r) => ({ label: `Roadmap: ${r.title}`, to: `/roadmaps/${r.slug}` })),
-  { label: "Role Analyzer", to: "/analyzer" },
-  { label: "AI projects", to: "/ai-projects" },
-  { label: "Behavioral prep", to: "/behavioral" },
-  { label: "Resume guide", to: "/resume" },
-  { label: "Dashboard", to: "/dashboard" },
-  { label: "Profile", to: "/profile" },
-  { label: "Privacy policy", to: "/privacy" },
-  { label: "Terms of use", to: "/terms" },
-];
+import { matchDestinations } from "../data/destinations";
 
 const QUICK = [
   { label: "My plan", text: "Build a study plan", to: "/my-plan", icon: CalendarCheck },
@@ -39,8 +18,7 @@ function JumpTo() {
   const listId = useId();
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
-  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const results = words.length ? DESTINATIONS.filter((d) => words.every((w) => d.label.toLowerCase().includes(w))).slice(0, 6) : [];
+  const results = matchDestinations(query);
   const open = results.length > 0;
 
   function onKeyDown(event) {

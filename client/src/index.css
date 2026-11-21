@@ -856,3 +856,22 @@ input:-webkit-autofill:active {
 dd, time, [role="progressbar"] + p {
   font-variant-numeric: tabular-nums;
 }
+
+/* Progress marks fill in one after another the first time they show (slow, once); the global reduced-motion rule removes it */
+@media (prefers-reduced-motion: no-preference) {
+  .mark-fill { animation: mark-in 0.6s var(--ease-out) backwards; }
+  .day-done-glow { animation: sheet-done-glow 1.6s var(--ease-out) 1; }
+}
+@keyframes mark-in {
+  0% { opacity: 0; transform: scaleY(0.2); }
+  100% { opacity: 1; transform: scaleY(1); }
+}
+
+/* A page fades up once when you arrive (slow, medium distance). No fill after the end, so nothing keeps a transform. */
+@media (prefers-reduced-motion: no-preference) {
+  .route-enter { animation: route-in 0.55s var(--ease-out) backwards; }
+}
+@keyframes route-in {
+  0% { opacity: 0; transform: translate3d(0, 14px, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}

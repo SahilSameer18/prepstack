@@ -1,13 +1,15 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Suspense } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
+import CommandPalette from "../components/CommandPalette";
 import { RouteFallback } from "../components/ui/TopProgress";
 import RouteSeo from "../seo/Seo";
 
 const MainLayout = () => {
+  const { pathname } = useLocation();
   return (
     <div className="relative min-h-screen flex flex-col bg-canvas text-body selection:bg-brand/25 selection:text-fg overflow-x-clip">
       {/* ── LUXURY ATMOSPHERIC CANVAS (Subtle architectural grid + radial light) ── */}
@@ -30,9 +32,10 @@ const MainLayout = () => {
 
       <RouteSeo />
       <ScrollToTop />
+      <CommandPalette />
       <Navbar />
       <main className="flex-grow pt-20 sm:pt-24 px-4 pb-12 overflow-x-clip relative z-10">
-        <div className="max-w-7xl mx-auto">
+        <div key={pathname} className="route-enter max-w-7xl mx-auto">
           <Suspense fallback={<RouteFallback />}>
             <Outlet /> {/* Render the child route pages here */}
           </Suspense>

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Tick from "../ui/Tick";
 import { refLink } from "../../utils/reportLinks";
@@ -17,7 +18,23 @@ const PlanChecklist = ({
   readOnly = false,
   renderActions,
   disabled = false,
-}) => (
+}) => {
+  // The moment the last task of a day is ticked, that day's list glows once (never on first paint, never for a day that was already done)
+  const doneBefore = useRef(null);
+  const [glowDay, setGlowDay] = useState(null);
+  useEffect(() => {
+    const now = new Map((days || []).map((d) => [d.day, (d.items || []).length > 0 && d.items.every((it) => it.done)]));
+    const before = doneBefore.current;
+    doneBefore.current = now;
+    if (!before || readOnly) return undefined;
+    const finished = [...now].find(([day, done]) => done && before.get(day) === false);
+    if (!finished) return undefined;
+    setGlowDay(finished[0]);
+    const timer = setTimeout(() => setGlowDay(null), 1800);
+    return () => clearTimeout(timer);
+  }, [days, readOnly]);
+
+  return (
   <ol className="relative ml-2 mt-3 border-l border-ink/[0.12]">
     {(days || []).map((d) => {
       const isToday = d.day === todayDay;
@@ -32,7 +49,7 @@ const PlanChecklist = ({
             {isToday && <span className="ml-2 text-fg-3">Today</span>}
           </p>
           <p className="font-display text-lg font-bold tracking-tight text-fg">{d.focus}</p>
-          <ul className="mt-2 divide-y divide-ink/[0.08] rounded-xl border border-ink/[0.08] bg-card">
+          <ul className={`mt-2 divide-y divide-ink/[0.08] rounded-xl border border-ink/[0.08] bg-card ${glowDay === d.day ? "day-done-glow" : ""}`}>
             {(d.items || []).map((it, pos) => {
               const index = it.index ?? pos;
               const key = `${d.day}:${index}`;
@@ -81,6 +98,7 @@ const PlanChecklist = ({
       );
     })}
   </ol>
-);
+  );
+};
 
 export default PlanChecklist;

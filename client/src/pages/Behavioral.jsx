@@ -5,6 +5,7 @@ import { MagnifyingGlass, CaretDown, ArrowRight } from "@phosphor-icons/react";
 import { behavioralQuestions, CATEGORIES as CATEGORY_NAMES } from "../data/behavioralQuestions";
 import { EmptyState } from "../components/ui/StateComponents";
 import PageBackdrop from "../components/ui/PageBackdrop";
+import Reveal from "../components/ui/Reveal";
 
 const CATEGORIES = ["All", ...CATEGORY_NAMES];
 
@@ -193,7 +194,7 @@ const Behavioral = () => {
             <p className="sr-only" aria-live="polite">{filteredQuestions.length} questions shown</p>
             <div className="space-y-12">
               {groups.map(({ name, items }) => (
-                <section key={name} aria-labelledby={`group-${name.replace(/\s+/g, "-")}`}>
+                <Reveal as="section" key={name} y={10} aria-labelledby={`group-${name.replace(/\s+/g, "-")}`}>
                   <div className="mb-3 flex items-end justify-between gap-4">
                     <h2 id={`group-${name.replace(/\s+/g, "-")}`} className="font-code text-xs uppercase tracking-[0.14em] text-fg-3">{name}</h2>
                     <span className="font-code text-xs text-muted">{items.length} {items.length === 1 ? "question" : "questions"}</span>
@@ -201,7 +202,7 @@ const Behavioral = () => {
                   <div className="border-t border-ink">
                     {items.map((q) => <QuestionRow key={q.id} q={q} number={numberOf.get(q.id)} />)}
                   </div>
-                </section>
+                </Reveal>
               ))}
             </div>
             {filteredQuestions.length === 0 && (

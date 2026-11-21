@@ -15,7 +15,12 @@ const ProgressMarks = ({ value, total, max = 20, label, tall = false, className 
       className={`flex gap-[3px] ${className}`}
     >
       {Array.from({ length: marks }, (_, i) => (
-        <i key={i} aria-hidden="true" className={`${tall ? "h-3" : "h-2"} min-w-0 flex-1 rounded-[2px] transition-colors duration-300 ${i < filled ? "bg-brand" : "bg-ink/[0.1]"}`} />
+        <i
+          key={i}
+          aria-hidden="true"
+          style={i < filled ? { animationDelay: `${Math.min(i * 40, 600)}ms` } : undefined}
+          className={`${tall ? "h-3" : "h-2"} min-w-0 flex-1 rounded-[2px] transition-colors duration-300 ${i < filled ? "bg-brand mark-fill" : "bg-ink/[0.1]"}`}
+        />
       ))}
     </span>
   );

@@ -3,6 +3,7 @@ import { ArrowRight } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { roadmaps } from "../../data/roadmaps.js";
 import PageBackdrop from "../../components/ui/PageBackdrop";
+import Reveal from "../../components/ui/Reveal";
 
 // One roadmap as a line: its name and path, how long it takes, its level, and how many steps it has.
 const RoadmapRow = ({ r, index }) => (
@@ -41,7 +42,7 @@ const Roadmap = () => (
       </div>
 
       <div className="border-t border-ink">
-        {roadmaps.map((r, i) => <RoadmapRow key={r.slug} r={r} index={i} />)}
+        {roadmaps.map((r, i) => <Reveal key={r.slug} y={10} delay={Math.min(i, 5) * 0.05}><RoadmapRow r={r} index={i} /></Reveal>)}
       </div>
     </div>
   </div>

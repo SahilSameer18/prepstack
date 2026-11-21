@@ -7,6 +7,7 @@ import { useLoadingGate } from "../../hooks/useLoadingGate";
 import { EmptyState } from "../../components/ui/StateComponents";
 import PageBackdrop from "../../components/ui/PageBackdrop";
 import ProgressMarks from "../../components/ui/ProgressMarks";
+import Reveal from "../../components/ui/Reveal";
 import { useAuth } from "../../hooks/useAuth";
 import { getDashboardSummary } from "../../api/services/userService";
 
@@ -234,7 +235,7 @@ const Sheets = () => {
                   <span className="shrink-0 font-code text-xs text-muted">{cat.sheets.length} {cat.sheets.length === 1 ? "sheet" : "sheets"}</span>
                 </div>
                 <div className="border-t border-ink">
-                  {cat.sheets.map((sheet) => <SheetRow key={sheet.slug} sheet={sheet} progress={progress[sheet.slug]} withProgress={hasProgress} />)}
+                  {cat.sheets.map((sheet, i) => <Reveal key={sheet.slug} y={10} delay={Math.min(i, 4) * 0.06}><SheetRow sheet={sheet} progress={progress[sheet.slug]} withProgress={hasProgress} /></Reveal>)}
                 </div>
               </section>
             ))}

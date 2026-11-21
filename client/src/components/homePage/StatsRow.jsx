@@ -2,14 +2,15 @@ import React from "react";
 import { roadmaps } from "../../data/roadmaps";
 import { behavioralQuestions } from "../../data/behavioralQuestions";
 import homeFacts from "../../data/homeFacts.json";
+import CountUp from "../ui/CountUp";
 
 // Four real numbers under the hero, spread across the full width. All come from files in the app (the DSA numbers from
 // homeFacts.json, built from the sheet data), so they show at once and cannot go stale: nothing here waits for the server.
 const STATS = [
-  { value: homeFacts.problems.toLocaleString("en-IN"), label: "DSA problems" },
-  { value: homeFacts.sheets, label: "curated sheets" },
-  { value: roadmaps.length, label: "roadmaps" },
-  { value: behavioralQuestions.length, label: "behavioral questions" },
+  { value: <CountUp value={homeFacts.problems} format={(n) => n.toLocaleString("en-IN")} />, label: "DSA problems" },
+  { value: <CountUp value={homeFacts.sheets} />, label: "curated sheets" },
+  { value: <CountUp value={roadmaps.length} />, label: "roadmaps" },
+  { value: <CountUp value={behavioralQuestions.length} />, label: "behavioral questions" },
 ];
 
 const StatsRow = () => (
