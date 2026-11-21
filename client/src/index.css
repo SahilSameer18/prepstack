@@ -28,7 +28,6 @@
   display: none;
 }
 
-
 /* ---------------- GLOBAL RESET ---------------- */
 
 /* Removed universal margin/padding reset to allow Tailwind preflight to work correctly */
@@ -358,42 +357,6 @@ kbd {
   -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 85%);
 }
 
-.luxury-card {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 3.8%, transparent) 0%, color-mix(in srgb, var(--ink) 0.8%, transparent) 100%), var(--card);
-  border: 1px solid var(--border-hairline);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--shadow) 60%, transparent), 0 20px 45px -15px color-mix(in srgb, var(--shadow) 85%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 12%, transparent);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.luxury-card:hover {
-  border-color: var(--border-medium);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--shadow) 80%, transparent), 0 25px 55px -12px color-mix(in srgb, var(--shadow) 95%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 20%, transparent);
-}
-
-.titanium-card {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 4.5%, transparent) 0%, color-mix(in srgb, var(--ink) 0.6%, transparent) 100%), var(--card);
-  border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--shadow) 70%, transparent), 0 24px 48px -12px color-mix(in srgb, var(--shadow) 90%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 14%, transparent);
-}
-
-.titanium-card:hover {
-  border-color: color-mix(in srgb, var(--ink) 15%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--shadow) 90%, transparent), 0 30px 60px -15px color-mix(in srgb, var(--shadow) 98%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 22%, transparent);
-}
-
-.luxury-glass {
-  background: var(--surface-overlay);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--border-hairline);
-  box-shadow: 0 30px 60px -20px color-mix(in srgb, var(--shadow) 85%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 12%, transparent);
-}
-
-.specular-border {
-  border: 1px solid var(--border-hairline);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--ink) 15%, transparent);
-}
-
 .amber-specular-button {
   background: linear-gradient(180deg, var(--brand-grad-top) 0%, var(--brand-grad-bottom) 100%);
   color: var(--on-grad);
@@ -440,22 +403,6 @@ a.btn:active,
   transition: transform 100ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-
-/* ── SPOTLIGHT CARD (Zero layout-thrashing cursor glow) ── */
-.spotlight-card {
-  position: relative;
-  overflow: hidden;
-  background: var(--surface-card);
-  border: 1px solid var(--border-hairline);
-  border-radius: 1rem;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.spotlight-card:hover {
-  border-color: var(--border-medium);
-  box-shadow: 0 20px 45px -15px color-mix(in srgb, var(--shadow) 85%, transparent);
-}
-
 /* ── ENVIRONMENTAL ACCESSIBILITY TRIAD (Apple WWDC Standards) ── */
 
 /* 1. Reduced Motion: non-vestibular cross-fades without jarring skips */
@@ -469,14 +416,10 @@ a.btn:active,
 }
 
 /* 2. Reduced Transparency: Solidify translucent layers for contrast and cognitive clarity */
-@media (prefers-reduced-transparency: reduce) {
-  .backdrop-blur-md,
-  .backdrop-blur-sm,
-  .backdrop-blur-lg,
-  .glass,
-  .titanium-card,
-  nav,
-  .modal-surface {
+@media (prefers-reduced-transparency: reduce) {.backdrop-blur-md,
+.backdrop-blur-sm,
+.backdrop-blur-lg,
+nav {
     background-color: var(--card) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -489,13 +432,9 @@ a.btn:active,
     --border-hairline: color-mix(in srgb, var(--ink) 28%, transparent);
     --border-medium: color-mix(in srgb, var(--ink) 40%, transparent);
     --lc-border: color-mix(in srgb, var(--ink) 30%, transparent);
-  }
-
-  .titanium-card,
-  .luxury-card,
-  .card,
-  [class*="border-ink/[0.0"],
-  [class*="border-ink/[0.1"] {
+  }.card,
+[class*="border-ink/[0.0"],
+[class*="border-ink/[0.1"] {
     border-color: color-mix(in srgb, var(--ink) 30%, transparent) !important;
   }
 
@@ -551,14 +490,6 @@ a.btn:active,
   color: var(--fg);
 }
 
-/* ---------------- GLASS EFFECT ---------------- */
-
-.glass {
-  background: color-mix(in srgb, var(--ink) 5%, transparent);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--lc-border);
-}
-
 /* ---------------- CARD ---------------- */
 
 .card {
@@ -581,29 +512,6 @@ a.btn:active,
 
 .btn-primary:hover {
   background: var(--lc-primary-hover);
-}
-
-/* testimonials */
-
-
-@keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  display: flex;
-  width: max-content;
-  animation: marquee 28s linear infinite;
-}
-
-.animate-marquee:hover {
-  animation-play-state: paused;
 }
 
 /* ---------------- SKELETON SHIMMER ---------------- */
@@ -678,7 +586,6 @@ input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-
 /* ---------------- RESPONSIVE POLISH ---------------- */
 
 /* Rows that push two things to opposite ends (justify-between) had no minimum gap, so on narrow screens their
@@ -702,30 +609,6 @@ input:-webkit-autofill:active {
 /* ---------------- LIGHT THEME: SURFACES ----------------
    The dark theme builds depth from white highlights and heavy black shadows. On cream, depth is a soft
    tinted shadow (--shadow is a warm brown) and a white top edge. */
-:root[data-theme="light"] .luxury-card,
-:root[data-theme="light"] .titanium-card {
-  background: var(--card);
-  border-color: color-mix(in srgb, var(--ink) 10%, transparent);
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 14%, transparent), 0 12px 28px -14px color-mix(in srgb, var(--shadow) 30%, transparent);
-}
-
-:root[data-theme="light"] .luxury-card:hover,
-:root[data-theme="light"] .titanium-card:hover {
-  border-color: color-mix(in srgb, var(--ink) 18%, transparent);
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 12%, transparent), 0 18px 36px -14px color-mix(in srgb, var(--shadow) 30%, transparent);
-}
-
-:root[data-theme="light"] .luxury-glass {
-  box-shadow: 0 18px 40px -18px color-mix(in srgb, var(--shadow) 28%, transparent);
-}
-
-:root[data-theme="light"] .specular-border {
-  box-shadow: none;
-}
-
-:root[data-theme="light"] .spotlight-card:hover {
-  box-shadow: 0 16px 34px -14px color-mix(in srgb, var(--shadow) 26%, transparent);
-}
 
 :root[data-theme="light"] .titanium-button {
   background: var(--card);
@@ -736,11 +619,6 @@ input:-webkit-autofill:active {
 :root[data-theme="light"] .titanium-button:hover {
   background: var(--card-hover);
   border-color: color-mix(in srgb, var(--ink) 28%, transparent);
-}
-
-
-:root[data-theme="light"] .glass {
-  background: color-mix(in srgb, var(--card) 70%, transparent);
 }
 
 :root[data-theme="light"] ::-webkit-scrollbar-thumb {
@@ -770,15 +648,6 @@ input:-webkit-autofill:active {
 
 @keyframes draw-underline {
   to { background-size: 100% 3px; }
-}
-
-.pulse-once {
-  animation: pulse-once 1.4s 1.6s ease-out 1;
-}
-
-@keyframes pulse-once {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-grad-top) 55%, transparent); }
-  100% { box-shadow: 0 0 0 14px transparent; }
 }
 
 /* One card look for every page. surface-card-link adds the hover lift (uses the separate translate/scale
