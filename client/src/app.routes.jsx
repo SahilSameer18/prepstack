@@ -131,11 +131,14 @@ export const router = createBrowserRouter([
         path: "/terms",
         element: <TermsOfUse />
       },
+      {
+        path: "*",
+        element: <NotFound />
+      },
     ],
   },
   { path: '/login', element: <><RouteSeo /><Login /></> },
   { path: '/register', element: <><RouteSeo /><Register /></> },
   { path: '/forgot-password', element: <><RouteSeo /><ForgotPassword /></> },
   { path: '/reset-password', element: <><RouteSeo /><ResetPassword /></> },
-  { path: '*', element: <><RouteSeo /><NotFound /></> },
 ])

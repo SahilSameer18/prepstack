@@ -1,21 +1,26 @@
 import { Link } from "react-router-dom";
-import { FiClock } from "react-icons/fi";
+import { Clock } from "@phosphor-icons/react";
 
-const BUTTON = "inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl amber-specular-button text-on-brand font-bold text-xs sm:text-sm min-h-[44px] cursor-pointer";
+const BUTTON = "amber-specular-button inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm font-bold";
 
 // An empty list or "nothing found" screen: icon, title, one line, and an optional button.
-// icon is a react-icons component (for example FiCpu); action is { label, to } for a link or { label, onClick } for a button.
+// icon is an icon component (Phosphor, for example MagnifyingGlass); action is { label, to } for a link or { label, onClick } for a button.
 export const EmptyState = ({ icon: Icon, title, text, action, className = "" }) => (
-  <div className={`flex flex-col items-center justify-center py-12 bg-card border border-ink/[0.08] rounded-2xl text-center px-4 ${className}`}>
+  <div className={`surface-card fade-in relative flex flex-col items-center justify-center overflow-hidden px-6 py-14 text-center ${className}`}>
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute -top-20 left-1/2 h-44 w-80 -translate-x-1/2 rounded-full blur-3xl"
+      style={{ background: "color-mix(in srgb, var(--brand) 12%, transparent)" }}
+    />
     {Icon && (
-      <div className="w-14 h-14 rounded-2xl bg-ink/[0.03] border border-ink/[0.08] flex items-center justify-center mb-4">
-        <Icon className="text-2xl text-muted" />
-      </div>
+      <span className="relative mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-brand/25 bg-brand/10 text-3xl text-brand">
+        <Icon weight="duotone" aria-hidden="true" />
+      </span>
     )}
-    <h3 className="font-display text-lg font-bold text-fg mb-2">{title}</h3>
-    {text && <p className="text-muted text-xs sm:text-sm max-w-sm mb-5 leading-relaxed">{text}</p>}
-    {action?.to && <Link to={action.to} className={BUTTON}>{action.label}</Link>}
-    {action?.onClick && <button type="button" onClick={action.onClick} className={BUTTON}>{action.label}</button>}
+    <h3 className="relative font-display text-2xl font-extrabold tracking-tight text-fg">{title}</h3>
+    {text && <p className="relative mb-6 mt-2 max-w-sm text-base leading-relaxed text-muted">{text}</p>}
+    {action?.to && <Link to={action.to} className={`relative ${BUTTON}`}>{action.label}</Link>}
+    {action?.onClick && <button type="button" onClick={action.onClick} className={`relative ${BUTTON}`}>{action.label}</button>}
   </div>
 );
 
@@ -25,17 +30,17 @@ export const LimitState = ({ title, text, used, allowed, resetsAt, className = "
   const resets = resetsAt ? new Date(resetsAt).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }) : null;
   const showBar = Number.isFinite(used) && Number.isFinite(allowed) && allowed > 0;
   return (
-    <div role="status" className={`bg-warn-solid/10 border border-warn-solid/25 rounded-xl px-4 py-3 ${className}`}>
+    <div role="status" className={`rounded-xl border border-warn-solid/25 bg-warn-solid/10 px-4 py-3 ${className}`}>
       <div className="flex items-start gap-3">
-        <FiClock className="text-warn flex-shrink-0 mt-0.5 text-base" />
+        <Clock weight="duotone" aria-hidden="true" className="mt-0.5 shrink-0 text-lg text-warn" />
         <div className="flex-1">
-          <p className="text-warn text-sm font-semibold leading-snug">{title}</p>
-          {text && <p className="text-warn text-xs mt-1 leading-snug">{text}{resets ? ` Resets at ${resets}.` : ""}</p>}
+          <p className="text-sm font-semibold leading-snug text-warn">{title}</p>
+          {text && <p className="mt-1 text-sm leading-snug text-warn">{text}{resets ? ` Resets at ${resets}.` : ""}</p>}
         </div>
       </div>
       {showBar && (
-        <div className="mt-3 h-1.5 rounded-full bg-ink/[0.08] overflow-hidden" aria-hidden="true">
-          <div className="h-full bg-warn-solid" style={{ width: `${Math.min(100, Math.round((used / allowed) * 100))}%` }} />
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-ink/[0.08]" aria-hidden="true">
+          <div className="bar-fill h-full w-full bg-warn-solid" style={{ transform: `scaleX(${Math.min(100, Math.round((used / allowed) * 100)) / 100})` }} />
         </div>
       )}
     </div>
@@ -59,5 +64,5 @@ export const UsageNotice = ({ usage, noun, className = "" }) => {
       />
     );
   }
-  return <p className={`text-xs text-muted text-center ${className}`}>{left} of {usage.allowed} {noun} left today</p>;
+  return <p className={`text-center text-sm text-muted ${className}`}>{left} of {usage.allowed} {noun} left today</p>;
 };

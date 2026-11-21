@@ -47,7 +47,7 @@ const HeroProductShowcase = () => {
   const progressPct = Math.round((solvedCount / demoProblems.length) * 100);
 
   return (
-    <div className="relative w-full rounded-2xl titanium-card overflow-hidden text-left transform-gpu">
+    <div className="surface-card relative w-full overflow-hidden text-left transform-gpu">
       {/* ── WINDOW CHROME ── */}
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 sm:px-6 py-3.5 border-b border-ink/[0.08] bg-card">
         {/* Workspace status / file path header */}

@@ -35,7 +35,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
     <div
       className={`rounded-2xl transition-all duration-200 border overflow-hidden relative ${
         isOpen
-          ? "titanium-card border-brand/40 shadow-[0_15px_35px_-14px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
+          ? "surface-card border-brand/40 shadow-[0_15px_35px_-14px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
           : "bg-card border-ink/[0.07] hover:border-ink/[0.14] hover:bg-ink/[0.015]"
       }`}
     >

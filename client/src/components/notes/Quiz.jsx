@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { FiCheck, FiX, FiRefreshCw } from "react-icons/fi";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Check, X, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { scoreQuiz, pick, emptyPicks } from "./quizScoring";
+import ProgressRing from "../../pages/DsaSheets/components/ProgressRing";
 
 const LETTERS = ["A", "B", "C", "D"];
 
@@ -8,6 +10,7 @@ const LETTERS = ["A", "B", "C", "D"];
 const Quiz = ({ quiz, onComplete, disabled = false }) => {
   const [picks, setPicks] = useState(() => emptyPicks(quiz));
   const score = scoreQuiz(quiz, picks);
+  const calm = useReducedMotion();
 
   // The study screen receives a score only after every question has been answered.
   function chooseAnswer(question, answer) {
@@ -24,7 +27,7 @@ const Quiz = ({ quiz, onComplete, disabled = false }) => {
         const answered = chosen !== null;
         return (
           <div key={q.question} className="space-y-2.5">
-            <p className="text-fg text-sm sm:text-base font-semibold leading-snug">{i + 1}. {q.question}</p>
+            <p className="font-display text-lg font-extrabold leading-snug tracking-tight text-fg">{i + 1}. {q.question}</p>
             <div className="grid gap-2">
               {q.options.map((option, o) => {
                 const isRight = answered && o === q.answer;
@@ -36,35 +39,49 @@ const Quiz = ({ quiz, onComplete, disabled = false }) => {
                     disabled={answered || disabled}
                     onClick={() => chooseAnswer(i, o)}
                     aria-pressed={chosen === o}
-                    className={`flex items-start gap-3 text-left px-4 py-3 min-h-[44px] rounded-xl border text-sm transition-colors ${
+                    className={`flex items-start gap-3 text-left px-4 py-3 min-h-[44px] rounded-xl border text-base transition-colors duration-200 ${
                       isRight ? "border-ok-solid/40 bg-ok-solid/10 text-fg"
                         : isWrongPick ? "border-bad-solid/40 bg-bad-solid/10 text-fg"
-                        : "border-ink/[0.08] bg-card text-fg-3 hover:border-ink/[0.2] disabled:hover:border-ink/[0.08]"
+                        : "border-ink/[0.1] bg-card text-fg-3 hover:border-ink/[0.22] disabled:hover:border-ink/[0.1]"
                     } ${answered ? "cursor-default" : "cursor-pointer"}`}
                   >
                     <span className="font-ui font-bold text-xs mt-0.5 w-5 shrink-0 text-muted">{LETTERS[o]}</span>
                     <span className="flex-1">{option}</span>
-                    {isRight && <FiCheck className="text-ok mt-0.5 shrink-0" aria-label="Correct answer" />}
-                    {isWrongPick && <FiX className="text-bad mt-0.5 shrink-0" aria-label="Your answer was wrong" />}
+                    {isRight && <motion.span className="mt-0.5 flex shrink-0 text-ok" initial={calm ? false : { scale: 0.5 }} animate={{ scale: 1 }} transition={{ type: "spring", duration: 0.3, bounce: 0.4 }}><Check weight="bold" aria-label="Correct answer" /></motion.span>}
+                    {isWrongPick && <motion.span className="mt-0.5 flex shrink-0 text-bad" initial={calm ? false : { scale: 0.5 }} animate={{ scale: 1 }} transition={{ type: "spring", duration: 0.3, bounce: 0.25 }}><X weight="bold" aria-label="Your answer was wrong" /></motion.span>}
                   </button>
                 );
               })}
             </div>
-            {answered && <p className="text-muted text-xs sm:text-sm leading-relaxed">{q.explanation}</p>}
+            <AnimatePresence initial={false}>
+              {answered && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.3, bounce: 0 }, opacity: { duration: 0.2 } }}
+                  className="overflow-hidden"
+                >
+                  <p className="pt-1 text-sm leading-relaxed text-muted">{q.explanation}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         );
       })}
 
       {score.done && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-brand/[0.06] border border-brand/20 px-4 py-3">
-          <p className="text-fg text-sm font-semibold">You got {score.correct} of {score.total} right.</p>
+        <div className="surface-card fade-in flex flex-wrap items-center justify-between gap-4 border-brand/25 p-5">
+          <div className="flex items-center gap-4">
+            <ProgressRing size={84} percentage={Math.round((score.correct / score.total) * 100)} solved={score.correct} total={score.total} />
+            <p className="font-display text-lg font-extrabold tracking-tight text-fg">You got {score.correct} of {score.total} right.</p>
+          </div>
           <button
             type="button"
             disabled={disabled}
             onClick={() => { setPicks(emptyPicks(quiz)); onComplete?.(null); }}
-            className="inline-flex items-center gap-2 text-xs font-ui font-semibold text-brand min-h-[44px] cursor-pointer"
+            className="inline-flex min-h-[44px] cursor-pointer items-center gap-2 text-sm font-semibold text-brand transition-colors hover:text-brand-hover"
           >
-            <FiRefreshCw /> Try again
+            <ArrowCounterClockwise aria-hidden="true" /> Try again
           </button>
         </div>
       )}

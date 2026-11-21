@@ -1,9 +1,14 @@
 import React from 'react';
-import { FiAlertTriangle, FiRefreshCw } from 'react-icons/fi';
+import { WarningCircle, ArrowClockwise, House } from '@phosphor-icons/react';
+import PageBackdrop from './ui/PageBackdrop';
+import { CONTACT_EMAIL } from '../data/contact';
 
 /**
  * ErrorBoundary: catches any uncaught render/lifecycle errors in the tree
- * and shows a styled fallback UI instead of a blank white screen.
+ * and shows a calm fallback instead of a blank white screen.
+ *
+ * It must still work when the app itself is broken, so it uses no router, no context and no animation library:
+ * plain links, the shared classes and the theme colours only.
  *
  * Wrap your entire <App /> (in main.jsx) with this component.
  */
@@ -18,103 +23,55 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    // In production you could send this to a monitoring service (Sentry, etc.)
+    // Nothing is sent anywhere: the visitor can email the details from the page if they choose to.
     console.error('ErrorBoundary caught an error:', error, info.componentStack);
   }
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: null });
-    // Navigate to home to give the user a clean slate
-    window.location.href = '/';
-  };
 
   render() {
     if (!this.state.hasError) return this.props.children;
 
-    return (
-      <div
-        style={{
-          minHeight: '100vh',
-          backgroundColor: 'var(--card)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '24px',
-          padding: '24px',
-          textAlign: 'center',
-          fontFamily: 'Inter, system-ui, sans-serif',
-        }}
-      >
-        {/* Icon */}
-        <div
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: 20,
-            background: 'color-mix(in srgb, var(--bad-solid) 10%, transparent)',
-            border: '1px solid color-mix(in srgb, var(--bad-solid) 20%, transparent)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <FiAlertTriangle style={{ fontSize: 36, color: 'var(--bad)' }} />
-        </div>
+    const message = String(this.state.error?.message || 'Unknown error').slice(0, 400);
+    const report = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('PrepStack error')}&body=${encodeURIComponent(
+      `Page: ${window.location.pathname}\nWhat I was doing:\n\nError: ${message}`,
+    )}`;
 
-        {/* Copy */}
-        <div>
-          <h1 style={{ color: 'var(--fg)', fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
-            Something went wrong
+    return (
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-canvas px-6 py-12 text-body">
+        <PageBackdrop />
+        <div role="alert" className="surface-card fade-in relative z-10 w-full max-w-lg p-8 text-center sm:p-12">
+          <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-bad-solid/25 bg-bad-solid/10 text-4xl text-bad">
+            <WarningCircle weight="duotone" aria-hidden="true" />
+          </span>
+          <h1 className="mt-7 font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg">
+            Something went <span className="text-brand">wrong.</span>
           </h1>
-          <p style={{ color: 'var(--faint)', fontSize: 14, maxWidth: 400, lineHeight: 1.6 }}>
-            An unexpected error occurred. Our team has been notified. Try going
-            back to the home page.
+          <p className="mx-auto mt-4 max-w-sm text-base leading-relaxed text-muted">
+            Something unexpected broke on this page. Reloading usually fixes it. If it does not, go back to the home page.
           </p>
 
-          {/* Show error message in development */}
-          {import.meta.env.DEV && this.state.error && (
-            <pre
-              style={{
-                marginTop: 16,
-                padding: '12px 16px',
-                background: 'color-mix(in srgb, var(--bad-solid) 6%, transparent)',
-                border: '1px solid color-mix(in srgb, var(--bad-solid) 15%, transparent)',
-                borderRadius: 10,
-                color: 'var(--bad)',
-                fontSize: 12,
-                textAlign: 'left',
-                maxWidth: 480,
-                overflow: 'auto',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
-              }}
-            >
-              {this.state.error.message}
+          {import.meta.env.DEV && (
+            <pre className="mx-auto mt-5 max-w-md overflow-auto whitespace-pre-wrap break-words rounded-xl border border-bad-solid/20 bg-bad-solid/[0.06] p-3 text-left text-xs text-bad">
+              {message}
             </pre>
           )}
-        </div>
 
-        {/* Actions */}
-        <button
-          onClick={this.handleReset}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '10px 24px',
-            borderRadius: 12,
-            background: 'linear-gradient(135deg, var(--brand), var(--brand-deep))',
-            color: 'var(--on-brand)',
-            fontWeight: 600,
-            fontSize: 14,
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          <FiRefreshCw style={{ fontSize: 14 }} />
-          Back to Home
-        </button>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="amber-specular-button inline-flex min-h-[48px] cursor-pointer items-center gap-2 rounded-xl px-6 text-sm font-bold"
+            >
+              <ArrowClockwise aria-hidden="true" /> Reload this page
+            </button>
+            <a href="/" className="titanium-button inline-flex min-h-[48px] items-center gap-2 rounded-xl px-6 text-sm font-medium">
+              <House aria-hidden="true" /> Back to home
+            </a>
+          </div>
+
+          <p className="mt-8 text-sm text-muted">
+            If this keeps happening, <a href={report} className="font-semibold text-brand hover:underline">email us the details</a>.
+          </p>
+        </div>
       </div>
     );
   }
