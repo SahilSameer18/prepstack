@@ -1,11 +1,12 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
+import { ArrowRight, CaretDown, Check, Copy, Cpu, Lightning } from "@phosphor-icons/react";
 import LongWait from "../../components/ui/LongWait";
-import React, { useState, useEffect } from "react";
-import { FiCpu, FiRefreshCw, FiCopy, FiCheck, FiZap, FiCode, FiList } from "react-icons/fi";
+import PageBackdrop from "../../components/ui/PageBackdrop";
 import { useProject } from '../../hooks/useProject'
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { InlineErrorAlert } from "../../components/ui/ErrorComponents";
 import { InlineSpinner } from "../../components/ui/Skeletons";
-import { UsageNotice } from "../../components/ui/StateComponents";
+import { EmptyState, UsageNotice } from "../../components/ui/StateComponents";
 import { useUsage } from "../../hooks/useUsage";
 
 // KEEP IN SYNC with KNOWN_STACKS in server/src/modules/ai/ai.service.js: typed names that are not in this list are
@@ -15,6 +16,12 @@ const techStacks = ["MERN Stack", "PERN Stack", "MEAN Stack", "Next.js", "Angula
 const isValidStackName = (value) => /^[A-Za-z0-9 +#./&()-]{2,40}$/.test(value) && (value.match(/[A-Za-z]/g) || []).length >= 2;
 const complexities = ["Beginner", "Intermediate", "Advanced"];
 const domains = ["FinTech", "HealthTech", "EdTech", "E-Commerce", "SaaS", "Web3", "Open Source", "Social Media", "Productivity", "AI / ML"];
+
+const chipClass = (on, dashed = false) =>
+  `flex min-h-[44px] cursor-pointer items-center rounded-xl px-3.5 text-sm transition-colors duration-150 active:scale-[0.98] sm:min-h-[40px] ${
+    on ? "bg-brand/12 font-semibold text-brand" : `border text-muted hover:text-fg ${dashed ? "border-dashed border-ink/[0.2]" : "border-ink/[0.1]"}`
+  }`;
+const inputClass = "w-full rounded-xl border border-ink/[0.1] bg-card px-4 py-3 text-sm text-fg outline-none transition-colors placeholder:text-faint hover:border-ink/[0.2] focus:border-brand focus:ring-1 focus:ring-brand";
 
 const AIProjectIdeas = () => {
   const navigate = useNavigate();
@@ -29,6 +36,8 @@ const AIProjectIdeas = () => {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(null);
   const [customStack, setCustomStack] = useState(!known && isValidStackName(wanted)); // "Other": the user types their own tech stack
+  const [detailOpen, setDetailOpen] = useState(false);
+  const resultRef = useRef(null);
 
   useEffect(() => {
     if (projectId) {
@@ -39,6 +48,13 @@ const AIProjectIdeas = () => {
       setProject(null);
     };
   }, [projectId, getProjectById, setProject]);
+
+  // The idea sits below the form on a phone (and below the fold when the form is long), so bring it into view when it starts.
+  useEffect(() => {
+    if (!loading) return;
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    resultRef.current?.scrollIntoView({ block: "start", behavior: calm ? "auto" : "smooth" });
+  }, [loading]);
 
   const handleChange = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -57,6 +73,7 @@ const AIProjectIdeas = () => {
   const handleReset = () => {
     setForm({ techStack: "", complexity: "", domain: "", notes: "" });
     setCustomStack(false);
+    setDetailOpen(false);
     setProject(null);
     setError(null);
     navigate('/ai-projects', { replace: true });
@@ -75,338 +92,206 @@ const AIProjectIdeas = () => {
   const limitReached = !!usage && usage.projects.used >= usage.projects.allowed;
   const isFormValid = stackOk && !!form.complexity;
   const canGenerate = isFormValid && !loading && !limitReached;
+  const detailCount = (form.domain ? 1 : 0) + (form.notes.trim() ? 1 : 0);
+  const level = project?.difficulty || form.complexity;
+  const tags = [project?.techStack || form.techStack, form.domain, level].filter(Boolean);
 
   return (
-    <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto page-enter">
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pt-2">
-        <div>
-          <div className="inline-flex items-center gap-2 text-xs font-ui text-muted mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-            <span className="tracking-wider font-semibold text-fg-3">AI Project Ideas</span>
+    <div className="relative">
+      <PageBackdrop />
+      <div className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-2 text-left text-fg sm:px-6">
+        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <h1 className="break-words font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] sm:text-5xl">Get a project idea</h1>
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
+              Pick a tech stack and difficulty, and get a portfolio project idea with real-world challenges to solve.
+            </p>
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-fg tracking-[-0.035em] mb-3">
-            Get a project idea
-          </h1>
-          <p className="text-muted max-w-2xl text-base sm:text-lg leading-relaxed font-normal">
-            Pick a tech stack and difficulty, and get a portfolio project idea with real-world challenges to solve.
-          </p>
+          <Link to="/dashboard?tab=projects" className="group inline-flex min-h-[44px] items-center gap-2 self-start font-display text-sm font-bold text-brand md:self-auto">
+            Saved ideas <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+          </Link>
         </div>
 
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-xl bg-ink/[0.03] border border-ink/[0.08] text-fg-3 hover:text-fg hover:bg-ink/[0.08] hover:border-ink/[0.18] transition-all font-display font-semibold text-xs sm:text-sm self-start md:self-auto cursor-pointer"
-        >
-          <FiList className="text-brand" /> Saved ideas
-        </button>
-      </div>
-
-      {/* Two-Panel Layout */}
-      <div className="grid lg:grid-cols-[380px_1fr] gap-6 items-start text-left">
-
-        {/* ─── LEFT PANEL: Controls ─── */}
-        <div className="titanium-card rounded-2xl p-6 space-y-5 sticky top-20 shadow-xl relative overflow-hidden">
-          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />
-
-          <div className="flex items-center gap-2.5 mb-2 pb-3 border-b border-ink/[0.08]">
-            <div className="w-8 h-8 bg-brand/10 border border-brand/25 rounded-lg flex items-center justify-center">
-              <FiCode className="text-brand text-sm" />
-            </div>
-            <div>
-              <h2 className="font-display font-bold text-fg text-sm">What do you want to build?</h2>
-              <p className="text-xs font-ui text-muted">Pick a tech stack and level</p>
-            </div>
-          </div>
-
-          {/* Tech Stack: grouped section */}
-          <div className="rounded-xl bg-ink/[0.02] p-3.5 space-y-2.5">
-            <label className="text-xs font-ui font-bold text-muted flex items-center gap-1">
-              Tech Stack <span className="text-brand">*</span>
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {techStacks.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => { setCustomStack(false); handleChange("techStack", s); }}
-                  className={`px-3 py-2.5 sm:py-1.5 min-h-[44px] sm:min-h-0 rounded-lg text-xs font-medium border transition-all duration-150 active:scale-95 cursor-pointer ${
-                    !customStack && form.techStack === s 
-                      ? "bg-brand/15 border-brand/40 text-brand font-semibold" 
-                      : "bg-card-hover border-ink/[0.08] text-muted hover:text-fg hover:border-ink/[0.2]"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-              <button
-                onClick={() => { setCustomStack(true); handleChange("techStack", ""); }}
-                className={`px-3 py-2.5 sm:py-1.5 min-h-[44px] sm:min-h-0 rounded-lg text-xs font-medium border border-dashed transition-all duration-150 active:scale-95 cursor-pointer ${
-                  customStack
-                    ? "bg-brand/15 border-brand/40 text-brand font-semibold"
-                    : "bg-card-hover border-ink/[0.15] text-muted hover:text-fg hover:border-ink/[0.3]"
-                }`}
-              >
-                Other (type your own)
-              </button>
-            </div>
-            {customStack && (
-              <div className="space-y-1.5">
-                <input
-                  type="text"
-                  value={form.techStack}
-                  maxLength={40}
-                  autoFocus
-                  onChange={(e) => handleChange("techStack", e.target.value)}
-                  placeholder="e.g. Rust, Svelte, Laravel"
-                  aria-label="Your tech stack"
-                  className="w-full bg-card-hover border border-ink/[0.08] hover:border-ink/[0.15] focus:border-brand focus:ring-1 focus:ring-brand rounded-xl px-4 py-3 text-sm text-fg placeholder-faint outline-none transition-colors"
-                />
-                <p className={`text-xs ${stackError ? "text-bad" : "text-muted"}`}>
-                  {stackError || "Type a programming language, framework or tool. We check that it is a real one."}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Complexity: grouped section */}
-          <div className="rounded-xl bg-ink/[0.02] p-3.5 space-y-2.5">
-            <label className="text-xs font-ui font-bold text-muted flex items-center gap-1">
-              Difficulty <span className="text-brand">*</span>
-            </label>
-            <div className="flex gap-2">
-              {complexities.map((c) => {
-                const activeColors = { 
-                  Beginner: "text-ok border-ok-solid/40 bg-ok-solid/10", 
-                  Intermediate: "text-warn border-warn-solid/40 bg-warn-solid/10", 
-                  Advanced: "text-bad border-bad-solid/40 bg-bad-solid/10" 
-                };
-                return (
+        <div className="grid items-start gap-6 lg:grid-cols-[380px_1fr]">
+          {/* Form */}
+          <div className="surface-card space-y-6 p-6">
+            <div role="group" aria-labelledby="stack-label">
+              <p id="stack-label" className="mb-3 font-ui text-sm font-semibold text-fg">Tech stack</p>
+              <div className="flex flex-wrap gap-2">
+                {techStacks.map((s) => (
                   <button
-                    key={c}
+                    key={s} type="button" aria-pressed={!customStack && form.techStack === s}
+                    onClick={() => { setCustomStack(false); handleChange("techStack", s); }}
+                    className={chipClass(!customStack && form.techStack === s)}
+                  >
+                    {s}
+                  </button>
+                ))}
+                <button
+                  type="button" aria-pressed={customStack}
+                  onClick={() => { setCustomStack(true); handleChange("techStack", ""); }}
+                  className={chipClass(customStack, true)}
+                >
+                  Other
+                </button>
+              </div>
+              {customStack && (
+                <div className="mt-3 space-y-1.5">
+                  <input
+                    type="text" value={form.techStack} maxLength={40} autoFocus
+                    onChange={(e) => handleChange("techStack", e.target.value)}
+                    placeholder="e.g. Rust, Svelte, Laravel"
+                    aria-label="Your tech stack"
+                    className={inputClass}
+                  />
+                  <p className={`text-xs ${stackError ? "text-bad" : "text-muted"}`}>
+                    {stackError || "Type a programming language, framework or tool. We check that it is a real one."}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div role="group" aria-labelledby="level-label">
+              <p id="level-label" className="mb-3 font-ui text-sm font-semibold text-fg">Difficulty</p>
+              <div className="grid grid-cols-3 gap-1 rounded-xl border border-ink/[0.1] p-1">
+                {complexities.map((c) => (
+                  <button
+                    key={c} type="button" aria-pressed={form.complexity === c}
                     onClick={() => handleChange("complexity", c)}
-                    className={`flex-1 py-3 sm:py-2 rounded-lg text-xs font-semibold border transition-all duration-150 active:scale-95 cursor-pointer ${
-                      form.complexity === c 
-                        ? activeColors[c] 
-                        : "bg-card-hover border-ink/[0.08] text-muted hover:text-fg-2"
-                    }`}
+                    className={`min-h-[44px] cursor-pointer rounded-lg text-sm transition-colors duration-150 sm:min-h-[40px] ${form.complexity === c ? "bg-brand/12 font-semibold text-brand" : "text-muted hover:text-fg"}`}
                   >
                     {c}
                   </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Domain + Notes: grouped section */}
-          <div className="rounded-xl bg-ink/[0.02] p-3.5 space-y-3">
-            <div className="space-y-2">
-              <label className="text-xs font-ui font-bold text-muted">Area (optional)</label>
-              <div className="flex flex-wrap gap-2">
-                {domains.map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => handleChange("domain", form.domain === d ? "" : d)}
-                    className={`px-3 py-2 sm:py-1 min-h-[44px] sm:min-h-0 rounded-full text-xs font-medium border transition-all duration-150 active:scale-95 cursor-pointer ${
-                      form.domain === d 
-                        ? "bg-violet-solid/20 border-violet-solid/40 text-violet font-semibold" 
-                        : "bg-card-hover border-ink/[0.08] text-muted hover:text-fg hover:border-ink/[0.2]"
-                    }`}
-                  >
-                    {d}
-                  </button>
                 ))}
               </div>
             </div>
 
-            <div className="space-y-2 pt-2.5 border-t border-ink/[0.06]">
-              <label className="text-xs font-ui font-bold text-muted">Anything specific? (optional)</label>
-              <textarea
-                placeholder="e.g. distributed event queue, high throughput p99 latency target, or WebSocket coordination..."
-                rows={3}
-                value={form.notes}
-                onChange={(e) => handleChange("notes", e.target.value)}
-                className="w-full bg-card-hover border border-ink/[0.08] hover:border-ink/[0.15] focus:border-brand focus:ring-1 focus:ring-brand rounded-xl px-4 py-3 text-sm text-fg placeholder-faint outline-none resize-none transition-colors"
+            {/* Area and notes stay optional, so they start folded away */}
+            <div className="border-y border-ink/[0.08]">
+              <button
+                type="button" aria-expanded={detailOpen} aria-controls="detail-panel"
+                onClick={() => setDetailOpen((open) => !open)}
+                className="flex min-h-[52px] w-full cursor-pointer items-center justify-between text-sm"
+              >
+                <span className="font-semibold text-fg">
+                  Add detail <span className="font-normal text-muted">{detailCount > 0 ? `(${detailCount} added)` : "(optional)"}</span>
+                </span>
+                <CaretDown aria-hidden="true" className={`text-muted transition-transform duration-200 ${detailOpen ? "rotate-180" : ""}`} />
+              </button>
+              <div id="detail-panel" className={`grid transition-[grid-template-rows] duration-300 ease-out ${detailOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+                <div className="overflow-hidden" inert={!detailOpen}>
+                  <div className="space-y-5 pb-5">
+                    <div role="group" aria-labelledby="area-label">
+                      <p id="area-label" className="mb-3 text-sm text-muted">Area</p>
+                      <div className="flex flex-wrap gap-2">
+                        {domains.map((d) => (
+                          <button
+                            key={d} type="button" aria-pressed={form.domain === d}
+                            onClick={() => handleChange("domain", form.domain === d ? "" : d)}
+                            className={chipClass(form.domain === d)}
+                          >
+                            {d}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="idea-notes" className="mb-3 block text-sm text-muted">Anything specific?</label>
+                      <textarea
+                        id="idea-notes" rows={3} value={form.notes}
+                        placeholder="e.g. a real-time queue, or a low-latency target"
+                        onChange={(e) => handleChange("notes", e.target.value)}
+                        className={`${inputClass} resize-none`}
+                      />
+                      <p className="mt-2 text-xs text-muted">Please don&apos;t include personal information. What you type here is sent to our AI providers (Google and Groq) to write your idea.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <InlineErrorAlert message={error} onDismiss={() => setError(null)} className="" />
+            <UsageNotice usage={usage?.projects} noun="ideas" />
+
+            <div className="space-y-3">
+              <button
+                type="button" onClick={handleGenerate} disabled={!canGenerate}
+                className={`flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl font-display text-sm font-bold transition-colors ${
+                  canGenerate ? "amber-specular-button cursor-pointer text-on-brand" : "cursor-not-allowed border border-ink/[0.08] bg-ink/[0.04] text-muted"
+                }`}
+              >
+                {loading ? <><InlineSpinner size={16} color="currentColor" /> Generating...</> : <><Lightning weight="fill" aria-hidden="true" /> Generate project idea</>}
+              </button>
+              {!isFormValid && !loading && <p className="text-center text-sm text-muted">Choose a tech stack and a difficulty to start.</p>}
+            </div>
+          </div>
+
+          {/* Idea */}
+          <div ref={resultRef} className="min-h-[500px] scroll-mt-24">
+            {!project && !loading && (
+              <EmptyState
+                icon={Cpu}
+                title="Your project idea will appear here"
+                text="Choose a tech stack and difficulty, then generate an idea to build."
+                className="min-h-[500px]"
               />
-              <p className="text-xs text-muted">Please don&apos;t include personal information. What you type here is sent to our AI providers (Google and Groq) to write your idea.</p>
-            </div>
-          </div>
+            )}
 
-          {/* Validation hint */}
-          {!isFormValid && (
-            <div className="flex items-start gap-2 bg-warn-solid/10 border border-warn-solid/20 text-warn px-3 py-2.5 rounded-lg text-left">
-              <FiZap className="shrink-0 mt-0.5 text-sm" />
-              <p className="text-xs font-medium">Select Tech Stack and Complexity to compile blueprint</p>
-            </div>
-          )}
+            {loading && <LongWait shape="idea" title="Generating your project idea" note="This can take a little while." className="min-h-[500px]" />}
 
-          {/* Rate limit / generation error */}
-          <InlineErrorAlert
-            message={error}
-            onDismiss={() => setError(null)}
-            className=""
-          />
+            {project && !loading && (
+              <article className="surface-card fade-in overflow-hidden">
+                <header className="p-6 sm:p-7">
+                  <p className="text-sm font-semibold text-brand">{tags.join(" · ")}</p>
+                  <h2 className="mt-2 break-words font-display text-2xl font-extrabold tracking-tight text-fg sm:text-3xl">{project.title}</h2>
+                  {project.tagline && <p className="mt-1 text-muted">{project.tagline}</p>}
+                </header>
 
-          <UsageNotice usage={usage?.projects} noun="ideas" />
+                <div className="divide-y divide-ink/[0.08] border-t border-ink/[0.08]">
+                  <section className="p-6 sm:p-7">
+                    <h3 className="mb-2 text-sm font-semibold text-muted">Overview</h3>
+                    <p className="leading-relaxed text-fg-3">{project.description}</p>
+                  </section>
 
-          {/* Actions */}
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={handleGenerate}
-              disabled={!canGenerate}
-              className={`w-full py-3 rounded-xl font-display font-semibold text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer ${
-                canGenerate
-                  ? "amber-specular-button text-on-brand font-bold" 
-                  : "bg-ink/[0.04] border border-ink/[0.08] text-muted cursor-not-allowed"
-              }`}
-            >
-              {loading ? (
-                <><InlineSpinner size={16} color="currentColor" /> Generating...</>
-              ) : (
-                <><FiZap /> Generate project idea</>
-              )}
-            </button>
-            <button
-               onClick={handleReset}
-               title="Clear all fields and start fresh"
-               className="w-full py-2.5 min-h-[44px] rounded-xl bg-ink/[0.03] border border-ink/[0.08] flex items-center justify-center gap-2 text-muted hover:text-fg hover:bg-ink/[0.06] transition-colors font-medium text-xs sm:text-sm cursor-pointer"
-            >
-              <FiRefreshCw className="text-xs" /> Reset Parameters
-            </button>
-          </div>
-        </div>
+                  <section className="p-6 sm:p-7">
+                    <h3 className="mb-3 text-sm font-semibold text-muted">What you will build</h3>
+                    <ul className="space-y-2.5">
+                      {project.features?.map((f, i) => (
+                        <li key={i} className="flex items-start gap-3 text-fg-3">
+                          <Check weight="bold" aria-hidden="true" className="mt-1 shrink-0 text-brand" />
+                          <span className="leading-relaxed">{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
 
-        {/* ─── RIGHT PANEL: Generated Idea ─── */}
-        <div className="min-h-[500px]">
-          {!project && !loading && (
-            <div className="h-full min-h-[500px] flex flex-col items-center justify-center titanium-card rounded-2xl p-8 sm:p-12 text-center relative overflow-hidden">
-              <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-ink/[0.12] to-transparent" />
-              <div className="w-16 h-16 rounded-2xl bg-brand/10 border border-brand/25 flex items-center justify-center mb-4">
-                <FiCpu className="text-2xl text-brand" />
-              </div>
-              <h3 className="font-display text-lg font-bold text-fg mb-2">Your project idea will appear here</h3>
-              <p className="text-muted text-sm max-w-sm leading-relaxed">
-                Choose a tech stack and difficulty on the left, then generate a project idea to build.
-              </p>
-              <div className="mt-8 grid grid-cols-1 min-[420px]:grid-cols-3 gap-3 w-full max-w-sm">
-                {[
-                  { label: "Real-world scale", sub: "Not a toy app" },
-                  { label: "Clear goals", sub: "What to measure" },
-                  { label: "Resume ready", sub: "Worth showing" }
-                ].map((tag) => (
-                  <div key={tag.label} className="bg-card-hover border border-ink/[0.08] rounded-xl p-3 text-center">
-                    <p className="text-xs text-fg-2 font-semibold mb-0.5">{tag.label}</p>
-                    <p className="text-xs font-ui text-muted">{tag.sub}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {loading && <LongWait shape="idea" title="Generating your project idea" note="This can take a little while." className="min-h-[500px]" />}
-
-          {project && !loading && (
-            <div className="bg-card border border-ink/[0.08] rounded-2xl overflow-hidden shadow-2xl">
-              {/* Card Header */}
-              <div className="bg-card border-b border-ink/[0.08] px-6 py-5 flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  {/* Chip tags */}
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="text-xs font-ui font-bold tracking-wider text-brand bg-brand/10 border border-brand/25 rounded-full px-2.5 py-0.5 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand" /> ARCHITECTURE BLUEPRINT
-                    </span>
-                    {(project.techStack || form.techStack) && (
-                      <span className="text-xs font-ui font-semibold tracking-wider text-info bg-info-solid/10 border border-info-solid/20 rounded-full px-2.5 py-0.5">
-                        {project.techStack || form.techStack}
-                      </span>
-                    )}
-                    {form.domain && (
-                      <span className="text-xs font-ui font-semibold tracking-wider text-violet bg-violet-solid/10 border border-violet-solid/20 rounded-full px-2.5 py-0.5">
-                        {form.domain}
-                      </span>
-                    )}
-                    {(project.difficulty || form.complexity) && (
-                      <span className={`text-xs font-ui font-semibold tracking-wider rounded-full px-2.5 py-0.5 border uppercase ${
-                        (project.difficulty || form.complexity) === 'Beginner' ? 'text-ok bg-ok-solid/10 border-ok-solid/25' :
-                        (project.difficulty || form.complexity) === 'Intermediate' ? 'text-warn bg-warn-solid/10 border-warn-solid/25' :
-                        'text-bad bg-bad-solid/10 border-bad-solid/25'
-                      }`}>
-                        {project.difficulty || form.complexity}
-                      </span>
-                    )}
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-display font-bold text-fg mb-1">{project.title}</h2>
-                  <p className="text-muted text-xs sm:text-sm">{project.tagline}</p>
-                </div>
-                {/* Action buttons */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <button
-                    onClick={handleCopy}
-                    title="Copy specification to clipboard"
-                    className="w-9 h-9 rounded-xl bg-ink/[0.04] border border-ink/[0.08] flex items-center justify-center text-muted hover:text-fg hover:bg-ink/[0.08] transition-colors cursor-pointer"
-                  >
-                    {copied ? <FiCheck className="text-ok" /> : <FiCopy />}
-                  </button>
-                  <button
-                    onClick={handleReset}
-                    title="Clear current specification and start over"
-                    className="w-9 h-9 rounded-xl bg-ink/[0.04] border border-ink/[0.08] flex items-center justify-center text-muted hover:text-fg hover:bg-ink/[0.08] transition-colors cursor-pointer group"
-                  >
-                    <FiRefreshCw className="transition-transform group-hover:rotate-180 duration-500" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6 space-y-6">
-                {/* Description */}
-                <div>
-                  <h3 className="text-xs font-ui font-bold text-muted mb-2">System Overview</h3>
-                  <p className="text-fg-3 leading-relaxed text-sm sm:text-base">{project.description}</p>
-                </div>
-
-                {/* Features */}
-                <div>
-                  <h3 className="text-xs font-ui font-bold text-muted mb-3">Core Technical Requirements</h3>
-                  <ul className="space-y-2.5">
-                    {project.features?.map((f, i) => (
-                      <li key={i} className="flex items-start gap-3 text-sm text-fg-3">
-                        <span className="w-5 h-5 rounded-md bg-brand/10 border border-brand/25 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <FiCheck className="text-brand text-xs" />
-                        </span>
-                        <span className="leading-relaxed">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Meta details */}
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {[
-                      { label: "Tech Stack", value: project.techStack },
-                      { label: "Difficulty", value: project.difficulty },
-                      { label: "Implementation Target", value: project.estimatedTime },
-                    ].map((m) => (
-                      <div key={m.label} className="bg-card-hover border border-ink/[0.08] rounded-xl p-3.5">
-                        <p className="text-xs font-ui text-muted mb-1">{m.label}</p>
-                        <p className="text-xs sm:text-sm text-fg font-medium leading-snug">{m.value}</p>
+                  <dl className="grid grid-cols-1 divide-y divide-ink/[0.08] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+                    {[["Stack", project.techStack], ["Level", project.difficulty], ["Time", project.estimatedTime]].map(([label, value]) => (
+                      <div key={label} className="p-6">
+                        <dt className="text-sm text-muted">{label}</dt>
+                        <dd className="mt-1 font-semibold leading-snug text-fg">{value}</dd>
                       </div>
                     ))}
-                  </div>
+                  </dl>
 
-                  {/* Resume Value - Full Width and Highlighted */}
-                  <div className="bg-brand/[0.03] border border-brand/20 rounded-xl p-4">
-                    <p className="text-xs font-ui text-brand uppercase tracking-wider mb-2 font-bold flex items-center gap-2">
-                      <FiZap className="text-xs" /> Portfolio Value & ATS High-Signal Talking Points
-                    </p>
-                    <p className="text-xs sm:text-sm text-fg-3 leading-relaxed">
-                      {project.resumeValue}
-                    </p>
-                  </div>
+                  <section className="p-6 sm:p-7">
+                    <h3 className="mb-2 text-sm font-semibold text-muted">Why it is worth showing</h3>
+                    <p className="leading-relaxed text-fg-3">{project.resumeValue}</p>
+                  </section>
+
+                  <footer className="flex flex-wrap justify-end gap-3 p-5">
+                    <button type="button" onClick={handleCopy} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl border border-ink/[0.12] px-4 text-sm font-semibold text-fg transition-colors hover:bg-ink/[0.04]">
+                      {copied ? <Check weight="bold" aria-hidden="true" className="text-ok" /> : <Copy aria-hidden="true" />}
+                      {copied ? "Copied" : "Copy"}
+                    </button>
+                    <button type="button" onClick={handleReset} className="amber-specular-button flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl px-5 text-sm font-bold text-on-brand">
+                      New idea <ArrowRight aria-hidden="true" />
+                    </button>
+                  </footer>
                 </div>
-              </div>
-            </div>
-          )}
+              </article>
+            )}
+          </div>
         </div>
       </div>
     </div>
