@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, CalendarBlank, Shield } from "@phosphor-icons/react";
+import { ArrowRight, CalendarBlank } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import HeroProductShowcase from "./HeroProductShowcase";
@@ -14,11 +14,11 @@ const HeroSection = () => {
         {/* ── LEFT PANE: Mission, Editorial Typography, Direct CTA (5 Columns) ── */}
         <div className="min-w-0 xl:col-span-5 flex flex-col justify-center space-y-6 sm:space-y-7">
           {/* Left-Aligned High-Contrast Display Headline with Specular Sheen */}
-          <Reveal as="h1" onLoad className="font-display text-4xl sm:text-5xl xl:text-[60px] lg:text-[56px] font-black tracking-[-0.04em] text-fg leading-[1.02]">
-            Stop grinding blindly.{" "}
-            <span className="block mt-1.5 text-brand">
-              Engineer your placement.
-            </span>
+          <Reveal as="p" onLoad className="font-code text-xs uppercase tracking-[0.14em] text-muted">
+            Free · no card · reading is open
+          </Reveal>
+          <Reveal as="h1" onLoad delay={0.05} className="font-display text-4xl sm:text-5xl xl:text-[60px] lg:text-[56px] font-black tracking-[-0.04em] text-fg leading-[1.02]">
+            Stop grinding blindly. Engineer your placement.
           </Reveal>
 
           {/* Authoritative Subtitle */}
@@ -55,14 +55,6 @@ const HeroSection = () => {
           </Reveal>
 
           <Link to="/analyzer" className="inline-block text-sm text-brand hover:underline">New: match your resume to a job with the Role Analyzer &rarr;</Link>
-
-          {/* Target Placement Ticker */}
-          <div className="pt-2 flex flex-wrap items-center gap-2 font-ui text-xs text-muted">
-            <span className="text-fg-3 font-semibold flex items-center gap-1">
-              <Shield className="text-brand" /> What's covered:
-            </span>
-            <span className="text-fg-3 font-medium">Blind 75 · NeetCode 150 · Striver SDE · Low-Level CS</span>
-          </div>
         </div>
 
         {/* ── RIGHT PANE: Live Interactive IDE Workbench Cockpit (7 Columns) ── */}

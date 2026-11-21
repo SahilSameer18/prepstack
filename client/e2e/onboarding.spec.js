@@ -16,7 +16,7 @@ test("the home page leads with the study plan and says what it does", async ({ p
   await page.goto("/");
   const hero = page.getByRole("link", { name: /Build my study plan/ }).first();
   await expect(hero).toHaveAttribute("href", "/my-plan");
-  await expect(page.getByRole("heading", { name: "A study plan that fits your hours" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Three steps. Then just show up." })).toBeVisible();
   await expect(page.getByText("It shows what fits before your deadline, and what does not.")).toBeVisible();
   // two hero buttons only: the plan, and the account (signed out) or the dashboard (signed in)
   await expect(hero.locator("xpath=..").getByRole("link")).toHaveCount(2);

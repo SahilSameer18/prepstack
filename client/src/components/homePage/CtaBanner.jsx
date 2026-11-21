@@ -1,26 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Trophy } from "@phosphor-icons/react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { useAuth } from "../../hooks/useAuth";
 
 const CtaBanner = () => {
   const { user } = useAuth();
   return (
-    <section aria-labelledby="home-cta-heading" className="flex flex-col items-start gap-6 rounded-3xl border border-brand/25 bg-brand/10 p-6 sm:p-8 md:flex-row md:items-center md:justify-between text-left shadow-[0_24px_50px_-30px_color-mix(in_srgb,var(--shadow)_55%,transparent)]">
-      <div className="flex items-center gap-5">
-        <span className="hidden sm:flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-brand/30 bg-card text-4xl text-brand">
-          <Trophy weight="duotone" aria-hidden="true" />
-        </span>
-        <div>
-          <h2 id="home-cta-heading" className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-fg">
-            Your dream tech career is a plan away.
-          </h2>
-          <p className="mt-1 text-sm text-muted">Start your preparation with PrepStack today. It is free.</p>
-        </div>
+    <section aria-labelledby="home-cta-heading" className="flex flex-col items-start justify-between gap-6 border-t border-ink/[0.1] pt-16 text-left md:flex-row md:items-center">
+      <div>
+        <h2 id="home-cta-heading" className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+          Start free. No card.
+        </h2>
+        <p className="mt-3 text-base text-muted">Your dream tech career is a plan away.</p>
       </div>
       <Link
         to={user ? "/my-plan" : "/register"}
-        className="amber-specular-button group inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold"
+        className="amber-specular-button group inline-flex min-h-[48px] shrink-0 items-center gap-2 rounded-xl px-7 py-3 text-sm font-bold"
       >
         {user ? "Open My plan" : "Get started free"}
         <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />

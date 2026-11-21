@@ -12,6 +12,7 @@
     "check:links": "node scripts/check-links.js",
     "build:plan-catalogs": "node scripts/build-plan-catalogs.js",
     "build:plan-choices": "node scripts/export-plan-choices.js",
+    "build:home-facts": "node scripts/export-home-facts.js",
     "build:seo-content": "node scripts/build-seo-content.js",
     "redis:check": "node scripts/redis-host-check.js",
     "test": "node --test --test-concurrency=2 --test-force-exit \"test/**/*.test.js\"",

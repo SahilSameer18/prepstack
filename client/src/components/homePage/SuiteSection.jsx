@@ -1,82 +1,44 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { useRevealed } from "../../hooks/useRevealed";
-import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, BookOpenText, ChatsCircle, Check, CodeBlock, MapTrifold, Robot, Target } from "@phosphor-icons/react";
+import { ArrowRight, BookOpenText, ChatsCircle, CodeBlock, MapTrifold, Robot, Target } from "@phosphor-icons/react";
+import homeFacts from "../../data/homeFacts.json";
+import { roadmaps } from "../../data/roadmaps";
+import { behavioralQuestions } from "../../data/behavioralQuestions";
 
-const CHECKS = [
-  "DSA sheets: Blind 75, NeetCode 150, Striver and more",
-  "CS notes: OS, DBMS, networks and OOP in simple words",
-  "AI project ideas to build for your resume",
-  "Behavioral prep: answers for the common questions",
-];
-
-// Each tile is a real page. Labels follow the order of a preparation: practice, understand, build, grow, prepare, match.
-const TILES = [
-  { step: "01", verb: "Practice", title: "DSA", text: "Solve with intent.", to: "/dsa", icon: <CodeBlock weight="duotone" /> },
-  { step: "02", verb: "Understand", title: "CS notes", text: "Build foundations.", to: "/notes", icon: <BookOpenText weight="duotone" /> },
-  { step: "03", verb: "Build", title: "AI projects", text: "Turn ideas into impact.", to: "/ai-projects", icon: <Robot weight="duotone" /> },
-  { step: "04", verb: "Grow", title: "Roadmaps", text: "Plan your journey.", to: "/roadmaps", icon: <MapTrifold weight="duotone" /> },
-  { step: "05", verb: "Prepare", title: "Interviews", text: "Walk in with confidence.", to: "/behavioral", icon: <ChatsCircle weight="duotone" /> },
-  { step: "06", verb: "Match", title: "Role Analyzer", text: "Check your resume against a job.", to: "/analyzer", icon: <Target weight="duotone" /> },
-];
-
-const MotionLink = motion.create(Link);
-
-const Tile = ({ tile, index }) => {
-  const calm = useReducedMotion();
-  const ref = useRef(null);
-  const seen = useRevealed(ref);
-  return (
-    <MotionLink
-      to={tile.to}
-      ref={ref}
-      initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 24px, 0)" }}
-      animate={seen ? { opacity: 1, transform: "translate3d(0, 0, 0)" } : undefined}
-      transition={calm ? { duration: 0.2 } : { duration: 0.45, ease: [0.23, 1, 0.32, 1], delay: index * 0.06 }}
-      className="group relative flex min-h-[176px] flex-col overflow-hidden surface-card p-4 surface-card-link"
-    >
-      <span aria-hidden="true" className="absolute bottom-3.5 right-3.5 text-[52px] leading-none text-brand">
-        {tile.icon}
-      </span>
-      <span className="font-ui text-xs text-muted">{tile.step} / {tile.verb}</span>
-      <h3 className="mt-2 font-display text-lg font-extrabold tracking-tight text-fg">{tile.title}</h3>
-      <p className="mt-1 text-sm text-muted">{tile.text}</p>
-      <span className="relative mt-auto flex h-9 w-9 items-center justify-center rounded-full border border-brand/40 bg-brand/10 text-brand transition-colors group-hover:bg-brand group-hover:text-on-brand">
-        <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-0.5" />
-        <span className="sr-only">Open {tile.title}</span>
-      </span>
-    </MotionLink>
-  );
-};
-
+// One line per real page, in the order of a preparation. The right-hand note is a real count where we have one, or what the page needs.
 const SuiteSection = () => {
+  const lines = [
+    { to: "/dsa", title: "DSA sheets", text: "Blind 75, NeetCode 150, Striver and more, with your progress saved.", note: `${homeFacts.problems.toLocaleString("en-IN")} problems`, icon: <CodeBlock weight="duotone" /> },
+    { to: "/notes", title: "CS notes", text: "OS, DBMS, networks, OOP and system design in simple words.", note: "Free to read", icon: <BookOpenText weight="duotone" /> },
+    { to: "/roadmaps", title: "Roadmaps", text: "Step-by-step paths from beginner to job level.", note: `${roadmaps.length} roadmaps`, icon: <MapTrifold weight="duotone" /> },
+    { to: "/ai-projects", title: "AI project ideas", text: "A portfolio project for your tech stack and level.", note: "Sign in to use", icon: <Robot weight="duotone" /> },
+    { to: "/analyzer", title: "Role Analyzer", text: "Match your resume to a job. Get a score and a plan.", note: "Sign in to use", icon: <Target weight="duotone" /> },
+    { to: "/behavioral", title: "Behavioral prep", text: "Answers for the common interview questions.", note: `${behavioralQuestions.length} questions`, icon: <ChatsCircle weight="duotone" /> },
+  ];
+
   return (
-  <section aria-labelledby="home-suite-heading" className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 text-left">
-    <div className="lg:col-span-5 min-w-0">
-      <h2 id="home-suite-heading" className="font-display text-4xl sm:text-5xl font-black tracking-[-0.04em] leading-[1.04] text-fg">
-        A complete preparation suite,
-        <span className="block text-brand">in one place.</span>
+    <section aria-labelledby="home-suite-heading" className="border-t border-ink/[0.1] pt-16 text-left">
+      <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">What is inside</p>
+      <h2 id="home-suite-heading" className="mt-3 max-w-3xl font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+        One place. All linked to your plan.
       </h2>
-      <p className="mt-5 max-w-md text-base leading-relaxed text-muted">
-        From solving problems to building projects, PrepStack helps you prepare in an order that makes sense.
-      </p>
-      <ul className="mt-6 space-y-3">
-        {CHECKS.map((line) => (
-          <li key={line} className="flex items-start gap-3 text-sm sm:text-base text-fg-3">
-            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/15 text-xs text-brand">
-              <Check aria-hidden="true" />
-            </span>
-            {line}
+      <ul className="mt-8 border-t border-ink/[0.1]">
+        {lines.map((line) => (
+          <li key={line.to} className="border-b border-ink/[0.1]">
+            <Link
+              to={line.to}
+              className="group grid grid-cols-[44px_1fr_auto] items-center gap-x-4 gap-y-1 py-5 transition-colors hover:bg-ink/[0.02] sm:grid-cols-[44px_200px_1fr_150px_24px] sm:gap-x-5 sm:py-6"
+            >
+              <span aria-hidden="true" className="row-span-2 flex h-11 w-11 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-2xl text-brand sm:row-span-1">{line.icon}</span>
+              <span className="font-display text-xl font-extrabold tracking-tight text-fg sm:text-2xl">{line.title}</span>
+              <ArrowRight aria-hidden="true" className="justify-self-end text-brand transition-transform duration-150 group-hover:translate-x-1 sm:order-last" />
+              <span className="col-start-2 text-sm leading-relaxed text-muted sm:col-start-auto sm:text-base">{line.text}</span>
+              <span className="col-start-2 font-code text-sm text-fg-3 sm:col-start-auto sm:text-right">{line.note}</span>
+            </Link>
           </li>
         ))}
       </ul>
-    </div>
-
-    <div className="lg:col-span-7 min-w-0 grid grid-cols-1 min-[480px]:grid-cols-2 sm:grid-cols-3 gap-3.5">
-      {TILES.map((tile, i) => <Tile key={tile.to} tile={tile} index={i} />)}
-    </div>
-  </section>
+    </section>
   );
 };
 

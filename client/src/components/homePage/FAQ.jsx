@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useId, memo } from "react";
-import { CaretDown } from "@phosphor-icons/react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const TECHNICAL_FAQS = [
@@ -32,42 +31,26 @@ const TECHNICAL_FAQS = [
 const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
   const panelId = useId();
   return (
-    <div
-      className={`rounded-2xl transition-all duration-200 border overflow-hidden relative ${
-        isOpen
-          ? "surface-card border-brand/40 shadow-[0_15px_35px_-14px_color-mix(in_srgb,var(--shadow)_55%,transparent)]"
-          : "bg-card border-ink/[0.07] hover:border-ink/[0.14] hover:bg-ink/[0.015]"
-      }`}
-    >
-      {isOpen && (
-        <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-brand/50 to-transparent" />
-      )}
+    <div className="border-b border-ink/[0.1]">
       <button
         type="button"
         onClick={toggle}
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className="w-full p-5 sm:p-6 flex items-center justify-between text-left focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand cursor-pointer group select-none"
+        className="group flex min-h-[64px] w-full cursor-pointer select-none items-center justify-between gap-4 py-5 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand"
       >
-        <div className="flex items-center gap-3.5 sm:gap-4 pr-3">
-          <span className="font-ui text-xs font-semibold text-brand shrink-0">
-            [{idx}]
-          </span>
-          <span className="font-display text-base sm:text-lg font-bold text-fg group-hover:text-fg-2 transition-colors">
-            {question}
-          </span>
-        </div>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ type: "spring", damping: 20, stiffness: 320 }}
-          className={`shrink-0 w-7 h-7 rounded-lg border flex items-center justify-center transition-colors ${
-            isOpen
-              ? "bg-brand/10 border-brand/30 text-brand"
-              : "border-ink/[0.08] text-muted group-hover:text-fg"
-          }`}
+        <span className="flex items-baseline gap-5 pr-3">
+          <span className="font-code text-sm text-muted">{idx}</span>
+          <span className="font-display text-base font-bold text-fg transition-colors group-hover:text-brand sm:text-lg">{question}</span>
+        </span>
+        <motion.span
+          aria-hidden="true"
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          transition={{ type: "spring", damping: 24, stiffness: 320 }}
+          className="shrink-0 text-2xl leading-none text-muted"
         >
-          <CaretDown className="text-sm" />
-        </motion.div>
+          +
+        </motion.span>
       </button>
 
       <AnimatePresence initial={false}>
@@ -80,9 +63,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
             className="overflow-hidden"
           >
-            <div className="px-5 sm:px-6 pb-6 pt-1 text-muted text-sm leading-relaxed border-t border-ink/[0.04] mt-1 pl-12 sm:pl-14">
-              {answer}
-            </div>
+            <p className="max-w-3xl pb-6 pl-10 text-sm leading-relaxed text-muted sm:pl-12 sm:text-base">{answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -98,29 +79,22 @@ const FAQ = () => {
   }, []);
 
   return (
-    <section className="relative">
-      <div className="max-w-3xl mx-auto text-left">
-        <div className="text-center mb-12 sm:mb-14">
-          <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-fg tracking-tight leading-tight mb-4">
-            Frequently asked <span className="text-brand">questions</span>
-          </h2>
-          <p className="text-sm sm:text-base text-muted leading-relaxed">
-            Short answers about how PrepStack works.
-          </p>
-        </div>
-
-        <div className="space-y-3.5">
-          {TECHNICAL_FAQS.map((faq, index) => (
-            <FAQItem
-              key={index}
-              idx={String(index + 1).padStart(2, "0")}
-              question={faq.question}
-              answer={faq.answer}
-              isOpen={openIndex === index}
-              toggle={() => handleToggle(index)}
-            />
-          ))}
-        </div>
+    <section aria-labelledby="home-faq-heading" className="border-t border-ink/[0.1] pt-16 text-left">
+      <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">Questions</p>
+      <h2 id="home-faq-heading" className="mt-3 font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+        Frequently asked questions
+      </h2>
+      <div className="mt-8 border-t border-ink/[0.1]">
+        {TECHNICAL_FAQS.map((faq, index) => (
+          <FAQItem
+            key={index}
+            idx={String(index + 1).padStart(2, "0")}
+            question={faq.question}
+            answer={faq.answer}
+            isOpen={openIndex === index}
+            toggle={() => handleToggle(index)}
+          />
+        ))}
       </div>
     </section>
   );
