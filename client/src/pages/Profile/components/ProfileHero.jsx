@@ -1,23 +1,15 @@
 import { useState, useEffect } from "react";
-import { CalendarBlank, CodeBlock, Lightbulb } from "@phosphor-icons/react";
+import { CalendarBlank } from "@phosphor-icons/react";
 import axiosInstance from "../../../api/axios";
 import { SkeletonStat } from "../../../components/ui/Skeletons";
 import { getDiceBearAvatar } from "../../../utils/avatar";
 
-const Stat = ({ icon, label, value, loading }) => {
-  const Icon = icon;
-  return (
-  <div className="flex min-w-0 items-center gap-3 rounded-xl border border-ink/[0.1] bg-card px-4 py-3">
-    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand/25 bg-brand/10 text-xl text-brand">
-      <Icon weight="duotone" aria-hidden="true" />
-    </span>
-    <div>
-      <div className="font-ui text-xs font-medium leading-tight text-fg-3">{label}</div>
-      <div className="font-ui text-lg font-bold text-fg">{loading ? <SkeletonStat width="w-8" height="h-5" /> : value}</div>
-    </div>
+const Stat = ({ label, value, loading }) => (
+  <div className="min-w-0">
+    <dt className="text-sm text-muted">{label}</dt>
+    <dd className="font-code text-3xl text-fg">{loading ? <SkeletonStat width="w-8" height="h-7" /> : value}</dd>
   </div>
-  );
-};
+);
 
 // The page header: who you are (live avatar preview, name, email, join date) and your two headline numbers.
 const ProfileHero = ({ user, avatarUrl }) => {
@@ -44,7 +36,7 @@ const ProfileHero = ({ user, avatarUrl }) => {
   return (
     <header className="pt-2">
       <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
-        Your <span className="text-brand">profile.</span>
+        Your profile.
       </h1>
 
       <div className="mt-7 flex flex-col items-center gap-5 sm:flex-row sm:items-center">
@@ -72,10 +64,10 @@ const ProfileHero = ({ user, avatarUrl }) => {
           </p>
         </div>
 
-        <div className="grid w-full grid-cols-2 gap-3 sm:w-auto">
-          <Stat icon={CodeBlock} label="Problems solved" value={stats.solvedDSACount} loading={loadingStats} />
-          <Stat icon={Lightbulb} label="Project ideas" value={stats.generatedProjectsCount} loading={loadingStats} />
-        </div>
+        <dl className="grid w-full grid-cols-2 gap-8 border-t border-ink/[0.1] pt-5 sm:w-auto sm:border-t-0 sm:pt-0">
+          <Stat label="Problems solved" value={stats.solvedDSACount} loading={loadingStats} />
+          <Stat label="Project ideas" value={stats.generatedProjectsCount} loading={loadingStats} />
+        </dl>
       </div>
     </header>
   );

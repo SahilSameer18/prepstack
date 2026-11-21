@@ -154,12 +154,13 @@ const UnifiedDashboard = () => {
     <div className="relative">
       <PageBackdrop />
       <div className="relative z-10 mx-auto max-w-7xl px-0 pb-16 text-left text-fg sm:px-6">
-        <h1 className="mb-6 break-words font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+        <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">Dashboard</p>
+        <h1 className="mb-6 mt-2 break-words font-display text-3xl font-black leading-[1.06] tracking-[-0.04em] text-fg sm:text-4xl">
           {greeting}, {user?.username || "Engineer"}
         </h1>
 
         {/* ── Tabs ──────────────────────────────────────────────────────────── */}
-        <div role="tablist" aria-label="Dashboard sections" className="mb-8 flex gap-1 overflow-x-auto sm:gap-1.5">
+        <div role="tablist" aria-label="Dashboard sections" className="mb-8 flex gap-1 overflow-x-auto border-b border-ink/[0.1] pb-3 sm:gap-1.5">
           {tabs.map(([key, label]) => (
             <button
               key={key} id={`dashboard-tab-${key}`} role="tab" aria-selected={tab === key}

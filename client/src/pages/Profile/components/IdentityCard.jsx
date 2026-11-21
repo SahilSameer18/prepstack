@@ -95,7 +95,7 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
     <div className="surface-card p-6 sm:p-8">
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-ink/[0.06]">
         <div>
-          <h2 className="font-display text-xl font-extrabold tracking-tight text-fg">Account</h2>
+          <h2 className="font-display text-xl font-bold tracking-tight text-fg">Account</h2>
           <p className="text-sm font-ui text-muted mt-1">
             Choose your username and avatar.
           </p>
@@ -108,7 +108,7 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Username (Unique & Editable) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-ui font-semibold text-muted">Username</label>
+            <label className="font-code text-xs uppercase tracking-[0.14em] text-muted">Username</label>
             <div className="flex items-center gap-3 bg-card border border-ink/[0.14] focus-within:border-brand rounded-xl px-4 h-12 transition-colors">
               <User className="text-muted text-base shrink-0" />
               <input
@@ -128,7 +128,7 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
 
           {/* Email (Read-Only with Copy Action) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-ui font-semibold text-muted">Primary Email</label>
+            <label className="font-code text-xs uppercase tracking-[0.14em] text-muted">Email</label>
             <div className="flex items-center justify-between gap-3 border border-ink/[0.1] bg-ink/[0.03] rounded-xl px-4 h-12 transition-colors">
               <div className="flex items-center gap-3 overflow-hidden">
                 <Envelope className="text-muted text-base shrink-0" />
@@ -151,8 +151,8 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
         {/* Identicon Presets */}
         <div className="pt-4 border-t border-ink/[0.06] space-y-3">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-ui font-semibold text-muted">
-              Choose your avatar
+            <label className="font-code text-xs uppercase tracking-[0.14em] text-muted">
+              Avatar
             </label>
             <button
               type="button"
@@ -174,8 +174,8 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
                   onClick={() => handlePresetAvatar(preset.seed)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-colors cursor-pointer min-h-[44px] ${
                     isSelected
-                      ? "bg-brand/15 border-brand text-fg"
-                      : "bg-card border-ink/[0.12] text-muted hover:border-ink/[0.2] hover:text-fg"
+                      ? "bg-brand/15 border-brand/45 font-semibold text-brand"
+                      : "bg-card border-ink/[0.2] text-fg-3 hover:border-ink/[0.4] hover:text-fg"
                   }`}
                 >
                   <img src={avatarUrl} alt={preset.label} className="w-6 h-6 rounded-lg bg-inset/40" />

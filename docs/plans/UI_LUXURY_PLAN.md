@@ -50,7 +50,7 @@ Source: the honest audit of 21 Nov 2026 (overall 6.5 of 10 against "million doll
 | 4. Home page | Built (see Status). The live demo is now about the plan: your hours, today, missed days (decided 21 Nov). | Built, not tested |
 | 5. List and detail pages | DSA sheets list and sheet page as rows with progress marks, roadmaps list and page, behavioral, resume guide. | **Done 21 Nov** (all six pages built, looked at in light and dark; not tested) |
 | 6. Reading and planning screens (**built 21 Nov**, notes page, notes list and Plan tab) | The notes reading page (quiet backdrop, clear explanation, example, mistake and exercise blocks, narrow-screen diagrams and code) and the My plan Plan tab (controls grouped by purpose: schedule changes, task management, recovery, plan management). Draw each with real data first. | Open |
-| 7. App pages to the same look | Dashboard (smaller greeting, clear selected section), AI projects, Role Analyzer, profile, login and register; confirmation dialogs the same everywhere. | Open (they are close already) |
+| 7. App pages to the same look (**built 21 Nov except auth, which the owner keeps**; profile Security/Devices/Sign out cards not restyled) | Dashboard (smaller greeting, clear selected section), AI projects, Role Analyzer, profile, login and register; confirmation dialogs the same everywhere. | Open (they are close already) |
 | 8. Motion | One system: press feedback, tab movement, disclosure, dialogs, gentle page entry, a "task done" moment; consistent reduced motion; optional Ctrl+K "jump to" box (needs the owner's yes). | Open |
 | 9. Verify | Whole e2e suite, server tests, build and SEO check, light, dark and 375 px captures, slow network, accessibility checklist (touch targets, keyboard and focus, Escape and focus return, names for icon buttons, text as well as colour for errors, larger text and long labels, reduced motion and transparency, dialogs with the phone keyboard open); docs and README. | Open (when the owner asks) |
 
@@ -93,6 +93,16 @@ Source: the honest audit of 21 Nov 2026 (overall 6.5 of 10 against "million doll
 - Login and register: no orange word; the three facts as one mono strip with dividers; the feature pills removed (they repeat the navbar).
 - Security and Devices tabs, dialogs and confirmations: same row style; destructive actions as red text.
 - AI projects, Analyzer, Reports: label and rule alignment only.
+
+## Next phases, in order (planned 21 Nov, after Phase 7)
+| Step | Work | Size | Why now |
+|---|---|---|---|
+| 7b. Profile finish | Account as labelled rows with hairlines (no big card), plain side list without icons, lighter avatar frame, Security, Devices and Sign out as rows, destructive actions as red text. Look at every tab in light and dark. Auth pages untouched. | 1 day | The owner pointed at this page: it still feels like before |
+| 1+2. Site-wide polish | Heading weights: the heaviest weight only on page titles, section titles lighter. Backdrop: grid and glow only on home and auth, quiet on reading and app pages. Aligned figures. Spacing per page type; fix gaps above the footer. Check every page in light and dark. | 2 days | The biggest feel change for the least work |
+| 3. Signature marks | Use ProgressMarks, the square tick and mono numbers wherever progress or steps show (plan weeks, reports, roadmaps). | 1 day | Ties the pages together |
+| 8. Motion | One set of rules: press feedback, tab movement, opening and closing, dialogs, page entry, reduced motion everywhere; a task-done moment; the Ctrl+K box only if the owner says yes. | 2 to 3 days | After layout is stable |
+| 9. Test pass | Whole e2e, server tests, build and SEO check, light, dark and phone captures, slow network, accessibility list. Fix the tests that read moved headings. | 1 to 2 days | Run before real-device testing |
+Rule: a real-content screenshot, light and dark, is looked at before anything is shown to the owner. Heading font stays an open owner decision (three pictures first).
 
 ## Decisions that are the owner's (recommendation in brackets)
 1. Heading font: keep Plus Jakarta Sans, or change (recommend: look at three pictured options for the home hero before deciding; change only the heading font).

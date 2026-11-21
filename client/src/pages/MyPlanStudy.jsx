@@ -170,10 +170,10 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
     <div className={embedded ? undefined : "relative"}>
     {!embedded && <PageBackdrop />}
     <div className={embedded ? undefined : "relative z-10 mx-auto max-w-5xl pb-12 pt-2"}>
-      <Heading className={embedded ? "mb-4 font-display text-2xl font-extrabold tracking-tight text-fg" : "mb-6 font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl"}>My plan</Heading>
+      <Heading className={embedded ? "mb-3 font-code text-xs font-normal uppercase tracking-[0.14em] text-muted" : "mb-6 font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl"}>My plan</Heading>
       {plan && <nav
         aria-label="Study plan tabs"
-        className="mb-8 flex gap-1 overflow-x-auto sm:gap-1.5"
+        className={embedded ? "mb-8 flex gap-5 overflow-x-auto sm:gap-6" : "mb-8 flex gap-1 overflow-x-auto sm:gap-1.5"}
       >
         {TABS.map((name) => (
           <button
@@ -185,13 +185,13 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
               setRound(null);
               navigate(name.toLowerCase());
             }}
-            className={`relative min-h-[44px] flex-1 shrink-0 cursor-pointer rounded-xl px-1.5 text-sm sm:px-4 transition-colors disabled:cursor-not-allowed sm:flex-none ${tab === name.toLowerCase() ? "font-semibold text-brand" : "text-muted hover:bg-ink/[0.05] hover:text-fg"}`}
+            className={`relative min-h-[44px] shrink-0 cursor-pointer text-sm transition-colors disabled:cursor-not-allowed ${embedded ? "px-0.5" : "flex-1 rounded-xl px-1.5 sm:flex-none sm:px-4"} ${tab === name.toLowerCase() ? "font-semibold text-brand" : `text-muted hover:text-fg ${embedded ? "" : "hover:bg-ink/[0.05]"}`}`}
           >
             {tab === name.toLowerCase() && (
               <motion.span
                 aria-hidden="true"
                 layoutId={calm ? undefined : "study-tab-slide"}
-                className="absolute inset-0 -z-10 rounded-xl bg-brand/12"
+                className={embedded ? "absolute inset-x-0 bottom-1 h-0.5 rounded-full bg-brand" : "absolute inset-0 -z-10 rounded-xl bg-brand/12"}
                 transition={{ type: "spring", duration: 0.3, bounce: 0 }}
               />
             )}
