@@ -106,7 +106,7 @@ const NotFound = () => (
       </Item>
       <Item>
         <h1 className="mt-3 font-display text-5xl font-black leading-[1.02] tracking-[-0.04em] text-fg sm:text-6xl lg:text-7xl">
-          Page not <span className="text-brand">found.</span>
+          Page not found.
         </h1>
       </Item>
       <Item>
@@ -135,7 +135,7 @@ const NotFound = () => (
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-xl text-brand">
                   <Icon weight="duotone" aria-hidden="true" />
                 </span>
-                <p className="mt-4 font-display text-base font-extrabold tracking-tight text-fg">{q.label}</p>
+                <p className="mt-4 font-display text-base font-bold tracking-tight text-fg">{q.label}</p>
                 <p className="mt-0.5 text-sm text-muted">{q.text}</p>
               </Link>
             );

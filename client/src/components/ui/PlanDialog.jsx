@@ -48,7 +48,7 @@ export default function PlanDialog({ title, children, onClose, busy = false }) {
       className="surface-card m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto p-6 text-fg shadow-2xl backdrop:bg-scrim/50 backdrop:backdrop-blur-sm sm:p-8"
     >
       <div className="mb-5 flex items-start justify-between gap-4">
-        <h2 id={titleId} className="font-display text-2xl font-extrabold tracking-tight">
+        <h2 id={titleId} className="font-display text-2xl font-bold tracking-tight">
           {title}
         </h2>
         <button

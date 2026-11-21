@@ -19,7 +19,7 @@ const WITH_US = [
 const WhySection = () => (
   <section aria-labelledby="home-why-heading" className="border-t border-ink/[0.1] pt-16 text-left">
     <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">Why PrepStack</p>
-    <h2 id="home-why-heading" className="mt-3 max-w-3xl font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+    <h2 id="home-why-heading" className="mt-3 max-w-3xl font-display text-4xl font-bold leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
       Not a pile of scattered tabs.
     </h2>
     <p className="mt-5 max-w-xl text-base leading-relaxed text-muted">

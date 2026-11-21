@@ -58,7 +58,7 @@ export const PageErrorState = ({
       <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-bad-solid/25 bg-bad-solid/10 text-3xl text-bad">
         <WarningCircle weight="duotone" aria-hidden="true" />
       </span>
-      <h2 className="mt-5 font-display text-2xl font-extrabold tracking-tight text-fg">{title || titleFor(message)}</h2>
+      <h2 className="mt-5 font-display text-2xl font-bold tracking-tight text-fg">{title || titleFor(message)}</h2>
       <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">{message}</p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         {onRetry && (

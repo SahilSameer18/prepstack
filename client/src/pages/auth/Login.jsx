@@ -93,7 +93,7 @@ const Login = () => {
         {FACTS.map((f) => (
           <div key={f.label} className="surface-card p-4">
             <dt className="order-2 mt-1 text-xs leading-snug text-muted">{f.label}</dt>
-            <dd className="font-display text-2xl font-extrabold tracking-tight text-brand">{f.value}</dd>
+            <dd className="font-display text-2xl font-bold tracking-tight text-brand">{f.value}</dd>
           </div>
         ))}
       </dl>

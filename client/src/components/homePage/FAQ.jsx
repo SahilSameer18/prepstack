@@ -81,7 +81,7 @@ const FAQ = () => {
   return (
     <section aria-labelledby="home-faq-heading" className="border-t border-ink/[0.1] pt-16 text-left">
       <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">Questions</p>
-      <h2 id="home-faq-heading" className="mt-3 font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+      <h2 id="home-faq-heading" className="mt-3 font-display text-4xl font-bold leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
         Frequently asked questions
       </h2>
       <div className="mt-8 border-t border-ink/[0.1]">

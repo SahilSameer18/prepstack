@@ -51,7 +51,7 @@ export default function LongWait({ shape = "idea", title, note, className = "" }
     <div className={`surface-card fade-in p-6 sm:p-8 ${className}`}>
       <div className="flex items-start justify-between gap-4">
         <div role="status">
-          <p className="font-display text-xl font-extrabold tracking-tight text-fg">{title}</p>
+          <p className="font-display text-xl font-bold tracking-tight text-fg">{title}</p>
           <p className="mt-1 text-sm text-muted">{note}</p>
         </div>
         <span aria-hidden="true" className="shrink-0 font-ui text-sm tabular-nums text-muted">{seconds} s</span>

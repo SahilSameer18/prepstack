@@ -79,7 +79,7 @@ export default function StudyStart({
       >
         Back to plan
       </button>
-      <h2 className="font-display text-3xl font-extrabold tracking-tight text-fg">
+      <h2 className="font-display text-3xl font-bold tracking-tight text-fg">
         {review ? "Review: " : ""}
         {item.title}
         {item.part && ` (part ${item.part.n} of ${item.part.of})`}

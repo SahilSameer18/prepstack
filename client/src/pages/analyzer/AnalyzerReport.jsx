@@ -20,7 +20,7 @@ import { countPlan, setItemDone } from "../../components/analyzer/planProgress";
 import ReportPlanImport from '../../components/plan/ReportPlanImport';
 
 const list = "surface-card divide-y divide-ink/[0.08]";
-const heading = "mb-4 font-display text-xl font-extrabold tracking-tight text-fg";
+const heading = "mb-4 font-display text-xl font-bold tracking-tight text-fg";
 
 const ReportSkeleton = () => (
   <div aria-hidden="true" className="space-y-4">
@@ -148,7 +148,7 @@ const AnalyzerReport = () => {
                 <ScoreStrip score={report.score} reqs={reqs} />
                 <dl className="grid grid-cols-3 divide-x divide-ink/[0.08] text-left">
                   {[["Gaps", gaps.length], ["Study time", hours ? `${hours} h` : "-"], ["Plan", `${report.days} days`]].map(([k, v]) => (
-                    <div key={k} className="px-3 first:pl-0 sm:px-5"><dt className="text-sm text-muted">{k}</dt><dd className="font-display text-xl font-extrabold sm:text-2xl">{v}</dd></div>
+                    <div key={k} className="px-3 first:pl-0 sm:px-5"><dt className="text-sm text-muted">{k}</dt><dd className="font-display text-xl font-bold sm:text-2xl">{v}</dd></div>
                   ))}
                 </dl>
               </div>

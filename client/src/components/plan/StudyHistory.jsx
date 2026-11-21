@@ -38,7 +38,7 @@ export default function StudyHistory({ onClear }) {
     : reply;
   return (
     <section aria-label="Plan history" className="space-y-5">
-      <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Read-only plan history</h2>
+      <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Read-only plan history</h2>
       {selected && (
         <button
           className="min-h-[44px] cursor-pointer font-semibold text-brand transition-colors hover:text-brand-hover"

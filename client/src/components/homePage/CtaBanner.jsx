@@ -8,7 +8,7 @@ const CtaBanner = () => {
   return (
     <section aria-labelledby="home-cta-heading" className="flex flex-col items-start justify-between gap-6 border-t border-ink/[0.1] pt-16 text-left md:flex-row md:items-center">
       <div>
-        <h2 id="home-cta-heading" className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+        <h2 id="home-cta-heading" className="font-display text-4xl font-bold leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
           Start free. No card.
         </h2>
         <p className="mt-3 text-base text-muted">Your dream tech career is a plan away.</p>

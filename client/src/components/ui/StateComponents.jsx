@@ -17,7 +17,7 @@ export const EmptyState = ({ icon: Icon, title, text, action, className = "" }) 
         <Icon weight="duotone" aria-hidden="true" />
       </span>
     )}
-    <h3 className="relative font-display text-2xl font-extrabold tracking-tight text-fg">{title}</h3>
+    <h3 className="relative font-display text-2xl font-bold tracking-tight text-fg">{title}</h3>
     {text && <p className="relative mb-6 mt-2 max-w-sm text-base leading-relaxed text-muted">{text}</p>}
     {action?.to && <Link to={action.to} className={`relative ${BUTTON}`}>{action.label}</Link>}
     {action?.onClick && <button type="button" onClick={action.onClick} className={`relative ${BUTTON}`}>{action.label}</button>}

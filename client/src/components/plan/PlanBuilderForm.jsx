@@ -113,7 +113,7 @@ export default function PlanBuilderForm({
       }}
     >
       <fieldset disabled={disabled} className="space-y-7 disabled:opacity-60">
-        <legend className="mb-5 font-display text-2xl font-extrabold tracking-tight text-fg">
+        <legend className="mb-5 font-display text-2xl font-bold tracking-tight text-fg">
           Make room for your goal
         </legend>
         <Field

@@ -23,7 +23,7 @@ const TermsOfUse = () => {
     >
         {/* Section 1 */}
         <section id="s1" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">1.</span> Acceptance of Terms
           </h2>
           <p>
@@ -33,7 +33,7 @@ const TermsOfUse = () => {
 
         {/* Section 2 */}
         <section id="s2" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">2.</span> Educational Mission & License
           </h2>
           <p>
@@ -43,7 +43,7 @@ const TermsOfUse = () => {
 
         {/* Section 3 */}
         <section id="s3" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">3.</span> Intellectual Property & Third-Party Content
           </h2>
           <p>
@@ -56,7 +56,7 @@ const TermsOfUse = () => {
 
         {/* Section 4 */}
         <section id="s4" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">4.</span> Acceptable Use & Session Integrity
           </h2>
           <p>You agree not to:</p>
@@ -74,7 +74,7 @@ const TermsOfUse = () => {
 
         {/* Section 5 */}
         <section id="s5" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">5.</span> Disclaimer of Placement Guarantee
           </h2>
           <p>
@@ -84,7 +84,7 @@ const TermsOfUse = () => {
 
         {/* Section 6 */}
         <section id="s6" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">6.</span> Account Termination & Self-Service Erasure
           </h2>
           <p>
@@ -97,7 +97,7 @@ const TermsOfUse = () => {
 
         {/* Contact */}
         <section id="contact" className="surface-card scroll-mt-24 p-6">
-          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg mb-2">Inquiries Regarding Terms</h2>
+          <h2 className="font-display text-2xl font-bold tracking-tight text-fg mb-2">Inquiries Regarding Terms</h2>
           <p className="text-muted mb-3">
             For questions or enterprise usage inquiries, contact the creator:
           </p>

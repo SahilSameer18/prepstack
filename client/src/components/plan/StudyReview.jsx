@@ -90,7 +90,7 @@ export default function StudyReview({ plan, readOnly, onStart, onRebuild, curren
 
   return (
     <section aria-label="Reviews" className="space-y-6">
-      <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Due reviews</h2>
+      <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Due reviews</h2>
       {readOnly && (
         <p className="text-sm text-muted">
           This plan is read-only. Practice starred material or build another
@@ -99,7 +99,7 @@ export default function StudyReview({ plan, readOnly, onStart, onRebuild, curren
       )}
       <StudyItemList items={due} onStart={onStart} review readOnly={readOnly} />
       <div className="space-y-4 border-t border-ink/[0.1] pt-6">
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Weekly review</h2>
+        <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Weekly review</h2>
         <label className="block text-sm text-fg-3">
           Choose a day in the week
           <input
@@ -139,7 +139,7 @@ export default function StudyReview({ plan, readOnly, onStart, onRebuild, curren
                 Preview a rebuild
               </button>
             )}
-            <h3 className="font-display text-lg font-extrabold tracking-tight text-fg">Topics to revisit</h3>
+            <h3 className="font-display text-lg font-bold tracking-tight text-fg">Topics to revisit</h3>
             {!data.weakTopics.length && (
               <p className="text-sm text-muted">
                 No weak topics recorded this week.

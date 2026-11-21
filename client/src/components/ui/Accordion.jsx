@@ -19,7 +19,7 @@ const Accordion = ({ title, icon, children, flat = false }) => {
         className={`group flex min-h-[44px] w-full cursor-pointer items-center gap-4 text-left focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand ${flat ? "py-5" : "p-5"}`}
       >
         {icon && !flat && <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-xl text-brand">{icon}</span>}
-        <span className={`flex-1 font-display tracking-tight text-fg sm:text-lg ${flat ? "text-base font-bold group-hover:text-brand" : "text-base font-extrabold"}`}>{title}</span>
+        <span className={`flex-1 font-display tracking-tight text-fg sm:text-lg ${flat ? "text-base font-bold group-hover:text-brand" : "text-base font-bold"}`}>{title}</span>
         {flat ? (
           <CaretDown aria-hidden="true" className={`shrink-0 text-base transition-[transform,color] duration-200 ${open ? "rotate-180 text-brand" : "text-muted"}`} />
         ) : (

@@ -210,7 +210,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
 
       {round && !roundItem ? (
         <section className="space-y-4 text-fg-3">
-          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-fg">
             Practice round complete
           </h2>
           <p>Your saved progress and review dates are unchanged.</p>
@@ -283,7 +283,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
         </>
       ) : tab === "starred" ? (
         <section className="space-y-5">
-          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-fg">
             Starred for revision
           </h2>
           <StudyItemList

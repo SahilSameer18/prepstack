@@ -243,7 +243,7 @@ const AIProjectIdeas = () => {
               <article className="surface-card fade-in overflow-hidden">
                 <header className="p-6 sm:p-7">
                   <p className="text-sm font-semibold text-brand">{tags.join(" · ")}</p>
-                  <h2 className="mt-2 break-words font-display text-2xl font-extrabold tracking-tight text-fg sm:text-3xl">{project.title}</h2>
+                  <h2 className="mt-2 break-words font-display text-2xl font-bold tracking-tight text-fg sm:text-3xl">{project.title}</h2>
                   {project.tagline && <p className="mt-1 text-muted">{project.tagline}</p>}
                 </header>
 

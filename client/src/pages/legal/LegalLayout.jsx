@@ -20,7 +20,7 @@ const LegalLayout = ({ eyebrow, title, accent, updated, outline, children }) => 
           <header className="mb-10 border-b border-ink/[0.08] pb-8">
             <p className="mb-3 font-ui text-sm font-semibold text-fg-3">{eyebrow}</p>
             <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
-              {title} <span className="text-brand">{accent}</span>
+              {title} {accent}
             </h1>
             <p className="mt-4 text-sm text-muted">{updated}</p>
           </header>

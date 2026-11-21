@@ -19,7 +19,7 @@ const SuiteSection = () => {
   return (
     <section aria-labelledby="home-suite-heading" className="border-t border-ink/[0.1] pt-16 text-left">
       <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">What is inside</p>
-      <h2 id="home-suite-heading" className="mt-3 max-w-3xl font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+      <h2 id="home-suite-heading" className="mt-3 max-w-3xl font-display text-4xl font-bold leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
         One place. All linked to your plan.
       </h2>
       <ul className="mt-8 border-t border-ink/[0.1]">
@@ -30,7 +30,7 @@ const SuiteSection = () => {
               className="group grid grid-cols-[44px_1fr_auto] items-center gap-x-4 gap-y-1 py-5 transition-colors hover:bg-ink/[0.02] sm:grid-cols-[44px_200px_1fr_150px_24px] sm:gap-x-5 sm:py-6"
             >
               <span aria-hidden="true" className="row-span-2 flex h-11 w-11 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-2xl text-brand sm:row-span-1">{line.icon}</span>
-              <span className="font-display text-xl font-extrabold tracking-tight text-fg sm:text-2xl">{line.title}</span>
+              <span className="font-display text-xl font-bold tracking-tight text-fg sm:text-2xl">{line.title}</span>
               <ArrowRight aria-hidden="true" className="justify-self-end text-brand transition-transform duration-150 group-hover:translate-x-1 sm:order-last" />
               <span className="col-start-2 text-sm leading-relaxed text-muted sm:col-start-auto sm:text-base">{line.text}</span>
               <span className="col-start-2 font-code text-sm text-fg-3 sm:col-start-auto sm:text-right">{line.note}</span>

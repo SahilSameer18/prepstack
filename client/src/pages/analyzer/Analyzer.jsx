@@ -17,7 +17,7 @@ const MAX_PDF = 3 * 1024 * 1024; // same limit as the server
 const input = "w-full rounded-xl border border-ink/[0.1] bg-card px-4 py-3 text-sm text-fg outline-none transition-colors placeholder:text-faint hover:border-ink/[0.2] focus:border-brand focus:ring-1 focus:ring-brand";
 
 const Step = ({ n, children }) => (
-  <div className="mb-3 flex items-center gap-3 font-display text-lg font-extrabold tracking-tight text-fg">
+  <div className="mb-3 flex items-center gap-3 font-display text-lg font-bold tracking-tight text-fg">
     <span aria-hidden="true" className="flex h-7 w-7 items-center justify-center rounded-full bg-brand/12 text-sm text-brand">{n}</span>
     {children}
   </div>
@@ -173,14 +173,14 @@ const Analyzer = () => {
         {/* Recent reports */}
         {recent.length > 0 && (
           <section className="mt-12">
-            <h2 className="mb-5 font-display text-2xl font-extrabold tracking-tight">Your recent reports</h2>
+            <h2 className="mb-5 font-display text-2xl font-bold tracking-tight">Your recent reports</h2>
             <ul className="surface-card divide-y divide-ink/[0.08]">
               {recent.map((r) => (
                 <li key={r._id} className="flex items-stretch transition-colors hover:bg-ink/[0.02]">
                   <Link to={`/analyzer/${r._id}`} className="group flex min-w-0 flex-1 items-center gap-5 p-5">
-                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-4 border-brand font-display text-lg font-extrabold text-fg">{r.score}</span>
+                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-4 border-brand font-display text-lg font-bold text-fg">{r.score}</span>
                     <span className="min-w-0 flex-1">
-                      <span className="block break-words font-display text-lg font-extrabold tracking-tight text-fg">{formatTitle(r.title)}</span>
+                      <span className="block break-words font-display text-lg font-bold tracking-tight text-fg">{formatTitle(r.title)}</span>
                       <span className="block text-sm text-muted">{formatDate(r.createdAt)} &middot; {r.days}-day plan</span>
                     </span>
                     <ArrowRight aria-hidden="true" className="shrink-0 text-lg text-muted transition-transform duration-150 group-hover:translate-x-1" />

@@ -14,7 +14,7 @@ const AnalyzerShowcase = () => (
   <section aria-labelledby="home-analyzer-heading" className="grid items-center gap-12 border-t border-ink/[0.1] pt-16 text-left lg:grid-cols-[1fr_520px] lg:gap-16">
     <div>
       <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">Role Analyzer</p>
-      <h2 id="home-analyzer-heading" className="mt-3 font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+      <h2 id="home-analyzer-heading" className="mt-3 font-display text-4xl font-bold leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
         Does your resume prove what the job asks?
       </h2>
       <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">

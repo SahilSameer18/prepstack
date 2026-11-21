@@ -5,7 +5,7 @@ export default function StudyToday({ today, onStart }) {
   const label = today.isToday ? "Today" : formatPlanDate(today.date);
   return (
     <section aria-label="Today" className="mx-auto max-w-2xl space-y-5">
-      <h2 className="font-display text-3xl font-extrabold tracking-tight text-fg">
+      <h2 className="font-display text-3xl font-bold tracking-tight text-fg">
         {label}: {today.items.length} tasks, {formatPlanMinutes(today.minutes)}
       </h2>
       <button

@@ -24,7 +24,7 @@ const PrivacyPolicy = () => {
     >
         {/* Section 1 */}
         <section id="s1" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">1.</span> Overview & Purpose
           </h2>
           <p>
@@ -37,12 +37,12 @@ const PrivacyPolicy = () => {
 
         {/* Section 2 */}
         <section id="s2" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">2.</span> Information We Collect
           </h2>
           <div className="grid sm:grid-cols-2 gap-4 pt-2">
             <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2">
-              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+              <div className="flex items-center gap-2 font-display text-base font-bold tracking-tight text-fg">
                 <UserCheck className="text-brand" /> Account Details
               </div>
               <p className="text-sm text-muted">
@@ -50,7 +50,7 @@ const PrivacyPolicy = () => {
               </p>
             </div>
             <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2">
-              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+              <div className="flex items-center gap-2 font-display text-base font-bold tracking-tight text-fg">
                 <Database className="text-brand" /> Practice & Learning Progress
               </div>
               <p className="text-sm text-muted">
@@ -58,7 +58,7 @@ const PrivacyPolicy = () => {
               </p>
             </div>
             <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2 sm:col-span-2">
-              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+              <div className="flex items-center gap-2 font-display text-base font-bold tracking-tight text-fg">
                 <ShieldCheck className="text-brand" /> Devices & active sessions
               </div>
               <p className="text-sm text-muted">
@@ -66,7 +66,7 @@ const PrivacyPolicy = () => {
               </p>
             </div>
             <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2">
-              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+              <div className="flex items-center gap-2 font-display text-base font-bold tracking-tight text-fg">
                 <Lock className="text-brand" /> Your Problem Notes
               </div>
               <p className="text-sm text-muted">
@@ -74,7 +74,7 @@ const PrivacyPolicy = () => {
               </p>
             </div>
             <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2">
-              <div className="flex items-center gap-2 font-display text-base font-extrabold tracking-tight text-fg">
+              <div className="flex items-center gap-2 font-display text-base font-bold tracking-tight text-fg">
                 <Database className="text-brand" /> Server Logs
               </div>
               <p className="text-sm text-muted">
@@ -86,7 +86,7 @@ const PrivacyPolicy = () => {
 
         {/* Section 3 */}
         <section id="s3" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">3.</span> How Your Data is Used
           </h2>
           <ul className="list-disc pl-5 space-y-2 text-muted">
@@ -103,7 +103,7 @@ const PrivacyPolicy = () => {
 
         {/* Section 4 */}
         <section id="s4" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">4.</span> Cookies & Browser Storage
           </h2>
           <p>
@@ -119,7 +119,7 @@ const PrivacyPolicy = () => {
 
         {/* Section 5 */}
         <section id="s5" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">5.</span> Security Architecture
           </h2>
           <p>
@@ -139,7 +139,7 @@ const PrivacyPolicy = () => {
 
         {/* Section 6 */}
         <section id="s6" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">6.</span> Third-Party Service Providers
           </h2>
           <p>
@@ -162,7 +162,7 @@ const PrivacyPolicy = () => {
 
         {/* Section 7 */}
         <section id="s7" className="scroll-mt-24 space-y-3">
-          <h2 className="flex items-baseline gap-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+          <h2 className="flex items-baseline gap-2 font-display text-2xl font-bold tracking-tight text-fg">
             <span className="font-ui text-lg text-brand">7.</span> Your Rights & Self-Service Account Erasure (GDPR Article 17)
           </h2>
           <p>
@@ -178,7 +178,7 @@ const PrivacyPolicy = () => {
 
         {/* Contact */}
         <section id="contact" className="surface-card scroll-mt-24 p-6">
-          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg mb-2">Questions or Privacy Requests?</h2>
+          <h2 className="font-display text-2xl font-bold tracking-tight text-fg mb-2">Questions or Privacy Requests?</h2>
           <p className="text-muted mb-3">
             If you have any questions about this policy or your account data, please reach out directly:
           </p>

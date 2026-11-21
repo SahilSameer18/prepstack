@@ -57,7 +57,7 @@ const LEGACY_BLOCKS = [
 
 const LegacyTopic = ({ topic }) => (
   <section className="mb-12">
-    <h2 className="text-2xl font-display font-extrabold tracking-tight text-fg mb-5 text-left">{topic.name}</h2>
+    <h2 className="text-2xl font-display font-bold tracking-tight text-fg mb-5 text-left">{topic.name}</h2>
     {LEGACY_BLOCKS.map(([field, title, icon, colorClass, bgClass, borderClass]) => (
       <SectionBlock key={field} title={title} items={topic[field]} icon={icon} colorClass={colorClass} bgClass={bgClass} borderClass={borderClass} />
     ))}

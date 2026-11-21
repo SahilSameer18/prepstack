@@ -43,7 +43,7 @@ class ErrorBoundary extends React.Component {
             <WarningCircle weight="duotone" aria-hidden="true" />
           </span>
           <h1 className="mt-7 font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg">
-            Something went <span className="text-brand">wrong.</span>
+            Something went wrong.
           </h1>
           <p className="mx-auto mt-4 max-w-sm text-base leading-relaxed text-muted">
             Something unexpected broke on this page. Reloading usually fixes it. If it does not, go back to the home page.

@@ -11,14 +11,14 @@ const STEPS = [
 const HowItWorks = () => (
   <section aria-labelledby="home-how-heading" className="pt-2 text-left">
     <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">How it works</p>
-    <h2 id="home-how-heading" className="mt-3 max-w-3xl font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
+    <h2 id="home-how-heading" className="mt-3 max-w-3xl font-display text-4xl font-bold leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
       Three steps. Then just show up.
     </h2>
     <ol className="mt-10 grid divide-y divide-ink/[0.1] lg:grid-cols-3 lg:divide-x lg:divide-y-0">
       {STEPS.map((step) => (
         <li key={step.n} className="py-7 lg:px-7 lg:py-2 lg:first:pl-0 lg:last:pr-0">
           <span className="font-code text-sm text-brand">{step.n}</span>
-          <p className="mt-3 font-display text-2xl font-extrabold tracking-tight text-fg">{step.title}</p>
+          <p className="mt-3 font-display text-2xl font-bold tracking-tight text-fg">{step.title}</p>
           <p className="mt-2 leading-relaxed text-muted">{step.text}</p>
         </li>
       ))}

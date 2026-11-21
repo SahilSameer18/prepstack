@@ -113,7 +113,7 @@ const ProjectDash = () => {
               <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-bad-solid/25 bg-bad-solid/10 text-2xl text-bad">
                 <Trash weight="duotone" aria-hidden="true" />
               </span>
-              <h3 className="mb-2 font-display text-2xl font-extrabold tracking-tight text-fg">
+              <h3 className="mb-2 font-display text-2xl font-bold tracking-tight text-fg">
                 Delete this project idea?
               </h3>
               <p className="mb-6 text-sm leading-relaxed text-muted">
@@ -162,7 +162,7 @@ const ProjectDash = () => {
       <section className="text-left">
         {/* Header */}
         <div className="mb-5 flex items-end justify-between gap-4">
-          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Project ideas</h2>
+          <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Project ideas</h2>
           <Link to="/ai-projects" className="group inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">
             <Plus aria-hidden="true" /> Generate idea
           </Link>
@@ -245,7 +245,7 @@ const ProjectDash = () => {
                       </span>
                     </div>
 
-                    <h3 className="mt-4 font-display text-xl font-extrabold leading-snug tracking-tight text-fg">
+                    <h3 className="mt-4 font-display text-xl font-bold leading-snug tracking-tight text-fg">
                       <Link to={`/ai-projects/${project._id}`} className="after:absolute after:inset-0 after:rounded-2xl">
                         {project.title}
                       </Link>

@@ -42,7 +42,7 @@ function SavedPlanResult({ plan }) {
 
   return (
     <section aria-label="Saved plan" className="surface-card fade-in mt-10 border-brand/30 p-5 sm:p-7">
-      <h2 className="font-display text-3xl font-extrabold tracking-tight text-fg">Your saved plan</h2>
+      <h2 className="font-display text-3xl font-bold tracking-tight text-fg">Your saved plan</h2>
       <p role="status" className="mb-5 mt-2 text-sm text-muted">
         {plan.title} · {plan.startDate} to {plan.deadline}. All weeks are saved to your account.
       </p>
@@ -77,7 +77,7 @@ export default function MyPlan() {
         <Reveal as="header" onLoad className="mb-10 max-w-2xl">
           <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl lg:text-6xl">
             Your goal. Your hours.<br />
-            <span className="text-brand">One workable plan.</span>
+            One workable plan.
           </h1>
           <p className="mt-5 text-base leading-relaxed text-muted">
             Build a free study plan for placements, a role switch or big-tech interviews.
@@ -129,7 +129,7 @@ export default function MyPlan() {
 
           <Reveal as="aside" onLoad delay={0.16} className="space-y-6 lg:sticky lg:top-24" aria-label="Plan preview">
             <div className="surface-card p-5 sm:p-7">
-              <h2 className="mb-5 font-display text-2xl font-extrabold tracking-tight text-fg">See what fits</h2>
+              <h2 className="mb-5 font-display text-2xl font-bold tracking-tight text-fg">See what fits</h2>
               <PlanPreview builder={builder} />
 
               <div className="mt-6 space-y-3 border-t border-ink/[0.1] pt-5">

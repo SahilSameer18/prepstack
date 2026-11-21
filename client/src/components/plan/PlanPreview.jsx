@@ -163,7 +163,7 @@ export default function PlanPreview({ builder }) {
         </p>
       )}
       <div>
-        <h3 className="mb-3 font-display text-lg font-extrabold tracking-tight text-fg">Your first week</h3>
+        <h3 className="mb-3 font-display text-lg font-bold tracking-tight text-fg">Your first week</h3>
         {week1.items.length ? (
           <PlanChecklist readOnly days={planDays(week1.items)} />
         ) : (

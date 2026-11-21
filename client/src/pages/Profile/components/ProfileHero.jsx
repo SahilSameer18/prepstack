@@ -55,7 +55,7 @@ const ProfileHero = ({ user, avatarUrl }) => {
         </div>
 
         <div className="min-w-0 flex-1 text-center sm:text-left">
-          <p className="truncate font-display text-2xl font-extrabold tracking-tight text-fg sm:text-3xl">{user.username}</p>
+          <p className="truncate font-display text-2xl font-bold tracking-tight text-fg sm:text-3xl">{user.username}</p>
           <p className="mt-1 flex flex-col gap-x-5 gap-y-1 font-ui text-sm text-muted sm:flex-row sm:flex-wrap">
             <span className="min-w-0 break-all">{user.email}</span>
             <span className="inline-flex items-center justify-center gap-1.5 sm:justify-start">

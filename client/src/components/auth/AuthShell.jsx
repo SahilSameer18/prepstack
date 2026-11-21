@@ -37,7 +37,7 @@ export const Item = ({ children, className }) => {
 };
 
 export const Logo = ({ className = "text-2xl" }) => (
-  <Link to="/" className={`${className} w-fit font-display font-extrabold tracking-tight text-fg`}>
+  <Link to="/" className={`${className} w-fit font-display font-bold tracking-tight text-fg`}>
     Prep<span className="text-brand">Stack</span>
   </Link>
 );

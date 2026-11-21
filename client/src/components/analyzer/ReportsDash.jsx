@@ -19,7 +19,7 @@ const ReportsDash = ({ reports, onDelete }) => {
   return (
     <div className="text-left">
       <div className="mb-5 flex items-end justify-between gap-4">
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Role reports</h2>
+        <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Role reports</h2>
         <Link to="/analyzer" className="group inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">
           New report <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
         </Link>
@@ -28,9 +28,9 @@ const ReportsDash = ({ reports, onDelete }) => {
         {reports.map((r) => (
           <li key={r._id} className="flex items-stretch transition-colors hover:bg-ink/[0.02]">
             <Link to={`/analyzer/${r._id}`} className="group flex min-w-0 flex-1 items-center gap-5 p-5">
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-4 border-brand font-display text-lg font-extrabold text-fg">{r.score}</span>
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-4 border-brand font-display text-lg font-bold text-fg">{r.score}</span>
               <span className="min-w-0 flex-1">
-                <span className="block break-words font-display text-lg font-extrabold tracking-tight text-fg">{formatTitle(r.title)}</span>
+                <span className="block break-words font-display text-lg font-bold tracking-tight text-fg">{formatTitle(r.title)}</span>
                 <span className="block text-sm text-muted">{formatDate(r.createdAt)} &middot; {r.days}-day plan</span>
               </span>
               <ArrowRight aria-hidden="true" className="shrink-0 text-lg text-muted transition-transform duration-150 group-hover:translate-x-1" />

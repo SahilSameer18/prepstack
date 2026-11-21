@@ -8,7 +8,7 @@ import { formatDate } from "../../utils/formatDate";
 const DSADash = ({ dsaData, loading }) => (
   <section className="text-left">
     <div className="mb-5 mt-12 flex items-end justify-between gap-4">
-      <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Your sheets</h2>
+      <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Your sheets</h2>
       <Link to="/dsa" className="group inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">
         All sheets <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
       </Link>
@@ -21,7 +21,7 @@ const DSADash = ({ dsaData, loading }) => (
             const pct = total === 0 ? 0 : Math.round((solved / total) * 100);
             return (
               <Link key={sheet.slug} to={`/dsa/${sheet.slug}`} className="surface-card surface-card-link block p-6">
-                <h3 className="font-display text-lg font-extrabold tracking-tight text-fg">{sheet.name}</h3>
+                <h3 className="font-display text-lg font-bold tracking-tight text-fg">{sheet.name}</h3>
                 <div
                   className="mt-5 h-1.5 overflow-hidden rounded-full bg-ink/[0.08]"
                   role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`Progress on ${sheet.name}`}

@@ -31,7 +31,7 @@ const PlanChecklist = ({
             {d.label || `DAY ${d.day}`}
             {isToday && <span className="ml-2 text-fg-3">Today</span>}
           </p>
-          <p className="font-display text-lg font-extrabold tracking-tight text-fg">{d.focus}</p>
+          <p className="font-display text-lg font-bold tracking-tight text-fg">{d.focus}</p>
           <ul className="mt-2 divide-y divide-ink/[0.08] rounded-xl border border-ink/[0.08] bg-card">
             {(d.items || []).map((it, pos) => {
               const index = it.index ?? pos;

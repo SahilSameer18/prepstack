@@ -27,7 +27,7 @@ const Quiz = ({ quiz, onComplete, disabled = false }) => {
         const answered = chosen !== null;
         return (
           <div key={q.question} className="space-y-2.5">
-            <p className="font-display text-lg font-extrabold leading-snug tracking-tight text-fg">{i + 1}. {q.question}</p>
+            <p className="font-display text-lg font-bold leading-snug tracking-tight text-fg">{i + 1}. {q.question}</p>
             <div className="grid gap-2">
               {q.options.map((option, o) => {
                 const isRight = answered && o === q.answer;
@@ -73,7 +73,7 @@ const Quiz = ({ quiz, onComplete, disabled = false }) => {
         <div className="surface-card fade-in flex flex-wrap items-center justify-between gap-4 border-brand/25 p-5">
           <div className="flex items-center gap-4">
             <ProgressRing size={84} percentage={Math.round((score.correct / score.total) * 100)} solved={score.correct} total={score.total} />
-            <p className="font-display text-lg font-extrabold tracking-tight text-fg">You got {score.correct} of {score.total} right.</p>
+            <p className="font-display text-lg font-bold tracking-tight text-fg">You got {score.correct} of {score.total} right.</p>
           </div>
           <button
             type="button"
