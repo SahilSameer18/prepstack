@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, CalendarBlank } from "@phosphor-icons/react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import HeroProductShowcase from "./HeroProductShowcase";
@@ -42,7 +42,6 @@ const HeroSection = () => {
                 className="titanium-button inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-xs sm:text-sm font-medium cursor-pointer select-none"
               >
                 Dashboard
-                <span className="kbd-capsule">G &rarr; D</span>
               </Link>
             ) : (
               <Link
@@ -74,14 +73,6 @@ const HeroSection = () => {
             </p>
             <p className="pl-4 text-brand-grad-hover-top">level++;</p>
             <p className="text-brand-grad-top opacity-60">{"}"}</p>
-          </Reveal>
-          <Reveal onLoad spring y={-14} delay={0.7} className="hidden xl:block absolute -top-7 -right-5 w-56 rounded-2xl border border-ink/[0.1] bg-card p-4 shadow-[0_2px_4px_color-mix(in_srgb,var(--shadow)_18%,transparent),0_28px_50px_-18px_color-mix(in_srgb,var(--shadow)_75%,transparent)]">
-            <div className="flex items-center justify-between text-xs text-muted">
-              <span className="flex items-center gap-1.5 font-semibold text-fg-3"><CalendarBlank className="text-brand" /> Today</span>
-              <span className="rounded-md bg-ink/[0.06] px-1.5 py-0.5">Example</span>
-            </div>
-            <p className="mt-2 font-display text-sm font-bold text-fg">3 tasks, about 1 h 20 min</p>
-            <span className="amber-specular-button pulse-once mt-3 flex items-center justify-center rounded-lg py-2 text-xs font-bold">Start</span>
           </Reveal>
         </div>
       </div>

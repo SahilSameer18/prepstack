@@ -1,22 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { User, GraduationCap, Code, Briefcase, Rocket, Trophy, Compass, DownloadSimple, ArrowRight, Check, X, ArrowUpRight } from "@phosphor-icons/react";
+import { DownloadSimple, ArrowRight, Check, X, ArrowUpRight } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import { InlineSpinner } from "../components/ui/Skeletons";
 import Accordion from "../components/ui/Accordion";
 import PageBackdrop from "../components/ui/PageBackdrop";
 import { useActiveHeading } from "../hooks/useActiveHeading";
 import { sections, basics, roleVariants, exampleResume, goodHabits, commonProblems, tools } from "../data/resumeGuide";
-
-// One icon per section card (the text itself is in data/resumeGuide.js)
-const SECTION_ICON = {
-  contact: <User weight="duotone" aria-hidden="true" />,
-  education: <GraduationCap weight="duotone" aria-hidden="true" />,
-  skills: <Code weight="duotone" aria-hidden="true" />,
-  experience: <Briefcase weight="duotone" aria-hidden="true" />,
-  projects: <Rocket weight="duotone" aria-hidden="true" />,
-  honors: <Trophy weight="duotone" aria-hidden="true" />,
-};
 
 const OUTLINE = [
   { id: "basics", label: "Before you write" },
@@ -27,10 +17,8 @@ const OUTLINE = [
   { id: "tools", label: "Tools you can use" },
 ];
 
-const CARD = "surface-card";
-
 const Label = ({ children, className = "text-brand" }) => (
-  <p className={`mb-2 font-ui text-sm font-bold ${className}`}>{children}</p>
+  <p className={`mb-3 font-code text-xs uppercase tracking-[0.14em] ${className}`}>{children}</p>
 );
 
 const Example = ({ text }) => (
@@ -39,14 +27,14 @@ const Example = ({ text }) => (
 
 const SectionHeading = ({ id, title, text }) => (
   <>
-    <h2 id={id} className="scroll-mt-24 font-display text-2xl font-extrabold tracking-tight text-fg sm:text-3xl">{title}</h2>
-    {text && <p className="mb-6 mt-1.5 text-sm leading-relaxed text-muted">{text}</p>}
+    <h2 id={id} className="scroll-mt-24 font-display text-2xl font-bold tracking-tight text-fg sm:text-3xl">{title}</h2>
+    {text && <p className="mb-6 mt-2 text-base leading-relaxed text-muted">{text}</p>}
   </>
 );
 
 const SectionCard = ({ section }) => (
-  <Accordion title={section.title} icon={SECTION_ICON[section.id]}>
-    <div className="rounded-xl border border-brand/20 bg-brand/[0.05] p-4">
+  <Accordion flat title={section.title}>
+    <div className="rounded-xl bg-brand/[0.07] p-4">
       <Label>What recruiters often look for</Label>
       <p className="text-sm leading-relaxed text-fg-3">{section.recruiterScan}</p>
     </div>
@@ -65,11 +53,11 @@ const SectionCard = ({ section }) => (
       <div className="space-y-4">
         {section.beforeAfter.map((pair) => (
           <div key={pair.weak} className="space-y-2">
-            <div className="rounded-xl border border-bad-solid/15 bg-bad-solid/[0.04] p-3">
+            <div className="rounded-xl bg-bad-solid/[0.05] p-3">
               <p className="mb-1 font-ui text-xs font-semibold text-bad">Weak</p>
               <p className="whitespace-pre-wrap text-sm text-fg-3">{pair.weak}</p>
             </div>
-            <div className="rounded-xl border border-ok-solid/15 bg-ok-solid/[0.04] p-3">
+            <div className="rounded-xl bg-ok-solid/[0.05] p-3">
               <p className="mb-1 font-ui text-xs font-semibold text-ok">Strong</p>
               <p className="whitespace-pre-wrap text-sm text-fg-2">{pair.strong}</p>
             </div>
@@ -104,7 +92,7 @@ const SectionCard = ({ section }) => (
 );
 
 const BasicCard = ({ item }) => (
-  <Accordion title={item.title}>
+  <Accordion flat title={item.title}>
     {item.paragraphs.map((p) => (
       <p key={p} className="text-sm leading-relaxed text-fg-3">{p}</p>
     ))}
@@ -167,20 +155,20 @@ const Resume = () => {
           {/* Header */}
           <div className="mb-10 pt-2">
             <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl lg:text-6xl">
-              Resume guide for <span className="text-brand">software roles.</span>
+              Resume guide for software roles.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">
               A step-by-step guide to a clear resume for a software job or internship, with weak and strong examples for every section. It is advice, not a promise of results.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Link to="/analyzer" className="amber-specular-button inline-flex min-h-[44px] items-center gap-2 rounded-xl px-5 text-sm font-bold">
+              <Link to="/analyzer" className="amber-specular-button inline-flex min-h-[48px] items-center gap-2 rounded-xl px-6 text-sm font-bold">
                 Check your resume with the Role Analyzer <ArrowRight aria-hidden="true" />
               </Link>
               <button
                 type="button"
                 onClick={downloadChecklist}
                 disabled={downloading}
-                className="titanium-button inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl px-4 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex min-h-[48px] cursor-pointer items-center gap-2 rounded-xl border border-ink/[0.14] px-5 text-sm font-semibold text-fg transition-colors hover:bg-ink/[0.04] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {downloading ? <InlineSpinner size={14} color="currentColor" /> : <DownloadSimple aria-hidden="true" />} {downloading ? "Preparing..." : "One-page checklist (PDF)"}
               </button>
@@ -188,22 +176,17 @@ const Resume = () => {
           </div>
 
           {/* Principle */}
-          <div className={`${CARD} mb-14 flex items-start gap-4 p-5 sm:p-6`}>
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-xl text-brand">
-              <Compass weight="duotone" aria-hidden="true" />
-            </span>
-            <div>
-              <p className="mb-1 font-display text-base font-extrabold tracking-tight text-fg">One idea to keep in mind</p>
-              <p className="text-sm leading-relaxed text-fg-3">
-                Your resume is a short proof of what you can do, not your life story. Each line should show something you built or changed, using tools you can explain.
-              </p>
-            </div>
+          <div className="mb-14 rounded-2xl bg-brand/[0.07] p-6 sm:p-8">
+            <p className="mb-2 font-ui text-sm font-semibold text-brand">One idea to keep in mind</p>
+            <p className="max-w-2xl text-lg leading-relaxed text-fg-2">
+              Your resume is a short proof of what you can do, not your life story. Each line should show something you built or changed, using tools you can explain.
+            </p>
           </div>
 
           {/* Basics */}
           <div className="mb-14">
             <SectionHeading id="basics" title="Before you write" text="Five short rules that apply to the whole resume." />
-            <div className="space-y-3">
+            <div className="border-t border-ink">
               {basics.map((item) => <BasicCard key={item.id} item={item} />)}
             </div>
           </div>
@@ -211,7 +194,7 @@ const Resume = () => {
           {/* Section-by-section guide */}
           <div className="mb-14">
             <SectionHeading id="sections" title="Section by section" text="Open a section for tips, weak and strong examples, and common mistakes." />
-            <div className="space-y-3">
+            <div className="border-t border-ink">
               {sections.map((s) => <SectionCard key={s.id} section={s} />)}
             </div>
           </div>
@@ -219,10 +202,10 @@ const Resume = () => {
           {/* Role variants */}
           <div className="mb-14">
             <SectionHeading id="roles" title="If you are aiming for a specific role" text="The same resume, with a different focus." />
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
               {roleVariants.map((v) => (
-                <div key={v.role} className={`${CARD} p-5`}>
-                  <h3 className="mb-3 font-display text-lg font-extrabold tracking-tight text-fg">{v.role}</h3>
+                <div key={v.role} className="border-t border-ink pt-5">
+                  <h3 className="mb-3 font-display text-lg font-bold tracking-tight text-fg">{v.role}</h3>
                   <p className="mb-1 font-ui text-xs font-bold text-brand">Skills section</p>
                   <p className="mb-3 text-sm leading-relaxed text-fg-3">{v.skills}</p>
                   <p className="mb-1 font-ui text-xs font-bold text-brand">Projects</p>
@@ -235,7 +218,7 @@ const Resume = () => {
           {/* Example resume */}
           <div className="mb-14">
             <SectionHeading id="example" title="A complete example" text="This resume is fictional. The name, college, company and numbers are all invented." />
-            <Accordion title="Show the example resume">
+            <Accordion flat title="Show the example resume">
               <Example text={exampleResume} />
             </Accordion>
           </div>
@@ -243,9 +226,9 @@ const Resume = () => {
           {/* Good habits and common problems */}
           <div className="mb-14">
             <SectionHeading id="habits" title="Good habits and common problems" />
-            <div className="mt-6 grid gap-5 md:grid-cols-2">
-              <div className={`${CARD} p-6`}>
-                <h3 className="mb-4 flex items-center gap-2 font-display text-lg font-extrabold tracking-tight text-ok"><Check weight="bold" className="text-base" aria-hidden="true" /> Good habits</h3>
+            <div className="mt-6 grid gap-x-12 gap-y-10 md:grid-cols-2">
+              <div className="border-t border-ink pt-5">
+                <h3 className="mb-4 flex items-center gap-2 font-display text-lg font-bold tracking-tight text-ok"><Check weight="bold" className="text-base" aria-hidden="true" /> Good habits</h3>
                 <ul className="space-y-3">
                   {goodHabits.map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-fg-3">
@@ -255,8 +238,8 @@ const Resume = () => {
                   ))}
                 </ul>
               </div>
-              <div className={`${CARD} p-6`}>
-                <h3 className="mb-4 flex items-center gap-2 font-display text-lg font-extrabold tracking-tight text-bad"><X weight="bold" className="text-base" aria-hidden="true" /> Common problems</h3>
+              <div className="border-t border-ink pt-5">
+                <h3 className="mb-4 flex items-center gap-2 font-display text-lg font-bold tracking-tight text-bad"><X weight="bold" className="text-base" aria-hidden="true" /> Common problems</h3>
                 <ul className="space-y-3">
                   {commonProblems.map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-fg-3">
@@ -270,20 +253,20 @@ const Resume = () => {
           </div>
 
           {/* Tools */}
-          <div className={`${CARD} p-6 sm:p-8`}>
-            <h2 id="tools" className="scroll-mt-24 font-display text-2xl font-extrabold tracking-tight text-fg">Tools you can use</h2>
-            <p className="mb-6 mt-1.5 text-sm text-muted">Two options, not endorsements. Whichever you use, open the exported PDF and check it yourself.</p>
-            <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <h2 id="tools" className="scroll-mt-24 font-display text-2xl font-bold tracking-tight text-fg sm:text-3xl">Tools you can use</h2>
+            <p className="mb-6 mt-2 text-base text-muted">Two options, not endorsements. Whichever you use, open the exported PDF and check it yourself.</p>
+            <div className="border-t border-ink">
               {tools.map((tool) => (
                 <a
                   key={tool.name}
                   href={tool.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-4 transition-colors hover:border-ink/[0.22]"
+                  className="group block border-b border-ink/[0.1] py-5 transition-colors hover:bg-ink/[0.02]"
                 >
                   <div className="mb-1 flex items-center justify-between">
-                    <span className="font-display text-sm font-bold text-fg transition-colors group-hover:text-brand">{tool.name}</span>
+                    <span className="font-display text-lg font-bold text-fg transition-colors group-hover:text-brand">{tool.name}</span>
                     <ArrowUpRight className="text-sm text-muted transition-colors group-hover:text-brand" aria-hidden="true" />
                   </div>
                   <p className="text-sm leading-relaxed text-muted">{tool.desc}</p>

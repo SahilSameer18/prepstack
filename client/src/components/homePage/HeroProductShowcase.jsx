@@ -1,396 +1,232 @@
 import React, { useState } from "react";
-import { ArrowRight, Check, CheckCircle, Code, Cpu, Database, Play, Shield, Stack, Terminal } from "@phosphor-icons/react";
+import { ArrowRight, Check } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import homeFacts from "../../data/homeFacts.json";
 
-const INITIAL_DEMO_PROBLEMS = [
-  { id: 1, title: "Two Sum", category: "Arrays & Hashing", time: "O(n)", diff: "Easy", solved: true },
-  { id: 2, title: "LRU Cache", category: "Linked List + Map", time: "O(1)", diff: "Medium", solved: true },
-  { id: 3, title: "Trapping Rain Water", category: "Two Pointers", time: "O(n)", diff: "Hard", solved: false },
+// An interactive example of the planner, in three steps: what fits in your hours, what today looks like, and what happens when you miss a day.
+// Everything here is arithmetic on a made-up example, shown on screen; it is not the real planner and says so.
+const PROBLEMS = homeFacts.perSheet["blind-75"]; // the real size of the Blind 75 sheet
+const MINUTES_PER_PROBLEM = 40; // assumption
+const STUDY_DAYS_PER_WEEK = 5; // assumption
+const WEEK_CHOICES = [4, 6, 8];
+const HOUR_CHOICES = [1, 2, 3];
+
+const TASKS = [
+  { id: 1, title: "Two Sum", kind: "DSA problem", minutes: 20 },
+  { id: 2, title: "ACID properties", kind: "CS notes", minutes: 25 },
+  { id: 3, title: "Review: Binary Search", kind: "Review", minutes: 15 },
 ];
+
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+const TASKS_PER_DAY = 3;
 
 const TABS = [
-  { id: 0, name: "DSA Tracker", icon: <Code className="text-xs" />, file: "Blind75.tracker.ts" },
-  { id: 1, name: "CS Internals", icon: <Database className="text-xs" />, file: "OS_Memory.spec.md" },
-  { id: 2, name: "System Spec", icon: <Cpu className="text-xs" />, file: "RateLimiter.arch.yaml" },
+  { id: 0, name: "Your hours" },
+  { id: 1, name: "Today" },
+  { id: 2, name: "Missed days" },
 ];
+
+const hoursText = (minutes) => {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return h > 0 ? `${h} h${m ? ` ${m} min` : ""}` : `${m} min`;
+};
+
+const Choice = ({ on, onClick, children, label }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    aria-pressed={on}
+    aria-label={label}
+    className={`min-h-[44px] flex-1 cursor-pointer rounded-lg px-3 font-code text-sm transition-colors sm:min-h-[40px] ${on ? "border border-brand/45 bg-brand/15 font-semibold text-brand" : "border border-ink/[0.2] bg-card text-fg-3 hover:border-ink/[0.4] hover:text-fg"}`}
+  >
+    {children}
+  </button>
+);
+
+const HoursTab = () => {
+  const [weeks, setWeeks] = useState(6);
+  const [hours, setHours] = useState(1);
+  const neededHours = (PROBLEMS * MINUTES_PER_PROBLEM) / 60;
+  const haveHours = weeks * STUDY_DAYS_PER_WEEK * hours;
+  const fits = haveHours >= neededHours;
+  const fitCount = Math.min(PROBLEMS, Math.floor((haveHours * 60) / MINUTES_PER_PROBLEM));
+  const pct = Math.min(100, Math.round((haveHours / neededHours) * 100));
+
+  return (
+    <div className="space-y-5">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <p className="mb-2 text-sm font-semibold text-fg-3">Weeks until your deadline</p>
+          <div className="flex gap-2">{WEEK_CHOICES.map((w) => <Choice key={w} on={weeks === w} onClick={() => setWeeks(w)} label={`${w} weeks`}>{w}</Choice>)}</div>
+        </div>
+        <div>
+          <p className="mb-2 text-sm font-semibold text-fg-3">Hours a day</p>
+          <div className="flex gap-2">{HOUR_CHOICES.map((h) => <Choice key={h} on={hours === h} onClick={() => setHours(h)} label={`${h} hours a day`}>{h}</Choice>)}</div>
+        </div>
+      </div>
+
+      <div aria-live="polite">
+        <p className={`font-display text-xl font-bold tracking-tight sm:text-2xl ${fits ? "text-ok" : "text-fg"}`}>
+          {fits ? `It fits: all ${PROBLEMS} problems of Blind 75.` : `About ${fitCount} of ${PROBLEMS} problems fit before your deadline.`}
+        </p>
+        <div
+          className="mt-3 h-2.5 overflow-hidden rounded-full bg-ink/[0.1]"
+          role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="How much of the sheet your hours cover"
+        >
+          <div className="bar-fill h-full w-full rounded-full" style={{ transform: `scaleX(${pct / 100})`, background: "var(--brand-grad-bottom)" }} />
+        </div>
+        <p className="mt-3 font-code text-xs leading-relaxed text-muted">
+          {PROBLEMS} problems × {MINUTES_PER_PROBLEM} min = {neededHours} h needed.<br />
+          {weeks} weeks × {STUDY_DAYS_PER_WEEK} days × {hours} h = {haveHours} h available.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const TodayTab = () => {
+  const [done, setDone] = useState(() => new Set([1]));
+  const toggle = (id) => setDone((prev) => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+  const left = TASKS.filter((t) => !done.has(t.id)).reduce((sum, t) => sum + t.minutes, 0);
+  const total = TASKS.reduce((sum, t) => sum + t.minutes, 0);
+
+  return (
+    <div>
+      <p className="font-display text-xl font-bold tracking-tight text-fg sm:text-2xl">{TASKS.length} tasks, about {hoursText(total)}</p>
+      <ul className="mt-3 divide-y divide-ink/[0.1] border-y border-ink/[0.1]">
+        {TASKS.map((task) => {
+          const isDone = done.has(task.id);
+          return (
+            <li key={task.id}>
+              <button
+                type="button"
+                onClick={() => toggle(task.id)}
+                aria-pressed={isDone}
+                className="group flex min-h-[52px] w-full cursor-pointer items-center gap-4 py-2 text-left"
+              >
+                <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${isDone ? "border-brand bg-brand text-on-brand" : "border-ink/[0.3] bg-card group-hover:border-ink/[0.5]"}`}>
+                  {isDone && <Check weight="bold" aria-hidden="true" className="text-xs" />}
+                </span>
+                <span className={`min-w-0 flex-1 ${isDone ? "text-muted line-through" : "text-fg"}`}>
+                  <span className="block font-medium">{task.title}</span>
+                  <span className="block text-xs text-muted">{task.kind}</span>
+                </span>
+                <span className="font-code text-xs text-muted">{task.minutes} min</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="mt-4 flex items-center justify-between gap-4">
+        <p className="font-code text-xs text-muted" aria-live="polite">{done.size} of {TASKS.length} done · {left > 0 ? `${hoursText(left)} left` : "all done for today"}</p>
+        <span className="amber-specular-button flex min-h-[44px] items-center rounded-xl px-6 text-sm font-bold text-on-brand sm:min-h-[40px]">Start</span>
+      </div>
+    </div>
+  );
+};
+
+const MissedTab = () => {
+  const [missed, setMissed] = useState(() => new Set([2]));
+  const toggle = (i) => setMissed((prev) => { const next = new Set(prev); if (next.has(i)) next.delete(i); else next.add(i); return next; });
+  // the tasks of missed days are spread over the days that are still ahead and not missed
+  const first = missed.size ? Math.min(...missed) : DAYS.length;
+  const ahead = DAYS.map((_, i) => i).filter((i) => i > first && !missed.has(i));
+  const carried = missed.size * TASKS_PER_DAY;
+  const extra = (i) => (ahead.includes(i) ? Math.floor(carried / ahead.length) + (ahead.indexOf(i) < carried % ahead.length ? 1 : 0) : 0);
+  const stuck = missed.size > 0 && ahead.length === 0;
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-fg-3">Tap a day you missed. You see the new schedule before anything changes.</p>
+      <ol className="grid grid-cols-5 gap-2" aria-label="Five study days">
+        {DAYS.map((day, i) => {
+          const isMissed = missed.has(i);
+          const n = isMissed ? 0 : TASKS_PER_DAY + extra(i);
+          return (
+            <li key={day}>
+              <button
+                type="button"
+                onClick={() => toggle(i)}
+                aria-pressed={isMissed}
+                aria-label={`${day}: ${isMissed ? "missed" : `${n} tasks`}. ${isMissed ? "Tap to undo" : "Tap to mark as missed"}`}
+                className={`flex min-h-[88px] w-full cursor-pointer flex-col items-center justify-center rounded-xl border px-1 text-center transition-colors ${isMissed ? "border-dashed border-ink/[0.25] text-muted" : "border-ink/[0.1] text-fg hover:border-ink/[0.3]"}`}
+              >
+                <span className="font-ui text-xs text-muted">{day}</span>
+                <span className={`mt-1 font-code text-2xl ${isMissed ? "line-through" : ""}`}>{isMissed ? TASKS_PER_DAY : n}</span>
+                <span className={`mt-0.5 text-xs ${!isMissed && extra(i) > 0 ? "font-semibold text-brand" : "text-muted"}`}>{isMissed ? "missed" : extra(i) > 0 ? `+${extra(i)} moved` : "tasks"}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+      <p className="text-sm text-muted" aria-live="polite">
+        {missed.size === 0 && "Nothing missed. The plan stays as it is."}
+        {missed.size > 0 && !stuck && `${carried} tasks from the missed ${missed.size === 1 ? "day move" : "days move"} to the days ahead. Nothing changes until you accept.`}
+        {stuck && "No days are left this week, so the plan would show what no longer fits."}
+      </p>
+    </div>
+  );
+};
 
 const HeroProductShowcase = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [demoProblems, setDemoProblems] = useState(INITIAL_DEMO_PROBLEMS);
-  const [isRunningTest, setIsRunningTest] = useState(false);
-  const [testResult, setTestResult] = useState(null);
-  const [concurrencyMode, setConcurrencyMode] = useState("lockless"); // "mutex" | "lockless"
-
-  const toggleDemoProblem = (id) => {
-    setDemoProblems((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, solved: !p.solved } : p))
-    );
-  };
-
-  const runTestBenchmark = () => {
-    setIsRunningTest(true);
-    setTestResult(null);
-    setTimeout(() => {
-      setIsRunningTest(false);
-      setTestResult({
-        runtime: "2ms",
-        runtimePercentile: "98.7%",
-        memory: "41.2 MB",
-        memoryPercentile: "95.1%",
-        casesPassed: "48/48",
-      });
-    }, 450);
-  };
-
-  const solvedCount = demoProblems.filter((p) => p.solved).length;
-  const progressPct = Math.round((solvedCount / demoProblems.length) * 100);
 
   return (
     <div className="surface-card relative w-full overflow-hidden text-left transform-gpu">
-      {/* ── WINDOW CHROME ── */}
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 sm:px-6 py-3.5 border-b border-ink/[0.08] bg-card">
-        {/* Workspace status / file path header */}
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-ink/[0.04] text-muted">
-            <Terminal className="text-xs text-brand" />
-            <span className="text-xs font-ui tracking-wider text-fg-3 font-semibold">Demo</span>
-          </div>
-          <span className="hidden sm:inline-block font-ui text-xs text-muted font-medium">
-            prepstack-workspace / <span className="text-fg-2">{TABS[activeTab].file}</span>
-          </span>
-        </div>
-
-        {/* ── SILKY SEGMENTED CONTROL ── */}
-        <div className="relative flex items-center w-full sm:w-auto overflow-x-auto bg-inset/60 p-1 rounded-xl">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-ink/[0.08] bg-card px-4 py-3.5 sm:px-6">
+        <div className="relative flex w-full items-center overflow-x-auto rounded-xl bg-inset/60 p-1 sm:w-auto" role="tablist" aria-label="Planner demo">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 type="button"
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative z-10 flex flex-1 sm:flex-none items-center justify-center gap-1.5 min-h-[40px] sm:min-h-0 py-1.5 px-2.5 sm:px-3.5 rounded-lg text-xs font-medium transition-colors ${
-                  isActive ? "text-brand" : "text-muted hover:text-fg-2"
-                }`}
+                className={`relative z-10 flex min-h-[40px] flex-1 cursor-pointer items-center justify-center rounded-lg px-3.5 py-1.5 text-xs font-medium transition-colors sm:flex-none sm:min-h-0 ${isActive ? "text-brand" : "text-muted hover:text-fg-2"}`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeWorkspaceTab"
-                    className="absolute inset-0 bg-brand/12 border border-brand/30 rounded-lg shadow-sm -z-10"
+                    className="absolute inset-0 -z-10 rounded-lg border border-brand/30 bg-brand/12"
                     transition={{ type: "spring", stiffness: 450, damping: 35 }}
                   />
                 )}
-                {tab.icon}
-                <span className="font-display text-xs sm:text-xs">{tab.name}</span>
+                <span className="font-display">{tab.name}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* ── WORKSPACE BODY ── */}
-      <div className="p-4 sm:p-6 min-h-[340px] flex flex-col justify-between">
+      <div className="flex min-h-[374px] flex-col justify-between p-4 sm:p-6">
+        <div className="flex flex-1 items-center">
         <AnimatePresence mode="popLayout" initial={false}>
-          {/* Tab 0: DSA Tracker */}
-          {activeTab === 0 && (
-            <motion.div
-              key="dsa"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.14 }}
-              className="space-y-4"
-            >
-              <div className="flex items-center justify-between pb-3 border-b border-ink/[0.06]">
-                <div>
-                  <p className="text-xs font-ui uppercase tracking-widest text-brand font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-                    Try it: click a problem to mark it solved
-                  </p>
-                  <h3 className="font-display text-fg text-sm sm:text-base font-bold tracking-tight mt-0.5">
-                    Blind 75 Core Placement Patterns
-                  </h3>
-                </div>
-                <div className="text-right shrink-0">
-                  <span className="font-ui text-xs text-muted">
-                    <span className="text-fg font-bold">{solvedCount}</span>/{demoProblems.length} Solved
-                  </span>
-                  <div className="w-20 sm:w-28 h-1.5 bg-ink/[0.08] rounded-full mt-1.5 overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-brand to-brand-deep"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progressPct}%` }}
-                      transition={{ duration: 0.35, ease: "easeOut" }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Problem Rows */}
-              <div className="space-y-2">
-                {demoProblems.map((problem) => {
-                  const diffBadge =
-                    problem.diff === "Easy"
-                      ? "text-ok bg-ok-solid/10 border-ok-solid/20"
-                      : problem.diff === "Medium"
-                      ? "text-warn bg-warn-solid/10 border-warn-solid/20"
-                      : "text-bad bg-bad-solid/10 border-bad-solid/20";
-
-                  return (
-                    <div
-                      key={problem.id}
-                      onClick={() => toggleDemoProblem(problem.id)}
-                      className={`group flex items-center justify-between p-2.5 sm:p-3 rounded-xl border transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.985] cursor-pointer select-none ${
-                        problem.solved
-                          ? "bg-ink/[0.03] border-ink/[0.08] opacity-85"
-                          : "bg-ink/[0.015] border-ink/[0.06] hover:border-ink/[0.14] hover:bg-ink/[0.025]"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0 mr-2">
-                        <div
-                          className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors flex-shrink-0 ${
-                            problem.solved
-                              ? "bg-brand border-brand text-on-brand shadow-[0_0_10px_color-mix(in_srgb,var(--brand)_40%,transparent)]"
-                              : "border-ink/25 group-hover:border-ink/50"
-                          }`}
-                        >
-                          {problem.solved && (
-                            <motion.span initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", duration: 0.3, bounce: 0.35 }} className="flex">
-                              <Check className="text-xs" />
-                            </motion.span>
-                          )}
-                        </div>
-                        <span
-                          className={`text-xs sm:text-sm font-medium transition-colors truncate ${
-                            problem.solved
-                              ? "line-through text-muted"
-                              : "text-fg-2 group-hover:text-fg"
-                          }`}
-                        >
-                          {problem.title}
-                        </span>
-                        <span className="hidden sm:inline-block font-ui text-xs text-muted">
-                          {problem.category}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="font-ui text-xs text-muted bg-ink/[0.04] px-1.5 py-0.5 rounded">
-                          {problem.time}
-                        </span>
-                        <span className={`text-xs font-ui px-2 py-0.5 rounded-md border ${diffBadge}`}>
-                          {problem.diff}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Interactive Execution Trigger */}
-              <div className="pt-2">
-                {/* Wraps (with a real gap) so the engine note drops below the button on narrow phones instead of crowding it */}
-                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5">
-                  <button
-                    type="button"
-                    onClick={runTestBenchmark}
-                    disabled={isRunningTest}
-                    className="titanium-button text-xs font-ui py-2.5 sm:py-1.5 px-3.5 sm:px-3 min-h-[44px] sm:min-h-0 rounded-lg flex items-center gap-2 whitespace-nowrap cursor-pointer select-none"
-                  >
-                    <Play className={`text-xs text-brand ${isRunningTest ? "animate-spin" : ""}`} />
-                    <span>{isRunningTest ? "Running Benchmark..." : "Run Test Benchmark"}</span>
-                    <span className="hidden sm:inline-flex"><span className="kbd-capsule">⌘↵</span></span>
-                  </button>
-
-                  <span className="text-xs font-ui text-muted whitespace-nowrap">
-                    Demo only
-                  </span>
-                </div>
-
-                {/* Benchmark Output Strip */}
-                {testResult && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="mt-2.5 p-2.5 rounded-lg bg-ok/25 border border-ok-solid/25 font-ui text-xs text-ok flex flex-wrap items-center justify-between gap-2"
-                  >
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="text-ok text-xs shrink-0" />
-                      <span>Passed {testResult.casesPassed} test cases</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted">
-                      <span>Runtime: <strong className="text-ok">{testResult.runtime}</strong> (Beats {testResult.runtimePercentile})</span>
-                      <span>Memory: <strong className="text-ok">{testResult.memory}</strong></span>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-          )}
-
-          {/* Tab 1: CS Internals Simulator */}
-          {activeTab === 1 && (
-            <motion.div
-              key="cs"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.14 }}
-              className="space-y-4"
-            >
-              <div className="flex items-center justify-between pb-3 border-b border-ink/[0.06]">
-                <div>
-                  <p className="text-xs font-ui text-cyan font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan" />
-                    Interactive Kernel Simulator
-                  </p>
-                  <h3 className="font-display text-fg text-sm sm:text-base font-bold tracking-tight mt-0.5">
-                    Concurrency &amp; Memory Synchronization
-                  </h3>
-                </div>
-
-                {/* Concurrency Selector */}
-                <div className="flex items-center bg-inset/60 p-0.5 rounded-lg text-xs font-ui">
-                  <button
-                    type="button"
-                    onClick={() => setConcurrencyMode("mutex")}
-                    className={`px-2 py-1 rounded transition-colors ${
-                      concurrencyMode === "mutex" ? "bg-ink/[0.1] text-fg font-bold" : "text-muted hover:text-fg-2"
-                    }`}
-                  >
-                    Mutex Lock
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConcurrencyMode("lockless")}
-                    className={`px-2 py-1 rounded transition-colors ${
-                      concurrencyMode === "lockless" ? "bg-cyan-solid/20 text-cyan border border-cyan-solid/30 font-bold" : "text-muted hover:text-fg-2"
-                    }`}
-                  >
-                    Atomic CAS
-                  </button>
-                </div>
-              </div>
-
-              {/* Simulation Architecture Diagram */}
-              <div className="bg-inset/50 rounded-xl p-3.5 space-y-3 font-ui text-xs">
-                <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2 rounded-lg bg-elevated/80 border border-ink/[0.06]">
-                    <div className="text-muted text-xs">Thread 0 (Producer)</div>
-                    <div className="text-ok font-bold mt-1">EMIT_PACKET</div>
-                    <div className="text-xs text-muted mt-0.5">CPU Core 0</div>
-                  </div>
-                  <div className="p-2 rounded-lg bg-elevated/80 border border-cyan-solid/30 bg-cyan/10">
-                    <div className="text-muted text-xs">Shared Barrier</div>
-                    <div className="text-cyan font-bold mt-1">
-                      {concurrencyMode === "mutex" ? "MUTEX_HELD" : "CAS_EXCHANGE"}
-                    </div>
-                    <div className="text-xs text-muted mt-0.5">[0x7ffd8a04]</div>
-                  </div>
-                  <div className="p-2 rounded-lg bg-elevated/80 border border-ink/[0.06]">
-                    <div className="text-muted text-xs">Thread 1 (Consumer)</div>
-                    <div className={concurrencyMode === "mutex" ? "text-warn font-bold mt-1" : "text-ok font-bold mt-1"}>
-                      {concurrencyMode === "mutex" ? "BLOCKED_WAIT" : "DRAIN_BUFFER"}
-                    </div>
-                    <div className="text-xs text-muted mt-0.5">CPU Core 1</div>
-                  </div>
-                </div>
-
-                <div className="p-2.5 rounded-lg bg-ink/[0.02] text-xs leading-relaxed flex items-center justify-between text-fg-3">
-                  <span>
-                    {concurrencyMode === "mutex"
-                      ? "⚠️ Kernel context switch triggered: ~1,420ns latency penalty"
-                      : "⚡ Zero kernel trap: 4ns hardware atomic exchange without OS preemption"}
-                  </span>
-                  <span className="font-bold text-fg-2 shrink-0 ml-2">
-                    {concurrencyMode === "mutex" ? "High Contention" : "Lockless 0% Contention"}
-                  </span>
-                </div>
-
-                <div className="text-xs text-muted pt-1 border-t border-ink/[0.05]">
-                  <strong className="text-muted">FAANG Question:</strong> "Explain how ring buffers prevent cache bouncing across L1/L2 data lines."
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Tab 2: System Architecture Spec */}
-          {activeTab === 2 && (
-            <motion.div
-              key="ai"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.14 }}
-              className="space-y-4"
-            >
-              <div className="flex items-center justify-between pb-3 border-b border-ink/[0.06]">
-                <div>
-                  <p className="text-xs font-ui uppercase tracking-widest text-brand font-semibold flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand" />
-                    Example Architecture Spec (sample, not AI output)
-                  </p>
-                  <h3 className="font-display text-fg text-sm sm:text-base font-bold tracking-tight mt-0.5">
-                    Distributed Sliding-Window Rate Limiter
-                  </h3>
-                </div>
-                <span className="text-xs font-ui px-2.5 py-0.5 rounded-md bg-brand/10 border border-brand/25 text-brand font-bold">
-                  Scale: 100k req/s
-                </span>
-              </div>
-
-              {/* Topology Layers */}
-              <div className="space-y-2 font-ui text-xs">
-                <div className="p-2.5 rounded-xl bg-ink/[0.02] flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Stack className="text-brand text-xs" />
-                    <span className="text-fg-2 text-xs">Edge API Gateway</span>
-                  </div>
-                  <span className="text-xs text-muted bg-ink/[0.05] px-2 py-0.5 rounded">
-                    TLS 1.3 Termination · Envoy Proxy
-                  </span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-elevated/60 border border-brand/30 bg-brand/[0.02] flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Shield className="text-brand text-xs" />
-                    <span className="text-fg text-xs font-semibold">Sliding Window Core</span>
-                  </div>
-                  <span className="text-xs text-brand font-ui">
-                    Redis Cluster + Lua Script Atomic Eval
-                  </span>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-ink/[0.02] flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Database className="text-cyan text-xs" />
-                    <span className="text-fg-2 text-xs">PostgreSQL WAL Logging</span>
-                  </div>
-                  <span className="text-xs text-muted bg-ink/[0.05] px-2 py-0.5 rounded">
-                    Partitioned by User UUID · Async Sync
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pt-1 px-1 text-xs text-muted">
-                  <span>Latency SLA: <strong className="text-fg">p99 &lt; 2.4ms</strong></span>
-                  <span>Fault Tolerance: <strong className="text-fg">Multi-AZ Failover</strong></span>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ── WORKSPACE FOOTER ── */}
-        <div className="pt-3.5 border-t border-ink/[0.07] flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-muted mt-3">
-          <span className="font-ui text-xs flex items-center gap-2 text-muted whitespace-nowrap">
-            Interactive demo
-          </span>
-          <Link
-            to={activeTab === 0 ? "/dsa" : activeTab === 1 ? "/notes" : "/ai-projects"}
-            className="inline-flex items-center gap-1.5 py-2.5 sm:py-0 min-h-[44px] sm:min-h-0 text-brand hover:text-brand-hover font-semibold transition-colors text-xs shrink-0 whitespace-nowrap select-none group"
+          <motion.div
+            key={activeTab}
+            role="tabpanel"
+            className="w-full"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.14 }}
           >
-            Launch Full Tool{" "}
+            {activeTab === 0 && <HoursTab />}
+            {activeTab === 1 && <TodayTab />}
+            {activeTab === 2 && <MissedTab />}
+          </motion.div>
+        </AnimatePresence>
+        </div>
+
+        <div className="mt-5 flex items-center justify-end border-t border-ink/[0.07] pt-3.5 text-xs text-muted">
+          <Link
+            to="/my-plan"
+            className="group inline-flex min-h-[44px] shrink-0 select-none items-center gap-1.5 whitespace-nowrap py-2.5 text-xs font-semibold text-brand transition-colors hover:text-brand-hover sm:min-h-0 sm:py-0"
+          >
+            Build your own plan{" "}
             <ArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-0.5" />
           </Link>
         </div>

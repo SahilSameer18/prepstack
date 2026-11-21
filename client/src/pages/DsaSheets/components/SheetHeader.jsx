@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, ArrowSquareOut, Trophy } from "@phosphor-icons/react";
-import ProgressRing from './ProgressRing';
+import ProgressMarks from '../../../components/ui/ProgressMarks';
 
 const LEVELS = [
   { key: 'Easy', color: 'text-ok' },
@@ -10,7 +10,7 @@ const LEVELS = [
   { key: 'Hard', color: 'text-bad' },
 ];
 
-// ── Header: title, description, source, the way into your plan, the progress ring and the Easy/Medium/Hard split ──
+// ── Header: title, description, source, the way into your plan, the progress as marks and the Easy/Medium/Hard split ──
 const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPercentage, byLevel, hasNext, onContinue }) => {
   const calm = useReducedMotion();
   const finished = totalProblems > 0 && totalSolvedCount === totalProblems;
@@ -29,18 +29,18 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
   return (
   <div className="mb-8">
     <h1 className="font-display text-4xl sm:text-5xl font-black tracking-[-0.04em] leading-[1.04] text-fg">{name}</h1>
-    <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">{meta.description}</p>
+    <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">{meta.description}</p>
 
     <div className="mt-6 flex flex-wrap items-center gap-3">
       {hasNext ? (
-        <button type="button" onClick={onContinue} className="amber-specular-button group inline-flex min-h-[44px] items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold">
+        <button type="button" onClick={onContinue} className="amber-specular-button group inline-flex min-h-[48px] items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-bold">
           {totalSolvedCount > 0 ? 'Continue where you left off' : 'Start the first problem'}
           <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
         </button>
       ) : (
         totalProblems > 0 && <span className="text-sm font-semibold text-ok">You have solved every problem on this sheet.</span>
       )}
-      <Link to="/my-plan" className="titanium-button inline-flex min-h-[44px] items-center rounded-xl px-5 py-2.5 text-sm font-medium">
+      <Link to="/my-plan" className="inline-flex min-h-[48px] items-center rounded-xl border border-ink/[0.14] px-5 py-2.5 text-sm font-semibold text-fg transition-colors hover:bg-ink/[0.04]">
         Plan this sheet in My plan
       </Link>
       {meta.sourceUrl && meta.sourceUrl !== '#' && (
@@ -51,11 +51,8 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
       )}
     </div>
 
-    <div className={`mt-8 flex flex-col gap-6 surface-card p-5 sm:flex-row sm:items-center sm:p-6 ${celebrate ? "sheet-done-glow" : ""}`}>
-      <motion.div className="flex justify-center sm:justify-start" animate={celebrate && !calm ? { scale: [1, 1.07, 1] } : { scale: 1 }} transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}>
-        <ProgressRing percentage={progressPercentage} solved={totalSolvedCount} total={totalProblems} />
-      </motion.div>
-      <div className="min-w-0 flex-1">
+    <div className={`mt-9 grid items-end gap-6 border-y border-ink/[0.1] py-7 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-8 ${celebrate ? "sheet-done-glow" : ""}`}>
+      <motion.div className="min-w-0" animate={celebrate && !calm ? { scale: [1, 1.05, 1] } : { scale: 1 }} transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}>
         {finished ? (
           <motion.p key={celebrate ? "now" : "static"} initial={celebrate && !calm ? { scale: 0.8, opacity: 0 } : false} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", duration: 0.4, bounce: 0.3 }} className="inline-flex origin-left items-center gap-1.5 font-ui text-sm font-bold text-brand">
             <Trophy weight="duotone" aria-hidden="true" /> Sheet complete
@@ -63,24 +60,32 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
         ) : (
           <p className="font-ui text-sm text-muted">Overall progress</p>
         )}
-        <p className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-fg">
-          {totalSolvedCount} <span className="text-muted">/ {totalProblems}</span>
+        <p className="mt-1 flex items-baseline gap-2">
+          <span className="font-code text-5xl font-medium tracking-tight text-fg">{totalSolvedCount}</span>
+          <span className="font-code text-2xl text-muted">/ {totalProblems}</span>
         </p>
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-ink/[0.08]" role="progressbar" aria-valuenow={progressPercentage} aria-valuemin={0} aria-valuemax={100} aria-label="Overall progress">
-          <div className="bar-fill h-full w-full rounded-full" style={{ transform: `scaleX(${progressPercentage / 100})`, background: 'var(--brand-grad-bottom)' }} />
-        </div>
-        <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-ink/[0.08] pt-4">
-          {LEVELS.map(({ key, color }) => (
-            <div key={key}>
-              <dt className={`font-ui text-xs font-semibold ${color}`}>{key}</dt>
-              <dd className="mt-0.5 font-display text-lg font-extrabold text-fg">
-                {byLevel[key].solved}
-                <span className="text-sm font-medium text-muted"> / {byLevel[key].total}</span>
-              </dd>
-            </div>
-          ))}
-        </dl>
+      </motion.div>
+      <div className="min-w-0">
+        {totalSolvedCount > 0 ? (
+          <>
+            <ProgressMarks value={totalSolvedCount} total={totalProblems} label={`Overall progress: ${progressPercentage}%`} tall />
+            <p className="mt-3 text-sm text-muted">{progressPercentage}% solved</p>
+          </>
+        ) : (
+          <p className="text-sm text-muted">Tick a problem when you solve it. Your progress is saved to your account.</p>
+        )}
       </div>
+      <dl className="grid grid-cols-3 gap-6">
+        {LEVELS.map(({ key, color }) => (
+          <div key={key}>
+            <dt className={`font-ui text-sm font-semibold ${color}`}>{key}</dt>
+            <dd className="mt-0.5 font-code text-xl text-fg">
+              {byLevel[key].solved}
+              <span className="text-sm text-muted"> / {byLevel[key].total}</span>
+            </dd>
+          </div>
+        ))}
+      </dl>
     </div>
   </div>
   );

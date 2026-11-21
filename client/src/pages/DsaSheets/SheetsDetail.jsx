@@ -7,6 +7,7 @@ import { PageErrorState } from '../../components/ui/ErrorComponents';
 import { SkeletonSheetDetail } from '../../components/ui/Skeletons';
 import { useLoadingGate } from '../../hooks/useLoadingGate';
 import PageBackdrop from '../../components/ui/PageBackdrop';
+import ProgressMarks from '../../components/ui/ProgressMarks';
 import { getSheetMeta } from '../../data/sheetMeta';
 import { useProblemNotes } from '../../hooks/useProblemNotes';
 import { useAuth } from '../../hooks/useAuth';
@@ -195,7 +196,7 @@ const SheetsDetail = () => {
         />
 
         {/* ── Filters: stays under the navbar on larger screens so it is always within reach ── */}
-        <div className="z-20 mb-4 rounded-2xl border border-ink/[0.1] bg-canvas/85 p-3 backdrop-blur-xl md:sticky md:top-[72px]">
+        <div className="z-20 mb-4 bg-canvas/85 py-3 backdrop-blur-xl md:sticky md:top-[72px]">
           <div className="flex flex-wrap items-center gap-2">
             {LEVEL_FILTERS.map((name) => {
               const count = name === 'All' ? stats.total : stats.byLevel[name].total;
@@ -206,12 +207,12 @@ const SheetsDetail = () => {
                   type="button"
                   aria-pressed={active}
                   onClick={() => setLevel(name)}
-                  className={`flex min-h-[44px] items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-[transform,color,background-color] duration-150 cursor-pointer select-none sm:min-h-[40px] ${
-                    active ? 'amber-specular-button font-bold' : 'titanium-button text-muted hover:text-fg'
+                  className={`flex min-h-[44px] items-center gap-2 rounded-xl px-3.5 py-2 text-sm transition-colors duration-150 cursor-pointer select-none sm:min-h-[40px] ${
+                    active ? 'border border-brand/45 bg-brand/15 font-semibold text-brand' : 'border border-ink/[0.2] bg-card text-fg-3 hover:border-ink/[0.4] hover:text-fg'
                   }`}
                 >
                   {name}
-                  <span className={`font-ui text-xs ${active ? 'opacity-80' : 'text-faint'}`}>{count}</span>
+                  <span className={`font-code text-xs ${active ? 'text-brand' : 'text-faint'}`}>{count}</span>
                 </button>
               );
             })}
@@ -220,7 +221,7 @@ const SheetsDetail = () => {
               aria-pressed={hideSolved}
               onClick={() => setHideSolved((v) => !v)}
               className={`flex min-h-[44px] items-center rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors cursor-pointer select-none sm:min-h-[40px] ${
-                hideSolved ? 'border-brand/40 bg-brand/10 text-brand' : 'border-ink/[0.1] text-muted hover:text-fg'
+                hideSolved ? 'border-brand/45 bg-brand/15 font-semibold text-brand' : 'border-ink/[0.2] bg-card text-fg-3 hover:border-ink/[0.4] hover:text-fg'
               }`}
             >
               Hide solved
@@ -240,7 +241,7 @@ const SheetsDetail = () => {
         </div>
 
         {/* ── Topics Accordion ── */}
-        <div className="space-y-3">
+        <div className="border-t border-ink">
           {filtersActive && visibleTopics.length === 0 && (
             <div className="rounded-2xl border border-ink/[0.1] bg-card p-8 text-center" role="status">
               <p className="font-display text-lg font-bold text-fg">No problems match these filters</p>
@@ -260,35 +261,29 @@ const SheetsDetail = () => {
             const topicPct = topicTotal === 0 ? 0 : Math.round((topicSolvedCount / topicTotal) * 100);
 
             return (
-              <div key={index} className={`overflow-hidden rounded-2xl border bg-card transition-[border-color,box-shadow] duration-200 ${isOpen ? 'border-ink/[0.14] shadow-[0_18px_34px_-24px_color-mix(in_srgb,var(--shadow)_45%,transparent)]' : 'border-ink/[0.08] hover:border-ink/[0.16]'}`}>
+              <div key={index} className="border-b border-ink/[0.1]">
                 <button
                   type="button"
                   onClick={() => { if (!filtersActive) toggleTopic(index); }}
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-ink/[0.02]"
+                  className="grid w-full cursor-pointer grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 py-5 text-left transition-colors hover:bg-ink/[0.02] sm:grid-cols-[40px_minmax(0,1fr)_150px_56px_24px]"
                 >
-                  <div className="flex min-w-0 items-center gap-4">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 font-ui text-sm font-bold text-brand">{index + 1}</span>
-                    <div className="min-w-0">
-                      <h2 className="truncate font-display text-base font-extrabold tracking-tight text-fg">{topic.title || topic.topic || `Topic ${index + 1}`}</h2>
-                      <div className="mt-1 flex items-center gap-2">
-                        <div className="h-1.5 w-20 overflow-hidden rounded-full bg-ink/[0.08]">
-                          <div className="h-full rounded-full" style={{ width: `${topicPct}%`, background: 'var(--brand-grad-bottom)' }} />
-                        </div>
-                        <span className="font-ui text-xs text-muted">{topicSolvedCount}/{topicTotal}</span>
-                      </div>
-                    </div>
-                  </div>
-                  {!filtersActive && (
+                  <span className="font-code text-sm text-muted">{String(index + 1).padStart(2, '0')}</span>
+                  <h2 className="truncate font-display text-lg font-bold tracking-tight text-fg sm:text-xl">{topic.title || topic.topic || `Topic ${index + 1}`}</h2>
+                  {topicSolvedCount > 0
+                    ? <ProgressMarks value={topicSolvedCount} total={topicTotal} max={12} label={`${topicPct}% of ${topic.title || topic.topic || 'this topic'} solved`} className="col-start-2 sm:col-start-auto" />
+                    : <span aria-hidden="true" className="hidden sm:block" />}
+                  <span className="font-code text-sm text-fg-3 sm:text-right">{topicSolvedCount}/{topicTotal}</span>
+                  {!filtersActive ? (
                     <motion.span
                       aria-hidden="true"
                       animate={{ rotate: isOpen ? 180 : 0 }}
                       transition={{ type: 'spring', damping: 20, stiffness: 320 }}
-                      className="shrink-0 text-xs text-muted"
+                      className={`shrink-0 text-base ${isOpen ? 'text-brand' : 'text-muted'}`}
                     >
                       <CaretDown />
                     </motion.span>
-                  )}
+                  ) : <span />}
                 </button>
 
                 <AnimatePresence initial={false}>
@@ -298,8 +293,9 @@ const SheetsDetail = () => {
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ type: 'spring', damping: 30, stiffness: 350 }}
-                      className="overflow-hidden border-t border-ink/[0.08]"
+                      className="overflow-hidden"
                     >
+                      <div className="mb-4 ml-0 border-t border-ink/[0.08] sm:ml-14">
                       {shown.map(({ problem, pIdx }) => (
                         <ProblemRow
                           key={pIdx}
@@ -317,6 +313,7 @@ const SheetsDetail = () => {
                           onCloseDrawer={() => setActiveNoteLink(null)}
                         />
                       ))}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>

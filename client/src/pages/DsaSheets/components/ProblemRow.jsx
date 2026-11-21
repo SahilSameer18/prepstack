@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowSquareOut, Article, CaretDown, CheckCircle, Circle, FileText, YoutubeLogo } from "@phosphor-icons/react";
+import { ArrowSquareOut, Article, Check, FileText, YoutubeLogo } from "@phosphor-icons/react";
 import ProblemNoteDrawer from './ProblemNoteDrawer';
 
 // ── Platform icon resolver ─────────────────────────────────────────────────
@@ -16,11 +16,12 @@ const getPlatformIcon = (link) => {
   if (!link) return null;
   const l = link.toLowerCase();
   const found = PLATFORMS.find(([host]) => l.includes(host)) || (l.includes('tuf') ? PLATFORMS[3] : null);
-  if (!found) return <ArrowSquareOut className="text-muted text-xs" />;
-  return <span className="font-ui text-xs font-semibold text-fg-3">{found[1]}</span>;
+  if (!found) return <ArrowSquareOut aria-hidden="true" className="text-base" />;
+  return <span className="font-code text-xs font-medium">{found[1]}</span>;
 };
 
-const LEARN_LINK = 'inline-flex min-h-[32px] items-center gap-1.5 rounded-lg border border-ink/[0.1] bg-card px-2 font-ui text-xs font-medium text-fg-3 transition-colors hover:border-ink/[0.22] hover:text-fg cursor-pointer';
+// Secondary actions are plain icon buttons with a comfortable 40 px target; the title stays the loudest thing in the row.
+const ICON_BUTTON = 'inline-flex h-10 min-w-[40px] cursor-pointer items-center justify-center gap-1.5 rounded-lg px-2 text-xl text-muted transition-colors hover:bg-ink/[0.05] hover:text-fg';
 
 const getDifficultyColor = (diff) => {
   if (!diff) return 'text-muted';
@@ -31,16 +32,7 @@ const getDifficultyColor = (diff) => {
   return 'text-muted';
 };
 
-const getDifficultyBg = (diff) => {
-  if (!diff) return 'bg-ink/[0.04] border-ink/[0.07]';
-  const d = diff.toLowerCase();
-  if (d === 'easy') return 'bg-ok-solid/[0.08] border-ok-solid/20';
-  if (d === 'medium') return 'bg-yellow-solid/[0.08] border-yellow-solid/20';
-  if (d === 'hard') return 'bg-bad-solid/[0.08] border-bad-solid/20';
-  return 'bg-ink/[0.04] border-ink/[0.07]';
-};
-
-// ── One problem in a topic: solved toggle, title, quick-note badges, tags, difficulty, notes drawer, platform link ──
+// ── One problem in a topic: solved tick, title, difficulty, then the quiet actions (note, watch, read, open) ──
 const ProblemRow = ({
   anchorId,
   problem,
@@ -63,132 +55,76 @@ const ProblemRow = ({
   );
 
   return (
-    <div
-      id={anchorId}
-      className={`border-b border-ink/[0.06] last:border-b-0 transition-colors ${
-        isCompleted ? 'bg-brand/[0.04]' : ''
-      }`}
-    >
-      <div
-        className={`group flex flex-col md:flex-row md:items-center justify-between px-5 py-3.5 transition-colors gap-3 ${
-          isDrawerOpen ? 'bg-ink/[0.03]' : 'hover:bg-ink/[0.02]'
-        }`}
-      >
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          {/* Toggle */}
+    <div id={anchorId} className="border-b border-ink/[0.06] last:border-b-0">
+      <div className={`group flex flex-col justify-between gap-2 py-2 transition-colors md:flex-row md:items-center md:gap-4 ${isDrawerOpen ? 'bg-ink/[0.03]' : 'hover:bg-ink/[0.02]'}`}>
+        <div className="flex min-w-0 flex-1 items-center gap-3.5">
+          {/* Solved tick */}
           <button
+            type="button"
             onClick={(e) => { if (!isCompleted) setTickPops((n) => n + 1); onToggleSolved(e, problem.link); }}
-            className={`flex h-11 w-11 -m-2.5 flex-shrink-0 items-center justify-center text-2xl transition-[transform,color] duration-150 active:scale-90 cursor-pointer ${isCompleted ? 'text-brand' : 'text-faint hover:text-fg-3'}`}
+            className="-m-2.5 flex h-11 w-11 flex-shrink-0 cursor-pointer items-center justify-center active:scale-90"
             aria-pressed={isCompleted}
             aria-label={isCompleted ? `Mark ${problem.title} as unsolved` : `Mark ${problem.title} as solved`}
             title={isCompleted ? 'Mark as unsolved' : 'Mark as solved'}
           >
-            {isCompleted ? (
-              <motion.span key={tickPops} className="flex" initial={tickPops && !calm ? { scale: 0.55 } : false} animate={{ scale: 1 }} transition={{ type: 'spring', duration: 0.3, bounce: 0.4 }}>
-                <CheckCircle weight="fill" />
-              </motion.span>
-            ) : <Circle weight="regular" />}
-          </button>
-
-          {/* Title */}
-          <span
-            className={`text-sm font-medium truncate transition-colors ${
-              isCompleted ? 'text-muted line-through' : 'text-fg-2 group-hover:text-fg'
-            }`}
-          >
-            {index + 1}. {problem.title}
-          </span>
-        </div>
-
-        <div className="flex items-center flex-wrap gap-2.5 pl-9 md:pl-0 flex-shrink-0">
-          {/* Quick Note Badges if note exists */}
-          {noteData?.pattern && (
-            <span className="text-xs font-ui font-medium text-fg-3 bg-ink/[0.05] border border-ink/[0.1] px-2 py-0.5 rounded-md">
-              {noteData.pattern}
-            </span>
-          )}
-          {noteData?.timeComplexity && (
-            <span className="text-xs font-ui font-medium text-fg-3 bg-ink/[0.05] border border-ink/[0.1] px-1.5 py-0.5 rounded-md">
-              {noteData.timeComplexity}
-            </span>
-          )}
-
-          {/* Tags */}
-          {problem.tags && problem.tags.length > 0 && (
-            <div className="flex items-center gap-1">
-              {problem.tags.slice(0, 2).map((tag, tIdx) => (
-                <span
-                  key={tIdx}
-                  className="text-xs font-ui text-muted bg-ink/[0.04] px-1.5 py-0.5 rounded-md"
-                >
-                  {tag}
-                </span>
-              ))}
-              {problem.tags.length > 2 && (
-                <span className="text-xs font-ui text-muted">
-                  +{problem.tags.length - 2}
-                </span>
-              )}
-            </div>
-          )}
-
-          {/* Difficulty */}
-          <span
-            className={`text-xs font-semibold px-2 py-0.5 rounded-md border ${getDifficultyColor(
-              problem.difficulty
-            )} ${getDifficultyBg(problem.difficulty)}`}
-          >
-            {problem.difficulty || 'Medium'}
-          </span>
-
-          {/* Approach & Invariant Notes Toggle Button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleDrawer(problem.link);
-            }}
-            title={hasNote ? 'View or edit approach & invariant notes' : 'Add approach notes'}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-ui font-medium border transition-all cursor-pointer ${
-              hasNote
-                ? 'bg-brand/10 border-brand/30 text-brand hover:bg-brand/15'
-                : isDrawerOpen
-                ? 'bg-ink/[0.08] border-ink/20 text-fg'
-                : 'bg-ink/[0.04] border-ink/[0.08] text-muted hover:text-fg-2 hover:border-ink/15'
-            }`}
-          >
-            <FileText className={`text-xs ${hasNote ? 'text-brand' : 'text-muted'}`} />
-            <span className="hidden sm:inline">{hasNote ? 'Notes' : '+ Note'}</span>
             <motion.span
-              animate={{ rotate: isDrawerOpen ? 180 : 0 }}
-              transition={{ type: "spring", damping: 20, stiffness: 320 }}
-              className="text-xs"
+              key={tickPops}
+              initial={tickPops && isCompleted && !calm ? { scale: 0.7 } : false}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', duration: 0.3, bounce: 0.4 }}
+              className={`flex h-5 w-5 items-center justify-center rounded-md border transition-colors duration-150 ${isCompleted ? 'border-brand bg-brand text-on-brand' : 'border-ink/[0.3] bg-card group-hover:border-ink/[0.5]'}`}
             >
-              <CaretDown />
+              {isCompleted && <Check weight="bold" aria-hidden="true" className="text-xs" />}
             </motion.span>
           </button>
 
-          {/* The author's own learning links, when the sheet has them */}
-          {problem.video && (
-            <a href={problem.video} target="_blank" rel="noopener noreferrer" title="Watch the video lecture (takeUforward)" aria-label={`Watch the video lecture for ${problem.title}, on takeUforward`} className={LEARN_LINK}>
-              <YoutubeLogo weight="duotone" className="text-base" aria-hidden="true" />
-              <span className="hidden lg:inline">Watch</span>
-            </a>
-          )}
-          {problem.article && (
-            <a href={problem.article} target="_blank" rel="noopener noreferrer" title="Read the article (takeUforward)" aria-label={`Read the article for ${problem.title}, on takeUforward`} className={LEARN_LINK}>
-              <Article weight="duotone" className="text-base" aria-hidden="true" />
-              <span className="hidden lg:inline">Read</span>
-            </a>
-          )}
+          {/* Title */}
+          <span className={`min-w-0 truncate font-medium transition-colors ${isCompleted ? 'text-muted line-through' : 'text-fg'}`}>
+            <span className="mr-2 font-code text-xs font-normal text-muted">{String(index + 1).padStart(2, '0')}</span>
+            {problem.title}
+          </span>
+        </div>
 
-          {/* Platform Link */}
+        <div className="flex flex-shrink-0 flex-wrap items-center gap-x-3 gap-y-1 pl-10 md:grid md:grid-cols-[84px_repeat(4,40px)] md:gap-0 md:pl-0">
+          {/* Quick note badges, when a note exists */}
+          {noteData?.pattern && <span className="font-ui text-xs text-fg-3">{noteData.pattern}</span>}
+          {noteData?.timeComplexity && <span className="font-code text-xs text-fg-3">{noteData.timeComplexity}</span>}
+
+          {/* Difficulty */}
+          <span className={`w-16 text-sm font-semibold md:w-auto ${getDifficultyColor(problem.difficulty)}`}>{problem.difficulty || 'Medium'}</span>
+
+          {/* The visitor's own approach notes */}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onToggleDrawer(problem.link); }}
+            aria-expanded={isDrawerOpen}
+            aria-label={hasNote ? `View or edit your notes for ${problem.title}` : `Add notes for ${problem.title}`}
+            title={hasNote ? 'View or edit approach & invariant notes' : 'Add approach notes'}
+            className={`${ICON_BUTTON} ${hasNote ? 'text-brand' : ''}`}
+          >
+            <FileText weight={hasNote ? 'fill' : 'regular'} aria-hidden="true" />
+          </button>
+
+          {/* The author's own learning links, when the sheet has them */}
+          {problem.video ? (
+            <a href={problem.video} target="_blank" rel="noopener noreferrer" title="Watch the video lecture (takeUforward)" aria-label={`Watch the video lecture for ${problem.title}, on takeUforward`} className={ICON_BUTTON}>
+              <YoutubeLogo aria-hidden="true" />
+            </a>
+          ) : <span aria-hidden="true" className="hidden md:block" />}
+          {problem.article ? (
+            <a href={problem.article} target="_blank" rel="noopener noreferrer" title="Read the article (takeUforward)" aria-label={`Read the article for ${problem.title}, on takeUforward`} className={ICON_BUTTON}>
+              <Article aria-hidden="true" />
+            </a>
+          ) : <span aria-hidden="true" className="hidden md:block" />}
+
+          {/* The problem itself, on its own site */}
           <a
             href={problem.link}
             target="_blank"
             rel="noopener noreferrer"
             title="Open this problem on its own site"
-            className="flex min-h-[32px] min-w-[32px] items-center justify-center rounded-lg border border-ink/[0.1] bg-card px-1.5 transition-colors hover:border-ink/[0.22] cursor-pointer"
+            aria-label={`Open ${problem.title} on its own site`}
+            className={`${ICON_BUTTON} text-brand hover:text-brand`}
           >
             {getPlatformIcon(problem.link)}
           </a>
