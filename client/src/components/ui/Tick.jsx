@@ -9,8 +9,8 @@ const Tick = ({ done }) => (
     aria-hidden="true"
     initial={false}
     animate={{ scale: done ? TICK_SQUEEZE : 1 }}
-    transition={done ? { duration: 0.34 } : SPRING.snappy}
-    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors duration-150 ${done ? "border-brand bg-brand text-on-brand" : "border-ink/[0.3] bg-card group-hover:border-ink/[0.5]"}`}
+    transition={done ? { duration: 0.5 } : SPRING.snappy}
+    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors duration-200 ${done ? "border-brand bg-brand text-on-brand" : "border-ink/[0.3] bg-card group-hover:border-ink/[0.5]"}`}
   >
     {done && <Check weight="bold" className="text-xs" />}
   </motion.span>

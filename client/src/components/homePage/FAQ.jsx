@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useId, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Reveal from "../ui/Reveal";
+import { SPRING } from "../../utils/motion";
 
 const TECHNICAL_FAQS = [
   {
@@ -46,7 +48,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
         <motion.span
           aria-hidden="true"
           animate={{ rotate: isOpen ? 45 : 0 }}
-          transition={{ type: "spring", damping: 24, stiffness: 320 }}
+          transition={SPRING.smooth}
           className="shrink-0 text-2xl leading-none text-muted"
         >
           +
@@ -60,7 +62,7 @@ const FAQItem = memo(({ idx, question, answer, isOpen, toggle }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", damping: 28, stiffness: 320 }}
+            transition={SPRING.smooth}
             className="overflow-hidden"
           >
             <p className="max-w-3xl pb-6 pl-10 text-sm leading-relaxed text-muted sm:pl-12 sm:text-base">{answer}</p>
@@ -86,14 +88,13 @@ const FAQ = () => {
       </h2>
       <div className="mt-8 border-t border-ink/[0.1]">
         {TECHNICAL_FAQS.map((faq, index) => (
-          <FAQItem
-            key={index}
+          <Reveal key={index} y={20} delay={Math.min(index, 5) * 0.07}><FAQItem
             idx={String(index + 1).padStart(2, "0")}
             question={faq.question}
             answer={faq.answer}
             isOpen={openIndex === index}
             toggle={() => handleToggle(index)}
-          />
+          /></Reveal>
         ))}
       </div>
     </section>

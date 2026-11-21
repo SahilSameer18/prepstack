@@ -14,6 +14,7 @@ import { useAuth } from '../../hooks/useAuth';
 import SignInNotice from '../../components/auth/SignInNotice';
 import SheetHeader from './components/SheetHeader';
 import ProblemRow from './components/ProblemRow';
+import { SPRING } from "../../utils/motion";
 
 const LEVEL_FILTERS = ['All', 'Easy', 'Medium', 'Hard'];
 
@@ -207,7 +208,7 @@ const SheetsDetail = () => {
                   type="button"
                   aria-pressed={active}
                   onClick={() => setLevel(name)}
-                  className={`flex min-h-[44px] items-center gap-2 rounded-xl px-3.5 py-2 text-sm transition-colors duration-150 cursor-pointer select-none sm:min-h-[40px] ${
+                  className={`flex min-h-[44px] items-center gap-2 rounded-xl px-3.5 py-2 text-sm transition-colors duration-200 cursor-pointer select-none sm:min-h-[40px] ${
                     active ? 'border border-brand/45 bg-brand/15 font-semibold text-brand' : 'border border-ink/[0.2] bg-card text-fg-3 hover:border-ink/[0.4] hover:text-fg'
                   }`}
                 >
@@ -278,7 +279,7 @@ const SheetsDetail = () => {
                     <motion.span
                       aria-hidden="true"
                       animate={{ rotate: isOpen ? 180 : 0 }}
-                      transition={{ type: 'spring', damping: 20, stiffness: 320 }}
+                      transition={SPRING.smooth}
                       className={`shrink-0 text-base ${isOpen ? 'text-brand' : 'text-muted'}`}
                     >
                       <CaretDown />
@@ -292,7 +293,7 @@ const SheetsDetail = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ type: 'spring', damping: 30, stiffness: 350 }}
+                      transition={SPRING.smooth}
                       className="overflow-hidden"
                     >
                       <div className="mb-4 ml-0 border-t border-ink/[0.08] sm:ml-14">

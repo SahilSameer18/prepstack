@@ -2,7 +2,7 @@ import SelectField from "../ui/SelectField";
 import { DEFAULT_SUBJECTS, PACES, paceMinutes, planTopics } from "../../utils/planBuilder";
 
 const INPUT =
-  "w-full min-h-[44px] rounded-xl border border-ink/[0.14] !bg-card px-3 py-2.5 text-sm text-fg outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink/[0.24] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]";
+  "w-full min-h-[44px] rounded-xl border border-ink/[0.14] !bg-card px-3 py-2.5 text-sm text-fg outline-none transition-[border-color,box-shadow] duration-200 hover:border-ink/[0.24] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]";
 const WEEKDAYS = [
   "Monday",
   "Tuesday",

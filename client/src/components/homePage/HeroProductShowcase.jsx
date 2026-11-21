@@ -4,6 +4,7 @@ import Tick from "../ui/Tick";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import homeFacts from "../../data/homeFacts.json";
+import { SPRING } from "../../utils/motion";
 
 // An interactive example of the planner, in three steps: what fits in your hours, what today looks like, and what happens when you miss a day.
 // Everything here is arithmetic on a made-up example, shown on screen; it is not the real planner and says so.
@@ -191,7 +192,7 @@ const HeroProductShowcase = () => {
                   <motion.div
                     layoutId="activeWorkspaceTab"
                     className="absolute inset-0 -z-10 rounded-lg border border-brand/30 bg-brand/12"
-                    transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                    transition={SPRING.smooth}
                   />
                 )}
                 <span className="font-display">{tab.name}</span>
@@ -226,7 +227,7 @@ const HeroProductShowcase = () => {
             className="group inline-flex min-h-[44px] shrink-0 select-none items-center gap-1.5 whitespace-nowrap py-2.5 text-xs font-semibold text-brand transition-colors hover:text-brand-hover sm:min-h-0 sm:py-0"
           >
             Build your own plan{" "}
-            <ArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-0.5" />
+            <ArrowRight className="text-xs transition-transform duration-200 group-hover:translate-x-0.5" />
           </Link>
         </div>
       </div>

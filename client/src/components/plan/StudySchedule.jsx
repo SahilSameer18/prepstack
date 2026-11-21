@@ -191,7 +191,7 @@ export default function StudySchedule({
                 {weekSummary(week)}
               </span>
             </span>
-            <CaretDown aria-hidden="true" className="order-3 shrink-0 max-sm:ml-auto text-base text-muted transition-transform duration-200 group-open:rotate-180 group-open:text-brand" />
+            <CaretDown aria-hidden="true" className="order-3 shrink-0 max-sm:ml-auto text-base text-muted transition-transform duration-300 group-open:rotate-180 group-open:text-brand" />
           </summary>
           <PlanChecklist
             days={week.days}

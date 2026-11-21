@@ -183,7 +183,7 @@ const Analyzer = () => {
                       <span className="block break-words font-display text-lg font-bold tracking-tight text-fg">{formatTitle(r.title)}</span>
                       <span className="block text-sm text-muted">{formatDate(r.createdAt)} &middot; {r.days}-day plan</span>
                     </span>
-                    <ArrowRight aria-hidden="true" className="shrink-0 text-lg text-muted transition-transform duration-150 group-hover:translate-x-1" />
+                    <ArrowRight aria-hidden="true" className="shrink-0 text-lg text-muted transition-transform duration-200 group-hover:translate-x-1" />
                   </Link>
                   <button type="button" onClick={() => remove(r._id)} aria-label={`Delete report ${r.title}`} className="flex w-14 shrink-0 cursor-pointer items-center justify-center text-xl text-muted transition-colors hover:text-bad"><Trash aria-hidden="true" /></button>
                 </li>

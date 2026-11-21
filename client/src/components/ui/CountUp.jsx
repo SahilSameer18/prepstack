@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, useInView, useReducedMotion } from "framer-motion";
 
-// A whole number that counts up once, the first time it is seen (slow motion: about 0.9 s). Reduced motion: the final number at once.
+// A whole number that counts up once, the first time it is seen (slow motion: about 1.5 s). Reduced motion: the final number at once.
 // `format` turns the running number into text (for example thousands separators).
-const CountUp = ({ value, format = (n) => String(n), duration = 0.9 }) => {
+const CountUp = ({ value, format = (n) => String(n), duration = 1.5 }) => {
   const ref = useRef(null);
   const seen = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
   const calm = useReducedMotion();

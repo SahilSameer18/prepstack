@@ -39,7 +39,7 @@ const Quiz = ({ quiz, onComplete, disabled = false }) => {
                     disabled={answered || disabled}
                     onClick={() => chooseAnswer(i, o)}
                     aria-pressed={chosen === o}
-                    className={`flex items-start gap-3 text-left px-4 py-3 min-h-[44px] rounded-xl border text-base transition-colors duration-200 ${
+                    className={`flex items-start gap-3 text-left px-4 py-3 min-h-[44px] rounded-xl border text-base transition-colors duration-300 ${
                       isRight ? "border-ok-solid/40 bg-ok-solid/10 text-fg"
                         : isWrongPick ? "border-bad-solid/40 bg-bad-solid/10 text-fg"
                         : "border-ink/[0.1] bg-card text-fg-3 hover:border-ink/[0.22] disabled:hover:border-ink/[0.1]"
@@ -58,7 +58,7 @@ const Quiz = ({ quiz, onComplete, disabled = false }) => {
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
-                  transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.3, bounce: 0 }, opacity: { duration: 0.2 } }}
+                  transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.45, bounce: 0 }, opacity: { duration: 0.3 } }}
                   className="overflow-hidden"
                 >
                   <p className="pt-1 text-sm leading-relaxed text-muted">{q.explanation}</p>

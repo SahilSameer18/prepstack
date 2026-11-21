@@ -18,7 +18,8 @@ const HeroSection = () => {
             Free · no card · reading is open
           </Reveal>
           <Reveal as="h1" onLoad delay={0.05} className="font-display text-4xl sm:text-5xl xl:text-[60px] lg:text-[56px] font-black tracking-[-0.04em] text-fg leading-[1.02]">
-            Stop grinding blindly. Engineer your placement.
+            <span className="block font-medium text-fg-3">Stop grinding blindly.</span>{" "}
+            <span className="block">Engineer your placement.</span>
           </Reveal>
 
           {/* Authoritative Subtitle */}
@@ -33,7 +34,7 @@ const HeroSection = () => {
               className="amber-specular-button inline-flex items-center gap-2 font-bold px-6 py-3.5 rounded-xl text-xs sm:text-sm font-display tracking-tight cursor-pointer select-none group"
             >
               Build my study plan{" "}
-              <ArrowRight className="text-xs transition-transform duration-150 group-hover:translate-x-1" />
+              <ArrowRight className="text-xs transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
 
             {user ? (

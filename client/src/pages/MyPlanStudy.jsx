@@ -31,6 +31,7 @@ import {
   resolveStudyItem,
   revisionRoundItems,
 } from "../utils/studyPlan";
+import { SPRING } from "../utils/motion";
 
 const TABS = ["Today", "Plan", "Reviews", "Starred", "History"];
 
@@ -192,7 +193,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
                 aria-hidden="true"
                 layoutId={calm ? undefined : "study-tab-slide"}
                 className={embedded ? "absolute inset-x-0 bottom-1 h-0.5 rounded-full bg-brand" : "absolute inset-0 -z-10 rounded-xl bg-brand/12"}
-                transition={{ type: "spring", duration: 0.3, bounce: 0 }}
+                transition={SPRING.smooth}
               />
             )}
             {name}

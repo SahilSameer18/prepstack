@@ -67,7 +67,7 @@ const SheetRow = ({ sheet, progress, withProgress }) => (
       )}
     </div>}
     <span className="hidden items-center justify-end gap-1.5 font-display text-sm font-bold text-brand sm:flex">
-      Open <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+      Open <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" />
     </span>
   </Link>
 );
@@ -208,7 +208,7 @@ const Sheets = () => {
                 type="button"
                 onClick={() => setActiveCategory(c.id)}
                 aria-pressed={activeCategory === c.id}
-                className={`flex min-h-[44px] items-center rounded-xl px-4 text-sm transition-colors duration-150 cursor-pointer select-none ${
+                className={`flex min-h-[44px] items-center rounded-xl px-4 text-sm transition-colors duration-200 cursor-pointer select-none ${
                   activeCategory === c.id ? "border border-brand/45 bg-brand/15 font-semibold text-brand" : "border border-ink/[0.2] bg-card text-fg-3 hover:border-ink/[0.4] hover:text-fg"
                 }`}
               >

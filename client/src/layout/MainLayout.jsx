@@ -34,7 +34,7 @@ const MainLayout = () => {
       <ScrollToTop />
       <CommandPalette />
       <Navbar />
-      <main className="flex-grow pt-20 sm:pt-24 px-4 pb-12 overflow-x-clip relative z-10">
+      <main className="flex-grow pt-20 sm:pt-24 px-4 pb-4 overflow-x-clip relative z-10">
         <div key={pathname} className="route-enter max-w-7xl mx-auto">
           <Suspense fallback={<RouteFallback />}>
             <Outlet /> {/* Render the child route pages here */}

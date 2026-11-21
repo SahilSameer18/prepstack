@@ -38,11 +38,11 @@ const QuestionRow = ({ q, number }) => {
         >
           <span className="mt-1 w-7 shrink-0 font-code text-sm text-muted">{String(number).padStart(2, "0")}</span>
           <span className="min-w-0 flex-1">
-            <span className={`block font-display text-base font-bold leading-snug tracking-tight transition-colors duration-200 sm:text-lg ${open ? "text-brand" : "text-fg group-hover:text-brand"}`}>
+            <span className={`block font-display text-base font-bold leading-snug tracking-tight transition-colors duration-300 sm:text-lg ${open ? "text-brand" : "text-fg group-hover:text-brand"}`}>
               {q.question}
             </span>
           </span>
-          <CaretDown aria-hidden="true" className={`mt-1.5 shrink-0 text-base transition-[transform,color] duration-200 ${open ? "rotate-180 text-brand" : "text-muted"}`} />
+          <CaretDown aria-hidden="true" className={`mt-1.5 shrink-0 text-base transition-[transform,color] duration-300 ${open ? "rotate-180 text-brand" : "text-muted"}`} />
         </button>
       </h3>
 
@@ -56,7 +56,7 @@ const QuestionRow = ({ q, number }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.3, bounce: 0 }, opacity: { duration: 0.2 } }}
+            transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.45, bounce: 0 }, opacity: { duration: 0.3 } }}
             className="overflow-hidden"
           >
             <div className="space-y-6 pb-8 pl-12 pr-1">
@@ -134,7 +134,7 @@ const Behavioral = () => {
           </p>
           <Link to="/analyzer" className="group mt-4 inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">
             Get questions picked for a specific job with the Role Analyzer
-            <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+            <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
         </div>
 
@@ -178,7 +178,7 @@ const Behavioral = () => {
                     type="button"
                     onClick={() => setSelectedCategory(cat)}
                     aria-pressed={isActive}
-                    className={`flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-xl px-3.5 py-2 text-left text-sm transition-colors duration-150 lg:rounded-lg ${
+                    className={`flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-xl px-3.5 py-2 text-left text-sm transition-colors duration-200 lg:rounded-lg ${
                       isActive ? "border border-brand/45 bg-brand/15 font-semibold text-brand lg:border-transparent" : "border border-ink/[0.2] bg-card text-fg-3 hover:border-ink/[0.4] hover:text-fg lg:border-transparent lg:bg-transparent lg:hover:bg-ink/[0.04]"
                     }`}
                   >

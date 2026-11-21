@@ -35,7 +35,7 @@ const SheetHeader = ({ meta, name, totalProblems, totalSolvedCount, progressPerc
       {hasNext ? (
         <button type="button" onClick={onContinue} className="amber-specular-button group inline-flex min-h-[48px] items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-bold">
           {totalSolvedCount > 0 ? 'Continue where you left off' : 'Start the first problem'}
-          <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+          <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" />
         </button>
       ) : (
         totalProblems > 0 && <span className="text-sm font-semibold text-ok">You have solved every problem on this sheet.</span>

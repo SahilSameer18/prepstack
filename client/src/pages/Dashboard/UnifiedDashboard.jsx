@@ -18,6 +18,7 @@ import { useStudyPlan } from '../../hooks/useStudyPlan';
 import { useLoadingGate } from '../../hooks/useLoadingGate';
 import MyPlanStudy from '../MyPlanStudy';
 import FirstStepCard from "../../components/plan/FirstStepCard";
+import { SPRING } from "../../utils/motion";
 
 const TABS = ["plan", "dsa", "projects", "reports"];
 
@@ -173,7 +174,7 @@ const UnifiedDashboard = () => {
                   aria-hidden="true"
                   layoutId={calm ? undefined : "dashboard-tab-slide"}
                   className="absolute inset-0 -z-10 rounded-xl bg-brand/12"
-                  transition={{ type: "spring", duration: 0.3, bounce: 0 }}
+                  transition={SPRING.smooth}
                 />
               )}
               {label} <span className="hidden text-sm font-normal text-muted sm:inline">{counts[key]}</span>

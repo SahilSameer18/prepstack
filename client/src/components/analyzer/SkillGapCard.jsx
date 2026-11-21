@@ -13,7 +13,7 @@ const SkillGapCard = ({ advice }) => (
           <li key={a.kind + a.path}>
             <Link to={a.path} className="group flex min-h-[44px] items-center justify-between gap-3 text-sm text-fg-2 transition-colors hover:text-fg">
               <span className="leading-snug">{a.label}</span>
-              <ArrowRight aria-hidden="true" className="shrink-0 text-brand transition-transform duration-150 group-hover:translate-x-1" />
+              <ArrowRight aria-hidden="true" className="shrink-0 text-brand transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
           </li>
         ))}

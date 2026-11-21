@@ -10,7 +10,7 @@ const Accordion = ({ title, icon, children, flat = false }) => {
   const calm = useReducedMotion();
   const panelId = useId();
   return (
-    <div className={flat ? "border-b border-ink/[0.1]" : `overflow-hidden rounded-2xl border bg-card transition-[border-color,box-shadow] duration-200 ${open ? "border-ink/[0.16] shadow-[0_18px_34px_-24px_color-mix(in_srgb,var(--shadow)_45%,transparent)]" : "border-ink/[0.1] hover:border-ink/[0.2]"}`}>
+    <div className={flat ? "border-b border-ink/[0.1]" : `overflow-hidden rounded-2xl border bg-card transition-[border-color,box-shadow] duration-300 ${open ? "border-ink/[0.16] shadow-[0_18px_34px_-24px_color-mix(in_srgb,var(--shadow)_45%,transparent)]" : "border-ink/[0.1] hover:border-ink/[0.2]"}`}>
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -21,9 +21,9 @@ const Accordion = ({ title, icon, children, flat = false }) => {
         {icon && !flat && <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-xl text-brand">{icon}</span>}
         <span className={`flex-1 font-display tracking-tight text-fg sm:text-lg ${flat ? "text-base font-bold group-hover:text-brand" : "text-base font-bold"}`}>{title}</span>
         {flat ? (
-          <CaretDown aria-hidden="true" className={`shrink-0 text-base transition-[transform,color] duration-200 ${open ? "rotate-180 text-brand" : "text-muted"}`} />
+          <CaretDown aria-hidden="true" className={`shrink-0 text-base transition-[transform,color] duration-300 ${open ? "rotate-180 text-brand" : "text-muted"}`} />
         ) : (
-          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm transition-[transform,color] duration-200 ${open ? "rotate-180 border-brand/30 bg-brand/10 text-brand" : "border-ink/[0.1] text-muted"}`}>
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm transition-[transform,color] duration-300 ${open ? "rotate-180 border-brand/30 bg-brand/10 text-brand" : "border-ink/[0.1] text-muted"}`}>
             <CaretDown aria-hidden="true" />
           </span>
         )}
@@ -35,7 +35,7 @@ const Accordion = ({ title, icon, children, flat = false }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.3, bounce: 0 }, opacity: { duration: 0.2 } }}
+            transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.45, bounce: 0 }, opacity: { duration: 0.3 } }}
             className="overflow-hidden"
           >
             <div className={flat ? "space-y-5 pb-7 pt-1" : "space-y-5 border-t border-ink/[0.08] px-5 pb-6 pt-5"}>{children}</div>

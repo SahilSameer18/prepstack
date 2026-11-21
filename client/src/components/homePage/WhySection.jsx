@@ -1,5 +1,6 @@
 import React from "react";
 import { Check, X } from "@phosphor-icons/react";
+import Reveal from "../ui/Reveal";
 
 // Compared with the usual way of preparing, not with named products: every line here is something the app really does.
 const USUAL = [
@@ -18,7 +19,7 @@ const WITH_US = [
 
 const WhySection = () => (
   <section aria-labelledby="home-why-heading" className="border-t border-ink/[0.1] pt-16 text-left">
-    <p className="font-code text-xs uppercase tracking-[0.14em] text-muted">Why PrepStack</p>
+    <Reveal y={24}><p className="font-code text-xs uppercase tracking-[0.14em] text-muted">Why PrepStack</p></Reveal>
     <h2 id="home-why-heading" className="mt-3 max-w-3xl font-display text-4xl font-bold leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl">
       Not a pile of scattered tabs.
     </h2>
@@ -30,24 +31,24 @@ const WhySection = () => (
       <div className="bg-card p-6 sm:p-8">
         <h3 className="font-display text-sm font-bold text-muted">The usual way</h3>
         <ul className="mt-4 space-y-3">
-          {USUAL.map((line) => (
-            <li key={line} className="flex items-start gap-3 text-sm text-muted sm:text-base">
+          {USUAL.map((line, i) => (
+            <Reveal as="li" key={line} y={20} delay={0.1 + i * 0.1} className="flex items-start gap-3 text-sm text-muted sm:text-base">
               <X aria-hidden="true" className="mt-1 shrink-0 text-faint" />
               {line}
-            </li>
+            </Reveal>
           ))}
         </ul>
       </div>
       <div className="border-t border-ink/[0.1] bg-brand/10 p-6 sm:p-8 md:border-l md:border-t-0">
         <h3 className="font-display text-sm font-bold text-brand">With PrepStack</h3>
         <ul className="mt-4 space-y-3">
-          {WITH_US.map((line) => (
-            <li key={line} className="flex items-start gap-3 text-sm text-fg-2 sm:text-base">
+          {WITH_US.map((line, i) => (
+            <Reveal as="li" key={line} y={20} delay={0.3 + i * 0.1} className="flex items-start gap-3 text-sm text-fg-2 sm:text-base">
               <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/20 text-xs text-brand">
                 <Check aria-hidden="true" />
               </span>
               {line}
-            </li>
+            </Reveal>
           ))}
         </ul>
       </div>

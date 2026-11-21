@@ -15,6 +15,7 @@ import Quiz from '../../components/notes/Quiz';
 import Diagram from '../../components/notes/Diagram';
 import { formatDate } from '../../utils/formatDate';
 import { CONTACT_EMAIL } from '../../data/contact';
+import { SPRING } from "../../utils/motion";
 
 // ── Sections written before the new template (no lastChecked): their topics keep the old blocks ────────────────
 // One neutral look for every block; amber marks the interview answer and red the traps, as everywhere else in the app.
@@ -267,7 +268,7 @@ const SectionList = ({ subject, subjectTitle, sections, activeId, onPick, slideI
                       aria-hidden="true"
                       layoutId={calm ? undefined : slideId}
                       className="absolute inset-0 -z-10 rounded-xl bg-brand/12"
-                      transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+                      transition={SPRING.smooth}
                     />
                   )}
                   <span className="w-5 shrink-0 text-right font-ui text-xs leading-[1.4rem] opacity-70">{i + 1}</span>
@@ -350,7 +351,7 @@ export default function NotesDetail() {
               />
               <motion.aside
                 initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
-                transition={{ type: 'spring', duration: 0.35, bounce: 0 }}
+                transition={SPRING.smooth}
                 className="fixed bottom-0 left-0 top-16 z-50 w-[300px] max-w-[88vw] overflow-y-auto border-r border-ink/[0.1] bg-card p-4 lg:hidden"
                 aria-label="Sections"
               >
@@ -399,13 +400,13 @@ export default function NotesDetail() {
 
             <div className="mt-14 grid grid-cols-1 gap-4 border-t border-ink/[0.1] pt-8 sm:grid-cols-2">
               {prevSection ? (
-                <Link to={`/notes/${subject}/${prevSection.id}`} className="group flex flex-col items-start rounded-2xl border border-ink/[0.1] bg-card p-4 text-left transition-[border-color,transform] duration-150 hover:border-ink/[0.22] active:scale-[0.99]">
+                <Link to={`/notes/${subject}/${prevSection.id}`} className="group flex flex-col items-start rounded-2xl border border-ink/[0.1] bg-card p-4 text-left transition-[border-color,transform] duration-200 hover:border-ink/[0.22] active:scale-[0.99]">
                   <span className="mb-1 flex items-center gap-1.5 font-ui text-xs text-muted"><CaretLeft className="transition-transform group-hover:-translate-x-0.5" aria-hidden="true" /> Previous section</span>
                   <span className="w-full text-sm font-semibold text-fg-2 group-hover:text-fg">{prevSection.title}</span>
                 </Link>
               ) : <div />}
               {nextSection ? (
-                <Link to={`/notes/${subject}/${nextSection.id}`} className="group flex flex-col items-end rounded-2xl border border-ink/[0.1] bg-card p-4 text-right transition-[border-color,transform] duration-150 hover:border-brand/40 active:scale-[0.99] sm:col-start-2">
+                <Link to={`/notes/${subject}/${nextSection.id}`} className="group flex flex-col items-end rounded-2xl border border-ink/[0.1] bg-card p-4 text-right transition-[border-color,transform] duration-200 hover:border-brand/40 active:scale-[0.99] sm:col-start-2">
                   <span className="mb-1 flex items-center gap-1.5 font-ui text-xs text-muted">Next section <CaretRight className="text-brand transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></span>
                   <span className="w-full text-sm font-semibold text-fg-2 group-hover:text-fg">{nextSection.title}</span>
                 </Link>

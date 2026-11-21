@@ -21,7 +21,7 @@ const ReportsDash = ({ reports, onDelete }) => {
       <div className="mb-5 flex items-end justify-between gap-4">
         <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Role reports</h2>
         <Link to="/analyzer" className="group inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">
-          New report <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+          New report <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" />
         </Link>
       </div>
       <ul className="surface-card divide-y divide-ink/[0.08]">
@@ -33,7 +33,7 @@ const ReportsDash = ({ reports, onDelete }) => {
                 <span className="block break-words font-display text-lg font-bold tracking-tight text-fg">{formatTitle(r.title)}</span>
                 <span className="block text-sm text-muted">{formatDate(r.createdAt)} &middot; {r.days}-day plan</span>
               </span>
-              <ArrowRight aria-hidden="true" className="shrink-0 text-lg text-muted transition-transform duration-150 group-hover:translate-x-1" />
+              <ArrowRight aria-hidden="true" className="shrink-0 text-lg text-muted transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
             <button
               type="button"

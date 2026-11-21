@@ -58,7 +58,7 @@ const StepExtras = ({ step }) => (
         <p className={LABEL}>Mini-project</p>
         <p className={BODY}>{step.project.brief}</p>
         <Link to={projectLink(step.project)} className="group mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-bold text-brand">
-          Generate an idea with {step.project.stack} <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+          Generate an idea with {step.project.stack} <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" />
         </Link>
       </div>
     )}
@@ -161,7 +161,7 @@ const RoadmapDetail = () => {
                       </span>
                       <span className="mt-1.5 flex shrink-0 items-center gap-4 text-muted">
                         {detail.time && <span className="hidden items-center gap-1.5 font-code text-sm sm:flex"><Clock aria-hidden="true" /> {detail.time}</span>}
-                        <CaretDown aria-hidden="true" className={`text-base transition-[transform,color] duration-200 ${isOpen ? "rotate-180 text-brand" : ""}`} />
+                        <CaretDown aria-hidden="true" className={`text-base transition-[transform,color] duration-300 ${isOpen ? "rotate-180 text-brand" : ""}`} />
                       </span>
                     </button>
                   </h3>
@@ -173,7 +173,7 @@ const RoadmapDetail = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.3, bounce: 0 }, opacity: { duration: 0.2 } }}
+                      transition={calm ? { duration: 0.15 } : { height: { type: "spring", duration: 0.45, bounce: 0 }, opacity: { duration: 0.3 } }}
                       className="overflow-hidden"
                     >
                     <div className="space-y-8 border-t border-ink/[0.08] pb-10 pt-7">

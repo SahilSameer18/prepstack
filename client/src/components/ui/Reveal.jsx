@@ -13,9 +13,9 @@ export default function Reveal({ as = "div", children, delay = 0, x = 0, y = 18,
   const ref = useRef(null);
   const seen = useRevealed(ref);
   const shown = { opacity: 1, transform: at(0, 0) };
-  let transition = { duration: 0.45, ease: EASE, delay };
-  if (onLoad) transition = { duration: 0.6, ease: EASE, delay };
-  if (spring) transition = { type: "spring", duration: 0.7, bounce: 0.15, delay };
+  let transition = { duration: 0.8, ease: EASE, delay };
+  if (onLoad) transition = { duration: 0.95, ease: EASE, delay };
+  if (spring) transition = { type: "spring", duration: 1.0, bounce: 0.15, delay };
   if (calm) transition = { duration: 0.2, delay: 0 };
   const Tag = motion[as];
   return (

@@ -7,7 +7,7 @@ const AuthField = ({ id, label, icon, trailing, hint, ...inputProps }) => {
   return (
     <div className="space-y-1.5">
       <label htmlFor={id} className="text-sm font-medium text-fg-3">{label}</label>
-      <div className="group flex h-12 w-full items-center gap-3 rounded-xl border border-ink/[0.14] bg-card px-4 transition-[border-color,box-shadow] duration-150 hover:border-ink/[0.24] focus-within:border-brand focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]">
+      <div className="group flex h-12 w-full items-center gap-3 rounded-xl border border-ink/[0.14] bg-card px-4 transition-[border-color,box-shadow] duration-200 hover:border-ink/[0.24] focus-within:border-brand focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]">
         <Icon aria-hidden="true" className="shrink-0 text-lg text-muted transition-colors group-focus-within:text-brand" />
         <input id={id} className="auth-field-input w-full bg-transparent text-sm text-fg placeholder-faint outline-none" {...inputProps} />
         {trailing}

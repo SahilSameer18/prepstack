@@ -30,7 +30,7 @@ function JumpTo() {
 
   return (
     <div className="relative mx-auto w-full max-w-md text-left">
-      <div className="flex h-14 items-center gap-3 rounded-2xl border border-ink/[0.14] bg-card px-5 shadow-[0_18px_34px_-22px_color-mix(in_srgb,var(--shadow)_40%,transparent)] transition-[border-color,box-shadow] duration-150 focus-within:border-brand focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]">
+      <div className="flex h-14 items-center gap-3 rounded-2xl border border-ink/[0.14] bg-card px-5 shadow-[0_18px_34px_-22px_color-mix(in_srgb,var(--shadow)_40%,transparent)] transition-[border-color,box-shadow] duration-200 focus-within:border-brand focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]">
         <MagnifyingGlass aria-hidden="true" className="shrink-0 text-xl text-muted" />
         <input
           type="text"

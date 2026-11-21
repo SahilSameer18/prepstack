@@ -117,13 +117,13 @@ body, #root {
   --shadow: #000000;
 
   /* ── text ── */
-  --fg: #ffffff;
-  --fg-1: oklch(96.7% 0.001 286.375);
-  --fg-2: oklch(92% 0.004 286.32);
-  --fg-3: oklch(87.1% 0.006 286.286);
+  --fg: #ece8df;
+  --fg-1: #e3dfd6;
+  --fg-2: #d3cfc6;
+  --fg-3: #bcb8af;
   --muted: oklch(70.5% 0.015 286.067);
   --faint: oklch(55.2% 0.016 285.938);
-  --body: #f4f4f5;
+  --body: #d9d5cc;
   --line: oklch(37% 0.013 285.805);   /* a solid, stronger border */
 
   /* ── brand ── */
@@ -230,13 +230,13 @@ body, #root {
   --glow: 30%;
   --shadow: #7a5a2e;   /* warm brown: shadows on cream are tinted, never black */
 
-  --fg: #17130d;
-  --fg-1: #1f1910;
-  --fg-2: #2f281d;
-  --fg-3: #4a4135;
+  --fg: #2a2118;
+  --fg-1: #30271c;
+  --fg-2: #40362a;
+  --fg-3: #594e3f;
   --muted: #6a5f4e;
   --faint: #766b59;
-  --body: #2a2318;
+  --body: #3a3124;
   --line: #cdbfa8;
 
   --brand: #945400;   /* deep amber: readable as text on cream; the bright amber is the button gradient */
@@ -398,7 +398,7 @@ kbd {
   background: linear-gradient(180deg, var(--brand-grad-top) 0%, var(--brand-grad-bottom) 100%);
   color: var(--on-grad);
   box-shadow: 0 8px 24px -4px color-mix(in srgb, var(--brand-deep) 38%, transparent), inset 0 1px 0 color-mix(in srgb, var(--ink) 40%, transparent);
-  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s ease, background 0.12s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease;
   will-change: transform;
 }
 
@@ -654,7 +654,7 @@ a.btn:active,
 }
 
 .page-enter {
-  animation: pageIn 0.35s ease forwards;
+  animation: pageIn 0.55s ease forwards;
 }
 
 .fade-in {
@@ -828,7 +828,7 @@ input:-webkit-autofill:active {
 
 /* A finished sheet: one soft ring of light that fades, once. */
 @media (prefers-reduced-motion: no-preference) {
-  .sheet-done-glow { animation: sheet-done-glow 1.6s var(--ease-out) 1; }
+  .sheet-done-glow { animation: sheet-done-glow 2.4s var(--ease-out) 1; }
 }
 @keyframes sheet-done-glow {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 45%, transparent); }
@@ -859,8 +859,8 @@ dd, time, [role="progressbar"] + p {
 
 /* Progress marks fill in one after another the first time they show (slow, once); the global reduced-motion rule removes it */
 @media (prefers-reduced-motion: no-preference) {
-  .mark-fill { animation: mark-in 0.6s var(--ease-out) backwards; }
-  .day-done-glow { animation: sheet-done-glow 1.6s var(--ease-out) 1; }
+  .mark-fill { animation: mark-in 0.9s var(--ease-out) backwards; }
+  .day-done-glow { animation: sheet-done-glow 2.4s var(--ease-out) 1; }
 }
 @keyframes mark-in {
   0% { opacity: 0; transform: scaleY(0.2); }
@@ -869,7 +869,7 @@ dd, time, [role="progressbar"] + p {
 
 /* A page fades up once when you arrive (slow, medium distance). No fill after the end, so nothing keeps a transform. */
 @media (prefers-reduced-motion: no-preference) {
-  .route-enter { animation: route-in 0.55s var(--ease-out) backwards; }
+  .route-enter { animation: route-in 0.85s var(--ease-out) backwards; }
 }
 @keyframes route-in {
   0% { opacity: 0; transform: translate3d(0, 14px, 0); }

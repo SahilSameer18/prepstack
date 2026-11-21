@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
 import { matchDestinations } from "../data/destinations";
+import { OPEN_PALETTE_EVENT } from "./ui/SearchButton";
 
 // Ctrl+K (or Cmd+K) opens a small "Jump to" box anywhere: type a few letters, arrow keys and Enter, Escape closes and focus goes back.
 // It is one dialog that stays mounted and closed, so the shortcut works on every page.
@@ -27,8 +28,15 @@ export default function CommandPalette() {
         setOpen(true);
       }
     };
+    const onOpen = () => {
+      returnFocus.current = document.activeElement;
+      setQuery("");
+      setActive(0);
+      setOpen(true);
+    };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    document.addEventListener(OPEN_PALETTE_EVENT, onOpen);
+    return () => { document.removeEventListener("keydown", onKey); document.removeEventListener(OPEN_PALETTE_EVENT, onOpen); };
   }, []);
 
   useEffect(() => {

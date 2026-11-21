@@ -34,7 +34,7 @@ const NoteRow = ({ s, stats, index }) => (
       </h2>
       <p className="mt-1 text-sm leading-relaxed text-muted sm:text-base">{s.description}</p>
     </div>
-    <ArrowRight aria-hidden="true" className="justify-self-end text-brand transition-transform duration-150 group-hover:translate-x-1 sm:order-last" />
+    <ArrowRight aria-hidden="true" className="justify-self-end text-brand transition-transform duration-200 group-hover:translate-x-1 sm:order-last" />
     {/* Numbers worked out from the notes themselves */}
     <div className="col-start-2 min-h-[20px] font-code text-sm sm:col-start-auto">
       {stats === null ? (

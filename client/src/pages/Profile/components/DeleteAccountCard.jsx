@@ -7,6 +7,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { InlineSpinner } from "../../../components/ui/Skeletons";
 import { InlineErrorAlert } from "../../../components/ui/ErrorComponents";
 import { deleteUserAccount } from "../../../api/services/userService";
+import { SPRING } from "../../../utils/motion";
 
 // ── 6. GDPR Privacy & Account Deletion (warning card + confirmation modal) ──
 const DeleteAccountCard = () => {
@@ -112,7 +113,7 @@ const DeleteAccountCard = () => {
               initial={{ opacity: 0, scale: 0.95, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 8 }}
-              transition={{ type: "spring", damping: 26, stiffness: 360 }}
+              transition={SPRING.smooth}
               className="w-full max-w-md bg-card border border-bad-solid/30 rounded-2xl p-6 space-y-5 shadow-2xl relative text-left"
             >
               <div className="flex items-center justify-between border-b border-ink/[0.08] pb-4">

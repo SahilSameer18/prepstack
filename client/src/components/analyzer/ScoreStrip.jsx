@@ -10,7 +10,7 @@ const ScoreStrip = ({ score, reqs }) => {
   return (
     <>
       <div className="flex items-baseline gap-2" role="img" aria-label={`Evidence match ${score} out of 100`}>
-        <span className="font-display text-7xl font-black leading-none tracking-tight text-fg"><CountUp value={score} duration={1.1} /></span>
+        <span className="font-display text-7xl font-black leading-none tracking-tight text-fg"><CountUp value={score} duration={1.7} /></span>
         <span className="text-muted">out of 100</span>
       </div>
       <div className="min-w-0">

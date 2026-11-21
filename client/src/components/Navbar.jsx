@@ -7,6 +7,8 @@ import { useAuth } from "../hooks/useAuth";
 import { InlineSpinner } from "../components/ui/Skeletons";
 import LogoMark from "./ui/LogoMark";
 import ThemeToggle from "./ui/ThemeToggle";
+import SearchButton from "./ui/SearchButton";
+import { SPRING } from "../utils/motion";
 
 const Navbar = () => {
 
@@ -33,7 +35,7 @@ const Navbar = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ type: "spring", duration: 0.3, bounce: 0 }}
+          transition={SPRING.smooth}
           className="absolute inset-0 -z-10 rounded-lg bg-ink/[0.06]"
         />
       )}
@@ -96,7 +98,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 w-full z-50 border-b backdrop-blur-xl backdrop-saturate-150 transition-colors duration-200 ${scrolled ? 'bg-canvas/80 border-ink/[0.08]' : 'bg-canvas/60 border-transparent'}`}>
+    <nav className={`fixed top-0 w-full z-50 border-b backdrop-blur-xl backdrop-saturate-150 transition-colors duration-300 ${scrolled ? 'bg-canvas/80 border-ink/[0.08]' : 'bg-canvas/60 border-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
 
@@ -116,7 +118,7 @@ const Navbar = () => {
                 to={link.path}
                 onPointerEnter={hoverIn(link.path)}
                 className={({ isActive }) =>
-                  `relative flex items-center px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                  `relative flex items-center px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${
                     isActive ? "text-brand" : "text-fg-3 hover:text-fg"
                   }`
                 }
@@ -127,7 +129,7 @@ const Navbar = () => {
                       <motion.div
                         layoutId="navbarActiveIndicator"
                         className="absolute inset-0 bg-brand/12 rounded-lg -z-10"
-                        transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                        transition={SPRING.smooth}
                       />
                     )}
                     {!isActive && hoverPill(link.path)}
@@ -145,7 +147,7 @@ const Navbar = () => {
                 aria-controls="navbar-explore"
                 onClick={() => setExploreOpen(!exploreOpen)}
                 onPointerEnter={hoverIn("explore")}
-                className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${exploreOpen ? "text-fg bg-ink/[0.08]" : "text-fg-3 hover:text-fg"}`}
+                className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-300 ${exploreOpen ? "text-fg bg-ink/[0.08]" : "text-fg-3 hover:text-fg"}`}
               >
                 {!exploreOpen && hoverPill("explore")}
                 Explore
@@ -161,7 +163,7 @@ const Navbar = () => {
                     initial={{ opacity: 0, y: -6, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                    transition={{ type: "spring", damping: 25, stiffness: 360 }}
+                    transition={SPRING.smooth}
                     style={{ transformOrigin: "top center" }}
                     className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-72 max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-6rem)] overflow-y-auto bg-card border border-ink/[0.1] rounded-2xl shadow-[0_20px_50px_color-mix(in_srgb,var(--shadow)_85%,transparent)] overflow-hidden backdrop-blur-2xl"
                   >
@@ -175,7 +177,7 @@ const Navbar = () => {
                           to={link.path}
                           onClick={() => setExploreOpen(false)}
                           className={({ isActive }) =>
-                            `flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 group ${isActive ? "bg-brand/10 text-fg" : "hover:bg-ink/[0.04]"}`
+                            `flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive ? "bg-brand/10 text-fg" : "hover:bg-ink/[0.04]"}`
                           }
                         >
                           <div className="w-7 h-7 rounded-lg bg-ink/[0.05] border border-ink/[0.08] flex items-center justify-center text-muted group-hover:text-brand group-hover:bg-brand/10 transition-all flex-shrink-0 mt-0.5">
@@ -196,6 +198,7 @@ const Navbar = () => {
 
           {/* ── Desktop CTA ── */}
           <div className="hidden xl:flex items-center gap-2">
+            <SearchButton />
             <ThemeToggle />
             {user ? (
               <div className="relative" ref={userRef} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setUserMenuOpen(false); }}>
@@ -232,7 +235,7 @@ const Navbar = () => {
                       initial={{ opacity: 0, y: -6, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                      transition={{ type: "spring", damping: 25, stiffness: 360 }}
+                      transition={SPRING.smooth}
                       style={{ transformOrigin: "top right" }}
                       className="absolute right-0 top-[calc(100%+8px)] w-48 max-w-[calc(100vw-2rem)] max-h-[calc(100dvh-6rem)] overflow-y-auto bg-card border border-ink/[0.1] rounded-xl shadow-[0_20px_50px_color-mix(in_srgb,var(--shadow)_85%,transparent)] overflow-hidden backdrop-blur-2xl"
                     >
@@ -277,7 +280,7 @@ const Navbar = () => {
             ) : (
               <NavLink
                 to="/login"
-                className="amber-specular-button flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
+                className="amber-specular-button flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300"
               >
                 Get Started <ArrowRight className="text-xs" />
               </NavLink>
@@ -286,6 +289,7 @@ const Navbar = () => {
 
           {/* ── Mobile: theme + menu (WCAG 44x44px targets) ── */}
           <div className="xl:hidden flex items-center gap-1">
+          <SearchButton compact />
           <ThemeToggle />
           <button
             type="button"
@@ -320,7 +324,7 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ type: "spring", damping: 28, stiffness: 320 }}
+            transition={SPRING.smooth}
             className="xl:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto bg-canvas/98 backdrop-blur-2xl border-t border-ink/[0.08]"
           >
             <div className="px-5 py-4 space-y-1">

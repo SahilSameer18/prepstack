@@ -101,7 +101,7 @@ const SessionsCard = () => {
         </button>
       </div>
 
-      <div className="pt-5 space-y-3">
+      <div className="pt-2">
         {loadingSessions ? (
           <div className="space-y-3">
             {[1, 2].map((i) => (
@@ -129,11 +129,7 @@ const SessionsCard = () => {
             return (
               <div
                 key={session.id}
-                className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border transition-colors ${
-                  session.isCurrent
-                    ? "bg-brand/[0.04] border-brand/30"
-                    : "bg-card border-ink/[0.1] hover:border-ink/[0.15]"
-                }`}
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-ink/[0.1] py-5"
               >
                 <div className="flex items-start sm:items-center gap-3.5 min-w-0">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 ${

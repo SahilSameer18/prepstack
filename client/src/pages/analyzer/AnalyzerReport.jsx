@@ -18,6 +18,7 @@ import SkillGapCard from "../../components/analyzer/SkillGapCard";
 import PlanChecklist from "../../components/analyzer/PlanChecklist";
 import { countPlan, setItemDone } from "../../components/analyzer/planProgress";
 import ReportPlanImport from '../../components/plan/ReportPlanImport';
+import { SPRING } from "../../utils/motion";
 
 const list = "surface-card divide-y divide-ink/[0.08]";
 const heading = "mb-4 font-display text-xl font-bold tracking-tight text-fg";
@@ -130,7 +131,7 @@ const AnalyzerReport = () => {
           gate === "skeleton" ? <ReportSkeleton /> : <div className="min-h-[60vh]" />
         ) : (
           <>
-            <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3">
               <Link to="/analyzer" className="inline-flex min-h-[44px] items-center gap-2 whitespace-nowrap text-sm text-muted transition-colors hover:text-fg"><ArrowLeft aria-hidden="true" /> New report</Link>
               <div className="flex items-center gap-1 sm:gap-2">
                 <button type="button" onClick={download} disabled={downloading} className="inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 whitespace-nowrap px-2 text-sm text-fg-3 transition-colors hover:text-fg disabled:opacity-60">
@@ -170,7 +171,7 @@ const AnalyzerReport = () => {
               <div className="mt-3 flex items-start gap-3 rounded-2xl border border-brand/30 bg-brand/[0.05] px-5 py-4 sm:items-center">
                 <Flag weight="duotone" aria-hidden="true" className="mt-0.5 shrink-0 text-xl text-brand sm:mt-0" />
                 <p className="flex-1 text-sm leading-snug text-fg-2"><span className="font-semibold text-fg">Start here:</span> {first.title}{first.hours ? ` (about ${first.hours} hours)` : ""}</p>
-                {startLink && <Link to={startLink.path} className="group inline-flex min-h-[44px] shrink-0 items-center gap-1.5 text-sm font-bold text-brand">Open <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" /></Link>}
+                {startLink && <Link to={startLink.path} className="group inline-flex min-h-[44px] shrink-0 items-center gap-1.5 text-sm font-bold text-brand">Open <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" /></Link>}
               </div>
             )}
 
@@ -186,7 +187,7 @@ const AnalyzerReport = () => {
                       aria-hidden="true"
                       layoutId={calm ? undefined : "report-tab-slide"}
                       className="absolute inset-0 -z-10 rounded-xl bg-brand/12"
-                      transition={{ type: "spring", duration: 0.3, bounce: 0 }}
+                      transition={SPRING.smooth}
                     />
                   )}
                   {t.label} <span className="font-normal text-muted">{t.n}</span>
@@ -276,7 +277,7 @@ const AnalyzerReport = () => {
                           </li>
                         ))}
                       </ul>
-                      <Link to="/behavioral" className="group mt-3 inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">Practise these on Behavioral Prep <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" /></Link>
+                      <Link to="/behavioral" className="group mt-3 inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">Practise these on Behavioral Prep <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" /></Link>
                     </section>
                   )}
                 </>
@@ -291,7 +292,7 @@ const AnalyzerReport = () => {
                       ))}
                     </ul>
                   ) : <p className="text-sm text-muted">No resume changes to suggest for this job.</p>}
-                  <Link to="/resume" className="group mt-3 inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">Read the Resume Guide <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" /></Link>
+                  <Link to="/resume" className="group mt-3 inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">Read the Resume Guide <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" /></Link>
                 </section>
               )}
             </div>

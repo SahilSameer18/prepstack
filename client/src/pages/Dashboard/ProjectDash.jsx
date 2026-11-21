@@ -179,7 +179,7 @@ const ProjectDash = () => {
                 placeholder="Search ideas by title or stack..."
                 value={projectSearch}
                 onChange={(e) => setProjectSearch(e.target.value)}
-                className="w-full rounded-xl border border-ink/[0.14] bg-card py-3 pl-11 pr-4 text-sm text-fg outline-none transition-[border-color,box-shadow] duration-150 placeholder-faint hover:border-ink/[0.24] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]"
+                className="w-full rounded-xl border border-ink/[0.14] bg-card py-3 pl-11 pr-4 text-sm text-fg outline-none transition-[border-color,box-shadow] duration-200 placeholder-faint hover:border-ink/[0.24] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]"
               />
             </div>
             <div className="grid min-w-0 grid-cols-2 gap-2 md:w-80">

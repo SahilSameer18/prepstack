@@ -19,7 +19,7 @@ const RoadmapRow = ({ r, index }) => (
       </h2>
       <p className="mt-1 text-sm leading-relaxed text-muted sm:text-base">{r.desc}</p>
     </div>
-    <ArrowRight aria-hidden="true" className="justify-self-end text-brand transition-transform duration-150 group-hover:translate-x-1 sm:order-last" />
+    <ArrowRight aria-hidden="true" className="justify-self-end text-brand transition-transform duration-200 group-hover:translate-x-1 sm:order-last" />
     <div className="col-start-2 sm:col-start-auto">
       <p className="font-code text-sm text-fg">{r.duration}</p>
       <p className="text-sm text-muted">{r.level}</p>

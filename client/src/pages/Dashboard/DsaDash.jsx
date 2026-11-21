@@ -11,7 +11,7 @@ const DSADash = ({ dsaData, loading }) => (
     <div className="mb-5 mt-12 flex items-end justify-between gap-4">
       <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Your sheets</h2>
       <Link to="/dsa" className="group inline-flex min-h-[44px] items-center gap-2 font-display text-sm font-bold text-brand">
-        All sheets <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+        All sheets <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" />
       </Link>
     </div>
 

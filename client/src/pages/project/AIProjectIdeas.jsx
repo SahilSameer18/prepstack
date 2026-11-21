@@ -18,7 +18,7 @@ const complexities = ["Beginner", "Intermediate", "Advanced"];
 const domains = ["FinTech", "HealthTech", "EdTech", "E-Commerce", "SaaS", "Web3", "Open Source", "Social Media", "Productivity", "AI / ML"];
 
 const chipClass = (on, dashed = false) =>
-  `flex min-h-[44px] cursor-pointer items-center rounded-xl px-3.5 text-sm transition-colors duration-150 active:scale-[0.98] sm:min-h-[40px] ${
+  `flex min-h-[44px] cursor-pointer items-center rounded-xl px-3.5 text-sm transition-colors duration-200 active:scale-[0.98] sm:min-h-[40px] ${
     on ? "bg-brand/12 font-semibold text-brand" : `border text-muted hover:text-fg ${dashed ? "border-dashed border-ink/[0.2]" : "border-ink/[0.1]"}`
   }`;
 const inputClass = "w-full rounded-xl border border-ink/[0.1] bg-card px-4 py-3 text-sm text-fg outline-none transition-colors placeholder:text-faint hover:border-ink/[0.2] focus:border-brand focus:ring-1 focus:ring-brand";
@@ -108,7 +108,7 @@ const AIProjectIdeas = () => {
             </p>
           </div>
           <Link to="/dashboard?tab=projects" className="group inline-flex min-h-[44px] items-center gap-2 self-start font-display text-sm font-bold text-brand md:self-auto">
-            Saved ideas <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
+            Saved ideas <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" />
           </Link>
         </div>
 
@@ -158,7 +158,7 @@ const AIProjectIdeas = () => {
                   <button
                     key={c} type="button" aria-pressed={form.complexity === c}
                     onClick={() => handleChange("complexity", c)}
-                    className={`min-h-[44px] cursor-pointer rounded-lg text-sm transition-colors duration-150 sm:min-h-[40px] ${form.complexity === c ? "bg-brand/12 font-semibold text-brand" : "text-muted hover:text-fg"}`}
+                    className={`min-h-[44px] cursor-pointer rounded-lg text-sm transition-colors duration-200 sm:min-h-[40px] ${form.complexity === c ? "bg-brand/12 font-semibold text-brand" : "text-muted hover:text-fg"}`}
                   >
                     {c}
                   </button>
@@ -176,7 +176,7 @@ const AIProjectIdeas = () => {
                 <span className="font-semibold text-fg">
                   Add detail <span className="font-normal text-muted">{detailCount > 0 ? `(${detailCount} added)` : "(optional)"}</span>
                 </span>
-                <CaretDown aria-hidden="true" className={`text-muted transition-transform duration-200 ${detailOpen ? "rotate-180" : ""}`} />
+                <CaretDown aria-hidden="true" className={`text-muted transition-transform duration-300 ${detailOpen ? "rotate-180" : ""}`} />
               </button>
               <div id="detail-panel" className={`grid transition-[grid-template-rows] duration-300 ease-out ${detailOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
                 <div className="overflow-hidden" inert={!detailOpen}>

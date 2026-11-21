@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, CircleNotch, Clock, Cpu, FileText, Trash, WarningCircle, X } from "@phosphor-icons/react";
 import { TIME_COMPLEXITIES, SPACE_COMPLEXITIES, COMMON_PATTERNS, APPROACH_MAX } from '../../../data/problemNoteOptions';
+import { SPRING } from "../../../utils/motion";
 
 // The drawer's save status, in words (never colour alone)
 const STATUS = {
@@ -48,7 +49,7 @@ const ProblemNoteDrawer = ({ isOpen, noteData, hasNote, saveStatus = 'saved', on
         initial={{ height: 0, opacity: 0 }}
         animate={{ height: "auto", opacity: 1 }}
         exit={{ height: 0, opacity: 0 }}
-        transition={{ type: "spring", damping: 28, stiffness: 340 }}
+        transition={SPRING.smooth}
         className="overflow-hidden"
       >
         <div className="bg-card border-t border-ink/[0.06] px-5 py-4 space-y-3.5">
