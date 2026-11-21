@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { roadmaps } from "./roadmaps";
-import { iconMap } from "../pages/roadmaps/roadmapIcons";
 import { ROADMAP } from "../utils/reportLinks";
 import { allPages } from "../seo/pages";
 
@@ -51,11 +50,10 @@ export const checkStep = (step) => {
 };
 
 describe("the roadmap data", () => {
-  it("has at least the six first roadmaps, each with a unique slug, a known icon and a list of steps", () => {
+  it("has at least the six first roadmaps, each with a unique slug and a list of steps", () => {
     for (const slug of ["frontend", "backend", "fullstack", "android", "data-analytics", "machine-learning"]) expect(roadmaps.some((r) => r.slug === slug), slug).toBe(true);
     expect(new Set(roadmaps.map((r) => r.slug)).size).toBe(roadmaps.length);
     for (const r of roadmaps) {
-      expect(iconMap[r.icon], r.slug).toBeTruthy();
       expect(Array.isArray(r.steps) && r.steps.length > 0, r.slug).toBe(true);
       expect(r.details, `${r.slug} still has the old details list`).toBeUndefined();
     }

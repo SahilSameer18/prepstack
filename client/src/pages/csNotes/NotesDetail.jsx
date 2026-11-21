@@ -10,7 +10,6 @@ import { SkeletonNotesDetail } from '../../components/ui/Skeletons';
 import { useLoadingGate } from '../../hooks/useLoadingGate';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
 import SelectField from '../../components/ui/SelectField';
-import PageBackdrop from '../../components/ui/PageBackdrop';
 import Accordion from '../../components/ui/Accordion';
 import Quiz from '../../components/notes/Quiz';
 import Diagram from '../../components/notes/Diagram';
@@ -87,25 +86,26 @@ const LegacySection = ({ section }) => (
 );
 
 // ── Sections written to the template (they have lastChecked) ──────────────────────────────────────────────────────────
-const Heading = ({ id, children }) => <h2 id={id} className="scroll-mt-28 text-2xl font-display font-extrabold tracking-tight text-fg mb-5 text-left">{children}</h2>;
+const Heading = ({ id, children }) => <h2 id={id} className="scroll-mt-28 border-b border-ink pb-3 text-left font-code text-xs uppercase tracking-[0.14em] text-fg-3">{children}</h2>;
+
+// Why it matters, Example and How it fails: a small label and a thin coloured rule, not a filled box
+const Aside = ({ label, tone, rule, children, pre }) => (
+  <div className={`border-l-2 pl-5 ${rule}`}>
+    <p className={`mb-1.5 font-code text-xs uppercase tracking-[0.14em] ${tone}`}>{label}</p>
+    <p className={`text-[15px] leading-[1.7] text-fg-3 ${pre ? 'whitespace-pre-wrap' : ''}`}>{children}</p>
+  </div>
+);
 
 const topicId = (name) => 'topic-' + String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 const TopicCard = ({ topic }) => (
-  <article id={topicId(topic.name)} className="scroll-mt-28 rounded-2xl bg-card border border-ink/[0.1] p-5 sm:p-6 text-left space-y-4 shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_12%,transparent),0_16px_30px_-22px_color-mix(in_srgb,var(--shadow)_38%,transparent)] transition-[border-color,box-shadow] duration-200 hover:border-ink/[0.2] hover:shadow-[0_1px_2px_color-mix(in_srgb,var(--shadow)_14%,transparent),0_22px_38px_-22px_color-mix(in_srgb,var(--shadow)_50%,transparent)]">
-    <h3 className="font-display text-xl font-extrabold tracking-tight text-fg">{topic.name}</h3>
-    <p className="text-fg-2 text-[17px] leading-[1.75]">{topic.definition}</p>
-    <div className="rounded-xl bg-brand/[0.07] border border-brand/[0.2] p-4">
-      <p className="text-sm font-ui font-bold text-brand mb-1.5">Why it matters</p>
-      <p className="text-fg-2 text-base leading-relaxed">{topic.why}</p>
-    </div>
-    <div className="rounded-xl bg-ink/[0.03] border border-ink/[0.08] p-4">
-      <p className="text-sm font-ui font-bold text-fg-3 mb-1.5">Example</p>
-      <p className="text-fg-2 text-base leading-relaxed whitespace-pre-wrap">{topic.example}</p>
-    </div>
-    <div className="rounded-xl bg-bad-solid/[0.05] border border-bad-solid/[0.18] p-4">
-      <p className="text-sm font-ui font-bold text-bad mb-1.5">How it fails</p>
-      <p className="text-fg-2 text-base leading-relaxed">{topic.failure}</p>
+  <article id={topicId(topic.name)} className="scroll-mt-28 border-b border-ink/[0.1] py-10 text-left">
+    <h3 className="font-display text-2xl font-bold tracking-tight text-fg">{topic.name}</h3>
+    <p className="mt-4 text-fg-2 text-[17px] leading-[1.75]">{topic.definition}</p>
+    <div className="mt-6 space-y-6">
+      <Aside label="Why it matters" tone="text-brand" rule="border-brand/50">{topic.why}</Aside>
+      <Aside label="Example" tone="text-muted" rule="border-ink/[0.25]" pre>{topic.example}</Aside>
+      <Aside label="How it fails" tone="text-bad" rule="border-bad-solid/50">{topic.failure}</Aside>
     </div>
   </article>
 );
@@ -141,7 +141,7 @@ const OnThisPage = ({ outline }) => {
   );
   return (
     <nav aria-label="On this page" className="text-left">
-      <p className="mb-2 font-ui text-xs font-bold text-fg-3">On this page</p>
+      <p className="mb-2 font-code text-xs uppercase tracking-[0.14em] text-muted">On this page</p>
       <ul className="space-y-0.5 border-l border-ink/[0.1] pl-3">
         {outline.map((o) => (
           <li key={o.id}>
@@ -165,19 +165,19 @@ const ReviewedSection = ({ section }) => {
 
     <div>
       <Heading id="topics">Topics</Heading>
-      <div className="space-y-5">{section.topics.map((topic) => <TopicCard key={topic.name} topic={topic} />)}</div>
+      <div>{section.topics.map((topic) => <TopicCard key={topic.name} topic={topic} />)}</div>
     </div>
 
     {section.diagrams?.length > 0 && (
       <div>
         <Heading id="diagrams">Diagrams</Heading>
-        <div className="space-y-5">{section.diagrams.map((d) => <Diagram key={d.caption} diagram={d} />)}</div>
+        <div className="mt-6 space-y-5">{section.diagrams.map((d) => <Diagram key={d.caption} diagram={d} />)}</div>
       </div>
     )}
 
     <div>
       <Heading id="mistakes">Common mistakes</Heading>
-      <ul className="space-y-3 text-left">
+      <ul className="mt-6 space-y-3 text-left">
         {section.mistakes.map((m) => (
           <li key={m} className="flex items-start gap-3 text-fg-2 text-base leading-relaxed">
             <Warning className="text-bad mt-1.5 shrink-0" aria-hidden="true" />
@@ -189,9 +189,9 @@ const ReviewedSection = ({ section }) => {
 
     <div>
       <Heading id="questions">Interview questions</Heading>
-      <div className="space-y-3 text-left">
+      <div className="text-left">
         {section.questions.map((q) => (
-          <Accordion key={q.question} title={q.question}>
+          <Accordion flat key={q.question} title={q.question}>
             <p className="text-fg-2 text-base leading-relaxed whitespace-pre-wrap">{q.answer}</p>
           </Accordion>
         ))}
@@ -200,7 +200,7 @@ const ReviewedSection = ({ section }) => {
 
     <div>
       <Heading id="quiz">Check yourself</Heading>
-      <Quiz quiz={section.quiz} onComplete={(correct) => setQuizDone(correct !== null)} />
+      <div className="mt-6"><Quiz quiz={section.quiz} onComplete={(correct) => setQuizDone(correct !== null)} /></div>
       {quizDone && !user && !authLoading && (
         <div className="mt-4">
           <SignInNotice text="This score is not saved. Sign in to keep track of your progress in My plan." />
@@ -210,10 +210,10 @@ const ReviewedSection = ({ section }) => {
 
     <div>
       <Heading id="keep-going">Keep going</Heading>
-      <ul className="grid sm:grid-cols-2 gap-3">
+      <ul className="divide-y divide-ink/[0.1] border-b border-ink/[0.1]">
         {relatedLinks(section.links).map((l) => (
           <li key={l.key}>
-            <Link to={l.path} className="flex items-center justify-between gap-3 rounded-xl bg-card border border-ink/[0.1] hover:border-ink/[0.22] px-4 py-3 min-h-[44px] text-sm text-fg-2 hover:text-fg transition-colors">
+            <Link to={l.path} className="flex items-center justify-between gap-3 py-3.5 min-h-[44px] text-fg-2 hover:text-fg transition-colors">
               <span className="capitalize">{l.label}</span>
               <CaretRight className="text-muted shrink-0" aria-hidden="true" />
             </Link>
@@ -234,7 +234,7 @@ const SectionList = ({ subject, subjectTitle, sections, activeId, onPick, slideI
   const subjects = summary ? Object.values(summary) : [];
   return (
     <div className="text-left">
-      <label htmlFor="notes-subject" className="mb-1.5 block font-ui text-xs font-bold text-fg-3">Subject</label>
+      <label htmlFor="notes-subject" className="mb-1.5 block font-code text-xs uppercase tracking-[0.14em] text-muted">Subject</label>
       {subjects.length > 1 ? (
         <SelectField
           id="notes-subject"
@@ -246,7 +246,7 @@ const SectionList = ({ subject, subjectTitle, sections, activeId, onPick, slideI
       ) : (
         <p id="notes-subject" className="min-h-[44px] content-center text-sm font-semibold text-fg">{subjectTitle}</p>
       )}
-      <p className="mb-2 mt-5 font-ui text-xs font-bold text-fg-3">{sections.length} sections</p>
+      <p className="mb-2 mt-5 font-code text-xs uppercase tracking-[0.14em] text-muted">{sections.length} sections</p>
       <nav aria-label="Sections">
         <ol className="space-y-0.5">
           {sections.map((s, i) => {
@@ -321,7 +321,6 @@ export default function NotesDetail() {
 
   return (
     <div className="relative">
-      <PageBackdrop />
       <div className="relative z-10 mx-auto max-w-7xl lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[16rem_minmax(0,1fr)_13rem]">
 
         {/* ── Phone: the section list opens as a drawer ── */}
@@ -381,14 +380,14 @@ export default function NotesDetail() {
 
         {/* ── The article: one section ── */}
         <div className="min-w-0 pb-4">
-          <motion.div key={section.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="max-w-3xl">
+          <motion.div key={section.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="max-w-[46rem]">
             <div className="mb-5 flex items-center gap-1.5 font-ui text-xs text-muted">
               <Link to="/notes" className="transition-colors hover:text-fg-2">{subjectTitle}</Link>
               <CaretRight className="text-xs" aria-hidden="true" />
               <span className="truncate text-fg-2">{section.title}</span>
             </div>
 
-            <h1 className="mb-4 text-left font-display text-3xl font-black leading-[1.1] tracking-[-0.03em] text-fg md:text-4xl">{section.title}</h1>
+            <h1 className="mb-4 text-left font-display text-3xl font-black leading-[1.08] tracking-[-0.04em] text-fg md:text-5xl">{section.title}</h1>
 
             <div className="mb-10 flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-ink/[0.1] pb-5 font-ui text-sm text-muted">
               <span className="flex items-center gap-1.5"><Clock aria-hidden="true" /> {section.readMinutes} min read</span>

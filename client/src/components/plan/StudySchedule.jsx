@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CaretDown, DotsThree } from "@phosphor-icons/react";
 import PlanChecklist from "../analyzer/PlanChecklist";
 import { updatePlanItem } from "../../api/services/planService";
 import { PACES, dateInIndia, paceMinutes } from "../../utils/planBuilder";
@@ -15,7 +16,16 @@ import {
 } from "../../utils/studyPlan";
 
 const BUTTON =
-  "min-h-[44px] rounded-xl border border-ink/[0.2] px-4 py-2 text-sm text-fg disabled:opacity-50";
+  "inline-flex min-h-[44px] items-center rounded-xl border border-ink/[0.2] bg-card px-4 py-2 text-sm font-medium text-fg transition-colors hover:border-ink/[0.4] disabled:opacity-50";
+const DANGER = "inline-flex min-h-[44px] items-center rounded-xl px-3 py-2 text-sm font-medium text-bad transition-colors hover:bg-bad-solid/10 disabled:opacity-50";
+
+// A labelled group of actions: every action stays visible, grouped by what it is for.
+const Group = ({ label, children }) => (
+  <div>
+    <p className="mb-2.5 font-code text-xs uppercase tracking-[0.14em] text-muted">{label}</p>
+    <div className="flex flex-wrap gap-2">{children}</div>
+  </div>
+);
 
 // All planning controls live here so Today can remain a small, quiet task list.
 export default function StudySchedule({
@@ -47,24 +57,15 @@ export default function StudySchedule({
   }
 
   return (
-    <section aria-label="Plan" className="space-y-6">
-      <div className="space-y-2 text-sm text-fg-3">
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">{plan.title}</h2>
-        <p>
-          {progress.done} of {progress.total} tasks complete ·{" "}
-          {formatPlanMinutes(progress.minutes)} completed.
+    <section aria-label="Plan" className="space-y-8">
+      <div className="space-y-3 text-sm text-fg-3">
+        <h2 className="font-display text-3xl font-bold tracking-tight text-fg">{plan.title}</h2>
+        <p className="font-code text-sm leading-relaxed text-muted">
+          {progress.done} of {progress.total} tasks complete · {formatPlanMinutes(progress.minutes)} completed ·{" "}
+          {formatPlanDate(plan.startDate, true)} to {formatPlanDate(plan.deadline, true)}
+          {!plan.fromReport && <> · {(PACES[plan.pace] || PACES.standard).label} pace (a Medium problem takes about {paceMinutes(plan.pace)} min)</>}
         </p>
-        <p>
-          {formatPlanDate(plan.startDate, true)} to{" "}
-          {formatPlanDate(plan.deadline, true)}.
-        </p>
-        {!plan.fromReport && (
-          <p>
-            Pace: {(PACES[plan.pace] || PACES.standard).label} (a Medium problem
-            takes about {paceMinutes(plan.pace)} min).
-          </p>
-        )}
-        <p>{today?.onTrack?.text}</p>
+        {today?.onTrack?.text && <p className="font-medium text-fg">{today.onTrack.text}</p>}
         {!readOnly && overdue.length > 0 && (
           <p>
             {overdue.length} overdue {overdue.length === 1 ? 'task' : 'tasks'} remain in the schedule.
@@ -89,8 +90,8 @@ export default function StudySchedule({
           </p>
         )}
         {!!plan.coverage?.leftOut?.length && !!plan.coverage?.byGroup?.length && (
-          <details className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-3">
-            <summary className="min-h-[44px] cursor-pointer text-sm font-semibold text-fg">
+          <details className="border-y border-ink/[0.1]">
+            <summary className="flex min-h-[44px] cursor-pointer items-center text-sm font-semibold text-fg">
               See what is not in your plan
             </summary>
             <PlanCoverage byGroup={plan.coverage.byGroup} className="pt-2" />
@@ -103,17 +104,9 @@ export default function StudySchedule({
           </p>
         )}
       </div>
-      <div className="flex flex-wrap gap-3">
-        {readOnly && <button className={BUTTON} disabled={model.busy} onClick={() => onDialog('rebuild')}>Extend deadline</button>}
+      <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
         {!readOnly && (
-          <>
-            <button
-              className={BUTTON}
-              disabled={model.busy}
-              onClick={() => onDialog("rebuild")}
-            >
-              Rebuild from today
-            </button>
+          <Group label="Adjust">
             <button className={BUTTON} onClick={() => onDialog("hours")}>
               Change hours
             </button>
@@ -125,6 +118,10 @@ export default function StudySchedule({
             <button className={BUTTON} onClick={() => onDialog("lighter")}>
               Lighter days
             </button>
+          </Group>
+        )}
+        {!readOnly && (
+          <Group label="Tasks">
             <button className={BUTTON} onClick={() => onDialog("add")}>
               Add a task
             </button>
@@ -133,37 +130,58 @@ export default function StudySchedule({
                 Pull tomorrow’s first task
               </button>
             )}
-          </>
+          </Group>
         )}
-        {progress.complete && round.length > 0 && (
-          <button className={BUTTON} onClick={() => onDialog("revision")}>
-            Preview revision round
+        {(
+          <Group label="Recovery">
+            {readOnly && <button className={BUTTON} disabled={model.busy} onClick={() => onDialog('rebuild')}>Extend deadline</button>}
+            {!readOnly && (
+              <button
+                className={BUTTON}
+                disabled={model.busy}
+                onClick={() => onDialog("rebuild")}
+              >
+                Rebuild from today
+              </button>
+            )}
+            {progress.complete && round.length > 0 && (
+              <button className={BUTTON} onClick={() => onDialog("revision")}>
+                Preview revision round
+              </button>
+            )}
+          </Group>
+        )}
+        <Group label="Plan">
+          <Link className={BUTTON} to="/my-plan">
+            Build another plan
+          </Link>
+          <button className={DANGER} onClick={() => onDialog("delete")}>
+            Delete current plan
           </button>
-        )}
-        <Link className={BUTTON} to="/my-plan">
-          Build another plan
-        </Link>
-        <button className={BUTTON} onClick={() => onDialog("delete")}>
-          Delete current plan
-        </button>
+        </Group>
       </div>
       {model.actionError && (
         <p role="alert" className="text-sm text-bad">
           {model.actionError}
         </p>
       )}
+      <div className="border-t border-ink">
       {weeks.map((week) => (
         <details
           key={week.number}
           open={week.days.some((day) => day.day <= currentDay)}
-          className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-3"
+          className="group border-b border-ink/[0.1]"
         >
-          <summary className="min-h-[44px] cursor-pointer text-sm font-semibold text-fg">
-            Week {week.number} · {week.days[0].label} to{" "}
-            {week.days.at(-1).label}
-            <span className="mt-1 block text-xs font-normal text-muted">
-              {weekSummary(week)}
+          <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between gap-4 py-5 [&::-webkit-details-marker]:hidden">
+            <span className="min-w-0">
+              <span className="block font-display text-lg font-bold text-fg">
+                Week {week.number} <span className="ml-2 text-sm font-normal text-fg-3">{week.days[0].label} to {week.days.at(-1).label}</span>
+              </span>
+              <span className="mt-1 block text-sm font-normal text-muted">
+                {weekSummary(week)}
+              </span>
             </span>
+            <CaretDown aria-hidden="true" className="shrink-0 text-base text-muted transition-transform duration-200 group-open:rotate-180 group-open:text-brand" />
           </summary>
           <PlanChecklist
             days={week.days}
@@ -180,7 +198,7 @@ export default function StudySchedule({
                       type="button"
                       disabled={model.busy}
                       aria-label={`Options: ${entry.task}`}
-                      className="min-h-[44px] px-2 text-xs text-brand"
+                      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg text-xl text-muted transition-colors hover:bg-ink/[0.05] hover:text-fg"
                       onClick={() =>
                         onDialog(
                           "task",
@@ -188,16 +206,17 @@ export default function StudySchedule({
                         )
                       }
                     >
-                      Options
+                      <DotsThree weight="bold" aria-hidden="true" />
                     </button>
                   )
             }
           />
         </details>
       ))}
+      </div>
       {!!skipped.length && (
-        <details className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-4">
-          <summary className="min-h-[44px] cursor-pointer text-sm text-fg">
+        <details className="border-y border-ink/[0.1]">
+          <summary className="flex min-h-[44px] cursor-pointer items-center text-sm font-medium text-fg">
             Skipped tasks ({skipped.length})
           </summary>
           <ul className="space-y-2">

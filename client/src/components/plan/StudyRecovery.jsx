@@ -5,7 +5,7 @@ import { PlanWeeks } from './PlanPreview';
 import { applyPlanRecovery, getPausedPlan, previewPlanRecovery } from '../../api/services/planService';
 import { extractError } from '../../utils/extractError';
 
-const BUTTON = 'min-h-[44px] rounded-xl border border-ink/[0.2] px-4 py-2 text-sm text-fg disabled:opacity-50';
+const BUTTON = 'inline-flex min-h-[44px] items-center rounded-xl border border-ink/[0.2] bg-card px-4 py-2 text-sm font-medium text-fg transition-colors hover:border-ink/[0.4] disabled:opacity-50';
 const INPUT = 'mt-2 min-h-[44px] w-full rounded-xl border border-ink/[0.2] bg-card-hover px-3 py-2 text-fg';
 const TITLES = {
   calendar: 'Study day settings', pause: 'Pause this plan', resume: 'Resume paused plan',
@@ -26,10 +26,9 @@ export default function StudyRecovery({ model }) {
   }
 
   return (
-    <section aria-label="Plan recovery" className="mb-7 space-y-4 border-b border-ink/[0.1] pb-6 text-sm text-fg-3">
-      <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Your study schedule</h2>
-      <p className="break-words">
-        {calendar?.timeZone || 'Asia/Kolkata'} · Study day starts at {calendar?.dayStartHour ?? 0}:00.
+    <section aria-label="Plan recovery" className="mb-8 space-y-4 border-b border-ink/[0.1] pb-6 text-sm text-fg-3">
+      <p className="break-words font-code text-xs uppercase tracking-[0.14em] text-muted">
+        Study schedule · {calendar?.timeZone || 'Asia/Kolkata'} · day starts at {calendar?.dayStartHour ?? 0}:00
       </p>
       <div className="flex flex-wrap gap-3">
         <button className={BUTTON} disabled={model.busy} onClick={() => open('calendar')}>

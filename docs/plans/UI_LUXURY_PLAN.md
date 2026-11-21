@@ -49,10 +49,50 @@ Source: the honest audit of 21 Nov 2026 (overall 6.5 of 10 against "million doll
 | 3. Signature marks | The segmented progress strip, the tick box, numbered steps in mono, used across DSA, plan and roadmaps. | Open |
 | 4. Home page | Built (see Status). The live demo is now about the plan: your hours, today, missed days (decided 21 Nov). | Built, not tested |
 | 5. List and detail pages | DSA sheets list and sheet page as rows with progress marks, roadmaps list and page, behavioral, resume guide. | **Done 21 Nov** (all six pages built, looked at in light and dark; not tested) |
-| 6. Reading and planning screens | The notes reading page (quiet backdrop, clear explanation, example, mistake and exercise blocks, narrow-screen diagrams and code) and the My plan Plan tab (controls grouped by purpose: schedule changes, task management, recovery, plan management). Draw each with real data first. | Open |
+| 6. Reading and planning screens (**built 21 Nov**, notes page, notes list and Plan tab) | The notes reading page (quiet backdrop, clear explanation, example, mistake and exercise blocks, narrow-screen diagrams and code) and the My plan Plan tab (controls grouped by purpose: schedule changes, task management, recovery, plan management). Draw each with real data first. | Open |
 | 7. App pages to the same look | Dashboard (smaller greeting, clear selected section), AI projects, Role Analyzer, profile, login and register; confirmation dialogs the same everywhere. | Open (they are close already) |
 | 8. Motion | One system: press feedback, tab movement, disclosure, dialogs, gentle page entry, a "task done" moment; consistent reduced motion; optional Ctrl+K "jump to" box (needs the owner's yes). | Open |
 | 9. Verify | Whole e2e suite, server tests, build and SEO check, light, dark and 375 px captures, slow network, accessibility checklist (touch targets, keyboard and focus, Escape and focus return, names for icon buttons, text as well as colour for errors, larger text and long labels, reduced motion and transparency, dialogs with the phone keyboard open); docs and README. | Open (when the owner asks) |
+
+## Phase 6 in detail (looked at on real pages, 21 Nov 2026)
+
+### 6a. Notes reading page (`/notes/:subject/:section`)
+**What is good and stays:** the three columns (chapter list on the left, article, "On this page" on the right), the title and meta row ("10 min read", "Last checked", "Report a mistake"), the plain-words text.
+**What is wrong:**
+1. Each topic is a white card, and inside it sit three more tinted boxes (Why it matters, Example, How it fails): four containers per topic, seven topics per section, and the page is about 9,400 px long. It reads as boxes, not as an article.
+2. The text line is about 90 characters wide: too long for comfortable reading (65 to 70 is the target).
+3. The grid and amber glow behind the article compete with the text; a reading page should be quiet.
+4. The three sub-blocks use three background colours at the same loudness as the body text.
+5. Not yet looked at closely: the diagrams, Common mistakes, Interview questions and Check yourself blocks at the bottom (to be checked before building).
+**Plan:** each topic becomes a plain section (heading, text, a hairline); Why it matters, Example and How it fails become quiet blocks with a small uppercase label and a thin coloured rule on the left (brand, neutral, red) instead of filled boxes; a narrower reading column; no grid and glow on reading pages; the bottom blocks get the same label style. Left list and right outline unchanged (sticky). The `Accordion` used by the notes quiz and diagrams is checked on the way.
+
+### 6b. My plan, "Plan" tab (`/my-plan/study?tab=plan`). The Today screen is not touched.
+**What is wrong:**
+1. Two headings for one thing ("Your study schedule" and "Placement prep, 4 weeks") and the plan facts are five stacked lines of the same size (progress, dates, pace, "On track", a long amber warning).
+2. Seven buttons of the same weight in one row, including "Delete current plan" next to the ones used every day.
+3. Weeks are boxes, with day timelines and task boxes inside them: cards inside cards. Each task's "Options" sits far to the right.
+**Plan (nothing is hidden; every action stays visible, so no behaviour or test flow changes):**
+- One heading (the plan title) and one status line of small facts (done count, dates, pace, "On track"); the warning as one short line with its disclosure.
+- Actions in four labelled groups: **Adjust** (Change hours, Change pace, Lighter days), **Tasks** (Add a task), **Recovery** (Pause plan, Rebuild from today), **Plan** (Study day settings, Build another plan, and Delete current plan as a separate red text action).
+- Weeks as lines (like the DSA topics): week, dates, hours, a mark per task done, a caret; inside, days on a thin line with flat task rows (square tick, title, minutes, source in muted text, Options as a small icon button with a name).
+
+### How we do it (agreed rules)
+1. For each of 6a and 6b: a picture first, drawn with the **real content** (the real OS text, the real plan from a built test plan), light and dark, then your yes.
+2. Build one page, look at real screenshots in light and dark, fix, then show you.
+3. No test pass until you ask; lint only.
+
+## Phase 7 in detail (looked at on real pages, 21 Nov 2026)
+**Findings**
+1. Dashboard "My plan" tab: two heading levels and two tab rows stacked (Dashboard tabs, then "My plan" heading and Today/Plan/Reviews tabs in the same style), so it is unclear which row does what. The greeting is the loudest thing on the page.
+2. Profile: orange word in "Your profile.", two stat cards with icon tiles, avatar in a big framed box, the form inside one large card.
+3. Login and register: orange words ("back.", "crack your tech role."), three stat cards with different heights, a pill list of features.
+4. AI projects, Analyzer, Reports: already close (done earlier); they get only the label and rule alignment.
+**Plan**
+- Dashboard: small "Dashboard" label, a smaller greeting; the top tabs stay as the one main row; the My plan inner tabs become a quiet underline row so the two rows look different; the Today screen content is not changed.
+- Profile: no orange word; name as the title with the avatar; two numbers in mono without cards; form as labelled rows with hairlines (label and hint on the left, field on the right).
+- Login and register: no orange word; the three facts as one mono strip with dividers; the feature pills removed (they repeat the navbar).
+- Security and Devices tabs, dialogs and confirmations: same row style; destructive actions as red text.
+- AI projects, Analyzer, Reports: label and rule alignment only.
 
 ## Decisions that are the owner's (recommendation in brackets)
 1. Heading font: keep Plus Jakarta Sans, or change (recommend: look at three pictured options for the home hero before deciding; change only the heading font).

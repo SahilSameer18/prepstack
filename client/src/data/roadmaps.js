@@ -2,7 +2,6 @@ export const roadmaps = [
   {
     title: "Frontend Development",
     slug: "frontend",
-    icon: "FaLaptopCode",
     color: "text-info", bg: "bg-info-solid/10", border: "border-info-solid/20", glow: "shadow-info-solid/10",
     desc: "HTML → CSS → JavaScript → React → Next.js → Production. Complete path from zero to deployable portfolio.",
     duration: "4–6 months",
@@ -119,7 +118,6 @@ export const roadmaps = [
   {
     title: "Backend Development",
     slug: "backend",
-    icon: "FaServer",
     color: "text-bad", bg: "bg-bad-solid/10", border: "border-bad-solid/20", glow: "shadow-bad-solid/10",
     desc: "Node.js → Express → MongoDB → REST APIs → Auth → Cloud. Build scalable backend applications.",
     duration: "4–5 months",
@@ -251,7 +249,6 @@ export const roadmaps = [
   {
     title: "Full Stack MERN",
     slug: "fullstack",
-    icon: "FaDatabase",
     color: "text-violet", bg: "bg-violet-solid/10", border: "border-violet-solid/20", glow: "shadow-violet-solid/10",
     desc: "Combine Frontend & Backend to build production-grade MERN applications.",
     duration: "6–8 months",
@@ -385,7 +382,6 @@ export const roadmaps = [
   {
     title: "Android Development",
     slug: "android",
-    icon: "FaMobileAlt",
     color: "text-ok", bg: "bg-ok-solid/10", border: "border-ok-solid/20", glow: "shadow-ok-solid/10",
     desc: "Kotlin → Jetpack Compose → Android SDK → Firebase. Publish apps to Google Play Store.",
     duration: "5–6 months",
@@ -492,7 +488,6 @@ export const roadmaps = [
   {
     title: "Data Analytics",
     slug: "data-analytics",
-    icon: "FaChartLine",
     color: "text-info",
     bg: "bg-info-solid/10",
     border: "border-info-solid/20",
@@ -607,7 +602,6 @@ export const roadmaps = [
   {
     title: "Machine Learning",
     slug: "machine-learning",
-    icon: "FaBrain",
     color: "text-violet", bg: "bg-violet-solid/10", border: "border-violet-solid/20", glow: "shadow-violet-solid/10",
     desc: "Python → NumPy → Pandas → Scikit-Learn → Deep Learning. Build and deploy ML models.",
     duration: "5–7 months",
@@ -718,7 +712,6 @@ export const roadmaps = [
   {
     title: "DSA & Problem Solving",
     slug: "dsa",
-    icon: "FaCode",
     color: "text-warn", bg: "bg-warn-solid/10", border: "border-warn-solid/20", glow: "shadow-warn-solid/10",
     desc: "Learn the main data structures and algorithms in a sensible order, and practise each one with your PrepStack DSA sheets.",
     duration: "5–8 months",
@@ -952,7 +945,6 @@ export const roadmaps = [
   {
     title: "Java & Spring Boot",
     slug: "java-spring",
-    icon: "FaJava",
     color: "text-ok", bg: "bg-ok-solid/10", border: "border-ok-solid/20", glow: "shadow-ok-solid/10",
     desc: "Learn Java, then build web APIs with Spring Boot, a database, sign-in and tests, and put the app in a container.",
     duration: "5–7 months",
@@ -1081,7 +1073,6 @@ export const roadmaps = [
   {
     title: "DevOps & Cloud",
     slug: "devops-cloud",
-    icon: "FaCloud",
     color: "text-violet", bg: "bg-violet-solid/10", border: "border-violet-solid/20", glow: "shadow-violet-solid/10",
     desc: "Learn how software is built, tested, packaged, put online and watched: Git, Linux, containers, automatic checks, cloud basics and monitoring.",
     duration: "5–7 months",

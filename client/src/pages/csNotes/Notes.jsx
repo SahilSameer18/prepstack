@@ -1,67 +1,52 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowRight, Blueprint, Cpu, Cube, Database, MagnifyingGlass, ShareNetwork } from "@phosphor-icons/react";
+import { ArrowRight, MagnifyingGlass } from "@phosphor-icons/react";
 import { useNotesSummary } from '../../hooks/useNotes';
 import { SkeletonStat } from '../../components/ui/Skeletons';
 import { formatDate } from '../../utils/formatDate';
 import { EmptyState } from "../../components/ui/StateComponents";
 import PageBackdrop from '../../components/ui/PageBackdrop';
 
-const MotionLink = motion.create(Link);
-
-// One accent for every subject: they are told apart by their names and icons, not by colour.
+// One line per subject, told apart by name.
 const subjects = [
-  { title: "Operating Systems", slug: "os", icon: <Cpu weight="duotone" />, level: "Core", description: "Deep dive into process management, memory, and the internals that power every computer." },
-  { title: "DBMS", slug: "dbms", icon: <Database weight="duotone" />, level: "Core", description: "Master relational databases, SQL, normalization, transactions and indexing concepts." },
-  { title: "Computer Networks", slug: "cn", icon: <ShareNetwork weight="duotone" />, level: "Core", description: "Understand how the internet works, from OSI layers to TCP/IP, DNS, routing and sockets." },
-  { title: "OOPs", slug: "oops", icon: <Cube weight="duotone" />, level: "Core", description: "Grasp the four pillars of OOP and how design patterns solve real-world software problems." },
-  { title: "System Design", slug: "hld", icon: <Blueprint weight="duotone" />, level: "Advanced", description: "Design systems the way big-tech interviews ask: caching, replication, consistency, queues, reliability and 12 full case studies." },
+  { title: "Operating Systems", slug: "os", level: "Core", description: "Deep dive into process management, memory, and the internals that power every computer." },
+  { title: "DBMS", slug: "dbms", level: "Core", description: "Master relational databases, SQL, normalization, transactions and indexing concepts." },
+  { title: "Computer Networks", slug: "cn", level: "Core", description: "Understand how the internet works, from OSI layers to TCP/IP, DNS, routing and sockets." },
+  { title: "OOPs", slug: "oops", level: "Core", description: "Grasp the four pillars of OOP and how design patterns solve real-world software problems." },
+  { title: "System Design", slug: "hld", level: "Advanced", description: "Design systems the way big-tech interviews ask: caching, replication, consistency, queues, reliability and 12 full case studies." },
 ];
 
 // "17 min" under an hour, "3 hrs" above
 const readTimeLabel = (minutes) => (minutes < 60 ? `${minutes} min` : `${Math.round(minutes / 6) / 10} hrs`);
 
 // stats: this subject's numbers from the API (null while loading, undefined if they could not be loaded)
-const NoteCard = ({ s, stats, index }) => {
-  const calm = useReducedMotion();
-  return (
-    <MotionLink
-      to={`/notes/${s.slug}`}
-      initial={calm ? { opacity: 0 } : { opacity: 0, transform: "translate3d(0, 12px, 0)" }}
-      animate={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
-      transition={calm ? { duration: 0.2 } : { duration: 0.35, ease: [0.23, 1, 0.32, 1], delay: (index % 3) * 0.04 }}
-      className="group relative flex flex-col surface-card p-6 text-left surface-card-link"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-3xl text-brand">{s.icon}</span>
-        <span className="font-ui text-xs font-semibold text-muted">{s.level}</span>
-      </div>
-
-      <h2 className="mt-5 font-display text-xl font-extrabold tracking-tight text-fg">{s.title}</h2>
-      <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted">{s.description}</p>
-
-      {/* Numbers worked out from the notes themselves */}
-      <div className="mt-4 flex min-h-[20px] flex-wrap items-center gap-x-2 gap-y-1 font-ui text-xs text-muted">
-        {stats === null ? (
-          <SkeletonStat width="w-40" height="h-4" />
-        ) : stats ? (
-          <>
-            <span>{stats.sectionCount} sections, {stats.topicCount} topics</span>
-            <span aria-hidden="true">·</span>
-            <span>{readTimeLabel(stats.readMinutes)} read</span>
-            {stats.lastChecked && (<><span aria-hidden="true">·</span><span>Checked {formatDate(stats.lastChecked)}</span></>)}
-          </>
-        ) : null}
-      </div>
-
-      <span className="mt-5 inline-flex items-center gap-2 font-display text-sm font-bold text-brand">
-        Study notes
-        <ArrowRight aria-hidden="true" className="transition-transform duration-150 group-hover:translate-x-1" />
-      </span>
-    </MotionLink>
-  );
-};
+const NoteRow = ({ s, stats, index }) => (
+  <Link
+    to={`/notes/${s.slug}`}
+    className="group grid grid-cols-[32px_1fr_auto] items-center gap-x-5 gap-y-2 border-b border-ink/[0.1] py-6 text-left transition-colors hover:bg-ink/[0.02] sm:grid-cols-[40px_1fr_210px_24px] sm:gap-x-6"
+  >
+    <span className="font-code text-sm text-muted">{String(index + 1).padStart(2, '0')}</span>
+    <div className="min-w-0">
+      <h2 className="flex flex-wrap items-center gap-x-3 gap-y-1 font-display text-xl font-bold tracking-tight text-fg sm:text-2xl">
+        {s.title}
+        {s.level === 'Advanced' && <span className="rounded-full border border-brand/30 px-2.5 py-0.5 font-ui text-xs font-semibold text-brand">Advanced</span>}
+      </h2>
+      <p className="mt-1 text-sm leading-relaxed text-muted sm:text-base">{s.description}</p>
+    </div>
+    <ArrowRight aria-hidden="true" className="justify-self-end text-brand transition-transform duration-150 group-hover:translate-x-1 sm:order-last" />
+    {/* Numbers worked out from the notes themselves */}
+    <div className="col-start-2 min-h-[20px] font-code text-sm sm:col-start-auto">
+      {stats === null ? (
+        <SkeletonStat width="w-40" height="h-4" />
+      ) : stats ? (
+        <>
+          <p className="text-fg">{stats.sectionCount} sections · {stats.topicCount} topics</p>
+          <p className="text-muted">{readTimeLabel(stats.readMinutes)} read{stats.lastChecked ? ` · checked ${formatDate(stats.lastChecked)}` : ''}</p>
+        </>
+      ) : null}
+    </div>
+  </Link>
+);
 
 const Notes = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -78,7 +63,7 @@ const Notes = () => {
         {/* ── HEADER ── */}
         <div className="mb-10 pt-2">
           <h1 className="font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl lg:text-6xl">
-            Computer science <span className="text-brand">internals.</span>
+            Computer science internals.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">
             The operating system, database, network and design fundamentals that technical screening rounds ask about, in plain words and checked against their sources.
@@ -98,16 +83,15 @@ const Notes = () => {
           />
         </div>
 
-        {/* ── CARDS GRID ── */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/* ── SUBJECTS ── */}
+        <div className="border-t border-ink">
           {filtered.map((s, i) => (
-            <NoteCard key={s.slug} s={s} stats={summary && summary[s.slug]} index={i} />
+            <NoteRow key={s.slug} s={s} stats={summary && summary[s.slug]} index={i} />
           ))}
-
-          {filtered.length === 0 && (
-            <EmptyState className="col-span-full" icon={MagnifyingGlass} title="No subjects found" text="Try a different search query." />
-          )}
         </div>
+        {filtered.length === 0 && (
+          <EmptyState icon={MagnifyingGlass} title="No subjects found" text="Try a different search query." />
+        )}
       </div>
     </div>
   );
