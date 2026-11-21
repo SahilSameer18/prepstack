@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { FiCheck } from "react-icons/fi";
+import { Check } from "@phosphor-icons/react";
 import { refLink } from "../../utils/reportLinks";
 import { formatDoneAt } from "./planProgress";
 
-// The one study-plan checklist. The report page shows every day; the dashboard "Today" card shows a single day.
+// The one study-plan checklist: days run down a thin line, each day's tasks sit in one divided list.
+// The report page shows every day; My plan shows a week at a time.
 // days:     [{ day, focus, extra, items: [{ index?, task, ref, done, doneAt }] }]  (index defaults to the item's position)
 // todayDay: the day to highlight (the server works it out)
 // onToggle: (day, index, done) => void
@@ -17,32 +18,28 @@ const PlanChecklist = ({
   renderActions,
   disabled = false,
 }) => (
-  <ol className="space-y-3">
+  <ol className="relative ml-2 mt-3 border-l border-ink/[0.12]">
     {(days || []).map((d) => {
       const isToday = d.day === todayDay;
       return (
-        <li
-          key={d.day}
-          className={`rounded-xl bg-card-hover border border-ink/[0.08] p-4 border-l-2 ${isToday ? "border-l-brand" : "border-l-ink/[0.12]"}`}
-        >
-          <p className="text-xs font-ui font-bold text-brand mb-1">
+        <li key={d.day} className="relative pb-7 pl-6 last:pb-1">
+          <span
+            aria-hidden="true"
+            className={`absolute -left-[7px] top-1 h-3.5 w-3.5 rounded-full border-2 ${isToday ? "border-brand bg-brand" : "border-ink/[0.3] bg-card"}`}
+          />
+          <p className="text-sm font-semibold text-brand">
             {d.label || `DAY ${d.day}`}
-            {isToday && (
-              <span className="ml-2 text-fg-3 font-semibold">Today</span>
-            )}
+            {isToday && <span className="ml-2 text-fg-3">Today</span>}
           </p>
-          <p className="text-sm text-fg font-semibold">{d.focus}</p>
-          <ul className="mt-2 space-y-1">
+          <p className="font-display text-lg font-extrabold tracking-tight text-fg">{d.focus}</p>
+          <ul className="mt-2 divide-y divide-ink/[0.08] rounded-xl border border-ink/[0.08] bg-card">
             {(d.items || []).map((it, pos) => {
               const index = it.index ?? pos;
               const key = `${d.day}:${index}`;
               const l = refLink(it.ref, refTitles);
               const id = `plan-${d.day}-${index}`;
               return (
-                <li
-                  key={key}
-                  className="flex items-start gap-3 text-sm text-fg-3 leading-relaxed"
-                >
+                <li key={key} className="flex items-start gap-3 px-4 py-3 text-sm leading-relaxed text-fg-3">
                   {!readOnly && (
                     <input
                       id={id}
@@ -56,47 +53,34 @@ const PlanChecklist = ({
                   {!readOnly && (
                     <label
                       htmlFor={id}
-                      className="flex shrink-0 items-center justify-center w-11 h-11 -m-2 cursor-pointer peer-focus-visible:[&>span]:ring-2 peer-focus-visible:[&>span]:ring-brand"
+                      className="-m-3 flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center peer-focus-visible:[&>span]:ring-2 peer-focus-visible:[&>span]:ring-brand"
                       aria-label={`${it.done ? "Mark not done" : "Mark done"}: ${it.task}`}
                     >
                       <span
-                        className={`flex items-center justify-center w-5 h-5 rounded border transition-colors ${it.done ? "bg-brand border-brand text-on-brand" : "border-ink/[0.3] bg-card"}`}
+                        className={`flex h-5 w-5 items-center justify-center rounded-md border transition-colors duration-150 ${it.done ? "border-brand bg-brand text-on-brand" : "border-ink/[0.3] bg-card"}`}
                       >
-                        {it.done && (
-                          <FiCheck className="text-xs" aria-hidden="true" />
-                        )}
+                        {it.done && <Check weight="bold" aria-hidden="true" className="text-xs" />}
                       </span>
                     </label>
                   )}
-                  <div className="min-w-0 pt-1.5">
-                    <span className={it.done ? "line-through text-muted" : ""}>
-                      {it.task}
-                    </span>
+                  <div className="min-w-0 flex-1">
+                    <span className={it.done ? "text-muted line-through" : "text-fg"}>{it.task}</span>
                     {l && (
                       <>
                         {" "}
-                        <Link
-                          to={l.path}
-                          className="text-xs text-info hover:text-info"
-                        >
+                        <Link to={l.path} className="text-xs font-semibold text-brand hover:underline">
                           {l.label}
                         </Link>
                       </>
                     )}
-                    {it.done && it.doneAt && (
-                      <span className="block text-xs text-muted">
-                        Done {formatDoneAt(it.doneAt)}
-                      </span>
-                    )}
+                    {it.done && it.doneAt && <span className="block text-xs text-muted">Done {formatDoneAt(it.doneAt)}</span>}
                   </div>
-                  {renderActions && (
-                    <div className="ml-auto shrink-0">{renderActions(it)}</div>
-                  )}
+                  {renderActions && <div className="ml-auto shrink-0">{renderActions(it)}</div>}
                 </li>
               );
             })}
           </ul>
-          {d.extra && <p className="text-xs text-muted mt-2">{d.extra}</p>}
+          {d.extra && <p className="mt-2 text-xs text-muted">{d.extra}</p>}
         </li>
       );
     })}

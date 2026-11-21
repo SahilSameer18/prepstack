@@ -1,32 +1,31 @@
-import { FiCheckCircle, FiMinusCircle, FiXCircle } from "react-icons/fi";
+import { CheckCircle, MinusCircle, XCircle } from "@phosphor-icons/react";
 
 const STATUS = {
-  met: { label: "Matched", Icon: FiCheckCircle, text: "text-ok", box: "bg-ok-solid/10 border-ok-solid/25" },
-  partial: { label: "Partly", Icon: FiMinusCircle, text: "text-warn", box: "bg-warn-solid/10 border-warn-solid/25" },
-  missing: { label: "Missing", Icon: FiXCircle, text: "text-bad", box: "bg-bad-solid/10 border-bad-solid/25" },
+  met: { label: "Matched", Icon: CheckCircle, text: "text-ok" },
+  partial: { label: "Partly", Icon: MinusCircle, text: "text-warn" },
+  missing: { label: "Missing", Icon: XCircle, text: "text-bad" },
 };
 
 // One requirement from the job description, what the resume shows for it, and how sure we are about that proof.
-const RequirementRow = ({ req }) => {
+// It is a row of a divided list; children (the "how to close this gap" help) sit right under it.
+const RequirementRow = ({ req, children }) => {
   const s = STATUS[req.status] || STATUS.missing;
   const quoted = req.status !== "missing" && req.evidence;
   return (
-    <li className="rounded-xl bg-card-hover border border-ink/[0.08] p-4 text-left">
-      <div className="flex items-start gap-3">
-        <span className={`shrink-0 mt-0.5 ${s.text}`} aria-hidden="true"><s.Icon /></span>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm text-fg-1 font-medium leading-snug break-words">{req.text}</p>
-          <div className="flex flex-wrap items-center gap-2 mt-2">
-            <span className={`text-xs font-semibold rounded-full px-2.5 py-0.5 border ${s.box} ${s.text}`}>{s.label}</span>
-            <span className="text-xs text-muted">{req.importance === "must" ? "Required" : "Nice to have"}</span>
-          </div>
-          {req.why && <p className="mt-2 text-xs text-fg-3 leading-relaxed">{req.why}</p>}
+    <li className="p-5 text-left sm:p-6">
+      <div className="flex items-start gap-4">
+        <s.Icon weight="duotone" aria-hidden="true" className={`mt-0.5 shrink-0 text-2xl ${s.text}`} />
+        <div className="min-w-0 flex-1">
+          <p className="break-words font-semibold leading-snug text-fg">{req.text}</p>
+          <p className="mt-0.5 text-sm text-muted"><span className={`font-semibold ${s.text}`}>{s.label}</span> &middot; {req.importance === "must" ? "Required" : "Nice to have"}</p>
+          {req.why && <p className="mt-2 text-sm leading-relaxed text-fg-3">{req.why}</p>}
           {quoted && (
-            <p className="mt-3 text-xs text-muted border-l-2 border-ink/[0.12] pl-3 leading-relaxed break-words">
+            <p className="mt-3 break-words border-l-2 border-brand/40 pl-4 text-sm leading-relaxed text-fg-3">
               From your resume: &ldquo;{req.evidence}&rdquo;
             </p>
           )}
-          {req.didYouMean && <p className="mt-2 text-xs text-muted">Did you mean {req.didYouMean}?</p>}
+          {req.didYouMean && <p className="mt-2 text-sm text-muted">Did you mean {req.didYouMean}?</p>}
+          {children}
         </div>
       </div>
     </li>
