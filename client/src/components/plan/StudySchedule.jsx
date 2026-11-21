@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { CaretDown, DotsThree } from "@phosphor-icons/react";
 import PlanChecklist from "../analyzer/PlanChecklist";
+import ProgressMarks from "../ui/ProgressMarks";
 import { updatePlanItem } from "../../api/services/planService";
 import { PACES, dateInIndia, paceMinutes } from "../../utils/planBuilder";
 import PlanCoverage from "./PlanCoverage";
@@ -172,8 +173,17 @@ export default function StudySchedule({
           open={week.days.some((day) => day.day <= currentDay)}
           className="group border-b border-ink/[0.1]"
         >
-          <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between gap-4 py-5 [&::-webkit-details-marker]:hidden">
-            <span className="min-w-0">
+          <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-4 py-5 [&::-webkit-details-marker]:hidden">
+            {(() => {
+              const weekItems = week.days.flatMap((day) => day.items);
+              const weekDone = weekItems.filter((item) => item.done).length;
+              return weekItems.length > 0 ? (
+                <span className="order-2 ml-auto hidden w-40 shrink-0 sm:block">
+                  <ProgressMarks value={weekDone} total={weekItems.length} max={14} label={`Week ${week.number}: ${weekDone} of ${weekItems.length} tasks done`} />
+                </span>
+              ) : null;
+            })()}
+            <span className="order-1 min-w-0">
               <span className="block font-display text-lg font-bold text-fg">
                 Week {week.number} <span className="ml-2 text-sm font-normal text-fg-3">{week.days[0].label} to {week.days.at(-1).label}</span>
               </span>
@@ -181,7 +191,7 @@ export default function StudySchedule({
                 {weekSummary(week)}
               </span>
             </span>
-            <CaretDown aria-hidden="true" className="shrink-0 text-base text-muted transition-transform duration-200 group-open:rotate-180 group-open:text-brand" />
+            <CaretDown aria-hidden="true" className="order-3 shrink-0 max-sm:ml-auto text-base text-muted transition-transform duration-200 group-open:rotate-180 group-open:text-brand" />
           </summary>
           <PlanChecklist
             days={week.days}

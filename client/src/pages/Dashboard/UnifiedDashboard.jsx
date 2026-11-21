@@ -214,7 +214,7 @@ const UnifiedDashboard = () => {
                           return (
                             <div key={stat.label} className={`p-6 border-ink/[0.08] ${i > 1 ? "border-t lg:border-t-0" : ""} ${i % 2 === 1 ? "border-l" : ""} ${i === 2 ? "lg:border-l" : ""}`}>
                               <p className="flex items-center gap-2 font-ui text-sm text-muted"><Icon weight="duotone" aria-hidden="true" className="text-lg text-brand" />{stat.label}</p>
-                              <p className="mt-3 font-display text-4xl font-bold tracking-tight text-fg">{stat.value}</p>
+                              <p className="mt-3 font-code text-4xl font-medium tracking-tight text-fg">{stat.value}</p>
                               <p className="mt-1 truncate text-sm text-muted">{stat.sub}</p>
                             </div>
                           );

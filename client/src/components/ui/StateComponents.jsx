@@ -39,8 +39,10 @@ export const LimitState = ({ title, text, used, allowed, resetsAt, className = "
         </div>
       </div>
       {showBar && (
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-ink/[0.08]" aria-hidden="true">
-          <div className="bar-fill h-full w-full bg-warn-solid" style={{ transform: `scaleX(${Math.min(100, Math.round((used / allowed) * 100)) / 100})` }} />
+        <div className="mt-3 flex gap-[3px]" aria-hidden="true">
+          {Array.from({ length: Math.min(allowed, 10) }, (_, i) => (
+            <i key={i} className={`h-2 min-w-0 flex-1 rounded-[2px] ${i < Math.min(used, Math.min(allowed, 10)) ? "bg-warn-solid" : "bg-ink/[0.1]"}`} />
+          ))}
         </div>
       )}
     </div>

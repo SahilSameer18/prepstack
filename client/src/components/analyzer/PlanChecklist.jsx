@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Check } from "@phosphor-icons/react";
+import Tick from "../ui/Tick";
 import { refLink } from "../../utils/reportLinks";
 import { formatDoneAt } from "./planProgress";
 
@@ -56,11 +56,7 @@ const PlanChecklist = ({
                       className="-m-3 flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center peer-focus-visible:[&>span]:ring-2 peer-focus-visible:[&>span]:ring-brand"
                       aria-label={`${it.done ? "Mark not done" : "Mark done"}: ${it.task}`}
                     >
-                      <span
-                        className={`flex h-5 w-5 items-center justify-center rounded-md border transition-colors duration-150 ${it.done ? "border-brand bg-brand text-on-brand" : "border-ink/[0.3] bg-card"}`}
-                      >
-                        {it.done && <Check weight="bold" aria-hidden="true" className="text-xs" />}
-                      </span>
+                      <Tick done={!!it.done} />
                     </label>
                   )}
                   <div className="min-w-0 flex-1">

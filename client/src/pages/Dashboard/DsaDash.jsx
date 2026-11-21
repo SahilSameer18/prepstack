@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "@phosphor-icons/react";
 import { SkeletonDSACard } from "../../components/ui/Skeletons";
 import { formatDate } from "../../utils/formatDate";
+import ProgressMarks from "../../components/ui/ProgressMarks";
 
 // ── DSADash: one card per sheet with a smooth bar ──────────────────────────
 const DSADash = ({ dsaData, loading }) => (
@@ -18,18 +19,12 @@ const DSADash = ({ dsaData, loading }) => (
       {loading
         ? Array.from({ length: 3 }).map((_, i) => <SkeletonDSACard key={i} />)
         : dsaData.map(({ sheet, solved, total, lastSolvedAt }) => {
-            const pct = total === 0 ? 0 : Math.round((solved / total) * 100);
             return (
               <Link key={sheet.slug} to={`/dsa/${sheet.slug}`} className="surface-card surface-card-link block p-6">
                 <h3 className="font-display text-lg font-bold tracking-tight text-fg">{sheet.name}</h3>
-                <div
-                  className="mt-5 h-1.5 overflow-hidden rounded-full bg-ink/[0.08]"
-                  role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`Progress on ${sheet.name}`}
-                >
-                  <div className="bar-fill h-full w-full rounded-full" style={{ transform: `scaleX(${pct / 100})`, background: "var(--brand-grad-bottom)" }} />
-                </div>
+                <ProgressMarks value={solved} total={total} label={`Progress on ${sheet.name}`} tall className="mt-5" />
                 <div className="mt-3 flex items-baseline justify-between gap-3 text-sm">
-                  <span className="font-semibold text-fg">{solved} / {total} solved</span>
+                  <span className="font-code font-semibold text-fg">{solved} / {total} solved</span>
                   <span className={total > 0 && solved === total ? "font-semibold text-ok" : "text-muted"}>
                     {total > 0 && solved === total ? "Complete" : lastSolvedAt ? `Last solved ${formatDate(lastSolvedAt)}` : "Not started"}
                   </span>

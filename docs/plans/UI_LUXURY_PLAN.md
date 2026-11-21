@@ -46,7 +46,7 @@ Source: the honest audit of 21 Nov 2026 (overall 6.5 of 10 against "million doll
 | 0. Look board | Three directions drawn; owner kept the colours, worry is structure. | **Done** |
 | 1. Quick wins across the site | Lighter heading weights (the heaviest weight only on a few big headlines), the orange last word removed on the other pages, aligned figures (tabular numbers) for hours, counts and progress, a defined style for page title, section title, card heading, label and metadata. | Open (small) |
 | 2. Spacing and surface rules | Spacing per page type (home, dashboard, My plan, notes, catalogues, forms); two surface kinds (rows or ledgers for data, cards for real objects); grid and glow only on home and auth; fix gaps above footers and empty grid slots. | Open |
-| 3. Signature marks | The segmented progress strip, the tick box, numbered steps in mono, used across DSA, plan and roadmaps. | Open |
+| 3. Signature marks (**built 21 Nov**) | The segmented progress strip, the tick box, numbered steps in mono, used across DSA, plan and roadmaps. | Open |
 | 4. Home page | Built (see Status). The live demo is now about the plan: your hours, today, missed days (decided 21 Nov). | Built, not tested |
 | 5. List and detail pages | DSA sheets list and sheet page as rows with progress marks, roadmaps list and page, behavioral, resume guide. | **Done 21 Nov** (all six pages built, looked at in light and dark; not tested) |
 | 6. Reading and planning screens (**built 21 Nov**, notes page, notes list and Plan tab) | The notes reading page (quiet backdrop, clear explanation, example, mistake and exercise blocks, narrow-screen diagrams and code) and the My plan Plan tab (controls grouped by purpose: schedule changes, task management, recovery, plan management). Draw each with real data first. | Open |
@@ -103,6 +103,24 @@ Source: the honest audit of 21 Nov 2026 (overall 6.5 of 10 against "million doll
 | 8. Motion | One set of rules: press feedback, tab movement, opening and closing, dialogs, page entry, reduced motion everywhere; a task-done moment; the Ctrl+K box only if the owner says yes. | 2 to 3 days | After layout is stable |
 | 9. Test pass | Whole e2e, server tests, build and SEO check, light, dark and phone captures, slow network, accessibility list. Fix the tests that read moved headings. | 1 to 2 days | Run before real-device testing |
 Rule: a real-content screenshot, light and dark, is looked at before anything is shown to the owner. Heading font stays an open owner decision (three pictures first).
+
+## Step 3 in detail: signature marks (planned 21 Nov, from the code)
+**Today:** ProgressMarks is used on 3 pages (DSA list, sheet header, sheet topics). Other progress is still a thin bar or nothing.
+**Changes (all small, no behaviour change, the Today screen is not touched)**
+1. Dashboard DSA tab: each sheet card shows a thin bar (DsaDash.jsx) → ProgressMarks, same as the DSA list. Stat numbers (Problems solved, streak, sheets, overall) → mono figures.
+2. Plan tab: each week line gets a ProgressMarks (done of total tasks) beside its hours, as the DSA topics have.
+3. Usage limit card ("3 of 4 ideas used", StateComponents.jsx): thin bar → ProgressMarks with 4 to 5 marks.
+4. Home hero demo ("Your hours" bar): left as a bar, because it shows a fit amount, not finished items.
+5. One shared Tick: the square tick is written out in four places (PlanChecklist, ProblemRow, hero demo, note drawer); move it to one small component so they cannot drift apart.
+6. Mono for counts and times that are still in the main font: Analyzer days number, plan preview totals.
+**Not changed:** the Analyzer score and requirement strip (already marks), roadmap step numbers (already mono), round check icons used as status (matched, partly, missing), which are status, not ticks.
+**Size:** about 1 day. **Risk:** the Tick change touches the sheet row and the plan checklist, so the e2e tick tests run after.
+
+## To do later (owner, 21 Nov)
+- The gap above the footer on short pages (no clear fix found yet).
+- The device row inside the profile Devices tab still has its tinted card.
+- Phone-width (375 px) checks of the rebuilt pages; only a few were checked.
+- Unused-code cleanup: capsule styles and roadmap icons are removed; nothing else known.
 
 ## Decisions that are the owner's (recommendation in brackets)
 1. Heading font: keep Plus Jakarta Sans, or change (recommend: look at three pictured options for the home hero before deciding; change only the heading font).

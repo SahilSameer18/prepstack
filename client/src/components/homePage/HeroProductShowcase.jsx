@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ArrowRight, Check } from "@phosphor-icons/react";
+import { ArrowRight } from "@phosphor-icons/react";
+import Tick from "../ui/Tick";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import homeFacts from "../../data/homeFacts.json";
@@ -106,9 +107,7 @@ const TodayTab = () => {
                 aria-pressed={isDone}
                 className="group flex min-h-[52px] w-full cursor-pointer items-center gap-4 py-2 text-left"
               >
-                <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${isDone ? "border-brand bg-brand text-on-brand" : "border-ink/[0.3] bg-card group-hover:border-ink/[0.5]"}`}>
-                  {isDone && <Check weight="bold" aria-hidden="true" className="text-xs" />}
-                </span>
+                <Tick done={isDone} />
                 <span className={`min-w-0 flex-1 ${isDone ? "text-muted line-through" : "text-fg"}`}>
                   <span className="block font-medium">{task.title}</span>
                   <span className="block text-xs text-muted">{task.kind}</span>

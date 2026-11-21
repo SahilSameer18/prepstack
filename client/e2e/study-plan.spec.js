@@ -545,7 +545,7 @@ test('Coverage and pace on a saved plan: week summaries, the not-included list, 
   expect(plan.pace).toBe('standard');
   expect(plan.coverage.byGroup.some((group) => group.state === 'none')).toBe(true);
   await page.goto('/my-plan/study?tab=plan');
-  await expect(page.getByText(/^Pace: Standard \(a Medium problem takes about 70 min\)\.$/)).toBeVisible();
+  await expect(page.getByText(/Standard pace \(a Medium problem takes about 70 min\)/)).toBeVisible();
   await expect(page.getByText(/\d+ syllabus items did not fit\./)).toBeVisible();
   await page.getByText('See what is not in your plan').click();
   await expect(page.getByText('Not in your plan:')).toBeVisible();
@@ -560,7 +560,7 @@ test('Coverage and pace on a saved plan: week summaries, the not-included list, 
   await dialog.getByRole('button', { name: 'Confirm change' }).click();
   await expect(dialog).toHaveCount(0);
   expect((await savedPlan(page)).pace).toBe('slower');
-  await expect(page.getByText(/^Pace: Slower \(a Medium problem takes about 98 min\)\.$/)).toBeVisible();
+  await expect(page.getByText(/Slower pace \(a Medium problem takes about 98 min\)/)).toBeVisible();
   await assertFits(page);
 });
 

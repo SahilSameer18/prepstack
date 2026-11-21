@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowSquareOut, Article, Check, FileText, YoutubeLogo } from "@phosphor-icons/react";
+import { ArrowSquareOut, Article, FileText, YoutubeLogo } from "@phosphor-icons/react";
+import Tick from '../../../components/ui/Tick';
 import ProblemNoteDrawer from './ProblemNoteDrawer';
 
 // ── Platform icon resolver ─────────────────────────────────────────────────
@@ -72,9 +73,9 @@ const ProblemRow = ({
               initial={tickPops && isCompleted && !calm ? { scale: 0.7 } : false}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', duration: 0.3, bounce: 0.4 }}
-              className={`flex h-5 w-5 items-center justify-center rounded-md border transition-colors duration-150 ${isCompleted ? 'border-brand bg-brand text-on-brand' : 'border-ink/[0.3] bg-card group-hover:border-ink/[0.5]'}`}
+              className="flex"
             >
-              {isCompleted && <Check weight="bold" aria-hidden="true" className="text-xs" />}
+              <Tick done={isCompleted} />
             </motion.span>
           </button>
 
@@ -98,7 +99,7 @@ const ProblemRow = ({
             type="button"
             onClick={(e) => { e.stopPropagation(); onToggleDrawer(problem.link); }}
             aria-expanded={isDrawerOpen}
-            aria-label={hasNote ? `View or edit your notes for ${problem.title}` : `Add notes for ${problem.title}`}
+            aria-label={hasNote ? `View or edit approach notes for ${problem.title}` : `Add approach notes for ${problem.title}`}
             title={hasNote ? 'View or edit approach & invariant notes' : 'Add approach notes'}
             className={`${ICON_BUTTON} ${hasNote ? 'text-brand' : ''}`}
           >

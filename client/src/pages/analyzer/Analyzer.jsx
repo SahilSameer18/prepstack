@@ -145,7 +145,7 @@ const Analyzer = () => {
             <div className="min-w-[240px] flex-1">
               <Step n="3"><label htmlFor="days">Days until your interview</label></Step>
               <div className="flex items-center gap-5">
-                <span className="w-16 font-display text-5xl font-black tracking-tight" aria-live="polite">{days}</span>
+                <span className="w-20 font-code text-5xl font-medium tracking-tight" aria-live="polite">{days}</span>
                 <input id="days" type="range" min={3} max={30} value={days} onChange={(e) => setDays(Number(e.target.value))} className="h-11 w-full accent-brand" />
               </div>
             </div>
