@@ -97,7 +97,7 @@ Source: the honest audit of 21 Nov 2026 (overall 6.5 of 10 against "million doll
 ## Next phases, in order (planned 21 Nov, after Phase 7)
 | Step | Work | Size | Why now |
 |---|---|---|---|
-| 7b. Profile finish | Account as labelled rows with hairlines (no big card), plain side list without icons, lighter avatar frame, Security, Devices and Sign out as rows, destructive actions as red text. Look at every tab in light and dark. Auth pages untouched. | 1 day | The owner pointed at this page: it still feels like before |
+| 7b. Profile finish (**done 21 Nov**) | Account as labelled rows with hairlines (no big card), plain side list without icons, lighter avatar frame, Security, Devices and Sign out as rows, destructive actions as red text. Look at every tab in light and dark. Auth pages untouched. | 1 day | The owner pointed at this page: it still feels like before |
 | 1+2. Site-wide polish | Heading weights: the heaviest weight only on page titles, section titles lighter. Backdrop: grid and glow only on home and auth, quiet on reading and app pages. Aligned figures. Spacing per page type; fix gaps above the footer. Check every page in light and dark. | 2 days | The biggest feel change for the least work |
 | 3. Signature marks | Use ProgressMarks, the square tick and mono numbers wherever progress or steps show (plan weeks, reports, roadmaps). | 1 day | Ties the pages together |
 | 8. Motion | One set of rules: press feedback, tab movement, opening and closing, dialogs, page entry, reduced motion everywhere; a task-done moment; the Ctrl+K box only if the owner says yes. | 2 to 3 days | After layout is stable |

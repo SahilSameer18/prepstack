@@ -41,9 +41,9 @@ const SignOutCard = () => {
   };
 
   return (
-    <div className="surface-card p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-ink/[0.1] pb-8">
       <div>
-        <h2 className="font-display text-xl font-extrabold tracking-tight text-fg">Sign out</h2>
+        <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Sign out</h2>
         <p className="text-sm font-ui text-muted mt-1">Sign out here, or sign out of every device at once.</p>
       </div>
 

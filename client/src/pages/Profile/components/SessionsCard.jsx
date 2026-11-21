@@ -71,11 +71,11 @@ const SessionsCard = () => {
   };
 
   return (
-    <div className="surface-card p-6 sm:p-8">
+    <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-ink/[0.06]">
         <div className="flex items-center gap-2.5">
           <div>
-            <h2 className="font-display text-xl font-extrabold tracking-tight text-fg flex flex-wrap items-center gap-2">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-fg flex flex-wrap items-center gap-2">
               Devices signed in to your account
               {sessions.length > 0 && (
                 <span className="text-xs font-ui px-2 py-0.5 rounded-full bg-ink/[0.06] text-fg-3 border border-ink/[0.08]">

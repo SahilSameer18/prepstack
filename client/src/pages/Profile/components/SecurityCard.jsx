@@ -102,9 +102,9 @@ const SecurityCard = () => {
   };
 
   return (
-    <div className="surface-card p-6 sm:p-8 space-y-6">
+    <div className="space-y-6">
       <div className="pb-4 border-b border-ink/[0.06]">
-        <h2 className="font-display text-xl font-extrabold tracking-tight text-fg">Sign-in and security</h2>
+        <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Sign-in and security</h2>
         <p className="text-sm font-ui text-muted mt-1">Link your Google account and manage your password.</p>
       </div>
 

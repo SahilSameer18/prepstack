@@ -40,8 +40,8 @@ const ProfileHero = ({ user, avatarUrl }) => {
       </h1>
 
       <div className="mt-7 flex flex-col items-center gap-5 sm:flex-row sm:items-center">
-        <div className="h-24 w-24 shrink-0 rounded-2xl p-0.5 sm:h-28 sm:w-28" style={{ background: "var(--brand-grad-bottom)" }}>
-          <div className="h-full w-full overflow-hidden rounded-[0.9rem] bg-canvas">
+        <div className="h-24 w-24 shrink-0 rounded-2xl border border-brand/40 p-1 sm:h-28 sm:w-28">
+          <div className="h-full w-full overflow-hidden rounded-xl bg-canvas">
             <img
               src={avatarUrl}
               alt={user.username}

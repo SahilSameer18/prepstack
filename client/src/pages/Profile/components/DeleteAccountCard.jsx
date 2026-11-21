@@ -69,9 +69,9 @@ const DeleteAccountCard = () => {
 
   return (
     <>
-      <div className="bg-bad-solid/[0.04] border border-bad-solid/25 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-2">
         <div>
-          <h2 className="font-display text-xl font-extrabold tracking-tight text-bad">Delete account</h2>
+          <h2 className="font-display text-2xl font-bold tracking-tight text-bad">Delete account</h2>
           <p className="text-sm font-ui text-muted mt-1 max-w-xl leading-relaxed">
             Permanently delete your profile, solved-problem progress, problem notes, saved project ideas, role reports, and all current and historical study plans. This action is irreversible.
           </p>

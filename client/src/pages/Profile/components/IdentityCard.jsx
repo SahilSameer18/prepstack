@@ -92,10 +92,10 @@ const IdentityCard = ({ profileForm, setProfileForm }) => {
   };
 
   return (
-    <div className="surface-card p-6 sm:p-8">
+    <div>
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-ink/[0.06]">
         <div>
-          <h2 className="font-display text-xl font-bold tracking-tight text-fg">Account</h2>
+          <h2 className="font-display text-2xl font-bold tracking-tight text-fg">Account</h2>
           <p className="text-sm font-ui text-muted mt-1">
             Choose your username and avatar.
           </p>
