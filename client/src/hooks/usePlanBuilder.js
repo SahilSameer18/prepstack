@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from './useAuth';
 import { createPlan, getPlan, getPlanOptions, previewPlan } from '../api/services/planService';
+import planChoices from '../data/planChoices.json';
 import { extractError } from '../utils/extractError';
 import {
   PLAN_INTENT_KEY, consumePlanIntent, defaultSettings, planBody,
@@ -27,7 +28,9 @@ export function usePlanBuilder() {
   const latestSettings = useRef(settings);
   const settingsKey = writePlanSettings(settings);
 
-  const [options, setOptions] = useState(null);
+  // The choices ship with the app, so the form opens at once even when the server is still waking up.
+  // They are refreshed from the server in the background; a failed refresh keeps the bundled copy and shows nothing.
+  const [options, setOptions] = useState(planChoices);
   const [optionsError, setOptionsError] = useState('');
   const [retryCount, setRetryCount] = useState(0);
   const [preview, setPreview] = useState(null);
@@ -64,11 +67,11 @@ export function usePlanBuilder() {
       try {
         const choices = await getPlanOptions(controller.signal);
         if (!controller.signal.aborted) {
-          setOptions(choices);
+          setOptions((current) => (JSON.stringify(current) === JSON.stringify(choices) ? current : choices));
           setOptionsError('');
         }
-      } catch (error) {
-        if (!controller.signal.aborted) setOptionsError(extractError(error));
+      } catch {
+        // keep using the bundled choices
       }
     }
     loadOptions();

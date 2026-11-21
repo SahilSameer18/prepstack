@@ -38,10 +38,10 @@ export default function StudyHistory({ onClear }) {
     : reply;
   return (
     <section aria-label="Plan history" className="space-y-5">
-      <h2 className="text-xl font-semibold text-fg">Read-only plan history</h2>
+      <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Read-only plan history</h2>
       {selected && (
         <button
-          className="min-h-[44px] text-brand"
+          className="min-h-[44px] cursor-pointer font-semibold text-brand transition-colors hover:text-brand-hover"
           onClick={() => setSelected("")}
         >
           Back to history
@@ -88,7 +88,7 @@ export default function StudyHistory({ onClear }) {
                   {plan.title} · {plan.startDate} to {plan.deadline}
                 </p>
                 <button
-                  className="min-h-[44px] text-brand"
+                  className="min-h-[44px] cursor-pointer font-semibold text-brand transition-colors hover:text-brand-hover"
                   onClick={() => setSelected(plan.id)}
                 >
                   Read saved plan

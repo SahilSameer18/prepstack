@@ -44,7 +44,7 @@ export default function ProblemSubstitute({ item, model, onClose }) {
       <button
         type="button"
         disabled={loading || model.busy}
-        className="min-h-[44px] text-brand"
+        className="min-h-[44px] cursor-pointer font-semibold text-brand transition-colors hover:text-brand-hover"
         onClick={load}
       >
         {loading ? "Finding problems…" : "Find a different problem"}
@@ -88,7 +88,7 @@ export default function ProblemSubstitute({ item, model, onClose }) {
               <button
                 type="button"
                 disabled={model.busy}
-                className="min-h-[44px] text-brand"
+                className="min-h-[44px] cursor-pointer font-semibold text-brand transition-colors hover:text-brand-hover"
                 onClick={confirm}
               >
                 Confirm different problem

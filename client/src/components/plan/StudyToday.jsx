@@ -5,22 +5,22 @@ export default function StudyToday({ today, onStart }) {
   const label = today.isToday ? "Today" : formatPlanDate(today.date);
   return (
     <section aria-label="Today" className="mx-auto max-w-2xl space-y-5">
-      <h2 className="text-xl font-semibold text-fg">
+      <h2 className="font-display text-3xl font-extrabold tracking-tight text-fg">
         {label}: {today.items.length} tasks, {formatPlanMinutes(today.minutes)}
       </h2>
       <button
         type="button"
         onClick={() => onStart(today.startItem)}
         disabled={!today.startItem}
-        className="amber-specular-button min-h-[52px] w-full rounded-xl px-5 py-3 font-semibold text-on-brand disabled:opacity-50"
+        className="amber-specular-button min-h-[56px] w-full cursor-pointer rounded-2xl px-5 py-3 text-base font-bold text-on-brand disabled:cursor-not-allowed disabled:opacity-50"
       >
         Start
       </button>
-      <ul className="divide-y divide-ink/[0.1]">
+      <ul className="surface-card divide-y divide-ink/[0.08] px-5">
         {today.items.map((item) => (
           <li
             key={item.originalKey || item.key}
-            className="flex items-start justify-between gap-4 py-3 text-sm"
+            className="flex items-start justify-between gap-4 py-4 text-base"
           >
             <span className="min-w-0 text-fg-3">
               {item.title}{item.part && ` (part ${item.part.n} of ${item.part.of})`}

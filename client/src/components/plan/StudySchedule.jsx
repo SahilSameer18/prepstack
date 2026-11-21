@@ -49,7 +49,7 @@ export default function StudySchedule({
   return (
     <section aria-label="Plan" className="space-y-6">
       <div className="space-y-2 text-sm text-fg-3">
-        <h2 className="text-xl font-semibold text-fg">{plan.title}</h2>
+        <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">{plan.title}</h2>
         <p>
           {progress.done} of {progress.total} tasks complete ·{" "}
           {formatPlanMinutes(progress.minutes)} completed.
@@ -89,7 +89,7 @@ export default function StudySchedule({
           </p>
         )}
         {!!plan.coverage?.leftOut?.length && !!plan.coverage?.byGroup?.length && (
-          <details className="rounded-xl border border-ink/[0.1] p-3">
+          <details className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-3">
             <summary className="min-h-[44px] cursor-pointer text-sm font-semibold text-fg">
               See what is not in your plan
             </summary>
@@ -156,7 +156,7 @@ export default function StudySchedule({
         <details
           key={week.number}
           open={week.days.some((day) => day.day <= currentDay)}
-          className="rounded-xl border border-ink/[0.1] p-3"
+          className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-3"
         >
           <summary className="min-h-[44px] cursor-pointer text-sm font-semibold text-fg">
             Week {week.number} · {week.days[0].label} to{" "}
@@ -196,7 +196,7 @@ export default function StudySchedule({
         </details>
       ))}
       {!!skipped.length && (
-        <details className="rounded-xl border border-ink/[0.1] p-4">
+        <details className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-4">
           <summary className="min-h-[44px] cursor-pointer text-sm text-fg">
             Skipped tasks ({skipped.length})
           </summary>
@@ -209,7 +209,7 @@ export default function StudySchedule({
                 <span>{item.title}</span>
                 {!readOnly && (
                   <button
-                    className="min-h-[44px] text-brand"
+                    className="min-h-[44px] cursor-pointer font-semibold text-brand transition-colors hover:text-brand-hover"
                     onClick={() => onDialog("task", item)}
                   >
                     Options

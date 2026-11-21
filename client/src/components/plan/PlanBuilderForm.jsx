@@ -2,7 +2,7 @@ import SelectField from "../ui/SelectField";
 import { DEFAULT_SUBJECTS, PACES, paceMinutes, planTopics } from "../../utils/planBuilder";
 
 const INPUT =
-  "w-full min-h-[44px] rounded-xl border border-ink/[0.15] bg-card-hover px-3 py-2.5 text-sm text-fg focus:border-brand";
+  "w-full min-h-[44px] rounded-xl border border-ink/[0.14] !bg-card px-3 py-2.5 text-sm text-fg outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink/[0.24] focus:border-brand focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand)_12%,transparent)]";
 const WEEKDAYS = [
   "Monday",
   "Tuesday",
@@ -43,9 +43,9 @@ function Field({ name, label, error, hint, children }) {
         {label}
       </label>
       {children}
-      {hint && <p className="text-xs leading-relaxed text-muted">{hint}</p>}
+      {hint && <p className="text-sm leading-relaxed text-muted">{hint}</p>}
       {error && (
-        <p id={`plan-${name}-error`} className="text-xs text-bad">
+        <p id={`plan-${name}-error`} className="text-sm text-bad">
           {error}
         </p>
       )}
@@ -113,7 +113,7 @@ export default function PlanBuilderForm({
       }}
     >
       <fieldset disabled={disabled} className="space-y-7 disabled:opacity-60">
-        <legend className="mb-5 font-display text-xl font-bold text-fg">
+        <legend className="mb-5 font-display text-2xl font-extrabold tracking-tight text-fg">
           Make room for your goal
         </legend>
         <Field
@@ -306,7 +306,7 @@ export default function PlanBuilderForm({
                     <input
 
               type="checkbox"
-                      className="size-4 accent-brand"
+                      className="size-[18px] accent-brand"
 
               checked={settings.subjects.includes(subject.id)}
 
@@ -323,7 +323,7 @@ export default function PlanBuilderForm({
                 ))}
               </div>
               {errors.subjects && (
-                <p className="text-xs text-bad">{errors.subjects}</p>
+                <p className="text-sm text-bad">{errors.subjects}</p>
               )}
             </fieldset>
           </>
@@ -334,7 +334,7 @@ export default function PlanBuilderForm({
             Already know some DSA topics?{" "}
             <span className="font-normal text-muted">Optional</span>
           </summary>
-          <p className="mb-3 text-xs leading-relaxed text-muted">
+          <p className="mb-3 text-sm leading-relaxed text-muted">
             Selected topics are left out of this plan. Choose only topics you
             can solve confidently.
           </p>
@@ -342,7 +342,7 @@ export default function PlanBuilderForm({
             <button
 
               type="button"
-              className="min-h-[44px] text-sm text-brand"
+              className="min-h-[44px] cursor-pointer text-sm font-semibold text-brand transition-colors hover:text-brand-hover"
               onClick={() => onChange({ knownTopics: [] })}
             >
               Clear known topics
@@ -357,7 +357,7 @@ export default function PlanBuilderForm({
                 <input
 
               type="checkbox"
-                  className="size-4 shrink-0 accent-brand"
+                  className="size-[18px] shrink-0 accent-brand"
 
               checked={settings.knownTopics.includes(topic.id)}
 
@@ -375,7 +375,7 @@ export default function PlanBuilderForm({
             </p>
           )}
           {errors.knownTopics && (
-            <p className="mt-2 text-xs text-bad">{errors.knownTopics}</p>
+            <p className="mt-2 text-sm text-bad">{errors.knownTopics}</p>
           )}
         </details>
       </fieldset>

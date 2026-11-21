@@ -226,3 +226,38 @@ export const InlineSpinner = ({ size = 16, color = "var(--on-brand)" }) => (
     <path d="M12 3a9 9 0 0 1 9 9" style={{ stroke: color }} strokeWidth="2.5" strokeLinecap="round" />
   </svg>
 );
+
+/** SkeletonPlanPreview - the "See what fits" panel while the server builds the preview */
+export const SkeletonPlanPreview = () => (
+  <div aria-hidden="true" className="space-y-6">
+    <div className="space-y-3 border-b border-ink/[0.1] pb-5">
+      <Skeleton className="h-10 w-40 rounded-md" />
+      <Skeleton className="h-4 w-3/4 rounded-md" />
+      <Skeleton className="h-4 w-1/2 rounded-md" />
+    </div>
+    <div className="space-y-2.5">
+      <Skeleton className="h-4 w-full rounded-md" />
+      <Skeleton className="h-4 w-5/6 rounded-md" />
+    </div>
+    <div className="space-y-3">
+      <Skeleton className="h-5 w-28 rounded-md" />
+      {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-11 w-full rounded-xl" />)}
+    </div>
+  </div>
+);
+
+/** SkeletonStudy - the daily plan while it loads. Like the real Today screen it holds only a heading, one big button and the day's tasks. */
+export const SkeletonStudy = () => (
+  <Busy label="Loading your plan" className="mx-auto max-w-2xl space-y-5">
+    <Skeleton className="h-9 w-72 max-w-full rounded-xl" />
+    <Skeleton className="h-14 w-full rounded-2xl" />
+    <div className="surface-card space-y-1 px-5 py-2">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="flex items-center justify-between gap-4 py-4">
+          <Skeleton className="h-4 w-2/3 rounded-md" />
+          <Skeleton className="h-4 w-12 rounded-md" />
+        </div>
+      ))}
+    </div>
+  </Busy>
+);

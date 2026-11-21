@@ -27,7 +27,7 @@ export default function StudyRecovery({ model }) {
 
   return (
     <section aria-label="Plan recovery" className="mb-7 space-y-4 border-b border-ink/[0.1] pb-6 text-sm text-fg-3">
-      <h2 className="text-lg font-semibold text-fg">Your study schedule</h2>
+      <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">Your study schedule</h2>
       <p className="break-words">
         {calendar?.timeZone || 'Asia/Kolkata'} · Study day starts at {calendar?.dayStartHour ?? 0}:00.
       </p>

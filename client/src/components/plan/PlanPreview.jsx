@@ -1,6 +1,7 @@
 import PlanChecklist from "../analyzer/PlanChecklist";
 import { PACES, paceMinutes, planDays } from "../../utils/planBuilder";
 import PlanCoverage from "./PlanCoverage";
+import { SkeletonPlanPreview } from "../ui/Skeletons";
 
 // Format API estimates; no sample numbers are substituted while a request is loading.
 function hours(minutes) {
@@ -39,7 +40,7 @@ export function PlanWeeks({ items, startDate }) {
           <details
             key={week}
             open={index === 0}
-            className="rounded-xl border border-ink/[0.1] p-4"
+            className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-4 transition-colors hover:border-ink/[0.2]"
           >
             <summary className="min-h-[44px] cursor-pointer text-sm font-semibold text-fg">
               Week {week}{" "}
@@ -83,7 +84,7 @@ export default function PlanPreview({ builder }) {
         <button
           type="button"
           onClick={retry}
-          className="mt-3 min-h-[44px] text-sm text-brand"
+          className="mt-3 min-h-[44px] cursor-pointer text-sm font-semibold text-brand transition-colors hover:text-brand-hover"
         >
           Retry preview
         </button>
@@ -92,16 +93,17 @@ export default function PlanPreview({ builder }) {
   }
   if (!previewReady)
     return (
-      <p role="status" className="animate-pulse text-sm text-muted">
-        Updating your preview…
-      </p>
+      <div role="status">
+        <p className="mb-5 text-sm text-muted">Updating your preview…</p>
+        <SkeletonPlanPreview />
+      </div>
     );
 
   const { coverage, week1, finishDate, deadline, notices, pace } = preview.data;
   return (
     <div className="space-y-6">
       <div aria-live="polite" className="border-b border-ink/[0.1] pb-5">
-        <p className="font-display text-3xl font-bold text-fg">
+        <p className="font-display text-4xl font-black tracking-tight text-fg">
           {hours(coverage.plannedMinutes)}{" "}
           <span className="text-base font-normal text-muted">
             of {hours(coverage.syllabusMinutes)}
@@ -110,7 +112,7 @@ export default function PlanPreview({ builder }) {
         <p className="mt-2 text-sm text-muted">
           of your syllabus fits before {displayDate(deadline)}.
         </p>
-        <p className="mt-2 text-xs text-muted">
+        <p className="mt-2 text-sm text-muted">
           Estimated finish:{" "}
           {finishDate ? displayDate(finishDate) : "No tasks scheduled"}.
         </p>
@@ -161,7 +163,7 @@ export default function PlanPreview({ builder }) {
         </p>
       )}
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-fg">Your first week</h3>
+        <h3 className="mb-3 font-display text-lg font-extrabold tracking-tight text-fg">Your first week</h3>
         {week1.items.length ? (
           <PlanChecklist readOnly days={planDays(week1.items)} />
         ) : (
@@ -170,7 +172,7 @@ export default function PlanPreview({ builder }) {
           </p>
         )}
       </div>
-      <p className="border-t border-ink/[0.1] pt-4 text-xs leading-relaxed text-muted">
+      <p className="border-t border-ink/[0.1] pt-4 text-sm leading-relaxed text-muted">
         This public preview shows week 1 only. Sign in and generate to save all
         weeks. Saved sheet progress is taken into account when your plan is
         created.

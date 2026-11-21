@@ -75,11 +75,11 @@ export default function StudyStart({
         type="button"
         disabled={busy}
         onClick={onBack}
-        className="min-h-[44px] text-sm text-brand"
+        className="min-h-[44px] cursor-pointer text-sm font-semibold text-brand transition-colors hover:text-brand-hover"
       >
         Back to plan
       </button>
-      <h2 className="text-2xl font-semibold text-fg">
+      <h2 className="font-display text-3xl font-extrabold tracking-tight text-fg">
         {review ? "Review: " : ""}
         {item.title}
         {item.part && ` (part ${item.part.n} of ${item.part.of})`}
@@ -101,10 +101,10 @@ export default function StudyStart({
         </a>
       )}
       {item.type === 'dsa' && <details className="space-y-3 text-sm text-muted">
-        <summary className="min-h-[44px] cursor-pointer text-brand">Can’t access this problem?</summary>
+        <summary className="min-h-[44px] cursor-pointer font-semibold text-brand">Can’t access this problem?</summary>
         {(item.alternatives || []).map((resource) => <p key={resource.url}><a className="text-brand underline" href={resource.url} target="_blank" rel="noopener noreferrer">{resource.title} (new tab)</a></p>)}
         {!!item.alternatives?.length && <p>These cover the same exercise. You can record your original result after practising there.</p>}
-        <Link className="inline-flex min-h-[44px] items-center text-brand" to="/my-plan/study?tab=plan">Choose a different exercise from the original task’s Plan options</Link>
+        <Link className="inline-flex min-h-[44px] items-center font-semibold text-brand transition-colors hover:text-brand-hover" to="/my-plan/study?tab=plan">Choose a different exercise from the original task’s Plan options</Link>
       </details>}
       {item.type === "mock" && (
         <div className="space-y-3 text-sm text-fg-3">
@@ -146,7 +146,7 @@ export default function StudyStart({
               <button
                 type="button"
                 onClick={() => setRetry((count) => count + 1)}
-                className="min-h-[44px] text-brand"
+                className="min-h-[44px] cursor-pointer font-semibold text-brand transition-colors hover:text-brand-hover"
               >
                 Retry quiz
               </button>

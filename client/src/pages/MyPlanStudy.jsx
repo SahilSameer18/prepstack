@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import { useStudyPlan } from "../hooks/useStudyPlan";
+import { useLoadingGate } from "../hooks/useLoadingGate";
+import PageBackdrop from "../components/ui/PageBackdrop";
+import { SkeletonStudy } from "../components/ui/Skeletons";
 import StudyToday from "../components/plan/StudyToday";
 import StudyStart from "../components/plan/StudyStart";
 import StudySchedule from "../components/plan/StudySchedule";
@@ -34,6 +38,8 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
   const ownModel = useStudyPlan(!planModel);
   const model = planModel || ownModel;
   const [params, setParams] = useSearchParams();
+  const calm = useReducedMotion();
+  const gate = useLoadingGate(!!model.loading);
   const [dialog, setDialog] = useState(null);
   const [round, setRound] = useState(null);
   const [roundIndex, setRoundIndex] = useState(0);
@@ -118,17 +124,13 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
     }
   }
 
-  if (model.loading)
-    return (
-      <p role="status" className="py-12 text-muted">
-        Loading your plan…
-      </p>
-    );
+  if (gate === "blank") return <div className="min-h-[40vh]" />;
+  if (gate === "skeleton") return <SkeletonStudy />;
   if (model.error)
     return (
-      <div role="alert" className="space-y-4 py-12 text-bad">
+      <div role="alert" className="surface-card mx-auto my-12 max-w-md space-y-4 p-6 text-bad">
         <p>{model.error}</p>
-        <button className="min-h-[44px] text-brand" onClick={model.reload}>
+        <button className="min-h-[44px] cursor-pointer font-semibold text-brand" onClick={model.reload}>
           Retry loading plan
         </button>
       </div>
@@ -148,11 +150,13 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
   const Heading = embedded ? 'h2' : 'h1';
 
   return (
-    <div className={embedded ? undefined : "mx-auto max-w-5xl py-5 sm:py-8"}>
-      <Heading className="mb-4 font-display text-xl font-bold text-fg">My plan</Heading>
+    <div className={embedded ? undefined : "relative"}>
+    {!embedded && <PageBackdrop />}
+    <div className={embedded ? undefined : "relative z-10 mx-auto max-w-5xl pb-12 pt-2"}>
+      <Heading className={embedded ? "mb-4 font-display text-2xl font-extrabold tracking-tight text-fg" : "mb-6 font-display text-4xl font-black leading-[1.04] tracking-[-0.04em] text-fg sm:text-5xl"}>My plan</Heading>
       {plan && <nav
         aria-label="Study plan tabs"
-        className="mb-6 flex gap-1 overflow-x-auto border-b border-ink/[0.1]"
+        className="mb-8 flex gap-1 overflow-x-auto sm:gap-1.5"
       >
         {TABS.map((name) => (
           <button
@@ -164,8 +168,16 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
               setRound(null);
               navigate(name.toLowerCase());
             }}
-            className={`min-h-[44px] flex-1 shrink-0 border-b-2 px-1 text-sm sm:flex-none sm:px-3${tab === name.toLowerCase() ? "border-brand text-brand" : "border-transparent text-muted"}`}
+            className={`relative min-h-[44px] flex-1 shrink-0 cursor-pointer rounded-xl px-1.5 text-sm sm:px-4 transition-colors disabled:cursor-not-allowed sm:flex-none ${tab === name.toLowerCase() ? "font-semibold text-brand" : "text-muted hover:bg-ink/[0.05] hover:text-fg"}`}
           >
+            {tab === name.toLowerCase() && (
+              <motion.span
+                aria-hidden="true"
+                layoutId={calm ? undefined : "study-tab-slide"}
+                className="absolute inset-0 -z-10 rounded-xl bg-brand/12"
+                transition={{ type: "spring", duration: 0.3, bounce: 0 }}
+              />
+            )}
             {name}
           </button>
         ))}
@@ -181,7 +193,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
 
       {round && !roundItem ? (
         <section className="space-y-4 text-fg-3">
-          <h2 className="text-xl font-semibold text-fg">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">
             Practice round complete
           </h2>
           <p>Your saved progress and review dates are unchanged.</p>
@@ -254,7 +266,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
         </>
       ) : tab === "starred" ? (
         <section className="space-y-5">
-          <h2 className="text-xl font-semibold text-fg">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight text-fg">
             Starred for revision
           </h2>
           <StudyItemList
@@ -336,6 +348,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
           onConfirm={startRound}
         />
       )}
+    </div>
     </div>
   );
 }

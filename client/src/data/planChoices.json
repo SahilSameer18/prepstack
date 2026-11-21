@@ -1,0 +1,589 @@
+{
+  "sheets": [
+    {
+      "slug": "blind-75",
+      "title": "Blind 75",
+      "topics": [
+        {
+          "id": "arrays-hashing",
+          "title": "Arrays & Hashing"
+        },
+        {
+          "id": "two-pointers",
+          "title": "Two Pointers"
+        },
+        {
+          "id": "sliding-window",
+          "title": "Sliding Window"
+        },
+        {
+          "id": "stack",
+          "title": "Stack"
+        },
+        {
+          "id": "binary-search",
+          "title": "Binary Search"
+        },
+        {
+          "id": "linked-list",
+          "title": "Linked List"
+        },
+        {
+          "id": "trees",
+          "title": "Trees"
+        },
+        {
+          "id": "heap-priority-queue",
+          "title": "Heap/Priority Queue"
+        },
+        {
+          "id": "backtracking",
+          "title": "Backtracking"
+        },
+        {
+          "id": "trie",
+          "title": "Trie"
+        },
+        {
+          "id": "graph",
+          "title": "Graph"
+        },
+        {
+          "id": "dynamic-programming",
+          "title": "Dynamic Programming"
+        },
+        {
+          "id": "2-d-dynamic-programming",
+          "title": "2-D Dynamic Programming"
+        },
+        {
+          "id": "greedy",
+          "title": "Greedy"
+        },
+        {
+          "id": "intervals",
+          "title": "Intervals"
+        },
+        {
+          "id": "math-geometry",
+          "title": "Math & Geometry"
+        },
+        {
+          "id": "bit-manipulation",
+          "title": "Bit Manipulation"
+        }
+      ]
+    },
+    {
+      "slug": "neetcode-150",
+      "title": "NeetCode 150",
+      "topics": [
+        {
+          "id": "arrays-hashing",
+          "title": "Arrays & Hashing"
+        },
+        {
+          "id": "two-pointers",
+          "title": "Two Pointers"
+        },
+        {
+          "id": "sliding-window",
+          "title": "Sliding Window"
+        },
+        {
+          "id": "stack",
+          "title": "Stack"
+        },
+        {
+          "id": "binary-search",
+          "title": "Binary Search"
+        },
+        {
+          "id": "linked-list",
+          "title": "Linked List"
+        },
+        {
+          "id": "trees",
+          "title": "Trees"
+        },
+        {
+          "id": "heap-priority-queue",
+          "title": "Heap / Priority Queue"
+        },
+        {
+          "id": "backtracking",
+          "title": "Backtracking"
+        },
+        {
+          "id": "trie",
+          "title": "Trie"
+        },
+        {
+          "id": "graph",
+          "title": "Graph"
+        },
+        {
+          "id": "advanced-graphs",
+          "title": "Advanced Graphs"
+        },
+        {
+          "id": "1d-dynamic-programming",
+          "title": "1D Dynamic Programming"
+        },
+        {
+          "id": "2d-dynamic-programming",
+          "title": "2D Dynamic Programming"
+        },
+        {
+          "id": "greedy",
+          "title": "Greedy"
+        },
+        {
+          "id": "intervals",
+          "title": "Intervals"
+        },
+        {
+          "id": "math-geometry",
+          "title": "Math & Geometry"
+        },
+        {
+          "id": "bit-manipulation",
+          "title": "Bit Manipulation"
+        }
+      ]
+    },
+    {
+      "slug": "striver-sde",
+      "title": "Striver SDE",
+      "topics": [
+        {
+          "id": "arrays",
+          "title": "Arrays"
+        },
+        {
+          "id": "hashing",
+          "title": "Hashing"
+        },
+        {
+          "id": "binary-search",
+          "title": "Binary Search"
+        },
+        {
+          "id": "sliding-window-and-two-pointers",
+          "title": "Sliding Window and Two Pointers"
+        },
+        {
+          "id": "recursion-and-backtracking",
+          "title": "Recursion and Backtracking"
+        },
+        {
+          "id": "linked-list",
+          "title": "Linked List"
+        },
+        {
+          "id": "stack-and-queues",
+          "title": "Stack and Queues"
+        },
+        {
+          "id": "greedy-algorithms",
+          "title": "Greedy Algorithms"
+        },
+        {
+          "id": "heaps",
+          "title": "Heaps"
+        },
+        {
+          "id": "binary-trees",
+          "title": "Binary Trees"
+        },
+        {
+          "id": "binary-search-trees",
+          "title": "Binary Search Trees"
+        },
+        {
+          "id": "graphs",
+          "title": "Graphs"
+        },
+        {
+          "id": "dynamic-programming",
+          "title": "Dynamic Programming"
+        },
+        {
+          "id": "tries",
+          "title": "Tries"
+        },
+        {
+          "id": "strings",
+          "title": "Strings"
+        },
+        {
+          "id": "bit-manipulation",
+          "title": "Bit Manipulation"
+        },
+        {
+          "id": "mathematics",
+          "title": "Mathematics"
+        }
+      ]
+    },
+    {
+      "slug": "striver-a2z",
+      "title": "Striver A2Z",
+      "topics": [
+        {
+          "id": "beginner-problem",
+          "title": "Beginner Problems"
+        },
+        {
+          "id": "sorting",
+          "title": "Sorting"
+        },
+        {
+          "id": "arrays",
+          "title": "Arrays"
+        },
+        {
+          "id": "hashing",
+          "title": "Hashing"
+        },
+        {
+          "id": "binary-search",
+          "title": "Binary Search"
+        },
+        {
+          "id": "strings-basic-and-medium",
+          "title": "Strings (Basic and Medium)"
+        },
+        {
+          "id": "recursion",
+          "title": "Recursion"
+        },
+        {
+          "id": "linked-list",
+          "title": "Linked-List"
+        },
+        {
+          "id": "bit-manipulation",
+          "title": "Bit Manipulation"
+        },
+        {
+          "id": "greedy-algorithms",
+          "title": "Greedy Algorithms"
+        },
+        {
+          "id": "sliding-window-and-2-pointer",
+          "title": "Sliding Window / 2 Pointer"
+        },
+        {
+          "id": "stack-and-queues",
+          "title": "Stack / Queues"
+        },
+        {
+          "id": "binary-trees",
+          "title": "Binary Trees"
+        },
+        {
+          "id": "binary-search-trees",
+          "title": "Binary Search Trees"
+        },
+        {
+          "id": "heaps",
+          "title": "Heaps"
+        },
+        {
+          "id": "graph",
+          "title": "Graphs"
+        },
+        {
+          "id": "dynamic-programming",
+          "title": "Dynamic Programming"
+        },
+        {
+          "id": "tries",
+          "title": "Tries"
+        },
+        {
+          "id": "strings-advanced-algo",
+          "title": "Strings (Advanced Algo)"
+        },
+        {
+          "id": "maths",
+          "title": "Maths"
+        }
+      ]
+    },
+    {
+      "slug": "love-babbar",
+      "title": "Love Babbar",
+      "topics": [
+        {
+          "id": "array",
+          "title": "Array"
+        },
+        {
+          "id": "matrix",
+          "title": "Matrix"
+        },
+        {
+          "id": "string",
+          "title": "String"
+        },
+        {
+          "id": "searching-sorting",
+          "title": "Searching & Sorting"
+        },
+        {
+          "id": "linked-list",
+          "title": "Linked List"
+        },
+        {
+          "id": "stacks-queues",
+          "title": "Stacks & Queues"
+        },
+        {
+          "id": "binary-tree",
+          "title": "Binary Tree"
+        },
+        {
+          "id": "binary-search-tree",
+          "title": "Binary Search Tree"
+        },
+        {
+          "id": "greedy",
+          "title": "Greedy"
+        },
+        {
+          "id": "backtracking",
+          "title": "Backtracking"
+        },
+        {
+          "id": "dynamic-programming",
+          "title": "Dynamic Programming"
+        },
+        {
+          "id": "heap",
+          "title": "Heap"
+        },
+        {
+          "id": "graph",
+          "title": "Graph"
+        },
+        {
+          "id": "trie",
+          "title": "Trie"
+        },
+        {
+          "id": "bit-manipulation",
+          "title": "Bit Manipulation"
+        }
+      ]
+    }
+  ],
+  "subjects": [
+    {
+      "id": "os",
+      "title": "Operating Systems"
+    },
+    {
+      "id": "dbms",
+      "title": "DBMS"
+    },
+    {
+      "id": "cn",
+      "title": "Computer Networks"
+    },
+    {
+      "id": "oops",
+      "title": "OOP in Java"
+    },
+    {
+      "id": "hld",
+      "title": "System Design"
+    }
+  ],
+  "roadmaps": [
+    {
+      "slug": "frontend",
+      "title": "Frontend Development",
+      "topics": []
+    },
+    {
+      "slug": "backend",
+      "title": "Backend Development",
+      "topics": []
+    },
+    {
+      "slug": "fullstack",
+      "title": "Full Stack MERN",
+      "topics": []
+    },
+    {
+      "slug": "android",
+      "title": "Android Development",
+      "topics": []
+    },
+    {
+      "slug": "data-analytics",
+      "title": "Data Analytics",
+      "topics": []
+    },
+    {
+      "slug": "machine-learning",
+      "title": "Machine Learning",
+      "topics": []
+    },
+    {
+      "slug": "dsa",
+      "title": "DSA & Problem Solving",
+      "topics": [
+        {
+          "id": "arrays-hashing",
+          "title": "Arrays & Hashing"
+        },
+        {
+          "id": "array",
+          "title": "Array"
+        },
+        {
+          "id": "arrays",
+          "title": "Arrays"
+        },
+        {
+          "id": "two-pointers",
+          "title": "Two Pointers"
+        },
+        {
+          "id": "sliding-window",
+          "title": "Sliding Window"
+        },
+        {
+          "id": "sliding-window-and-2-pointer",
+          "title": "Sliding Window / 2 Pointer"
+        },
+        {
+          "id": "binary-search",
+          "title": "Binary Search"
+        },
+        {
+          "id": "sorting",
+          "title": "Sorting"
+        },
+        {
+          "id": "linked-list",
+          "title": "Linked List"
+        },
+        {
+          "id": "stack",
+          "title": "Stack"
+        },
+        {
+          "id": "stack-and-queues",
+          "title": "Stack / Queues"
+        },
+        {
+          "id": "trees",
+          "title": "Trees"
+        },
+        {
+          "id": "binary-tree",
+          "title": "Binary Tree"
+        },
+        {
+          "id": "binary-search-tree",
+          "title": "Binary Search Tree"
+        },
+        {
+          "id": "binary-trees",
+          "title": "Binary Trees"
+        },
+        {
+          "id": "binary-search-trees",
+          "title": "Binary Search Trees"
+        },
+        {
+          "id": "heap-priority-queue",
+          "title": "Heap/Priority Queue"
+        },
+        {
+          "id": "trie",
+          "title": "Trie"
+        },
+        {
+          "id": "heaps",
+          "title": "Heaps"
+        },
+        {
+          "id": "backtracking",
+          "title": "Backtracking"
+        },
+        {
+          "id": "recursion",
+          "title": "Recursion"
+        },
+        {
+          "id": "recursion-and-backtracking",
+          "title": "Recursion and Backtracking"
+        },
+        {
+          "id": "graph",
+          "title": "Graphs"
+        },
+        {
+          "id": "advanced-graphs",
+          "title": "Advanced Graphs"
+        },
+        {
+          "id": "graphs",
+          "title": "Graphs"
+        },
+        {
+          "id": "greedy",
+          "title": "Greedy"
+        },
+        {
+          "id": "intervals",
+          "title": "Intervals"
+        },
+        {
+          "id": "greedy-algorithms",
+          "title": "Greedy Algorithms"
+        },
+        {
+          "id": "1d-dynamic-programming",
+          "title": "1D Dynamic Programming"
+        },
+        {
+          "id": "2d-dynamic-programming",
+          "title": "2D Dynamic Programming"
+        },
+        {
+          "id": "dynamic-programming",
+          "title": "Dynamic Programming"
+        },
+        {
+          "id": "bit-manipulation",
+          "title": "Bit Manipulation"
+        },
+        {
+          "id": "math-geometry",
+          "title": "Math & Geometry"
+        }
+      ]
+    },
+    {
+      "slug": "java-spring",
+      "title": "Java & Spring Boot",
+      "topics": [
+        {
+          "id": "arrays-hashing",
+          "title": "Arrays & Hashing"
+        }
+      ]
+    },
+    {
+      "slug": "devops-cloud",
+      "title": "DevOps & Cloud",
+      "topics": []
+    }
+  ]
+}

@@ -114,7 +114,7 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
             <label className="block space-y-2 text-sm">
               Deadline (keep it or choose a later date)
               <input className={INPUT} type="date" min={plan.deadline} value={deadline} required onChange={(event) => setDeadline(event.target.value)} />
-              <span className="block text-xs text-muted">A later date gives more room; the preview shows what fits. Completed tasks remain saved.</span>
+              <span className="block text-sm text-muted">A later date gives more room; the preview shows what fits. Completed tasks remain saved.</span>
             </label>
           )}
           {type === "pace" && (
@@ -131,7 +131,7 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
                   </option>
                 ))}
               </select>
-              <span className="block text-xs text-muted">
+              <span className="block text-sm text-muted">
                 A slower pace plans fewer problems in the same time; a faster
                 pace plans more. Tasks you already finished do not change.
               </span>
@@ -212,7 +212,7 @@ export function StudyChangeDialog({ type, plan, model, onClose }) {
                   onChange={(event) => setHours(event.target.valueAsNumber)}
                 />
               </label>
-              <p className="text-xs text-muted">
+              <p className="text-sm text-muted">
                 A stretch can last up to 14 days and cannot overlap another
                 stretch.
               </p>
@@ -347,7 +347,7 @@ export function StudyTaskDialog({ item, plan, model, onClose }) {
               />
             </label>
             {item && (
-              <p className="text-xs text-muted">
+              <p className="text-sm text-muted">
                 Move up to three days from {item.plannedDay || item.day}. Moved
                 tasks stay locked during rebuilds.
               </p>
