@@ -15,14 +15,18 @@ async function signUp(page, label) {
 test("the home page leads with the study plan and says what it does", async ({ page }) => {
   await page.goto("/");
   const hero = page.getByRole("link", { name: /Build my study plan/ }).first();
-  await expect(hero).toHaveAttribute("href", "/my-plan");
+  await expect(hero).toHaveAttribute("href", "/my-plan?weeks=8");
   await expect(page.getByRole("heading", { name: "Three steps. Then just show up." })).toBeVisible();
   await expect(page.getByText("It shows what fits before your deadline, and what does not.")).toBeVisible();
-  // two hero buttons only: the plan, and the account (signed out) or the dashboard (signed in)
+  // two hero links only: the plan, and the account (signed out) or the dashboard (signed in)
   await expect(hero.locator("xpath=..").getByRole("link")).toHaveCount(2);
-  await expect(hero.locator("xpath=..").getByRole("link").nth(1)).toContainText("Create Account");
+  await expect(hero.locator("xpath=..").getByRole("link").nth(1)).toContainText("Create account");
+  // the weeks choice changes the picture and is carried into the planner
+  await page.getByRole("button", { name: "12 weeks" }).click();
+  await expect(page.getByText(/12 weeks is 60 study days/)).toBeVisible();
+  await expect(hero).toHaveAttribute("href", "/my-plan?weeks=12");
   await hero.click();
-  await expect(page).toHaveURL(/\/my-plan/);
+  await expect(page).toHaveURL(/\/my-plan\?weeks=12/);
 });
 
 test("login shows one field focus outline and keeps the password toggle keyboard accessible", async ({ page }) => {
