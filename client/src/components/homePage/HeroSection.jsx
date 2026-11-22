@@ -21,7 +21,7 @@ const HeroSection = () => {
   const days = weeks * 7;
 
   return (
-    <section className="pb-4 pt-6 text-left sm:pt-14">
+    <section className="pb-4 pt-2 text-left sm:pt-6">
       <Reveal as="p" onLoad className="font-code text-xs uppercase tracking-[0.14em] text-muted">Free · no card · reading is open</Reveal>
       <div className="relative">
         <Reveal as="h1" onLoad delay={0.05} className="mt-5 max-w-3xl font-display text-4xl font-bold leading-[1.02] tracking-[-0.045em] text-fg sm:text-6xl lg:text-[68px]">
@@ -43,7 +43,24 @@ const HeroSection = () => {
         </div>
       </div>
 
-      <Reveal onLoad delay={0.3} className="mt-12 border-t border-ink/[0.1] pt-8 sm:mt-14">
+      <Reveal onLoad delay={0.12} className="mt-5 max-w-2xl">
+        <p className="text-base leading-relaxed text-fg-3 sm:text-lg">
+          A day-by-day study plan for your hours, with DSA practice, CS notes and reviews. Preview what fits before you save.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center gap-5">
+          <Link
+            to={`/my-plan?weeks=${weeks}`}
+            className="amber-specular-button group inline-flex min-h-[48px] items-center gap-2 rounded-xl px-6 py-3.5 font-display text-sm font-bold tracking-tight"
+          >
+            Build my study plan <ArrowRight aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1" />
+          </Link>
+          <Link to={user ? "/dashboard" : "/register"} className="inline-flex min-h-[44px] items-center text-sm font-medium text-fg-3 transition-colors hover:text-fg">
+            {user ? "Open dashboard" : "Create account"} &rarr;
+          </Link>
+        </div>
+      </Reveal>
+
+      <Reveal onLoad delay={0.2} className="mt-8 border-t border-ink/[0.1] pt-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div role="group" aria-labelledby="hero-weeks-label">
             <p id="hero-weeks-label" className="font-code text-xs uppercase tracking-[0.14em] text-muted">How many weeks until your placement drive?</p>
@@ -68,14 +85,13 @@ const HeroSection = () => {
         </div>
 
         {/* one mark per day; 14 columns on a phone (two weeks a row), 28 on wider screens (four weeks a row) */}
-        <div key={weeks} aria-hidden="true" className="mt-8 grid grid-cols-[repeat(14,minmax(0,1fr))] gap-[4px] sm:grid-cols-[repeat(28,minmax(0,1fr))] sm:gap-[5px]">
+        <div aria-hidden="true" className="mt-6 grid min-h-[92px] grid-cols-[repeat(14,minmax(0,1fr))] content-start gap-[4px] sm:grid-cols-[repeat(28,minmax(0,1fr))] sm:gap-[5px]">
           {Array.from({ length: days }, (_, i) => {
             const study = i % 7 < STUDY_DAYS_PER_WEEK;
             return (
               <i
                 key={i}
-                style={study ? { animationDelay: `${Math.min(i * 14, 900)}ms` } : undefined}
-                className={`aspect-square rounded-[3px] ${study ? "mark-fill bg-brand-grad-top" : "border border-ink/[0.16]"}`}
+                className={`aspect-square rounded-[3px] transition-colors duration-200 ${study ? "bg-brand-grad-top" : "border border-ink/[0.16]"}`}
               />
             );
           })}
@@ -86,17 +102,6 @@ const HeroSection = () => {
             {weeks} weeks is {weeks * STUDY_DAYS_PER_WEEK} study days. At 1 hour a day, about {problemsThatFit(weeks, 1)} of the {BLIND_75} Blind 75 problems fit.
             <span className="mt-1 block font-code text-xs text-muted">Assumes {STUDY_DAYS_PER_WEEK} study days a week and {MINUTES_PER_PROBLEM} minutes a problem. Rest days are the faint marks.</span>
           </p>
-          <div className="flex flex-wrap items-center gap-5">
-            <Link
-              to={`/my-plan?weeks=${weeks}`}
-              className="amber-specular-button group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 font-display text-sm font-bold tracking-tight"
-            >
-              Build my study plan <ArrowRight className="transition-transform duration-200 group-hover:translate-x-1" />
-            </Link>
-            <Link to={user ? "/dashboard" : "/register"} className="text-sm font-medium text-fg-3 transition-colors hover:text-fg">
-              {user ? "Open dashboard" : "Create account"} &rarr;
-            </Link>
-          </div>
         </div>
       </Reveal>
     </section>

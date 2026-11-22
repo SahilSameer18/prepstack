@@ -92,6 +92,19 @@ test("signed in, the same sheet still saves a tick across a reload and opens the
   await expect(page.getByTitle("Mark as unsolved")).toHaveCount(1); // the tick was saved to the account
   await page.getByRole("button", { name: /Add approach notes|\+ Note/ }).first().click();
   await expect(page.getByTestId("sign-in-notice")).toHaveCount(0);
+  // Saved metadata must not move the difficulty or learning actions into another row.
+  await page.getByRole('button', { name: 'Prefix Sums', exact: true }).click();
+  await page.getByRole('button', { name: 'O(N)', exact: true }).first().click();
+  await page.getByRole('button', { name: 'Close drawer', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Close drawer', exact: true })).toHaveCount(0);
+  const row = page.locator('#p-0-0');
+  await expect(row.getByText('Prefix Sums', { exact: true })).toBeVisible();
+  const controls = [row.getByText('Easy', { exact: true }), row.getByRole('button', { name: /View or edit approach notes/ }), row.getByRole('link', { name: /Open Two Sum on its own site/ })];
+  const boxes = await Promise.all(controls.map((control) => control.boundingBox()));
+  const centers = boxes.map((box) => box.y + box.height / 2);
+  expect(Math.max(...centers) - Math.min(...centers)).toBeLessThan(2);
+  await row.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: '../.tmp/ui-polish-dsa.png' });
 });
 
 test("the sign-in message fits a phone", async ({ page }) => {
@@ -130,4 +143,26 @@ test("with reduced motion the home numbers show their final value at once", asyn
   await page.goto("/");
   await expect(page.getByText("1,276", { exact: true })).toBeVisible({ timeout: 1000 });
   await context.close();
+});
+
+test('the phone section drawer contains focus, closes with Escape and returns focus', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/notes/os');
+  const opener = page.getByRole('button', { name: 'Sections', exact: true });
+  await opener.click();
+  const drawer = page.getByRole('dialog', { name: 'Sections', exact: true });
+  await expect(drawer).toBeVisible();
+  const cancel = drawer.getByRole('button', { name: 'Cancel', exact: true });
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(drawer.getByRole('link').last()).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(drawer).toHaveCount(0);
+  await expect(opener).toBeFocused();
+  await opener.click();
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await expect(drawer).toHaveCount(0);
+  expect(await page.evaluate(() => document.body.style.overflow)).not.toBe('hidden');
 });

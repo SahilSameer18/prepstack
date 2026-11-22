@@ -12,7 +12,7 @@ export default function SearchButton({ compact = false }) {
       onClick={open}
       aria-label="Search pages"
       title="Search pages"
-      className="flex h-9 w-9 items-center justify-center rounded-full text-lg text-fg-3 transition-colors duration-300 hover:bg-ink/[0.07] hover:text-fg"
+      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg text-fg-3 transition-colors duration-300 hover:bg-ink/[0.07] hover:text-fg"
     >
       <MagnifyingGlass aria-hidden="true" />
     </button>
@@ -22,7 +22,7 @@ export default function SearchButton({ compact = false }) {
       onClick={open}
       aria-label={`Search pages, shortcut ${isMac ? "Command K" : "Control K"}`}
       title="Search pages"
-      className="flex h-9 items-center gap-2 rounded-full border border-ink/[0.15] px-3 text-sm text-fg-3 transition-colors duration-300 hover:border-ink/[0.3] hover:text-fg"
+      className="flex h-11 items-center gap-2 rounded-full border border-ink/[0.15] px-3 text-sm text-fg-3 transition-colors duration-300 hover:border-ink/[0.3] hover:text-fg"
     >
       <MagnifyingGlass aria-hidden="true" className="text-base" />
       <span>Search</span>

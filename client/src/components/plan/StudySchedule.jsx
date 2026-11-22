@@ -36,6 +36,7 @@ export default function StudySchedule({
   model,
   onStart,
   onDialog,
+  recoveryControls,
 }) {
   const progress = studyProgress(plan.items);
   const days = studyChecklistDays(plan.items.filter((item) => !item.skipped));
@@ -104,62 +105,6 @@ export default function StudySchedule({
             deadline. You can choose a practice round below.
           </p>
         )}
-      </div>
-      <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-        {!readOnly && (
-          <Group label="Adjust">
-            <button className={BUTTON} onClick={() => onDialog("hours")}>
-              Change hours
-            </button>
-            {!plan.fromReport && (
-              <button className={BUTTON} onClick={() => onDialog("pace")}>
-                Change pace
-              </button>
-            )}
-            <button className={BUTTON} onClick={() => onDialog("lighter")}>
-              Lighter days
-            </button>
-          </Group>
-        )}
-        {!readOnly && (
-          <Group label="Tasks">
-            <button className={BUTTON} onClick={() => onDialog("add")}>
-              Add a task
-            </button>
-            {pull && (
-              <button className={BUTTON} onClick={() => onDialog("pull", pull)}>
-                Pull tomorrow’s first task
-              </button>
-            )}
-          </Group>
-        )}
-        {(
-          <Group label="Recovery">
-            {readOnly && <button className={BUTTON} disabled={model.busy} onClick={() => onDialog('rebuild')}>Extend deadline</button>}
-            {!readOnly && (
-              <button
-                className={BUTTON}
-                disabled={model.busy}
-                onClick={() => onDialog("rebuild")}
-              >
-                Rebuild from today
-              </button>
-            )}
-            {progress.complete && round.length > 0 && (
-              <button className={BUTTON} onClick={() => onDialog("revision")}>
-                Preview revision round
-              </button>
-            )}
-          </Group>
-        )}
-        <Group label="Plan">
-          <Link className={BUTTON} to="/my-plan">
-            Build another plan
-          </Link>
-          <button className={DANGER} onClick={() => onDialog("delete")}>
-            Delete current plan
-          </button>
-        </Group>
       </div>
       {model.actionError && (
         <p role="alert" className="text-sm text-bad">
@@ -249,6 +194,67 @@ export default function StudySchedule({
           </ul>
         </details>
       )}
+      {/* Show the work before its maintenance controls. Every action stays available below. */}
+      <section aria-label="Plan settings" className="space-y-6">
+        <h3 className="font-display text-xl font-bold text-fg">Adjust your plan</h3>
+        {recoveryControls}
+        <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+          {!readOnly && (
+            <Group label="Adjust">
+              <button className={BUTTON} onClick={() => onDialog("hours")}>
+                Change hours
+              </button>
+              {!plan.fromReport && (
+                <button className={BUTTON} onClick={() => onDialog("pace")}>
+                  Change pace
+                </button>
+              )}
+              <button className={BUTTON} onClick={() => onDialog("lighter")}>
+                Lighter days
+              </button>
+            </Group>
+          )}
+          {!readOnly && (
+            <Group label="Tasks">
+              <button className={BUTTON} onClick={() => onDialog("add")}>
+                Add a task
+              </button>
+              {pull && (
+                <button className={BUTTON} onClick={() => onDialog("pull", pull)}>
+                  Pull tomorrow’s first task
+                </button>
+              )}
+            </Group>
+          )}
+          {(
+            <Group label="Recovery">
+              {readOnly && <button className={BUTTON} disabled={model.busy} onClick={() => onDialog('rebuild')}>Extend deadline</button>}
+              {!readOnly && (
+                <button
+                  className={BUTTON}
+                  disabled={model.busy}
+                  onClick={() => onDialog("rebuild")}
+                >
+                  Rebuild from today
+                </button>
+              )}
+              {progress.complete && round.length > 0 && (
+                <button className={BUTTON} onClick={() => onDialog("revision")}>
+                  Preview revision round
+                </button>
+              )}
+            </Group>
+          )}
+          <Group label="Plan">
+            <Link className={BUTTON} to="/my-plan">
+              Build another plan
+            </Link>
+            <button className={DANGER} onClick={() => onDialog("delete")}>
+              Delete current plan
+            </button>
+          </Group>
+        </div>
+      </section>
     </section>
   );
 }

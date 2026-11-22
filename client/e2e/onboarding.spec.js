@@ -52,7 +52,9 @@ for (const destination of ["/dashboard", "/my-plan?weeks=9"]) {
   test(`signup returns to ${destination}`, async ({ page }) => {
     if (destination === "/dashboard") {
       await page.goto("/");
-      await page.getByRole("link", { name: "Create Account", exact: true }).first().click();
+      await expect(page.getByRole('link', { name: 'Build my study plan', exact: true }).first()).toBeInViewport();
+      await page.screenshot({ path: '../.tmp/ui-polish-home.png' });
+      await page.getByRole("link", { name: /^Create account/ }).first().click();
     } else {
       await page.goto(`/register?returnTo=${encodeURIComponent(destination)}`);
     }

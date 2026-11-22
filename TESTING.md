@@ -1,4 +1,19 @@
-What exists today (updated 2026-11-16)
+What exists today (updated 2026-11-22)
+
+## UI polish verification — 22 Nov 2026
+
+- Client: `npm test -- --configLoader runner`, **213 passed** in 17 files. Includes the nearly-complete progress-mark regression: 49/50 must leave the final mark empty.
+- Server: `npm test`, **1,148 passed**, 220 suites, no failures/skips/cancellations. Disposable databases; no live environment or seeds.
+- `npm run lint` passed. Vite production build with the runner config loader, prerender and SEO passed: **101 pages, 91 indexable, zero SEO warnings**. Existing large-chunk warnings remain.
+- Browser: **43 distinct scenarios verified**. The initial full run ended with 40 passed and 3 failures: two test issues (waiting for an exiting drawer, and matching the signup link including its arrow), plus a history-test trace teardown failure caused by an overlapping rerun cleaning the shared artifact directory. The two corrected tests passed on a focused rerun; the history scenario passed separately with its own output directory. This was not a single clean full-suite exit. Only failed scenarios were repeated.
+- Playwright used a temporary config outside the repository with the runner loader and the already-running audit fixture on 3100/5175, verified through its test-only clock endpoint. Tests used separate disposable accounts. Real AI, Google sign-in, email and production were not exercised.
+- Environment limit: stopping the existing audit-server process was refused with Windows Access denied. The 3100/5175 audit servers were left running; the owner's application ports were not changed.
+- New browser coverage: primary hero action in the phone viewport; readable descriptions at 640/768/1024/1280 in both themes; DSA metadata/action alignment; drawer Tab containment, Escape, focus restoration and desktop-resize dismissal; schedule before settings. Existing planner, recovery, reviews, history, account and theme cases also ran.
+- Visual inspection: populated desktop DSA rows in light/dark, tablet feature rows in light/dark, phone hero, schedule-first Plan and native notes drawer. The 375×812 hero action measured approximately y=435–483 (previously below the viewport). Screenshots are ignored under `.tmp/`.
+
+**Still required outside this environment:** try these flows on physical Android Chrome and iOS Safari, with reduced motion and the phone keyboard open. Observe scrolling, interrupted transitions and tap feedback. Ask 3–5 students or a designer to explain what the homepage does, find today's work, change study hours, and open an OS chapter without coaching. Record hesitation, misunderstandings and completion. No outside feedback or physical-device result has been collected; desktop emulation does not replace it.
+
+## Earlier verification records
 
 **Backend modules Phases 7 and 8 and final local verification, 19 Nov 2026.** The server suite passed all 1,112 tests in 210 suites with zero failures, cancellations or skips. This is the 1,111-test baseline plus architecture.test.js. The guard scans source ownership, literal requires and the current runtime path.join form; new dynamic require forms must be handled explicitly. Static, template-literal and runtime-built forbidden imports from shared into auth each made the architecture test fail. All were restored before the final run. Ten verified-empty source folders were removed using nonrecursive deletion. All 135 client tests, build, prerender, SEO (101 pages, 91 indexable) and lint passed. Vite and Vitest used the runner config loader. The real server.js started from a disposable working directory with an in-memory MongoDB URI, test secrets and Redis off. Health, sheets, notes and planner options returned 200. Auth, user, project, analyzer, usage, problem notes and saved plans returned 401 without login. The server and database were stopped. Real seeds, server/.env, live Redis, AI, Google, email, deployed services and browser flows were outside this pass.
 

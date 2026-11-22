@@ -2,9 +2,10 @@
 // `value` of `total` is the real count; `max` caps the number of marks so a long list stays a calm row.
 const ProgressMarks = ({ value, total, max = 20, label, tall = false, className = "" }) => {
   const marks = Math.max(1, Math.min(total, max));
-  const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+  const pct = total > 0 ? Math.min(value >= total ? 100 : 99, Math.max(0, Math.floor((value / total) * 100))) : 0;
   // a started list always shows at least one filled mark, and a finished one fills them all
-  const filled = value <= 0 ? 0 : value >= total ? marks : Math.max(1, Math.round((value / total) * marks));
+  // Keep the final mark empty until the actual list is complete.
+  const filled = value <= 0 ? 0 : value >= total ? marks : Math.min(marks - 1, Math.max(1, Math.floor((value / total) * marks)));
   return (
     <span
       role="progressbar"

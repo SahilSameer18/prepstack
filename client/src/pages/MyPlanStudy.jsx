@@ -201,8 +201,6 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
         ))}
       </nav>}
 
-      {tab === 'plan' && plan && !item && !round && <StudyRecovery model={model} />}
-
       {!plan && tab === "history" && (
         <button type="button" className="mb-3 min-h-[44px] text-sm text-brand" onClick={() => navigate(defaultTab)}>
           Back to My plan
@@ -302,6 +300,7 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
           model={model}
           onStart={start}
           onDialog={openDialog}
+          recoveryControls={<StudyRecovery model={model} />}
         />
       )}
 

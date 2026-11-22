@@ -12,9 +12,9 @@ export const InlineErrorAlert = ({ message, onDismiss, className = "" }) => {
   if (!message) return null;
   return (
     <motion.div
-      initial={{ opacity: 0, transform: "translate3d(0, -8px, 0)" }}
-      animate={{ opacity: 1, transform: "translate3d(0, 0, 0)" }}
-      exit={{ opacity: 0, transform: "translate3d(0, -8px, 0)" }}
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
       role="alert"
       className={`flex items-start gap-3 rounded-xl border border-bad-solid/25 bg-bad-solid/10 px-4 py-3 ${className}`}
@@ -26,7 +26,7 @@ export const InlineErrorAlert = ({ message, onDismiss, className = "" }) => {
           type="button"
           onClick={onDismiss}
           aria-label="Dismiss error"
-          className="shrink-0 text-bad transition-colors hover:text-fg"
+          className="-my-2 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-bad transition-colors hover:text-fg"
         >
           <X aria-hidden="true" className="text-sm" />
         </button>

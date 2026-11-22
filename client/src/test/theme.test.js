@@ -2,6 +2,9 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import ProgressMarks from '../components/ui/ProgressMarks';
 
 const css = readFileSync(fileURLToPath(new URL('../index.css', import.meta.url)), 'utf8').replace(/\r\n/g, '\n');
 const block = (start) => {
@@ -46,4 +49,12 @@ describe('light theme contrast', () => {
     const missing = Object.keys(dark).filter((k) => !skip.has(k) && !dark[k].startsWith('var(') && !dark[k].startsWith('color-mix') && !dark[k].startsWith('inset') && !(k in light));
     expect(missing).toEqual([]);
   });
+});
+
+it('keeps the final progress mark empty until every item is complete', () => {
+  const render = (value) => renderToStaticMarkup(createElement(ProgressMarks, { value, total: 50, max: 20, label: 'Tasks' }));
+  expect(render(49).match(/bg-brand mark-fill/g)).toHaveLength(19);
+  expect(render(49)).toContain('aria-valuenow="98"');
+  expect(render(50).match(/bg-brand mark-fill/g)).toHaveLength(20);
+  expect(render(0)).not.toContain('bg-brand mark-fill');
 });

@@ -112,6 +112,19 @@ async function savedPlan(page) {
   return (await response.json()).data.plan;
 }
 
+test('the schedule comes before settings and adjustments on a phone', async ({ page }) => {
+  await createPlan(page);
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/my-plan/study?tab=plan');
+  const week = page.getByRole('region', { name: 'Plan', exact: true }).locator('details > summary').first();
+  await expect(week).toBeVisible();
+  const firstWeek = await week.boundingBox();
+  for (const name of ['Change hours', 'Study day settings', 'Pause plan']) {
+    const action = await page.getByRole('button', { name, exact: true }).boundingBox();
+    expect(firstWeek.y).toBeLessThan(action.y);
+  }
+});
+
 async function assertFits(page) {
   expect(
     await page.evaluate(

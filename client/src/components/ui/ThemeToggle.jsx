@@ -52,7 +52,7 @@ export default function ThemeToggle({ className = "" }) {
       onClick={toggle}
       aria-label={`Switch to ${next} theme`}
       title={`Switch to ${next} theme`}
-      className={`flex h-9 w-9 items-center justify-center rounded-full text-lg text-fg-3 transition-colors hover:bg-ink/[0.07] hover:text-fg ${className}`}
+      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg text-fg-3 transition-colors hover:bg-ink/[0.07] hover:text-fg ${className}`}
     >
       {theme === "light" ? <Moon aria-hidden="true" /> : <Sun aria-hidden="true" />}
     </button>

@@ -8,10 +8,13 @@ const CountUp = ({ value, format = (n) => String(n), duration = 1.5 }) => {
   const seen = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
   const calm = useReducedMotion();
   const [shown, setShown] = useState(calm ? value : 0);
+  const animated = useRef(false);
 
   useEffect(() => {
-    if (calm) { setShown(value); return undefined; }
+    // Refreshes update the figure directly; only its first appearance counts from zero.
+    if (calm || animated.current) { setShown(value); return undefined; }
     if (!seen) return undefined;
+    animated.current = true;
     const controls = animate(0, value, { duration, ease: [0.23, 1, 0.32, 1], onUpdate: (n) => setShown(Math.round(n)) });
     return () => controls.stop();
   }, [seen, value, calm, duration]);

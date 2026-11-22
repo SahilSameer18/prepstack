@@ -28,13 +28,13 @@ const SuiteSection = () => {
           <Reveal as="li" key={line.to} y={24} delay={Math.min(i, 5) * 0.09} className="border-b border-ink/[0.1]">
             <Link
               to={line.to}
-              className="group grid grid-cols-[44px_1fr_auto] items-center gap-x-4 gap-y-1 py-5 transition-colors hover:bg-ink/[0.02] sm:grid-cols-[44px_200px_1fr_150px_24px] sm:gap-x-5 sm:py-6"
+              className="group grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 py-5 transition-colors hover:bg-ink/[0.02] lg:grid-cols-[44px_minmax(0,1fr)_minmax(0,2fr)_140px_24px] lg:gap-x-5 sm:py-6"
             >
-              <span aria-hidden="true" className="row-span-2 flex h-11 w-11 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-2xl text-brand sm:row-span-1">{line.icon}</span>
+              <span aria-hidden="true" className="row-span-3 flex h-11 w-11 items-center justify-center rounded-xl border border-brand/25 bg-brand/10 text-2xl text-brand lg:row-span-1">{line.icon}</span>
               <span className="font-display text-xl font-bold tracking-tight text-fg sm:text-2xl">{line.title}</span>
-              <ArrowRight aria-hidden="true" className="justify-self-end text-brand transition-transform duration-200 group-hover:translate-x-1 sm:order-last" />
-              <span className="col-start-2 text-sm leading-relaxed text-muted sm:col-start-auto sm:text-base">{line.text}</span>
-              <span className="col-start-2 font-code text-sm text-fg-3 sm:col-start-auto sm:text-right">{line.note}</span>
+              <ArrowRight aria-hidden="true" className="justify-self-end text-brand transition-transform duration-200 group-hover:translate-x-1 lg:order-last" />
+              <span className="col-start-2 text-sm leading-relaxed text-muted lg:col-start-auto sm:text-base">{line.text}</span>
+              <span className="col-start-2 font-code text-sm text-fg-3 lg:col-start-auto lg:text-right">{line.note}</span>
             </Link>
           </Reveal>
         ))}

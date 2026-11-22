@@ -21,8 +21,8 @@ const getPlatformIcon = (link) => {
   return <span className="font-code text-xs font-medium">{found[1]}</span>;
 };
 
-// Secondary actions are plain icon buttons with a comfortable 40 px target; the title stays the loudest thing in the row.
-const ICON_BUTTON = 'inline-flex h-10 min-w-[40px] cursor-pointer items-center justify-center gap-1.5 rounded-lg px-2 text-xl text-muted transition-colors hover:bg-ink/[0.05] hover:text-fg';
+// Keep touch targets comfortable while leaving the title visually dominant.
+const ICON_BUTTON = 'inline-flex h-11 min-w-[44px] cursor-pointer items-center justify-center gap-1.5 rounded-lg px-2 text-xl text-muted transition-colors hover:bg-ink/[0.05] hover:text-fg';
 
 const getDifficultyColor = (diff) => {
   if (!diff) return 'text-muted';
@@ -80,17 +80,22 @@ const ProblemRow = ({
           </button>
 
           {/* Title */}
-          <span className={`min-w-0 truncate font-medium transition-colors ${isCompleted ? 'text-muted line-through' : 'text-fg'}`}>
-            <span className="mr-2 font-code text-xs font-normal text-muted">{String(index + 1).padStart(2, '0')}</span>
-            {problem.title}
-          </span>
+          <div className="min-w-0 flex-1">
+            <span className={`block break-words font-medium transition-colors ${isCompleted ? 'text-muted line-through' : 'text-fg'}`}>
+              <span className="mr-2 font-code text-xs font-normal text-muted">{String(index + 1).padStart(2, '0')}</span>
+              {problem.title}
+            </span>
+            {/* Metadata belongs with the problem, so it cannot displace action columns. */}
+            {(noteData?.pattern || noteData?.timeComplexity) && (
+              <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-fg-3">
+                {noteData.pattern && <span>{noteData.pattern}</span>}
+                {noteData.timeComplexity && <span className="font-code">{noteData.timeComplexity}</span>}
+              </span>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-shrink-0 flex-wrap items-center gap-x-3 gap-y-1 pl-10 md:grid md:grid-cols-[84px_repeat(4,40px)] md:gap-0 md:pl-0">
-          {/* Quick note badges, when a note exists */}
-          {noteData?.pattern && <span className="font-ui text-xs text-fg-3">{noteData.pattern}</span>}
-          {noteData?.timeComplexity && <span className="font-code text-xs text-fg-3">{noteData.timeComplexity}</span>}
-
+        <div className="flex flex-shrink-0 flex-wrap items-center gap-x-3 gap-y-1 pl-10 md:grid md:grid-cols-[84px_repeat(4,44px)] md:gap-0 md:pl-0">
           {/* Difficulty */}
           <span className={`w-16 text-sm font-semibold md:w-auto ${getDifficultyColor(problem.difficulty)}`}>{problem.difficulty || 'Medium'}</span>
 

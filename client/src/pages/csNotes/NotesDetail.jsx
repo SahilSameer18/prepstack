@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { CaretLeft, CaretRight, ChatCircle, Check, CheckCircle, Clock, Flag, Info, List, Warning, X } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, ChatCircle, Check, CheckCircle, Clock, Flag, Info, List, Warning } from "@phosphor-icons/react";
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useNotes, useNotesSummary } from '../../hooks/useNotes';
 import { useActiveHeading } from '../../hooks/useActiveHeading';
 import { useAuth } from '../../hooks/useAuth';
 import SignInNotice from '../../components/auth/SignInNotice';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import PlanDialog from '../../components/ui/PlanDialog';
 import { SkeletonNotesDetail } from '../../components/ui/Skeletons';
 import { useLoadingGate } from '../../hooks/useLoadingGate';
 import { PageErrorState } from '../../components/ui/ErrorComponents';
@@ -289,10 +290,18 @@ export default function NotesDetail() {
   const gate = useLoadingGate(loading);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Lock body scroll when mobile sidebar is open
+  // Keep the article still beneath the modal and close it when the desktop list takes over.
   useEffect(() => {
-    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    if (!isSidebarOpen) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeOnDesktop = () => { if (desktop.matches) setIsSidebarOpen(false); };
+    document.body.style.overflow = 'hidden';
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      desktop.removeEventListener('change', closeOnDesktop);
+    };
   }, [isSidebarOpen]);
 
   // A new section starts at the top of the page
@@ -333,6 +342,8 @@ export default function NotesDetail() {
           <button
             type="button"
             onClick={() => setIsSidebarOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={isSidebarOpen}
             className="flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl border border-ink/[0.12] bg-card px-3.5 text-sm font-medium text-fg-2 transition-colors hover:text-fg"
           >
             <List className="text-sm" aria-hidden="true" />
@@ -340,34 +351,14 @@ export default function NotesDetail() {
           </button>
         </div>
 
-        <AnimatePresence>
-          {isSidebarOpen && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={() => setIsSidebarOpen(false)}
-                className="fixed inset-0 z-40 bg-scrim/60 backdrop-blur-sm lg:hidden"
-              />
-              <motion.aside
-                initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
-                transition={SPRING.smooth}
-                className="fixed bottom-0 left-0 top-16 z-50 w-[300px] max-w-[88vw] overflow-y-auto border-r border-ink/[0.1] bg-card p-4 lg:hidden"
-                aria-label="Sections"
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <Link to="/notes" onClick={() => setIsSidebarOpen(false)} className="flex min-h-[44px] items-center gap-1.5 text-sm text-muted hover:text-fg">
-                    <CaretLeft aria-hidden="true" /> All subjects
-                  </Link>
-                  <button type="button" onClick={() => setIsSidebarOpen(false)} aria-label="Close the section list" className="flex h-11 w-11 items-center justify-center rounded-xl text-muted hover:bg-ink/[0.06] hover:text-fg">
-                    <X aria-hidden="true" />
-                  </button>
-                </div>
-                <SectionList {...listProps} slideId="section-slide-drawer" />
-              </motion.aside>
-            </>
-          )}
-        </AnimatePresence>
+        {isSidebarOpen && (
+          <PlanDialog title="Sections" placement="drawer" onClose={() => setIsSidebarOpen(false)}>
+            <Link to="/notes" onClick={() => setIsSidebarOpen(false)} className="mb-4 flex min-h-[44px] items-center gap-1.5 text-sm text-muted hover:text-fg">
+              <CaretLeft aria-hidden="true" /> All subjects
+            </Link>
+            <SectionList {...listProps} slideId="section-slide-drawer" />
+          </PlanDialog>
+        )}
 
         {/* ── Desktop: the section list stays beside the article ── */}
         <aside className="hidden lg:block">
