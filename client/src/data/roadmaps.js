@@ -121,7 +121,7 @@ export const roadmaps = [
     color: "text-bad", bg: "bg-bad-solid/10", border: "border-bad-solid/20", glow: "shadow-bad-solid/10",
     desc: "Node.js → Express → MongoDB → REST APIs → Auth → Cloud. Build scalable backend applications.",
     duration: "4–5 months",
-    level: "Beginner to Production Level",
+    level: "JavaScript basics required",
     steps: [
       { id: "os-networking-basics", title: "OS & Networking Basics", desc: "How computers talk to each other: programs, ports, the web and its rules.",
         goal: "After this step you can explain, in simple words, what happens between typing a web address and seeing the page.",
@@ -258,7 +258,7 @@ export const roadmaps = [
       { id: "frontend-development", title: "Frontend Development", desc: "The part users see: pages built with React. You need HTML, CSS and JavaScript basics first (see the Frontend roadmap).",
         goal: "After this step you can build the screens of an app in React that load data from an API.",
         time: "55 to 85 hours",
-        topics: ["Components, props and state in React", "Hooks for loading data when a page opens", "Moving between pages with a router", "Starting a project with Vite, a tool that runs and packs your project", "Showing loading and error messages", "Talking to a backend API from the page"],
+        topics: ["Starting a project with Vite, a tool that runs and packs your project", "Components, props and state in React", "Hooks for loading data when a page opens", "Moving between pages with a router", "Showing loading and error messages", "Talking to a backend API from the page"],
         practice: [
           { kind: "notes", target: "cn:cn-http-https-tls", label: "HTTP methods and status codes" },
         ],
@@ -348,20 +348,6 @@ export const roadmaps = [
           { label: "Getting Started – Vitest", url: "https://vitest.dev/guide/" },
           { label: "Get started in Postman – Postman docs", url: "https://learning.postman.com/docs/getting-started/overview/" },
         ]},
-      { id: "deployment-scaling", title: "Deployment & Scaling", desc: "Putting the whole app online and keeping it running.",
-        goal: "After this step you can deploy the front end and the back end, use HTTPS, and explain in simple words what changes when more people use the app.",
-        time: "20 to 30 hours",
-        topics: ["Deploying a web service to Render and a site to Vercel", "Environment settings for passwords and keys", "HTTPS certificates: free ones from Let's Encrypt", "Free plans have limits: some free services sleep when idle", "A rented computer in the cloud (Amazon EC2), its starting copy and its firewall rules", "What changes when more people use the app: more servers behind a load balancer"],
-        practice: [
-          { kind: "notes", target: "cn:cn-system-design-concepts", label: "Load balancers, proxies and CDN" },
-        ],
-        checkpoint: ["Deploy the API and the front end and connect them with environment settings.", "Explain why a free service may answer slowly after being idle.", "Say what an EC2 instance is in one sentence."],
-        project: { brief: "Deploy your notes app: the API on Render and the React app on Vercel, with every secret set as an environment setting.", stack: "MERN Stack" },
-        resources: [
-          { label: "Your First Render Deploy – Render docs", url: "https://render.com/docs/your-first-deploy" },
-          { label: "Vercel Documentation", url: "https://vercel.com/docs" },
-          { label: "What is Amazon EC2? – AWS docs", url: "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html" },
-        ]},
       { id: "security-performance", title: "Security & Performance", desc: "Keeping attackers out and keeping the app fast.",
         goal: "After this step you can name the main web security risks and use caching and speed measurements to make an app faster.",
         time: "20 to 30 hours",
@@ -377,6 +363,20 @@ export const roadmaps = [
           { label: "HTTP caching – MDN", url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching" },
           { label: "Web Vitals – web.dev", url: "https://web.dev/articles/vitals" },
         ]},
+      { id: "deployment-scaling", title: "Deployment & Scaling", desc: "Putting the whole app online and keeping it running.",
+        goal: "After this step you can deploy the front end and the back end, use HTTPS, and explain in simple words what changes when more people use the app.",
+        time: "20 to 30 hours",
+        topics: ["Deploying a web service to Render and a site to Vercel", "Environment settings for passwords and keys", "HTTPS certificates: free ones from Let's Encrypt", "Free plans have limits: some free services sleep when idle", "A rented computer in the cloud (Amazon EC2), its starting copy and its firewall rules", "What changes when more people use the app: more servers behind a load balancer"],
+        practice: [
+          { kind: "notes", target: "cn:cn-system-design-concepts", label: "Load balancers, proxies and CDN" },
+        ],
+        checkpoint: ["Deploy the API and the front end and connect them with environment settings.", "Explain why a free service may answer slowly after being idle.", "Say what an EC2 instance is in one sentence."],
+        project: { brief: "Deploy your notes app: the API on Render and the React app on Vercel, with every secret set as an environment setting.", stack: "MERN Stack" },
+        resources: [
+          { label: "Your First Render Deploy – Render docs", url: "https://render.com/docs/your-first-deploy" },
+          { label: "Vercel Documentation", url: "https://vercel.com/docs" },
+          { label: "What is Amazon EC2? – AWS docs", url: "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html" },
+        ]}
     ]
   },
   {
@@ -624,7 +624,7 @@ export const roadmaps = [
       { id: "data-handling", title: "Data Handling", desc: "Holding and shaping data with NumPy and pandas.",
         goal: "After this step you can load, clean and reshape data so that a model can learn from it.",
         time: "20 to 30 hours",
-        topics: ["NumPy arrays: fast lists of numbers", "pandas tables (DataFrames)", "Selecting, filtering and sorting", "Missing values and duplicates", "Making new columns (features) from old ones", "Turning words into numbers and putting numbers on one scale, so a model can use them", "Combining and reshaping tables"],
+        topics: ["NumPy arrays: fast lists of numbers", "pandas tables (DataFrames)", "Selecting, filtering and sorting", "Split data into training and test sets before learning preprocessing settings; keep test data separate", "Missing values and duplicates", "Making new columns (features) from old ones", "Turning words into numbers and putting numbers on one scale, so a model can use them", "Combining and reshaping tables"],
         checkpoint: ["Load a CSV file and show its summary numbers.", "Fill missing values and explain your choice.", "Create one new column that could help predict the answer."],
         project: { brief: "Load a public table (for example house prices), clean it and add three new columns that might help predict the price.", stack: "Python / scikit-learn" },
         resources: [
@@ -652,16 +652,6 @@ export const roadmaps = [
           { label: "Machine Learning Crash Course – Google", url: "https://developers.google.com/machine-learning/crash-course" },
           { label: "Clustering – scikit-learn docs", url: "https://scikit-learn.org/stable/modules/clustering.html" },
         ]},
-      { id: "deep-learning", title: "Deep Learning", desc: "Neural networks: models made of many simple layers.",
-        goal: "After this step you can explain how a neural network learns and train a small one with PyTorch.",
-        time: "50 to 80 hours",
-        topics: ["Neurons, layers and weights (the numbers the model adjusts)", "Training: measuring how wrong the model is (the loss) and improving step by step", "Tensors (grids of numbers), datasets and data loaders (a feeder that hands data to the model) in PyTorch", "Building and training a model in PyTorch", "Saving and loading a model", "What CNNs and transformers are used for, in simple words"],
-        checkpoint: ["Train a small network on a simple data set in PyTorch.", "Explain what a loss is and what training does to the weights.", "Say in your own words which kind of data CNNs and transformers suit (our summary, not from the pages)."],
-        project: { brief: "Train a small neural network to recognize handwritten digits using PyTorch and report its accuracy on test data.", stack: "Python / scikit-learn" },
-        resources: [
-          { label: "Learn the Basics – PyTorch tutorials", url: "https://docs.pytorch.org/tutorials/beginner/basics/intro.html" },
-          { label: "Machine Learning Crash Course – Google", url: "https://developers.google.com/machine-learning/crash-course" },
-        ]},
       { id: "model-evaluation", title: "Model Evaluation", desc: "Checking how good a model really is.",
         goal: "After this step you can pick the right score for a problem and tune a model without fooling yourself.",
         time: "15 to 25 hours",
@@ -672,6 +662,16 @@ export const roadmaps = [
           { label: "Metrics and scoring – scikit-learn docs", url: "https://scikit-learn.org/stable/modules/model_evaluation.html" },
           { label: "Accuracy, recall, precision – Google ML Crash Course", url: "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall" },
           { label: "Tuning the hyper-parameters – scikit-learn docs", url: "https://scikit-learn.org/stable/modules/grid_search.html" },
+        ]},
+      { id: "deep-learning", title: "Deep Learning", desc: "Neural networks: models made of many simple layers.",
+        goal: "After this step you can explain how a neural network learns and train a small one with PyTorch.",
+        time: "50 to 80 hours",
+        topics: ["Neurons, layers and weights (the numbers the model adjusts)", "Training: measuring how wrong the model is (the loss) and improving step by step", "Tensors (grids of numbers), datasets and data loaders (a feeder that hands data to the model) in PyTorch", "Building and training a model in PyTorch", "Saving and loading a model", "What CNNs and transformers are used for, in simple words"],
+        checkpoint: ["Train a small network on a simple data set in PyTorch.", "Explain what a loss is and what training does to the weights.", "Say in your own words which kind of data CNNs and transformers suit (our summary, not from the pages)."],
+        project: { brief: "Train a small neural network to recognize handwritten digits using PyTorch and report its accuracy on test data.", stack: "Python / scikit-learn" },
+        resources: [
+          { label: "Learn the Basics – PyTorch tutorials", url: "https://docs.pytorch.org/tutorials/beginner/basics/intro.html" },
+          { label: "Machine Learning Crash Course – Google", url: "https://developers.google.com/machine-learning/crash-course" },
         ]},
       { id: "deployment", title: "Deployment", desc: "Turning a trained model into something other people can use.",
         goal: "After this step you can wrap a model in a web API with FastAPI and run it in a Docker container.",
@@ -706,7 +706,7 @@ export const roadmaps = [
         resources: [
           { label: "Kaggle Competitions", url: "https://www.kaggle.com/competitions" },
           { label: "Spaces Overview – Hugging Face docs", url: "https://huggingface.co/docs/hub/spaces-overview" },
-        ]},
+        ]}
     ]
   },
   {
@@ -786,6 +786,22 @@ export const roadmaps = [
           { label: "collections (deque) – Python docs", url: "https://docs.python.org/3/library/collections.html" },
           { label: "Minimum stack and minimum queue – cp-algorithms", url: "https://cp-algorithms.com/data_structures/stack_queue_modification.html" },
         ]},
+      { id: "recursion-backtracking", title: "Recursion and Backtracking", desc: "Solving a problem by trying choices, and stepping back when a choice cannot work.",
+        goal: "After this step you can write a recursive function and use backtracking to list all the ways to build an answer.",
+        time: "15 to 25 hours",
+        topics: ["Recursion: a function that calls itself on a smaller problem, with a base case that stops it", "Backtracking: build the answer one choice at a time and drop a choice as soon as it cannot lead to a solution", "Checking early (pruning) can save a lot of work, but the worst case stays the same", "If nothing is ever rejected, backtracking is just trying everything (brute force)", "Total work is roughly the number of choices in the search tree times the work per choice"],
+        practice: [
+          { kind: "sheet", target: "neetcode-150:backtracking", label: "NeetCode 150: Backtracking" },
+          { kind: "sheet", target: "blind-75:backtracking", label: "Blind 75: Backtracking" },
+          { kind: "sheet", target: "striver-a2z:recursion", label: "Striver A2Z: Recursion" },
+          { kind: "sheet", target: "striver-sde:recursion-and-backtracking", label: "Striver SDE: Recursion and backtracking" },
+        ],
+        checkpoint: ["List every subset of [1, 2, 3] with recursion (there are 8).", "Explain what pruning means and why it helps.", "Write the base case before the recursive case for every recursive function you write."],
+        project: { brief: "Write a program that places 8 queens on a chess board so that none attacks another, using backtracking, and count how many solutions it finds.", stack: "Python or Java" },
+        resources: [
+          { label: "Backtracking – Wikipedia", url: "https://en.wikipedia.org/wiki/Backtracking" },
+          { label: "Introduction to Algorithms – MIT OpenCourseWare (free videos and notes)", url: "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/" },
+        ]},
       { id: "trees-bst", title: "Trees and Binary Search Trees", desc: "Data arranged like a family tree, and the four ways to walk through it.",
         goal: "After this step you can walk through a tree in four ways and use a binary search tree, and you know when it becomes slow.",
         time: "25 to 40 hours",
@@ -823,22 +839,6 @@ export const roadmaps = [
           { label: "Binary heap – Wikipedia", url: "https://en.wikipedia.org/wiki/Binary_heap" },
           { label: "heapq – Python docs", url: "https://docs.python.org/3/library/heapq.html" },
           { label: "Trie – Wikipedia", url: "https://en.wikipedia.org/wiki/Trie" },
-        ]},
-      { id: "recursion-backtracking", title: "Recursion and Backtracking", desc: "Solving a problem by trying choices, and stepping back when a choice cannot work.",
-        goal: "After this step you can write a recursive function and use backtracking to list all the ways to build an answer.",
-        time: "15 to 25 hours",
-        topics: ["Recursion: a function that calls itself on a smaller problem, with a base case that stops it", "Backtracking: build the answer one choice at a time and drop a choice as soon as it cannot lead to a solution", "Checking early (pruning) can save a lot of work, but the worst case stays the same", "If nothing is ever rejected, backtracking is just trying everything (brute force)", "Total work is roughly the number of choices in the search tree times the work per choice"],
-        practice: [
-          { kind: "sheet", target: "neetcode-150:backtracking", label: "NeetCode 150: Backtracking" },
-          { kind: "sheet", target: "blind-75:backtracking", label: "Blind 75: Backtracking" },
-          { kind: "sheet", target: "striver-a2z:recursion", label: "Striver A2Z: Recursion" },
-          { kind: "sheet", target: "striver-sde:recursion-and-backtracking", label: "Striver SDE: Recursion and backtracking" },
-        ],
-        checkpoint: ["List every subset of [1, 2, 3] with recursion (there are 8).", "Explain what pruning means and why it helps.", "Write the base case before the recursive case for every recursive function you write."],
-        project: { brief: "Write a program that places 8 queens on a chess board so that none attacks another, using backtracking, and count how many solutions it finds.", stack: "Python or Java" },
-        resources: [
-          { label: "Backtracking – Wikipedia", url: "https://en.wikipedia.org/wiki/Backtracking" },
-          { label: "Introduction to Algorithms – MIT OpenCourseWare (free videos and notes)", url: "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/" },
         ]},
       { id: "graphs-traversal", title: "Graphs: Walking Through a Network", desc: "Points joined by lines: finding paths, layers and orders.",
         goal: "After this step you can store a graph and walk through it with breadth-first and depth-first search.",
@@ -939,7 +939,7 @@ export const roadmaps = [
           { label: "Introduction to Algorithms – MIT OpenCourseWare (free videos and notes)", url: "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/" },
           { label: "Algorithms, 4th Edition – free booksite, Princeton", url: "https://algs4.cs.princeton.edu/home/" },
           { label: "VisuAlgo – animations of data structures and algorithms", url: "https://visualgo.net/en" },
-        ]},
+        ]}
     ]
   },
   {
@@ -953,7 +953,7 @@ export const roadmaps = [
       { id: "java-language-basics", title: "Java Language Basics", desc: "The core of the Java language: objects, classes, interfaces and inheritance.",
         goal: "After this step you can write Java programs with classes, interfaces and inheritance, and explain the main ideas of object-oriented programming.",
         time: "40 to 60 hours",
-        topics: ["Object-oriented ideas: objects, classes, inheritance and interfaces", "Language basics: variables, types, operators and control flow", "Classes and objects: fields, methods and constructors", "Interfaces and inheritance: sharing behaviour between classes", "Numbers and strings", "Packages: grouping classes", "Annotations: notes you attach to code for tools to read"],
+        topics: ["Language basics: variables, types, operators and control flow", "Object-oriented ideas: objects, classes, inheritance and interfaces", "Classes and objects: fields, methods and constructors", "Interfaces and inheritance: sharing behaviour between classes", "Numbers and strings", "Packages: grouping classes", "Annotations: notes you attach to code for tools to read"],
         practice: [
           { kind: "notes", target: "oops:oops-basics", label: "OOP basics" },
           { kind: "notes", target: "oops:oops-pillars", label: "The four pillars of OOP" },
@@ -1067,7 +1067,7 @@ export const roadmaps = [
         resources: [
           { label: "Testing – Spring Boot reference", url: "https://docs.spring.io/spring-boot/reference/testing/index.html" },
           { label: "Spring Boot with Docker – Spring guide", url: "https://spring.io/guides/gs/spring-boot-docker" },
-        ]},
+        ]}
     ]
   },
   {

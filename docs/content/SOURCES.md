@@ -1,5 +1,9 @@
 # Sources
 
+Phase 1 roadmap alignment (23 Nov 2026): [Stanford CS106B schedule](https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1262/schedule/) supports recursion/backtracking before trees; [scikit-learn pitfalls](https://scikit-learn.org/stable/common_pitfalls.html) explains splitting training/test data before learning preprocessing settings; [MDN website security](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/First_steps/Website_security) explains that security spans design and deployment; [Node.js prerequisites](https://nodejs.org/learn/getting-started/how-much-javascript-do-you-need-to-know-to-use-nodejs) identifies JavaScript knowledge expected before Node. These support the ordering/prerequisite corrections, not a claim that every topic has only one valid order. Existing roadmap topics/checkpoints supply the milestones. Short introduction/practice/checkpoint estimates and the setup cap are product estimates and are not attributed to learning research.
+
+Planner learning research (23 Nov 2026): `docs/research/MY_PLAN_LEARNING_AUDIT.md` contains the source register and evidence limits for proposed milestone, retrieval, pacing and assessment changes. Research supports investigating these designs; it does not validate PrepStack's exact review intervals, time estimates or an interview-readiness percentage. Forum reports are qualitative problem discovery, not instructional authority or population statistics. No new learning content was published by that audit.
+
 What the notes are checked against. A claim in the notes that is not in one of these (or a source added here first) does not get published. Editions are the ones to confirm when you own the book; the PostgreSQL and MySQL docs should be read at the version named in the note.
 
 ## Reference sources per subject

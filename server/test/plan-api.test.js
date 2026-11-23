@@ -20,6 +20,215 @@ const form = (over = {}) => ({ goalType: 'bigtech', style: 'one-topic', weeks: 1
 const preview = (body, ip) => t.api.post('/api/plan/preview', { body, ip });
 const create = (acct, body) => t.api.post('/api/plan', { cookies: acct.cookies, body });
 const getPlan = (acct) => t.api.get('/api/plan', { cookies: acct.cookies });
+const personalPreview = (acct, body) => t.api.post('/api/plan/preview/personal', { cookies: acct.cookies, body });
+
+describe('Phase 1 preview/save agreement and saved curricula', () => {
+  it('limits personal previews per account while keeping students on the same network separate', async () => {
+    const acct = await t.register();
+    const other = await t.register();
+    const body = form({weeks:1,subjects:[]});
+    const ip = '192.0.2.188';
+    for (let index=0;index<20;index+=1) {
+      assert.equal((await t.api.post('/api/plan/preview/personal',{cookies:acct.cookies,body,ip})).status,200);
+    }
+    assert.equal((await t.api.post('/api/plan/preview/personal',{cookies:acct.cookies,body,ip})).status,429);
+    assert.equal((await t.api.post('/api/plan/preview/personal',{cookies:other.cookies,body,ip})).status,200);
+  });
+  it('reports the same item-limit refusal in public preview, personal preview and save', async () => {
+    planClock.now = () => new Date('2026-11-23T08:00:00Z');
+    const acct = await t.register();
+    const body = form({ goalType:'placements', sheetSlug:'striver-a2z', weeks:52, weekdayHours:3, weekendHours:3, restDay:null });
+    const publicReply = await preview(body);
+    const privateReply = await personalPreview(acct, body);
+    const saved = await create(acct, body);
+    assert.equal(publicReply.status, 200);
+    assert.equal(privateReply.status, 200);
+    assert.equal(publicReply.body.data.saveEligibility.allowed, false);
+    assert.deepEqual(privateReply.body.data.saveEligibility, publicReply.body.data.saveEligibility);
+    assert.equal(saved.status, 422);
+    assert.equal(saved.body.message, privateReply.body.data.saveEligibility.reason);
+    assert.equal(await Plan.countDocuments({ user:acct.id }), 0);
+    assert.match(privateReply.headers['cache-control'], /private.*no-store/);
+    assert.equal((await t.api.post('/api/plan/preview/personal', { body })).status, 401);
+  });
+  it('includes only owned progress, can rescue an oversized public plan, and never leaks it into public previews', async () => {
+    planClock.now = () => new Date('2026-11-23T08:00:00Z');
+    const acct = await t.register();
+    const other = await t.register();
+    const body = form({ goalType:'placements', sheetSlug:'striver-a2z', weeks:52, weekdayHours:3, weekendHours:3, restDay:null });
+    const sheet = require('../src/modules/plan/planData').getPlanData().sheets['striver-a2z'];
+    const solved = sheet.topics.flatMap((topic)=>topic.problems).slice(0,200).map((p)=>({link:p.link,solvedAt:new Date()}));
+    await Progress.create({ user:acct.id, sheetSlug:'striver-a2z', solvedProblems:solved });
+    const owned = (await personalPreview(acct, body)).body.data;
+    assert.equal(owned.usesSavedProgress, true);
+    assert.ok(owned.coverage.alreadySolved > 0);
+    assert.equal(owned.saveEligibility.allowed, true);
+    assert.equal((await personalPreview(other, body)).body.data.coverage.alreadySolved, 0);
+    const publicReply = (await preview(body)).body.data;
+    assert.equal(publicReply.coverage.alreadySolved, 0);
+    assert.equal(publicReply.saveEligibility.allowed, false);
+    const saved = await create(acct, body);
+    assert.equal(saved.status, 201, JSON.stringify(saved.body));
+    assert.equal(saved.body.data.plan.items.length, owned.saveEligibility.itemCount);
+  });
+  it('uses new milestones for new saves but leaves legacy task identities intact on rebuild', async () => {
+    planClock.now = () => new Date('2026-11-23T08:00:00Z');
+    const acct = await t.register();
+    const body = form({ goalType:'role', roadmapSlug:'frontend', subjects:[], weeks:12, style:'mixed' });
+    const made = await create(acct, body);
+    assert.equal(made.status, 201, JSON.stringify(made.body));
+    assert.equal(made.body.data.plan.style, 'one-topic');
+    const doc = await Plan.findById(made.body.data.plan.id);
+    assert.equal(doc.generationVersion, 2);
+    assert.ok(doc.roadmapSnapshot.steps[0].topics.length);
+    assert.ok(made.body.data.plan.items[0].milestoneId);
+    assert.ok(!('roadmapSnapshot' in made.body.data.plan));
+    // A pre-upgrade record has no milestone identities or generation field.
+    const gen = require('../src/modules/plan/planGenerator');
+    const legacy = gen.generatePlan({ goalType:'role', roadmapSlug:'frontend', generationVersion:1, style:'one-topic', startDate:'2026-11-23', weeks:12, hoursByWeekday:Array(7).fill(3), restDay:6, subjects:[] }, require('../src/modules/plan/planData').getPlanData());
+    await Plan.updateOne({_id:doc.id},{$set:{items:legacy.items},$unset:{generationVersion:1,roadmapSnapshot:1}});
+    const old = await getPlan(acct);
+    const first = old.body.data.plan.items[0];
+    await t.api.patch(`/api/plan/items/${first.id}`,{cookies:acct.cookies,body:{done:true}});
+    const before = (await getPlan(acct)).body.data.plan.items.find((i)=>i.id===first.id);
+    const change = {type:'rebuild'};
+    const p = await changePreview(acct,change);
+    assert.equal(p.status,200,JSON.stringify(p.body));
+    const applied = await t.api.post('/api/plan/changes/apply',{cookies:acct.cookies,body:{...change,checksum:p.body.data.diff.checksum}});
+    assert.equal(applied.status,200,JSON.stringify(applied.body));
+    const items = applied.body.data.plan.items;
+    assert.ok(items.every((i)=>!i.milestoneId));
+    assert.equal(items.find((i)=>i.id===first.id).doneAt,before.doneAt);
+  });
+});
+
+describe('seeded mixed journeys through the real planner API', () => {
+  it('preserves plan rules after ticks, reviews, moves, skips, imports, substitutes and recovery', async (context) => {
+    const { rng } = require('./helpers/plan-scenarios');
+    const random = rng(20261123);
+    const profiles = [
+      {goalType:'placements',sheetSlug:'blind-75',weekdayHours:1,weekendHours:3,restDay:6},
+      {goalType:'bigtech',sheetSlug:'neetcode-150',weekdayHours:2,weekendHours:4,restDay:0},
+      {goalType:'role',roadmapSlug:'frontend',weekdayHours:1,weekendHours:3,restDay:6},
+      {goalType:'role',roadmapSlug:'backend',weekdayHours:2,weekendHours:3,restDay:5},
+    ];
+    let requests = 0;
+    let substitutions = 0;
+    let reviews = 0;
+    for (const profile of profiles) {
+      planClock.now = () => new Date('2026-11-23T08:00:00Z');
+      const acct = await t.register();
+      async function request(method, path, body, expected = 200) {
+        requests += 1;
+        const reply = await t.api[method]('/api/plan' + path, {cookies:acct.cookies,body});
+        assert.equal(reply.status,expected,`${profile.goalType} ${path}: ${JSON.stringify(reply.body)}`);
+        return reply.body.data;
+      }
+      // This oracle checks the saved response, independently of generator helpers.
+      async function state() {
+        const view = await request('get','');
+        if (!view.plan) return view;
+        const {plan,today} = view;
+        assert.equal(new Set(plan.items.map(i=>i.id)).size,plan.items.length);
+        assert.equal(new Set(plan.items.map(i=>i.key)).size,plan.items.length);
+        assert.ok(plan.items.length <= 600);
+        for (const item of plan.items) {
+          assert.ok(item.plannedMinutes > 0 && Number.isFinite(item.plannedMinutes));
+          assert.ok(item.day >= plan.startDate && item.day <= plan.deadline);
+          assert.ok(!(item.doneAt && item.skipped));
+        }
+        assert.equal(today.minutes,today.items.reduce((sum,item)=>sum+item.plannedMinutes,0));
+        if (today.startItem) assert.ok(today.items.some(i=>i.key===today.startItem.key));
+        return view;
+      }
+      async function apply(path,body) {
+        const preview = await request('post',path+'/preview',body);
+        await request('post',path+'/apply',{...body,checksum:preview.checksum || preview.diff.checksum});
+        return state();
+      }
+      const body = form({...profile,weeks:12,subjects:['os','dbms']});
+      const checked = await request('post','/preview/personal',body);
+      assert.equal(checked.saveEligibility.allowed,true);
+      await request('post','',body,201);
+      let view = await state();
+      const planId = view.plan.id;
+      assert.equal(view.plan.items.length,checked.saveEligibility.itemCount);
+      for (let step=0;step<20;step+=1) {
+        const previous = view.plan;
+        const waiting = previous.items.filter(i=>!i.doneAt&&!i.skipped&&['dsa','notes','roadmap'].includes(i.type));
+        const item = waiting[Math.floor(random()*waiting.length)];
+        if (!item) break;
+        const action = Math.floor(random()*5);
+        if (action===0) await request('patch','/items/'+item.id,{done:true,result:'hints',quizScore:4});
+        if (action===1) await request('patch','/items/'+item.id+'/star');
+        if (action===2) {
+          await request('post','/items/'+item.id+'/skip');
+          await state();
+          await request('post','/items/'+item.id+'/unskip');
+        }
+        if (action===3) {
+          const target = ymdOf(dayNumber(item.day)+1);
+          const weekday = (new Date(target+'T12:00:00Z').getUTCDay()+6)%7;
+          const hours = weekday===previous.restDay ? 0 : previous.hoursByWeekday[weekday];
+          const blocked = target>previous.deadline || !hours || Math.abs(dayNumber(target)-dayNumber(item.plannedDay))>3 || previous.items.some(i=>i.type==='mock'&&i.day===target);
+          await request('patch','/items/'+item.id,{day:target},blocked?422:200);
+        }
+        if (action===4) {
+          const completed = previous.items.find(i=>i.doneAt);
+          if (completed) await request('patch','/items/'+completed.id,{done:false});
+        }
+        view = await state();
+        if (action!==4) for (const completed of previous.items.filter(i=>i.doneAt)) {
+          assert.equal(view.plan.items.find(i=>i.id===completed.id)?.doneAt,completed.doneAt);
+        }
+      }
+      const custom = await request('post','/items',{title:'Explain a project decision',plannedMinutes:15,day:view.plan.items[0].day},201);
+      await state();
+      await request('patch','/items/'+custom.item.id,{done:true});
+      await state();
+      await request('del','/items/'+custom.item.id);
+      view = await state();
+      const exercise = view.plan.items.find(i=>!i.doneAt&&!i.skipped&&!i.part&&i.type==='dsa');
+      if (exercise) {
+        const result = await request('post','/items/'+exercise.id+'/result',{result:'solution'});
+        await state();
+        await request('post','/items/'+exercise.id+'/review',{passed:true},422);
+        planClock.now = () => new Date(result.item.nextReviewDay+'T08:00:00Z');
+        await request('post','/items/'+exercise.id+'/review',{passed:false});
+        await state();
+        await request('post','/items/'+exercise.id+'/review',{passed:true},422);
+        reviews += 1;
+      }
+      view = await state();
+      const beforePause = view.plan.items.reduce((sum,i)=>sum+i.plannedMinutes,0);
+      const resumeDay = ymdOf(dayNumber(view.calendar.today)+14);
+      await apply('/lifecycle',{type:'pause'});
+      assert.equal((await state()).plan,null);
+      planClock.now = () => new Date(resumeDay+'T08:00:00Z');
+      view = await apply('/lifecycle',{type:'resume',planId});
+      assert.equal(view.plan.items.reduce((sum,i)=>sum+i.plannedMinutes,0),beforePause);
+      const report = await importReport(acct);
+      view = await apply('/reports/'+report.id,{mode:'merge'});
+      const imported = view.plan.items.filter(i=>i.source==='analyzer:'+report.id).map(i=>i.id);
+      assert.ok(imported.length);
+      view = await apply('/changes',{type:'rebuild',deadline:ymdOf(dayNumber(view.plan.deadline)+7)});
+      assert.ok(imported.every(id=>view.plan.items.some(i=>i.id===id)));
+      const candidate = view.plan.items.find(i=>i.type==='dsa'&&!i.doneAt&&!i.skipped&&!i.part);
+      if (candidate) {
+        const options = await request('get','/items/'+candidate.id+'/substitutes');
+        const choice = options.substitutes[0];
+        if (choice) {
+          await request('post','/items/'+candidate.id+'/substitute',{sheetSlug:choice.sheetSlug,link:choice.link,checksum:choice.checksum});
+          await state();
+          substitutions += 1;
+        }
+      }
+      await request('get','/review');
+    }
+    assert.ok(substitutions>0 && reviews>0,'the journeys actually exercise substitutions and review writes');
+    context.diagnostic(`${requests} requests across four seeded student journeys; ${reviews} review flows, ${substitutions} substitutions`);
+  });
+});
 
 const lifecyclePreview = (acct, body) => t.api.post('/api/plan/lifecycle/preview', { cookies: acct.cookies, body });
 async function lifecycleApply(acct, body) {
@@ -555,7 +764,7 @@ describe('POST /api/plan/preview (public)', () => {
     const res = await preview(form({ restDay: null }));
     assert.equal(res.status, 200);
     const d = res.body.data;
-    assert.deepEqual(Object.keys(d).sort(), ['coverage', 'deadline', 'earlyDays', 'finishDate', 'notices', 'pace', 'startDate', 'week1']);
+    assert.deepEqual(Object.keys(d).sort(), ['coverage', 'deadline', 'earlyDays', 'finishDate', 'notices', 'pace', 'saveEligibility', 'startDate', 'usesSavedProgress', 'week1']);
     assert.ok(d.coverage.syllabusMinutes > 0 && d.coverage.plannedMinutes > 0);
     assert.equal(d.startDate, todayIst());
     assert.equal(d.week1.week, 1);

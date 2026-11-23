@@ -235,7 +235,8 @@ describe('my pace (phase D1)', () => {
     d.roadmapCatalog = [{ slug: 'r', title: 'R', steps: [{ id: 'one', title: 'One', from: 1, to: 1, unit: 'hours', practice: [{ kind: 'sheet', target: 'blind-75:a', label: 'x' }], project: { brief: 'b', stack: 's' } }] }];
     const p = generatePlan({ ...base, goalType: 'role', roadmapSlug: 'r', weeks: 4, hoursByWeekday: [4, 4, 4, 4, 4, 0, 0], pace: 'faster' }, d);
     assert.equal(p.items.find((i) => i.type === 'dsa').plannedMinutes, 42);
-    assert.equal(p.items.find((i) => i.type === 'roadmap').plannedMinutes, 60, 'the step itself is not scaled');
+    const learning = p.items.filter((i) => i.type === 'roadmap' && i.ref === 'roadmap:r');
+    assert.equal(learning.reduce((minutes,item)=>minutes+item.plannedMinutes,0), 60, 'subdividing the step does not scale or add minutes');
   });
 });
 

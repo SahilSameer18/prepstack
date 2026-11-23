@@ -481,6 +481,18 @@
           "title": "Stack / Queues"
         },
         {
+          "id": "backtracking",
+          "title": "Backtracking"
+        },
+        {
+          "id": "recursion",
+          "title": "Recursion"
+        },
+        {
+          "id": "recursion-and-backtracking",
+          "title": "Recursion and Backtracking"
+        },
+        {
           "id": "trees",
           "title": "Trees"
         },
@@ -511,18 +523,6 @@
         {
           "id": "heaps",
           "title": "Heaps"
-        },
-        {
-          "id": "backtracking",
-          "title": "Backtracking"
-        },
-        {
-          "id": "recursion",
-          "title": "Recursion"
-        },
-        {
-          "id": "recursion-and-backtracking",
-          "title": "Recursion and Backtracking"
         },
         {
           "id": "graph",

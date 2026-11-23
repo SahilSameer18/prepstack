@@ -1,4 +1,5 @@
 import PlanChecklist from "../analyzer/PlanChecklist";
+import { Link, useLocation } from 'react-router-dom';
 import { PACES, paceMinutes, planDays } from "../../utils/planBuilder";
 import PlanCoverage from "./PlanCoverage";
 import { SkeletonPlanPreview } from "../ui/Skeletons";
@@ -67,6 +68,7 @@ export function PlanWeeks({ items, startDate }) {
 
 // Present only a response for the current settings. The hook hides obsolete replies.
 export default function PlanPreview({ builder }) {
+  const location = useLocation();
   const { preview, previewReady, valid, retry, options, errors } = builder;
   if (!options)
     return <p className="text-sm text-muted">Loading plan choices…</p>;
@@ -99,9 +101,18 @@ export default function PlanPreview({ builder }) {
       </div>
     );
 
-  const { coverage, week1, finishDate, deadline, notices, pace } = preview.data;
+  const { coverage, week1, finishDate, deadline, notices, pace, saveEligibility, usesSavedProgress } = preview.data;
   return (
     <div className="space-y-6">
+      {saveEligibility?.allowed === false && <div role="alert" className="space-y-2 rounded-xl border border-bad-solid/25 bg-bad-solid/10 p-3 text-sm text-bad">
+        <p>{saveEligibility.reason}</p>
+        {!builder.userId && <p>
+          Already solved some of this material?{' '}
+          <Link className="underline" to={`/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`}>
+            Sign in to check your saved progress
+          </Link>.
+        </p>}
+      </div>}
       <div aria-live="polite" className="border-b border-ink/[0.1] pb-5">
         <p className="font-display text-4xl font-black tracking-tight text-fg">
           {hours(coverage.plannedMinutes)}{" "}
@@ -150,13 +161,13 @@ export default function PlanPreview({ builder }) {
           automatically.
         </p>
       )}
-      {notices.includes("nothing-fits") && (
+      {!saveEligibility && notices.includes("nothing-fits") && (
         <p role="alert" className="rounded-xl border border-bad-solid/25 bg-bad-solid/10 p-3 text-sm leading-relaxed text-bad">
           No task fits these days and hours. Add study time or weeks to see a
           plan.
         </p>
       )}
-      {notices.includes("nothing-to-plan") && (
+      {!saveEligibility && notices.includes("nothing-to-plan") && (
         <p className="text-sm text-fg-3">
           Nothing remains to schedule with these choices. Include more topics to
           create a plan.
@@ -173,9 +184,9 @@ export default function PlanPreview({ builder }) {
         )}
       </div>
       <p className="border-t border-ink/[0.1] pt-4 text-sm leading-relaxed text-muted">
-        This public preview shows week 1 only. Sign in and generate to save all
-        weeks. Saved sheet progress is taken into account when your plan is
-        created.
+        {usesSavedProgress
+          ? 'This preview includes your saved sheet progress and shows the first week. Generate to save all weeks.'
+          : 'This public preview shows the first week. Sign in to include your saved sheet progress, then generate to save all weeks.'}
       </p>
     </div>
   );

@@ -44,6 +44,12 @@ export async function previewPlan(settings, signal) {
   return response.data.data;
 }
 
+// Signed-in previews use saved sheet progress and are never publicly cached.
+export async function previewPersonalPlan(settings, signal) {
+  const response = await api.post('/api/plan/preview/personal', settings, { signal });
+  return response.data.data;
+}
+
 // Read the signed-in user's current plan. This request does not change it.
 export async function getPlan(signal) {
   const response = await api.get("/api/plan", { signal });

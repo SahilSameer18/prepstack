@@ -18,6 +18,7 @@ describe('roadmapCatalog.json (a server copy of client/src/data/roadmaps.js)', (
     assert.equal(roadmapCatalog.length, 9);
     for (const r of roadmapCatalog) for (const s of r.steps) {
       assert.ok(s.id && s.title, `${r.slug} has a step without id or title`);
+      assert.ok(s.goal && s.topics.length >= 4 && s.checkpoint.length >= 2, `${r.slug}/${s.id} learning objectives`);
       assert.ok(s.from > 0 && s.to >= s.from && ['hours', 'days', 'weeks', 'months'].includes(s.unit), `${r.slug}/${s.id} time`);
       assert.ok(s.project.brief && s.project.stack, `${r.slug}/${s.id} project`);
     }
@@ -26,6 +27,12 @@ describe('roadmapCatalog.json (a server copy of client/src/data/roadmaps.js)', (
 });
 
 describe('planCatalog.json (order and core or extra for every DSA sheet topic)', () => {
+  it('teaches recursion/backtracking before trees, heaps and graphs', () => {
+    const order = planCatalog.steps;
+    for (const step of ['trees-bst', 'heaps-tries', 'graphs-traversal']) {
+      assert.ok(order.indexOf('recursion-backtracking') < order.indexOf(step), step);
+    }
+  });
   it('equals what the build script makes (run `npm run build:plan-catalogs` after changing a sheet topic)', async () => {
     assert.deepEqual(planCatalog, JSON.parse(JSON.stringify(buildPlanCatalog(await buildRoadmapCatalog()))));
   });

@@ -1,4 +1,5 @@
 const rateLimit = require("express-rate-limit");
+const { ipKeyGenerator } = rateLimit;
 const { RedisRateLimitStore } = require("../infra/rateLimitStore");
 
 // Almost every limiter counts in Redis when it is on (shared by every server, kept across a restart) and in memory when it is not.
@@ -122,11 +123,13 @@ const planTickLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// My plan: the public preview needs no login, so it is limited per IP address (every request counts; it makes no database write).
+// Public previews count per IP; authenticated previews count per account so
+// students sharing a college network do not consume each other's allowance.
 const planPreviewLimiter = rateLimit({
   store: redisStore("plan-preview"),
   windowMs: 60 * 1000,
   max: PLAN_PREVIEWS_PER_MINUTE,
+  keyGenerator: (req) => req.user ? `user:${req.user._id}` : ipKeyGenerator(req.ip),
   message: {
     success: false,
     message: "You're previewing plans too fast. Please wait a moment.",

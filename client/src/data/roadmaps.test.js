@@ -50,6 +50,32 @@ export const checkStep = (step) => {
 };
 
 describe("the roadmap data", () => {
+  it('keeps prerequisite steps before the work that depends on them in every roadmap', () => {
+    const dependencies = {
+      frontend: [['javascript-core','react-basics'],['react-basics','react-advanced'],['react-advanced','nextjs']],
+      backend: [['nodejs-fundamentals','expressjs-routing'],['database-design','authentication-security'],['testing-debugging','deployment-cloud']],
+      fullstack: [['frontend-development','backend-api'],['database-layer','full-stack-authentication'],['security-performance','deployment-scaling']],
+      android: [['kotlin-basics','android-fundamentals'],['android-fundamentals','modern-ui-with-compose'],['networking-api-calls','firebase-services']],
+      'data-analytics': [['python-for-data-analytics','data-cleaning-preprocessing'],['statistics-probability','data-visualization'],['sql-databases','business-analytics']],
+      'machine-learning': [['python-basics','data-handling'],['ml-algorithms','model-evaluation'],['model-evaluation','deep-learning'],['model-evaluation','deployment']],
+      dsa: [['recursion-backtracking','trees-bst'],['recursion-backtracking','heaps-tries'],['recursion-backtracking','graphs-traversal'],['recursion-backtracking','dynamic-programming']],
+      'java-spring': [['java-language-basics','java-collections-generics-exceptions'],['spring-core-boot','spring-rest-api'],['spring-data-jpa','spring-security']],
+      'devops-cloud': [['linux-command-line','docker-containers'],['docker-containers','ci-cd-github-actions'],['cloud-aws-basics','kubernetes-terraform']],
+    };
+    for (const road of roadmaps) {
+      const ids = road.steps.map(step=>step.id);
+      for (const [before,after] of dependencies[road.slug]) {
+        expect(ids.indexOf(before),`${road.slug}: ${before}`).toBeGreaterThanOrEqual(0);
+        expect(ids.indexOf(after),`${road.slug}: ${before} before ${after}`).toBeGreaterThan(ids.indexOf(before));
+      }
+    }
+    const fullstack = roadmaps.find(r=>r.slug==='fullstack').steps[0];
+    expect(fullstack.topics[0]).toContain('Starting a project with Vite');
+    const java = roadmaps.find(r=>r.slug==='java-spring').steps[0];
+    expect(java.topics[0]).toContain('Language basics');
+    const ml = roadmaps.find(r=>r.slug==='machine-learning').steps.find(s=>s.id==='data-handling');
+    expect(ml.topics.findIndex(t=>t.startsWith('Split data'))).toBeLessThan(ml.topics.findIndex(t=>t.startsWith('Turning words')));
+  });
   it("has at least the six first roadmaps, each with a unique slug and a list of steps", () => {
     for (const slug of ["frontend", "backend", "fullstack", "android", "data-analytics", "machine-learning"]) expect(roadmaps.some((r) => r.slug === slug), slug).toBe(true);
     expect(new Set(roadmaps.map((r) => r.slug)).size).toBe(roadmaps.length);

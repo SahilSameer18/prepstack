@@ -90,6 +90,7 @@ export default function StudyStart({
           change.
         </p>
       )}
+      {item.objective && <p className="text-sm leading-relaxed text-fg-3">{item.objective}</p>}
       {material && (
         <a
           href={material.path}

@@ -8,6 +8,8 @@
 // Dates are plain "YYYY-MM-DD" strings (Indian time is decided by the caller: todayIst below). Weekdays are numbered Monday = 0 ... Sunday = 6.
 const limits = require('../../shared/config/limits');
 const { problemIdentity } = require('../sheets/problemIdentity');
+const { roadmapMilestones } = require('./roadmapMilestones');
+const GENERATION_VERSION = 2;
 
 const MINUTES_BY_DIFFICULTY = { Basic: 30, Easy: 40, Medium: 70, Hard: 120 }; // solve and check the solution (decision 29)
 const FALLBACK_DIFFICULTY = 'Medium';
@@ -122,7 +124,8 @@ const validateInput = (input, data) => {
     if (!data.sheets[i.sheetSlug]) errors.push('sheetSlug must name one of the DSA sheets');
     else if (i.goalType === 'bigtech' && !BIGTECH_SHEETS.includes(i.sheetSlug)) errors.push(`the big-tech goal uses ${BIGTECH_SHEETS.join(' or ')}`);
   }
-  if (i.goalType === 'role' && !data.roadmapCatalog.find((r) => r.slug === i.roadmapSlug)) errors.push('roadmapSlug must name one of the roadmaps');
+  const savedRoadmap = i.roadmapSnapshot && i.roadmapSnapshot.slug === i.roadmapSlug;
+  if (i.goalType === 'role' && !savedRoadmap && !data.roadmapCatalog.find((r) => r.slug === i.roadmapSlug)) errors.push('roadmapSlug must name one of the roadmaps');
   if (i.pace !== undefined && !Object.hasOwn(PACES, i.pace)) errors.push(`pace must be one of ${Object.keys(PACES).join(', ')}`);
   if (i.lighterDays !== undefined) errors.push(...lighterDaysErrors(i.lighterDays));
   if (i.subjects !== undefined && !(Array.isArray(i.subjects) && i.subjects.every((s) => data.notes[s]))) errors.push('subjects must be a list of notes subjects');
@@ -171,13 +174,16 @@ const dsaUnits = (sheetSlug, data, solved, known, seenLinks, pace) => {
 
 // Steps of a roadmap in order: the step's learning time (the middle of its range), its practice (notes and sheet topics), then its project.
 const roadmapUnits = (input, data, solved, known, seenLinks, pace) => {
-  const road = data.roadmapCatalog.find((r) => r.slug === input.roadmapSlug);
+  // Saved milestone plans retain their curriculum even after a roadmap edit.
+  const road = input.roadmapSnapshot || data.roadmapCatalog.find((r) => r.slug === input.roadmapSlug);
   const units = [];
   let alreadySolved = 0;
   const knownTopics = [];
   const seenNotes = new Set(); // a notes section linked from two steps is scheduled once, in the first
   for (const step of road.steps) {
-    const items = [{ type: 'roadmap', ref: `roadmap:${road.slug}`, stepId: step.id, title: step.title, plannedMinutes: Math.round(((step.from + step.to) / 2) * 60), core: true }];
+    const items = (input.generationVersion ?? GENERATION_VERSION) >= 2
+      ? roadmapMilestones(step, road.slug)
+      : [{ type: 'roadmap', ref: `roadmap:${road.slug}`, stepId: step.id, title: step.title, plannedMinutes: Math.round(((step.from + step.to) / 2) * 60), core: true }];
     for (const p of step.practice) {
       if (p.kind === 'notes') {
         const [subject, id] = p.target.split(':');
@@ -196,7 +202,9 @@ const roadmapUnits = (input, data, solved, known, seenLinks, pace) => {
         }
       }
     }
-    items.push({ type: 'roadmap', ref: `project:${road.slug}:${step.id}`, stepId: step.id, title: `Project: ${step.title}`, plannedMinutes: ROADMAP_PROJECT_MINUTES, core: true });
+    items.push({ type: 'roadmap', ref: `project:${road.slug}:${step.id}`, stepId: step.id, title: `Project: ${step.title}`, plannedMinutes: ROADMAP_PROJECT_MINUTES, core: true,
+      ...((input.generationVersion ?? GENERATION_VERSION) >= 2 ? { activity: 'project', objective: step.project?.brief } : {}),
+    });
     units.push({ unitId: `step:${road.slug}:${step.id}`, core: true, items });
   }
   return { units, alreadySolved, knownTopics };
@@ -286,7 +294,7 @@ const dayCaps = (days, reserved, context) => {
 
 // keepPartial: when the days end inside a long item, keep the parts already placed and report the rest as left over
 // (a roadmap step can be longer than the whole plan; dropping it would leave an empty plan while time is free).
-const fillDays = (sequence, days, reserved, context, keepPartial = false) => {
+const fillDays = (sequence, days, reserved, context, keepPartial = false, strictOrder = false) => {
   const caps = dayCaps(days, reserved, context);
   const used = new Array(sequence.length).fill(false);
   const unitAt = new Map(); // the units (topics, notes sections, roadmap steps) in list order, so "the next unit" is known
@@ -327,7 +335,7 @@ const fillDays = (sequence, days, reserved, context, keepPartial = false) => {
       const nextUnit = unitList[unitAt.get(item.unitId) + 1]; // the unit right after this one in the list, even when it is already used up: nothing further ahead is pulled forward
       let found = -1;
       let near = -1;
-      for (let k = head + 1, seen = 0; k < sequence.length && seen < LOOKAHEAD; k += 1) {
+      for (let k = head + 1, seen = 0; !strictOrder && k < sequence.length && seen < LOOKAHEAD; k += 1) {
         if (used[k]) continue;
         seen += 1;
         if (sequence[k].plannedMinutes > left) continue;
@@ -360,7 +368,7 @@ const fillDays = (sequence, days, reserved, context, keepPartial = false) => {
 
 const sumMinutes = (items) => items.reduce((s, it) => s + it.plannedMinutes, 0);
 // The identity of an item whatever its day or part: its ref plus its problem link (or its roadmap step).
-const baseId = (it) => [it.ref, it.link ? problemIdentity(it.link) : it.stepId || ''].join('|');
+const baseId = (it) => [it.ref, it.link ? problemIdentity(it.link) : it.stepId || '', ...(it.milestoneId ? [it.milestoneId] : [])].join('|');
 
 // ---------- choosing what fits: a fair share for every topic and subject (phase B of docs/plans/MY_PLAN_COVERAGE_PLAN.md) ----------
 // When the content is more than the days can hold, the old rule cut the tail of the list, so whole topics and subjects vanished.
@@ -480,7 +488,8 @@ const generatePlan = (input, data, context = {}) => {
       const capacity = Math.max(0, dayCaps(days, reserved, context).reduce((s, c) => s + c, 0) - shrink);
       ({ chosen: sequence, dropped, trimmed, spread } = selectForCapacity(content, capacity, keep));
     }
-    result = fillDays(sequence, days, reserved, context, input.goalType === 'role');
+    result = fillDays(sequence, days, reserved, context, input.goalType === 'role',
+      input.goalType === 'role' && (input.generationVersion ?? GENERATION_VERSION) >= 2);
     result.reserved = reserved;
     const useless = [...mockDays].filter((n) => reserved.has(n) && reserved.get(n).some((it) => it.type === 'mock') && result.placed.filter((p) => p.type === 'dsa' && p.core && dayNumber(p.day) > n).length < 2);
     if (useless.length) { for (const n of useless) mockDays.delete(n); continue; }
@@ -514,6 +523,7 @@ const generatePlan = (input, data, context = {}) => {
     ...[...trimmed, ...result.leftover].map((it) => ({
       ref: it.ref, link: it.link || null, title: it.title, plannedMinutes: it.plannedMinutes, core: it.core, reason: 'no-room', topicTitle: it.topicTitle || null,
       ...(it.stepId ? { stepId: it.stepId } : {}), ...(it.partial ? { partial: true } : {}),
+      ...(it.milestoneId ? { milestoneId: it.milestoneId } : {}),
     })),
   ];
   const lastDay = content2.reduce((m, it) => Math.max(m, dayNumber(it.day)), -1);
@@ -534,12 +544,31 @@ const generatePlan = (input, data, context = {}) => {
   const sorted = [];
   for (const d of days) {
     const list = byDay.get(d.ymd) || [];
-    list.sort((a, b) => ((a.type === 'mock' || a.type === 'behavioral') - (b.type === 'mock' || b.type === 'behavioral')) || a.plannedMinutes - b.plannedMinutes || a.order - b.order);
+    // Milestones teach before they practise, including within the same day.
+    list.sort((a, b) => ((a.type === 'mock' || a.type === 'behavioral') - (b.type === 'mock' || b.type === 'behavioral')) ||
+      (input.goalType === 'role' && (input.generationVersion ?? GENERATION_VERSION) >= 2 ? a.order - b.order : a.plannedMinutes - b.plannedMinutes || a.order - b.order));
     sorted.push(...list);
   }
 
   return {
-    input: { lighterDays: input.lighterDays || [], goalType: input.goalType, style: input.style, startDate: input.startDate, weeks: input.weeks, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay ?? null, sheetSlug: input.sheetSlug || null, roadmapSlug: input.roadmapSlug || null, subjects, knownTopics: input.knownTopics || [], solvedLinks: input.solvedLinks || [], pace },
+    input: {
+      generationVersion: input.generationVersion ?? GENERATION_VERSION,
+      roadmapSnapshot: input.goalType === 'role' && (input.generationVersion ?? GENERATION_VERSION) >= 2
+        ? structuredClone(input.roadmapSnapshot || data.roadmapCatalog.find((r) => r.slug === input.roadmapSlug)) : null,
+      lighterDays: input.lighterDays || [],
+      goalType: input.goalType,
+      style: input.style,
+      startDate: input.startDate,
+      weeks: input.weeks,
+      hoursByWeekday: input.hoursByWeekday,
+      restDay: input.restDay ?? null,
+      sheetSlug: input.sheetSlug || null,
+      roadmapSlug: input.roadmapSlug || null,
+      subjects,
+      knownTopics: input.knownTopics || [],
+      solvedLinks: input.solvedLinks || [],
+      pace,
+    },
     startDate: input.startDate,
     deadline: ymdOf(deadline),
     finishDate,
@@ -620,12 +649,28 @@ const previewPlan = (input, data) => {
   return {
     startDate: plan.startDate, deadline: plan.deadline, finishDate: plan.finishDate, earlyDays: plan.earlyDays, notices: plan.notices,
     pace: plan.input.pace,
+    saveEligibility: saveEligibility(plan),
     coverage: { syllabusMinutes: plan.coverage.syllabusMinutes, plannedMinutes: plan.coverage.plannedMinutes, extraMinutes: plan.coverage.extraMinutes, leftOutCount: plan.coverage.leftOut.length, leftOutMinutes: sumMinutes(plan.coverage.leftOut), alreadySolved: plan.coverage.alreadySolved, byGroup: plan.coverage.byGroup, finishAll: finishEverything(input, plan, data) },
     week1,
   };
 };
 
+// Preview and creation use the same rules. Private previews first include the
+// account's solved work; public previews never read or cache personal progress.
+function saveEligibility(plan) {
+  let reason = null;
+  if (plan.items.length > limits.PLAN_MAX_ITEMS) {
+    reason = `This plan would have ${plan.items.length} items and the most is ${limits.PLAN_MAX_ITEMS}. Choose fewer weeks, fewer subjects or a smaller sheet.`;
+  } else if (!plan.coverage.syllabusItems) {
+    reason = 'There is nothing to plan: every problem on this sheet is already solved or marked as known.';
+  } else if (!plan.coverage.plannedItems) {
+    reason = 'No task fits these days and hours. Add study time or weeks, then try again.';
+  }
+  return { allowed: reason === null, reason, itemCount: plan.items.length, itemLimit: limits.PLAN_MAX_ITEMS };
+}
+
 module.exports = {
+  GENERATION_VERSION, saveEligibility,
   groupTitle,
   generatePlan, previewPlan, groupByWeek, onTrack, isComplete, validateInput, lighterDaysErrors, baseId, dayBudget, todayIst, dayNumber, ymdOf, weekdayOf, PlanInputError,
   MINUTES_BY_DIFFICULTY, PACES, DEFAULT_PACE, FLOOR_SECTIONS, FLOOR_PROBLEMS, MOCK_MINUTES, BEHAVIORAL_MINUTES, GOALS, STYLES, DEFAULT_SUBJECTS, notesMinutes, problemMinutes,

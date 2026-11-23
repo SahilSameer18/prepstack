@@ -2,6 +2,48 @@ import { test, expect } from "@playwright/test";
 
 const API = "http://localhost:3100";
 
+test('Phase 1: oversized public previews explain the limit before login or save', async ({page}) => {
+  await page.setViewportSize({width:375,height:812});
+  const privateCalls = [];
+  page.on('request',request=>{if(request.url().includes('/preview/personal'))privateCalls.push(request.url());});
+  await page.goto('/my-plan?goalType=placements&sheetSlug=striver-a2z&weeks=52&weekdayHours=3&weekendHours=3&restDay=none&subjects=os,dbms,cn,oops');
+  await expect(page.getByRole('alert').filter({hasText:'the most is 600'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Generate my plan'})).toBeDisabled();
+  await expect(page.getByRole('link',{name:'Sign in to check your saved progress'})).toBeVisible();
+  expect(privateCalls).toEqual([]);
+  await assertFits(page);
+  await page.screenshot({path:'../.tmp/phase1-limit-phone.png',fullPage:true});
+});
+
+test('Phase 1: personal previews include progress and new role tasks have practical objectives', async ({page}) => {
+  const {plan} = await createPlan(page,{subjects:[]});
+  const first = plan.items.find(item=>item.type==='dsa'&&!item.part);
+  expect((await page.request.post(API+'/api/plan/items/'+first.id+'/result',{data:{result:'alone'}})).status()).toBe(200);
+  expect((await page.request.delete(API+'/api/plan')).status()).toBe(200);
+  const personal = page.waitForResponse(response=>response.url().endsWith('/api/plan/preview/personal')&&response.ok());
+  await page.goto('/my-plan?sheetSlug=blind-75&subjects=&weeks=4');
+  const response = await personal;
+  expect(response.headers()['cache-control']).toContain('no-store');
+  expect((await response.json()).data.coverage.alreadySolved).toBeGreaterThan(0);
+  await expect(page.getByText('This preview includes your saved sheet progress',{exact:false})).toBeVisible();
+  await page.goto('/my-plan?goalType=role&roadmapSlug=frontend&weeks=12&weekdayHours=1&weekendHours=3&restDay=6&style=mixed');
+  await expect(page.getByText('How do you like to study?')).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Generate my plan'})).toBeEnabled();
+  await page.getByRole('button',{name:'Generate my plan'}).click();
+  await expect(page.getByRole('heading',{name:'Your saved plan'})).toBeVisible();
+  await page.getByRole('region',{name:'Saved plan',exact:true}).getByRole('link',{name:'Open daily plan',exact:true}).click();
+  await expect(page.getByRole('region',{name:'Today',exact:true}).getByRole('button')).toHaveCount(1);
+  await page.getByRole('button',{name:/^Start/}).click();
+  const task = page.getByRole('region',{name:'Study task'});
+  await expect(task.getByRole('heading')).toContainText('Learn:');
+  await expect(task).toContainText('After this step');
+  await assertFits(page);
+  await page.screenshot({path:'../.tmp/phase1-milestone-desktop.png',fullPage:true});
+  await page.setViewportSize({width:375,height:812});
+  await assertFits(page);
+  await page.screenshot({path:'../.tmp/phase1-milestone-phone.png',fullPage:true});
+});
+
 test.beforeEach(async ({ page }) => {
   await page.request.post(API + '/__test/clock', { data: {} });
 });

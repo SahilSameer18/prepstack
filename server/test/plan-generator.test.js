@@ -221,7 +221,7 @@ describe('dated items: mock blocks and behavioral questions (decisions 28 and 38
 });
 
 describe('the role goal', () => {
-  const p = generatePlan({ ...base, goalType: 'role', roadmapSlug: 'backend', subjects: undefined, weeks: 12 }, makeData());
+  const p = generatePlan({ ...base, generationVersion: 1, goalType: 'role', roadmapSlug: 'backend', subjects: undefined, weeks: 12 }, makeData());
   it('goes through the roadmap steps in order: the step (the middle of its range), its practice, then its project', () => {
     const titles = p.items.map((i) => i.title);
     assert.ok(titles.indexOf('Step one') < titles.indexOf('Project: Step one') && titles.indexOf('Project: Step one') < titles.indexOf('Step two'));
@@ -271,7 +271,7 @@ describe('weeks, on track and the preview', () => {
   });
   it('the preview gives the numbers and week 1 only, never the other weeks', () => {
     const pv = previewPlan({ ...base, startDate: '2026-11-13', weeks: 4 }, makeData());
-    assert.deepEqual(Object.keys(pv).sort(), ['coverage', 'deadline', 'earlyDays', 'finishDate', 'notices', 'pace', 'startDate', 'week1']);
+    assert.deepEqual(Object.keys(pv).sort(), ['coverage', 'deadline', 'earlyDays', 'finishDate', 'notices', 'pace', 'saveEligibility', 'startDate', 'week1']);
     assert.equal(pv.week1.week, 1);
     assert.ok(pv.week1.items.every((i) => i.day <= '2026-11-15'));
     assert.ok(!JSON.stringify(pv).includes('2026-11-23'));
@@ -326,7 +326,7 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
   // The packing got slightly better (8454, 5653 and 4306 became 8749, 6013 and 4524 planned minutes; 47, 90 and 111 became 42, 84 and 108 items left out); the same checks hold.
   // 20 Nov 2026: after the NeetCode difficulty labels were corrected the 12 and 8 week plans moved from 8749 to 8841 and from 6013 to 6003 planned minutes (42 to 39 and 84 to 83 items left out); the 6 week plan did not change. The checks below still hold: planned + left out = the syllabus, and planned stays between 80 and 100 percent of the room.
   // The last Saturday's mock block is gone from each of the three plans (9, 5 and 3 became 8, 4 and 2): the last days hold only CS notes now, and a mock needs unsolved core problems after it.
-  for (const [weeks, mocks, behavioral, planned, leftOut] of [[12, 8, 12, 8841, 39], [8, 4, 12, 6003, 83], [6, 2, 12, 4524, 108]]) {
+  for (const [weeks, mocks, behavioral, planned, leftOut] of [[12, 8, 12, 8739, 41], [8, 4, 12, 5992, 83], [6, 2, 12, 4494, 108]]) {
     it(`${weeks} weeks: fair share, no day above 85 percent, ${mocks} mock blocks, ${behavioral} behavioral questions, nothing silently lost`, () => {
       const plan = generatePlan({ ...input, weeks }, data);
       const c = plan.coverage;
@@ -367,7 +367,13 @@ describe('acceptance example: big-tech SDE interview, Monday to Friday 3 hours, 
       const keys = p.items.map((i) => i.key);
       assert.equal(new Set(keys).size, keys.length, `${r.slug}: duplicate keys`);
       const notes = p.items.filter((i) => i.type === 'notes').map((i) => i.ref);
-      assert.equal(new Set(notes).size, notes.length, `${r.slug}: a notes section twice`);
+      for (const ref of new Set(notes)) {
+        const parts = p.items.filter((item) => item.type === 'notes' && item.ref === ref);
+        if (parts.length > 1) {
+          assert.ok(parts.every((item) => item.part), `${r.slug}: duplicate notes must be parts`);
+          assert.equal(new Set(parts.map((item) => item.part.n)).size, parts.length);
+        }
+      }
     }
     for (const over of [{ weeks: 12 }, { weeks: 6, style: 'mixed' }, { goalType: 'placements', sheetSlug: 'striver-a2z', weeks: 20 }]) {
       const keys = generatePlan({ ...input, ...over }, data).items.map((i) => i.key);

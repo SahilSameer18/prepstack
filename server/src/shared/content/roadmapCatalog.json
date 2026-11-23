@@ -6,6 +6,20 @@
    {
     "id": "internet-web-fundamentals",
     "title": "Internet & Web Fundamentals",
+    "goal": "After this step you can explain, in simple words, how a web page gets from a server to your screen.",
+    "topics": [
+     "Clients and servers: your browser asks, a server answers",
+     "The parts of a web address (URL)",
+     "DNS: the phone book that turns a name into a number",
+     "HTTP: the question-and-answer rules of the web, and its status codes",
+     "HTTPS: locking the conversation so others cannot read it",
+     "Packets: how data is cut into small pieces and sent"
+    ],
+    "checkpoint": [
+     "Write down the story of opening a web page in order (name lookup, connection, request, page drawn) and compare it with the MDN page.",
+     "Say what the status codes 200, 301, 404 and 503 mean.",
+     "Explain in one sentence what DNS does."
+    ],
     "time": "8 to 12 hours",
     "from": 8,
     "to": 12,
@@ -35,6 +49,21 @@
    {
     "id": "html-basics",
     "title": "HTML Basics",
+    "goal": "After this step you can build a well-structured page with headings, links, images, tables and forms that people using screen readers can also use.",
+    "topics": [
+     "Headings, paragraphs and lists",
+     "Links and images",
+     "Page structure with meaningful tags (header, main, footer)",
+     "Tables and how to make them readable for everyone",
+     "Forms and buttons",
+     "Accessibility: making pages usable with a keyboard and a screen reader",
+     "Checking and fixing mistakes in your HTML"
+    ],
+    "checkpoint": [
+     "Build a page with a header, a main part and a footer using the right tags.",
+     "Make a form where every field has a label.",
+     "Explain why accessibility matters and name two things you do to support it."
+    ],
     "time": "10 to 20 hours",
     "from": 10,
     "to": 20,
@@ -48,6 +77,21 @@
    {
     "id": "css-advanced",
     "title": "CSS Advanced",
+    "goal": "After this step you can lay out a page with Flexbox and Grid so that it looks right on both a phone and a laptop.",
+    "topics": [
+     "Selectors and the cascade: which style wins when two rules clash",
+     "The box model: content, padding, border and margin",
+     "Flexbox: lining things up in a row or a column",
+     "Grid: placing things in rows and columns",
+     "Responsive design: media queries that change the layout by screen size",
+     "Units and sizing",
+     "Backgrounds, borders and overflow"
+    ],
+    "checkpoint": [
+     "Center something on the page in both directions with Flexbox.",
+     "Build a three-column layout with Grid that becomes one column on a phone.",
+     "Explain which rule wins when two CSS rules point at the same thing."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -61,6 +105,21 @@
    {
     "id": "javascript-core",
     "title": "JavaScript Core",
+    "goal": "After this step you can write JavaScript that reacts to clicks, changes the page and loads data from a server.",
+    "topics": [
+     "Variables, numbers, text, lists and objects",
+     "Making decisions (if) and repeating work (loops)",
+     "Functions",
+     "Events: reacting to clicks and typing",
+     "The DOM: reading and changing the page from code",
+     "Loading data from a server and reading JSON",
+     "Finding and fixing errors (debugging)"
+    ],
+    "checkpoint": [
+     "Write code that adds an item to a list on the page when a button is clicked.",
+     "Fetch data from a public API and show it on the page.",
+     "Use the browser's developer tools to find why a script fails."
+    ],
     "time": "40 to 60 hours",
     "from": 40,
     "to": 60,
@@ -80,6 +139,21 @@
    {
     "id": "react-basics",
     "title": "React Basics",
+    "goal": "After this step you can build a small app from components that remember and show changing data.",
+    "topics": [
+     "Components: small reusable pieces of a page",
+     "JSX: writing page structure inside JavaScript",
+     "Props: passing data into a component",
+     "State (useState): data a component remembers and shows",
+     "Showing things only sometimes, and showing lists",
+     "Handling clicks and typing",
+     "Thinking in React: splitting a design into components"
+    ],
+    "checkpoint": [
+     "Turn a page design into a tree of components and name the data each one needs.",
+     "Explain the difference between props and state.",
+     "Build a counter and a list that changes when you click."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -93,6 +167,20 @@
    {
     "id": "react-advanced",
     "title": "React Advanced",
+    "goal": "After this step you can share data across a React app, move between pages, and test a component the way a user would use it.",
+    "topics": [
+     "Hooks: useState remembers data, useEffect runs code after the screen updates, useRef holds a value without redrawing, and you can write your own",
+     "Context: sharing data without passing it through every component",
+     "Reducers: one place that describes how data changes (React docs: Scaling Up with Reducer and Context)",
+     "Moving between pages with React Router",
+     "Making slow screens faster (useMemo, useCallback)",
+     "Testing a component by what the user sees (Testing Library)"
+    ],
+    "checkpoint": [
+     "Use context so that a theme choice is available in every component.",
+     "Add two pages with React Router and a link between them.",
+     "Write a test that clicks a button and checks what appears."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -106,6 +194,20 @@
    {
     "id": "css-frameworks",
     "title": "CSS Frameworks",
+    "goal": "After this step you can style a responsive page with Tailwind CSS, including a dark mode.",
+    "topics": [
+     "Why use utility classes: small classes you combine in your HTML",
+     "Installing Tailwind CSS with Vite",
+     "Responsive design: add a prefix like md: to change styling on bigger screens",
+     "Mobile first: plain classes apply to every screen, prefixes add changes",
+     "Dark mode with the dark: prefix",
+     "Customizing colors and breakpoints"
+    ],
+    "checkpoint": [
+     "Style a card that has one column on a phone and two columns on a tablet.",
+     "Add a dark mode that follows the visitor's system setting.",
+     "Explain what mobile first means."
+    ],
     "time": "10 to 20 hours",
     "from": 10,
     "to": 20,
@@ -119,6 +221,22 @@
    {
     "id": "nextjs",
     "title": "Next.js",
+    "goal": "After this step you can build a multi-page Next.js app that loads data on the server and can be put online.",
+    "topics": [
+     "What Next.js adds to React",
+     "The App Router: pages and layouts made from folders",
+     "Linking between pages",
+     "Server components and client components",
+     "Loading data on the server and caching it",
+     "Refreshing saved pages (revalidating)",
+     "Route handlers: small pieces of server code that answer web addresses",
+     "Deploying a Next.js app"
+    ],
+    "checkpoint": [
+     "Create two pages and a shared layout using folders.",
+     "Explain in one sentence the difference between a server component and a client component.",
+     "Load data on the server and show it on a page, and add a route handler that returns JSON."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -132,6 +250,20 @@
    {
     "id": "production-deployment",
     "title": "Production & Deployment",
+    "goal": "After this step you can put a site online, run automatic checks on every change, and measure how fast it feels to visitors.",
+    "topics": [
+     "Git and GitHub basics: saving your work in steps (commits) and sending it to GitHub",
+     "Deploying from a GitHub repository to a service such as Vercel",
+     "Keeping passwords and keys in environment settings, not in code",
+     "Automatic checks on every push with GitHub Actions",
+     "Core Web Vitals: three numbers for loading speed, response time and layout jumps",
+     "Measuring speed with PageSpeed Insights and Lighthouse"
+    ],
+    "checkpoint": [
+     "Put your app online with its secrets set as environment settings, and share the link.",
+     "Explain what a workflow (automatic checks that run when you push code) does.",
+     "Name the three Core Web Vitals and say what each one measures."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -162,6 +294,21 @@
    {
     "id": "os-networking-basics",
     "title": "OS & Networking Basics",
+    "goal": "After this step you can explain, in simple words, what happens between typing a web address and seeing the page.",
+    "topics": [
+     "Clients and servers: your browser asks, a server answers",
+     "Processes and threads: how a computer runs many things at once",
+     "Ports and sockets: the numbered doors a program listens on",
+     "TCP and UDP: a careful way and a quick way to send data",
+     "DNS: the phone book that turns a name into a number (an IP address)",
+     "HTTP: the question-and-answer rules of the web, and its status codes like 200 and 404",
+     "HTTPS and TLS: locking the conversation so others cannot read it"
+    ],
+    "checkpoint": [
+     "Tell the story of opening a web page in order: name lookup, connection, lock, request, page drawn.",
+     "Say when you would pick TCP (careful) and when UDP (quick), with one example each.",
+     "Name five HTTP status codes and say what each one tells the browser."
+    ],
     "time": "10 to 15 hours",
     "from": 10,
     "to": 15,
@@ -201,6 +348,22 @@
    {
     "id": "nodejs-fundamentals",
     "title": "Node.js Fundamentals",
+    "goal": "After this step you can explain how Node.js serves many people with a single worker, and write programs that read files without freezing.",
+    "topics": [
+     "What Node.js is: a way to run JavaScript outside the browser that does not wait around",
+     "The event loop: the worker's to-do list that keeps Node.js busy",
+     "Three ways to run code later: nextTick, setTimeout and setImmediate",
+     "Promises and async/await: a clean way to wait for slow work",
+     "Modules: splitting code into files (CommonJS and ES modules)",
+     "Files: reading and writing, and why the waiting kind freezes everything",
+     "Streams: handling big data a piece at a time",
+     "Buffers: raw bytes and text encodings"
+    ],
+    "checkpoint": [
+     "Explain why a file call that waits (a synchronous call) makes every other visitor wait too.",
+     "Read a large file with a stream, a piece at a time, instead of loading it all into memory.",
+     "Say that nextTick callbacks run first and setImmediate runs after the current work, and why too many nextTick calls can starve the loop."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -220,6 +383,22 @@
    {
     "id": "expressjs-routing",
     "title": "Express.js & Routing",
+    "goal": "After this step you can build a web API with Express where each address does one job and all errors are handled in one place.",
+    "topics": [
+     "A minimal Express app",
+     "Routes: which code runs for which address and method (GET, POST and so on)",
+     "Reading request data: req.params (from the address), req.query (after the ?) and req.body (sent data)",
+     "Routers: grouping related routes in one file",
+     "Middleware: small steps a request passes through before the answer is sent",
+     "Built-in middleware: reading JSON, reading forms, serving files",
+     "Error handlers: one place that catches mistakes and sends a clean answer",
+     "Errors in async code, which Express 5 passes on for you"
+    ],
+    "checkpoint": [
+     "Build routes to create, read, update and delete items that answer 201 (created), 204 (done, nothing to send back) and 404 (not found) where they should.",
+     "Write an error handler, place it last, and explain why the order matters.",
+     "Explain what middleware does and what happens if it forgets to call next."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -239,6 +418,22 @@
    {
     "id": "database-design",
     "title": "Database Design",
+    "goal": "After this step you can decide how to store related data, make searches fast with indexes, and write basic queries in MongoDB and SQL.",
+    "topics": [
+     "Two ways to store data: tables (SQL) and documents (MongoDB)",
+     "CRUD: create, read, update and delete in MongoDB",
+     "Embedding or referencing: keep related data inside one record, or link to another record",
+     "Indexes: like a book's index, they make reading fast but make every write a little slower",
+     "Aggregation: asking questions about many records at once (filter, group, sort)",
+     "Mongoose: a helper that gives your MongoDB data a fixed shape",
+     "SQL basics: select, join, group by",
+     "Transactions: a group of changes that all happen or none happen"
+    ],
+    "checkpoint": [
+     "For a blog with posts and comments, choose to embed or to link, and give the reason in one sentence.",
+     "Explain how an index makes a search faster and what it costs every time you save data.",
+     "Write a query that counts the posts of each user and sorts the result."
+    ],
     "time": "30 to 40 hours",
     "from": 30,
     "to": 40,
@@ -273,6 +468,22 @@
    {
     "id": "authentication-security",
     "title": "Authentication & Security",
+    "goal": "After this step you can add sign-in to an API and say what each protection (hashing, cookies, headers, limits) guards against.",
+    "topics": [
+     "Saving passwords safely: never the password itself, only a deliberately slow scrambled version with a random extra (a salt)",
+     "Sessions and tokens: how the site remembers you are signed in. A token (JWT) is signed so it cannot be changed, but anyone can read it",
+     "Cookie settings: Secure (only over HTTPS), HttpOnly (scripts cannot read it), SameSite (limits sending to other sites)",
+     "OAuth 2.0: how \"Sign in with Google\" lets one site act for you without your password",
+     "CORS: a rule the browser follows about which websites may call your API. Other tools such as curl ignore it",
+     "Authorization: checking who is allowed to do what",
+     "Checking all input and stopping injection (tricking the database with specially written input)",
+     "Hardening: security headers (Helmet), limits on tries per minute, and checking your packages for known problems"
+    ],
+    "checkpoint": [
+     "Explain why passwords are scrambled with a slow method and a salt, and not just locked with a key.",
+     "Say what is inside a token (JWT) and why you must never put secrets in it.",
+     "Explain why CORS does not stop someone using the curl tool."
+    ],
     "time": "30 to 40 hours",
     "from": 30,
     "to": 40,
@@ -297,6 +508,22 @@
    {
     "id": "testing-debugging",
     "title": "Testing & Debugging",
+    "goal": "After this step you can write tests that check your API automatically, and use the Node.js debugger to find a bug.",
+    "topics": [
+     "Unit tests (one small piece) and integration tests (pieces working together)",
+     "The test tool built into Node.js: describe, it and subtests",
+     "Testing web routes with supertest, which sends fake requests to your app",
+     "Skipping tests and checking how much code the tests cover",
+     "Setup and cleanup steps, and a separate test database so real data is safe",
+     "Keeping the app separate from the part that starts the server, so tests can use it",
+     "Debugging: pausing the program with --inspect and looking inside",
+     "Trying an API by hand with Postman"
+    ],
+    "checkpoint": [
+     "Write a test for a route with supertest that checks the status code and the data returned.",
+     "Start Node.js with --inspect and stop on a breakpoint (a line where the program pauses).",
+     "Say the difference between a unit test and an integration test, and when each is worth writing."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -316,6 +543,22 @@
    {
     "id": "docker-containers",
     "title": "Docker & Containers",
+    "goal": "After this step you can pack an API into an image, run it as a container, and start it together with a database using one command.",
+    "topics": [
+     "Containers and virtual machines: a container shares the computer's core, so it is lighter",
+     "Images and containers: the image is the recipe, the container is the running dish",
+     "The Dockerfile: the list of steps that builds an image",
+     "docker build and docker run, and linking a port of your computer to the container",
+     "Volumes: a safe place so database files survive a restart",
+     ".dockerignore: files you do not want to copy into the image",
+     "Docker Compose: several containers described in one file and started together",
+     "Passing settings in as environment variables"
+    ],
+    "checkpoint": [
+     "Write a Dockerfile for your API and run it with a port linked to your computer.",
+     "Explain the difference between an image and a container.",
+     "Use Compose to start the API and MongoDB together."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -335,6 +578,21 @@
    {
     "id": "deployment-cloud",
     "title": "Deployment & Cloud",
+    "goal": "After this step you can put an API on the internet from GitHub, keep secrets out of your code, and run your tests automatically on every push.",
+    "topics": [
+     "Keeping passwords and keys in environment settings, never in the code",
+     "Automatic checks on every push with GitHub Actions: workflows, triggers, jobs and runners",
+     "Deploying from a GitHub repository to a service such as Railway or Render",
+     "Free plans have limits: read them first (some free services go to sleep when nobody visits)",
+     "Cloud basics with AWS: the free plan gives credits that run out, so read the terms first",
+     "Load balancers: why one server is not enough and how traffic is shared",
+     "Looking at logs and a health check after you deploy"
+    ],
+    "checkpoint": [
+     "Explain what an automatic check does when you push code.",
+     "Deploy the API with every secret set as an environment setting and none stored in the repository.",
+     "Explain why a free service may answer slowly after being idle, and say what the AWS free plan gives you and when it stops being free."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -365,6 +623,20 @@
    {
     "id": "frontend-development",
     "title": "Frontend Development",
+    "goal": "After this step you can build the screens of an app in React that load data from an API.",
+    "topics": [
+     "Starting a project with Vite, a tool that runs and packs your project",
+     "Components, props and state in React",
+     "Hooks for loading data when a page opens",
+     "Moving between pages with a router",
+     "Showing loading and error messages",
+     "Talking to a backend API from the page"
+    ],
+    "checkpoint": [
+     "Build a page that loads a list from an API and shows loading and error states.",
+     "Explain what a component, a prop and state are.",
+     "Run the project with Vite, build it for production, and add a second page with a router."
+    ],
     "time": "55 to 85 hours",
     "from": 55,
     "to": 85,
@@ -384,6 +656,21 @@
    {
     "id": "backend-api",
     "title": "Backend API",
+    "goal": "After this step you can build a set of web addresses (an API) with Express that the front end can ask for data.",
+    "topics": [
+     "Starting an Express server",
+     "Routes: which code runs for which address and method",
+     "Reading request data: the address, the part after the question mark, and the message body",
+     "Middleware: small steps a request passes through",
+     "One error handler that sends clean error answers",
+     "Status codes: 200, 201, 204, 400, 404",
+     "Keeping routes in separate files with routers"
+    ],
+    "checkpoint": [
+     "Build create, read, update and delete routes with the right status codes.",
+     "Write a middleware and an error handler, and explain why the order matters.",
+     "Test each route by hand with Postman or curl."
+    ],
     "time": "25 to 35 hours",
     "from": 25,
     "to": 35,
@@ -403,6 +690,20 @@
    {
     "id": "database-layer",
     "title": "Database Layer",
+    "goal": "After this step you can store your app's data in MongoDB, choose between embedding and linking, and ask questions across many records.",
+    "topics": [
+     "Collections and documents in MongoDB",
+     "CRUD: create, read, update and delete",
+     "Mongoose models: a fixed shape for your data",
+     "Keeping related data inside one record, or in separate records that point to each other",
+     "Indexes: making searches fast",
+     "Aggregation: combining many records to get totals and counts"
+    ],
+    "checkpoint": [
+     "Design the models for a notes app with users and give the reason for each embed or link.",
+     "Add an index and explain what it speeds up and what it slows down.",
+     "Write a query that counts notes per user."
+    ],
     "time": "25 to 35 hours",
     "from": 25,
     "to": 35,
@@ -427,6 +728,22 @@
    {
     "id": "full-stack-authentication",
     "title": "Full Stack Authentication",
+    "goal": "After this step you can add sign-in to a full stack app and explain how the site remembers who you are.",
+    "topics": [
+     "Sessions: the server remembers you with a random ID",
+     "Cookies: the small piece of data the browser sends back each time",
+     "Cookie settings: Secure (only over HTTPS), HttpOnly (scripts cannot read it) and SameSite (stops other sites from sending your cookie)",
+     "Tokens (JWT): a signed note the browser carries instead of the server remembering you",
+     "OAuth 2.0: how \"Sign in with Google\" works without sharing your password",
+     "Signing out and session timeouts",
+     "Storing passwords safely: only a slow scrambled version, never the password",
+     "CORS: letting your front end on one address call your API on another"
+    ],
+    "checkpoint": [
+     "Explain what a session ID is and why it must be random and long.",
+     "Say what Secure, HttpOnly and SameSite each do for a cookie.",
+     "Log in as two users and show that one cannot read the other's notes."
+    ],
     "time": "25 to 35 hours",
     "from": 25,
     "to": 35,
@@ -446,6 +763,19 @@
    {
     "id": "state-management",
     "title": "State Management",
+    "goal": "After this step you can keep shared data in one place and choose between Context, Redux Toolkit and Zustand.",
+    "topics": [
+     "Why shared state gets messy as an app grows",
+     "Context with a reducer: built into React",
+     "Redux Toolkit: one store, slices and async actions",
+     "Zustand: a small store without extra code",
+     "Choosing the simplest tool that works"
+    ],
+    "checkpoint": [
+     "Move the signed-in user into shared state.",
+     "Explain when Context is enough and when a store is worth adding.",
+     "Write one function that loads notes and stores them in shared state."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -459,6 +789,20 @@
    {
     "id": "file-storage-media",
     "title": "File Storage & Media",
+    "goal": "After this step you can let users upload files and store them in the cloud instead of on your own server.",
+    "topics": [
+     "The file input in HTML and the File object",
+     "The accept setting is only a hint, so the server must check files too",
+     "Cloud storage (Amazon S3): folders called buckets that hold files",
+     "Firebase Storage and Cloudinary as easier options",
+     "Big files: uploading in chunks",
+     "Limits on file size and type"
+    ],
+    "checkpoint": [
+     "Build an upload form and show a preview of the chosen image.",
+     "Explain why the server must check the file type and size itself.",
+     "Say where uploaded files should live and why not on the app server."
+    ],
     "time": "10 to 20 hours",
     "from": 10,
     "to": 20,
@@ -472,6 +816,19 @@
    {
     "id": "testing-debugging",
     "title": "Testing & Debugging",
+    "goal": "After this step you can write tests for components and API routes and try an API by hand.",
+    "topics": [
+     "Testing a React component by what the user sees (Testing Library)",
+     "The Vitest test runner, made for Vite projects",
+     "Testing API routes",
+     "Trying an API by hand with Postman",
+     "Reading error messages and using the browser's developer tools"
+    ],
+    "checkpoint": [
+     "Write a test that types in a form and checks the message shown.",
+     "Write a test for an API route that checks the status code and the data.",
+     "Use Postman to call a protected route with and without a login."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -489,27 +846,21 @@
     }
    },
    {
-    "id": "deployment-scaling",
-    "title": "Deployment & Scaling",
-    "time": "20 to 30 hours",
-    "from": 20,
-    "to": 30,
-    "unit": "hours",
-    "practice": [
-     {
-      "kind": "notes",
-      "target": "cn:cn-system-design-concepts",
-      "label": "Load balancers, proxies and CDN"
-     }
-    ],
-    "project": {
-     "brief": "Deploy your notes app: the API on Render and the React app on Vercel, with every secret set as an environment setting.",
-     "stack": "MERN Stack"
-    }
-   },
-   {
     "id": "security-performance",
     "title": "Security & Performance",
+    "goal": "After this step you can name the main web security risks and use caching and speed measurements to make an app faster.",
+    "topics": [
+     "The OWASP Top 10: the most common web security risks",
+     "Limiting how many requests one person can make (rate limiting)",
+     "HTTP caching: reusing answers instead of asking again",
+     "Core Web Vitals: loading speed, response time and layout jumps",
+     "Load balancing: sharing traffic between servers"
+    ],
+    "checkpoint": [
+     "Name three risks from the OWASP Top 10 and a defence for each.",
+     "Set cache headers so that a logo is reused but a user page is not shared.",
+     "Explain what a load balancer does."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -530,6 +881,39 @@
      "brief": "Add rate limiting to your login route, set cache headers on your static files and measure the Core Web Vitals before and after.",
      "stack": "MERN Stack"
     }
+   },
+   {
+    "id": "deployment-scaling",
+    "title": "Deployment & Scaling",
+    "goal": "After this step you can deploy the front end and the back end, use HTTPS, and explain in simple words what changes when more people use the app.",
+    "topics": [
+     "Deploying a web service to Render and a site to Vercel",
+     "Environment settings for passwords and keys",
+     "HTTPS certificates: free ones from Let's Encrypt",
+     "Free plans have limits: some free services sleep when idle",
+     "A rented computer in the cloud (Amazon EC2), its starting copy and its firewall rules",
+     "What changes when more people use the app: more servers behind a load balancer"
+    ],
+    "checkpoint": [
+     "Deploy the API and the front end and connect them with environment settings.",
+     "Explain why a free service may answer slowly after being idle.",
+     "Say what an EC2 instance is in one sentence."
+    ],
+    "time": "20 to 30 hours",
+    "from": 20,
+    "to": 30,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "notes",
+      "target": "cn:cn-system-design-concepts",
+      "label": "Load balancers, proxies and CDN"
+     }
+    ],
+    "project": {
+     "brief": "Deploy your notes app: the API on Render and the React app on Vercel, with every secret set as an environment setting.",
+     "stack": "MERN Stack"
+    }
    }
   ]
  },
@@ -540,6 +924,20 @@
    {
     "id": "kotlin-basics",
     "title": "Kotlin Basics",
+    "goal": "After this step you can write small Kotlin programs with functions, classes and coroutines.",
+    "topics": [
+     "Variables, types and functions",
+     "Making decisions and repeating work",
+     "Classes and objects",
+     "Null safety: stopping the most common crash",
+     "Collections: lists, sets and maps",
+     "Coroutines: a way to do slow work without freezing the app"
+    ],
+    "checkpoint": [
+     "Write a class with properties and a function, and create two objects.",
+     "Explain what null safety means with one example.",
+     "Explain in simple words what a coroutine is for."
+    ],
     "time": "30 to 50 hours",
     "from": 30,
     "to": 50,
@@ -559,6 +957,20 @@
    {
     "id": "android-fundamentals",
     "title": "Android Fundamentals",
+    "goal": "After this step you can build a simple Android app with several screens and explain what happens when a screen opens, hides or closes.",
+    "topics": [
+     "Setting up Android Studio and running a first app",
+     "Activities: one screen of an app",
+     "The lifecycle: what an activity does when it starts, pauses and stops",
+     "Saving state, so rotating the phone does not lose your data",
+     "Resources: texts, images and colors kept outside the code",
+     "ViewModel: holds the data of a screen so it survives rotation"
+    ],
+    "checkpoint": [
+     "Run your first app on an emulator (a pretend phone on your computer) or a real phone.",
+     "Name the main lifecycle steps of an activity and what each one is for.",
+     "Explain what happens to your data when the screen is rotated and how to keep it."
+    ],
     "time": "50 to 80 hours",
     "from": 50,
     "to": 80,
@@ -572,6 +984,19 @@
    {
     "id": "modern-ui-with-compose",
     "title": "Modern UI with Compose",
+    "goal": "After this step you can build screens with Compose, keep their state correctly and move between them.",
+    "topics": [
+     "Composables: functions that each draw a part of the screen",
+     "State: data that makes the screen update when it changes",
+     "remember and rememberSaveable: keeping state while the app runs and across rotation",
+     "State hoisting: keeping the data in the parent so the parts are easy to reuse",
+     "Navigation between screens"
+    ],
+    "checkpoint": [
+     "Build a screen with a text field and a button that updates the screen.",
+     "Explain what state hoisting means.",
+     "Move between two screens with Navigation Compose."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -585,6 +1010,19 @@
    {
     "id": "data-storage",
     "title": "Data Storage",
+    "goal": "After this step you can save app data on the phone with Room and keep settings with DataStore.",
+    "topics": [
+     "Choosing where to store data: files, settings or a database",
+     "Room: a database made of entities (tables), DAOs (code that asks the database questions) and a database class",
+     "DataStore: saving small settings",
+     "Using stored data in Compose through a ViewModel (the part that holds the data of a screen)",
+     "Scoped storage: limits on which files an app can see"
+    ],
+    "checkpoint": [
+     "Save and read a list of items with Room.",
+     "Save a dark mode setting with DataStore.",
+     "Explain when to use a database and when to use DataStore."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -609,6 +1047,20 @@
    {
     "id": "networking-api-calls",
     "title": "Networking & API Calls",
+    "goal": "After this step you can load data from a web API in your app without freezing the screen, and show errors.",
+    "topics": [
+     "Permissions needed for internet access",
+     "Calling a web API and reading its JSON answer",
+     "Tools such as Retrofit and OkHttp that make web calls easier",
+     "Doing network work in the background so the screen does not freeze",
+     "Showing loading and error states",
+     "A repository: one place the app gets its data from"
+    ],
+    "checkpoint": [
+     "Load a list from a public API and show it.",
+     "Show an error message when the call fails.",
+     "Explain why network calls must not freeze the screen."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -628,6 +1080,20 @@
    {
     "id": "firebase-services",
     "title": "Firebase Services",
+    "goal": "After this step you can add sign-in and a cloud database to an Android app with Firebase.",
+    "topics": [
+     "Adding Firebase to an Android project",
+     "Firebase Authentication: sign-in without building your own server",
+     "Cloud Firestore: a cloud database of documents and collections",
+     "Live updates: the screen changes when data changes",
+     "Security rules: who may read and write what",
+     "Free plan limits: read them first"
+    ],
+    "checkpoint": [
+     "Sign a user in and show their name.",
+     "Save and read a document in Firestore.",
+     "Change a security rule and show that a read is now blocked."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -641,6 +1107,19 @@
    {
     "id": "testing-debugging",
     "title": "Testing & Debugging",
+    "goal": "After this step you can write tests for your app, read Logcat to find problems and see crashes from real users.",
+    "topics": [
+     "Local tests (fast, on your computer) and instrumented tests (tests that run on a phone)",
+     "UI tests that tap and check the screen",
+     "Logcat: the live log of your app",
+     "Log levels and filtering the log",
+     "Crashlytics: reports of crashes from real users"
+    ],
+    "checkpoint": [
+     "Write a local test for a function.",
+     "Filter Logcat to show only your app's errors.",
+     "Explain what Crashlytics shows you."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -654,6 +1133,20 @@
    {
     "id": "publishing",
     "title": "Publishing",
+    "goal": "After this step you can sign your app and know what Google Play needs before you can publish it.",
+    "topics": [
+     "The Play Console: where you manage your app",
+     "App signing: the key you prove you are the developer with, and the key Google uses to sign what users download",
+     "Keeping keys safe",
+     "Testing tracks: internal and closed testing",
+     "The testing rule for new personal accounts (Google changes it, so read the current help page)",
+     "Store listing and policies"
+    ],
+    "checkpoint": [
+     "Explain the difference between the key you upload with and the key Google signs with.",
+     "Say what a new personal developer account must do before it can publish.",
+     "Create a signed release build."
+    ],
     "time": "10 to 20 hours",
     "from": 10,
     "to": 20,
@@ -673,6 +1166,19 @@
    {
     "id": "data-fundamentals",
     "title": "Data Fundamentals",
+    "goal": "After this step you can explain what data analysis is, list its steps, and name common mistakes that give wrong answers.",
+    "topics": [
+     "Kinds of data: numbers, categories and text",
+     "Rows, columns and tables",
+     "The steps of an analysis: ask, collect, clean, explore, build a prediction or summary, share",
+     "Describing data before drawing conclusions",
+     "Common mistakes: bias, mixing up fact and opinion, and misreading numbers"
+    ],
+    "checkpoint": [
+     "List the steps of a data analysis in order and say what happens in each.",
+     "Explain the difference between a number and a category with an example.",
+     "Name two mistakes that lead to a wrong conclusion (for example bias or misreading a chart) and describe a table with five numbers using only its average and its range."
+    ],
     "time": "10 to 15 hours",
     "from": 10,
     "to": 15,
@@ -692,6 +1198,21 @@
    {
     "id": "spreadsheet-skills-excel",
     "title": "Spreadsheet Skills (Excel)",
+    "goal": "After this step you can clean a table, use formulas and PivotTables, and make a chart in a spreadsheet.",
+    "topics": [
+     "Cells, rows, columns and formatting",
+     "Formulas and functions such as IF, VLOOKUP and XLOOKUP",
+     "Sorting and filtering",
+     "PivotTables: summarising many rows in a small table",
+     "Charts",
+     "Removing duplicates and tidying messy text",
+     "Drop-down lists and data checks"
+    ],
+    "checkpoint": [
+     "Use a lookup formula to add a column from another table.",
+     "Build a PivotTable that adds up sales by month.",
+     "Make a chart and explain what it shows."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -705,6 +1226,22 @@
    {
     "id": "python-for-data-analytics",
     "title": "Python for Data Analytics",
+    "goal": "After this step you can load a table in pandas, filter it, group it and combine tables.",
+    "topics": [
+     "Running Python in a notebook such as Jupyter or Google Colab",
+     "Python basics: variables, lists, functions",
+     "NumPy arrays: fast lists of numbers",
+     "pandas tables (DataFrames: tables in Python)",
+     "Selecting rows and columns",
+     "Adding new columns",
+     "Summary numbers and grouping",
+     "Combining two tables"
+    ],
+    "checkpoint": [
+     "Load a CSV file and show its first rows and summary numbers.",
+     "Group a table by one column and compute the average of another.",
+     "Combine two tables on a shared column."
+    ],
     "time": "40 to 60 hours",
     "from": 40,
     "to": 60,
@@ -718,6 +1255,20 @@
    {
     "id": "data-cleaning-preprocessing",
     "title": "Data Cleaning & Preprocessing",
+    "goal": "After this step you can find and fix missing values, duplicates and odd values in a table with pandas.",
+    "topics": [
+     "Missing values: how pandas marks them",
+     "Dropping or filling missing values",
+     "Finding and removing duplicates",
+     "Fixing data types and text",
+     "Spotting values far from the rest (outliers) with a quick chart or summary",
+     "Reading and saving files (CSV: a spreadsheet saved as plain text)"
+    ],
+    "checkpoint": [
+     "Count the missing values in each column of a table.",
+     "Fill missing numbers with a sensible value and say why you chose it.",
+     "Remove duplicate rows and check how many were removed."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -731,6 +1282,21 @@
    {
     "id": "statistics-probability",
     "title": "Statistics & Probability",
+    "goal": "After this step you can describe data with numbers, read common distributions, and explain what a hypothesis test and a correlation do and do not tell you.",
+    "topics": [
+     "Describing data: mean, median and spread",
+     "Probability basics",
+     "Distributions: the shapes data often takes",
+     "Ideas behind sampling and inference",
+     "Hypothesis testing in simple words (a p-value tells how surprising the data would be if nothing was going on)",
+     "Correlation is not cause",
+     "Linear regression: drawing the best straight line through points"
+    ],
+    "checkpoint": [
+     "Explain why the median can be better than the mean.",
+     "Explain what a small p-value does and does not mean, and give an example where two things move together but one does not cause the other.",
+     "Draw the best straight line through ten points and say what its slope means."
+    ],
     "time": "40 to 60 hours",
     "from": 40,
     "to": 60,
@@ -744,6 +1310,20 @@
    {
     "id": "data-visualization",
     "title": "Data Visualization",
+    "goal": "After this step you can pick the right chart for a question and make it with Matplotlib, Seaborn or Plotly.",
+    "topics": [
+     "Matplotlib: figures, axes and the basic charts",
+     "Seaborn: nicer statistical charts with less code",
+     "Plotly: charts you can hover over and zoom",
+     "Choosing a chart: line, bar, histogram, scatter",
+     "Labels, titles and colors that help the reader",
+     "Telling the story: one chart, one message"
+    ],
+    "checkpoint": [
+     "Make a line chart, a bar chart and a scatter plot of the same data set.",
+     "Explain why a chart needs a title and labelled axes.",
+     "Turn one chart into a short story with a clear message."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -757,6 +1337,20 @@
    {
     "id": "sql-databases",
     "title": "SQL & Databases",
+    "goal": "After this step you can write SQL to filter, join, group and summarise data from several tables.",
+    "topics": [
+     "Tables, rows and columns",
+     "SELECT with WHERE and ORDER BY",
+     "Joins: lining up rows from two tables that share a value",
+     "Grouping and counting with GROUP BY: one result row per group",
+     "Subqueries: a query inside a query",
+     "Views: saved queries"
+    ],
+    "checkpoint": [
+     "Write a join of two tables and explain what it returns.",
+     "Count rows per group with GROUP BY.",
+     "Count the rows in each group and keep only groups with more than ten rows."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -786,6 +1380,19 @@
    {
     "id": "business-analytics",
     "title": "Business Analytics",
+    "goal": "After this step you can choose useful KPIs, build a simple dashboard, and explain results to people who do not work with data.",
+    "topics": [
+     "KPIs (key numbers): the few numbers that show how a business is doing",
+     "Leading and lagging indicators",
+     "Choosing goals that are clear and measurable",
+     "Dashboards in Looker Studio or Power BI",
+     "How counting the wrong thing can mislead"
+    ],
+    "checkpoint": [
+     "Pick five KPIs for a shop that can each be counted from its sales table.",
+     "Build a dashboard with three charts and one filter.",
+     "Explain a result to someone who has never used data, in three sentences without technical words."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -799,6 +1406,20 @@
    {
     "id": "capstone-portfolio",
     "title": "Capstone & Portfolio",
+    "goal": "After this step you can run a full analysis from a question to a dashboard and present it on GitHub.",
+    "topics": [
+     "Choosing a question that matters",
+     "Finding data: Kaggle datasets and public APIs",
+     "Cleaning and exploring the data",
+     "Analysis and charts",
+     "A dashboard or report",
+     "Writing the story and sharing it, for example on GitHub"
+    ],
+    "checkpoint": [
+     "State your question in one sentence.",
+     "Show your steps from raw data to answer, so a reader can follow them and get the same answer.",
+     "Explain what a reader should do with your findings."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -818,6 +1439,22 @@
    {
     "id": "python-basics",
     "title": "Python Basics",
+    "goal": "After this step you can write Python programs with loops, functions, lists, dictionaries and classes.",
+    "topics": [
+     "Variables, numbers and text",
+     "Making decisions and repeating work",
+     "Functions",
+     "Lists, dictionaries and sets",
+     "Files and JSON",
+     "Errors and how to handle them",
+     "Classes and objects",
+     "Virtual environments and installing packages with pip"
+    ],
+    "checkpoint": [
+     "Write a function that counts the words in a text file.",
+     "Use a dictionary to count how often each word appears.",
+     "Explain what a class is with a small example."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -837,6 +1474,22 @@
    {
     "id": "data-handling",
     "title": "Data Handling",
+    "goal": "After this step you can load, clean and reshape data so that a model can learn from it.",
+    "topics": [
+     "NumPy arrays: fast lists of numbers",
+     "pandas tables (DataFrames)",
+     "Selecting, filtering and sorting",
+     "Split data into training and test sets before learning preprocessing settings; keep test data separate",
+     "Missing values and duplicates",
+     "Making new columns (features) from old ones",
+     "Turning words into numbers and putting numbers on one scale, so a model can use them",
+     "Combining and reshaping tables"
+    ],
+    "checkpoint": [
+     "Load a CSV file and show its summary numbers.",
+     "Fill missing values and explain your choice.",
+     "Create one new column that could help predict the answer."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -850,6 +1503,20 @@
    {
     "id": "eda-visualization",
     "title": "EDA & Visualization",
+    "goal": "After this step you can explore a data set with charts and find patterns, links between columns and unusual values.",
+    "topics": [
+     "EDA: exploring the data before modelling",
+     "Histograms and box plots to see spread and odd values",
+     "Scatter plots to see how two columns move together",
+     "Correlation: how strongly two columns move together",
+     "Seaborn and Plotly charts",
+     "Writing down what you found"
+    ],
+    "checkpoint": [
+     "Find a column with outliers using a chart.",
+     "Draw a scatter plot of two columns and describe the link.",
+     "Explain why a strong correlation does not prove one thing causes the other."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -863,6 +1530,22 @@
    {
     "id": "ml-algorithms",
     "title": "ML Algorithms",
+    "goal": "After this step you can train a basic model with scikit-learn and explain what kind of problem each common algorithm solves.",
+    "topics": [
+     "Learning from labelled examples (supervised) and from unlabelled data (unsupervised)",
+     "A little maths first: mean, spread and the idea of a straight-line fit",
+     "Linear regression: predicting a number",
+     "Logistic regression: predicting a category",
+     "Decision trees: a chain of yes-or-no questions",
+     "Clustering: finding groups without labels",
+     "Training data and test data",
+     "Overfitting: learning the examples too well"
+    ],
+    "checkpoint": [
+     "Train and test a model with scikit-learn.",
+     "Say whether a problem needs regression, classification or clustering.",
+     "Explain overfitting with an example."
+    ],
     "time": "50 to 80 hours",
     "from": 50,
     "to": 80,
@@ -874,21 +1557,22 @@
     }
    },
    {
-    "id": "deep-learning",
-    "title": "Deep Learning",
-    "time": "50 to 80 hours",
-    "from": 50,
-    "to": 80,
-    "unit": "hours",
-    "practice": [],
-    "project": {
-     "brief": "Train a small neural network to recognize handwritten digits using PyTorch and report its accuracy on test data.",
-     "stack": "Python / scikit-learn"
-    }
-   },
-   {
     "id": "model-evaluation",
     "title": "Model Evaluation",
+    "goal": "After this step you can pick the right score for a problem and tune a model without fooling yourself.",
+    "topics": [
+     "Accuracy and why it can mislead when one class is rare",
+     "Precision and recall in simple words",
+     "The confusion matrix: a table of right and wrong guesses",
+     "F1 score",
+     "Cross-validation: testing on several different splits of the data",
+     "Tuning settings (hyper-parameters) by trying many values: grid search and random search"
+    ],
+    "checkpoint": [
+     "Explain why 99% accuracy can still be a bad model.",
+     "Compute precision and recall from a confusion matrix.",
+     "Use grid search to pick a setting."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -900,8 +1584,48 @@
     }
    },
    {
+    "id": "deep-learning",
+    "title": "Deep Learning",
+    "goal": "After this step you can explain how a neural network learns and train a small one with PyTorch.",
+    "topics": [
+     "Neurons, layers and weights (the numbers the model adjusts)",
+     "Training: measuring how wrong the model is (the loss) and improving step by step",
+     "Tensors (grids of numbers), datasets and data loaders (a feeder that hands data to the model) in PyTorch",
+     "Building and training a model in PyTorch",
+     "Saving and loading a model",
+     "What CNNs and transformers are used for, in simple words"
+    ],
+    "checkpoint": [
+     "Train a small network on a simple data set in PyTorch.",
+     "Explain what a loss is and what training does to the weights.",
+     "Say in your own words which kind of data CNNs and transformers suit (our summary, not from the pages)."
+    ],
+    "time": "50 to 80 hours",
+    "from": 50,
+    "to": 80,
+    "unit": "hours",
+    "practice": [],
+    "project": {
+     "brief": "Train a small neural network to recognize handwritten digits using PyTorch and report its accuracy on test data.",
+     "stack": "Python / scikit-learn"
+    }
+   },
+   {
     "id": "deployment",
     "title": "Deployment",
+    "goal": "After this step you can wrap a model in a web API with FastAPI and run it in a Docker container.",
+    "topics": [
+     "Saving a trained model to a file",
+     "A web API with FastAPI: a route that takes input and returns a prediction",
+     "Checking the input with Pydantic, a tool that validates it",
+     "Docker: a sealed box that runs the app the same on any computer",
+     "Showing a demo on Hugging Face Spaces (check the free plan first)"
+    ],
+    "checkpoint": [
+     "Create an API route that returns a prediction.",
+     "Explain why a model needs input checks before predicting.",
+     "Build and run the API in a container."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -921,6 +1645,19 @@
    {
     "id": "monitoring-optimization",
     "title": "Monitoring & Tracking",
+    "goal": "After this step you can explain data drift, track experiments, and decide when a model needs retraining.",
+    "topics": [
+     "Data drift: live data starts to look different from training data",
+     "Concept drift: the link between input and answer changes",
+     "Ways to detect drift: summary numbers and statistical tests",
+     "Tracking experiments and models with MLflow",
+     "Deciding when to retrain"
+    ],
+    "checkpoint": [
+     "Explain data drift with a real-life example.",
+     "Log the settings and the score of two training runs with MLflow.",
+     "Say when you would retrain a model."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -934,6 +1671,20 @@
    {
     "id": "capstone-project",
     "title": "Capstone Project",
+    "goal": "After this step you can run a machine learning project from a question to a working demo and explain every choice you made.",
+    "topics": [
+     "Choosing a problem and a data set",
+     "Cleaning and exploring the data",
+     "Training and comparing models",
+     "Evaluating with the right scores",
+     "Putting the model behind an API or a demo",
+     "Writing up what worked and what did not"
+    ],
+    "checkpoint": [
+     "State your problem and your score in one sentence.",
+     "Show why you chose your final model.",
+     "Share a link or a short video of the working demo."
+    ],
     "time": "40 to 60 hours",
     "from": 40,
     "to": 60,
@@ -953,6 +1704,22 @@
    {
     "id": "big-o-arrays-hashing",
     "title": "Big O, Arrays and Hash Tables",
+    "goal": "After this step you can say how fast a piece of code grows as its input grows, and use arrays and hash tables to solve search and counting problems.",
+    "topics": [
+     "Big O: a way to describe how the work grows when the input grows",
+     "Common growth rates: O(1), O(log n), O(n), O(n log n) and O(n squared)",
+     "Arrays: items kept in order and reached by their position",
+     "Adding at the end of a growing array is cheap when you count over many additions (amortized O(1)); adding at the front costs O(n)",
+     "Hash tables: look up an item by its key, O(1) on average with a good hash function, but O(n) in the worst case",
+     "Collisions: two keys landing in the same slot, and why they slow a hash table down",
+     "Counting and grouping with a hash table",
+     "Sets: a hash table that keeps only keys, to ask \"have I seen this?\" quickly"
+    ],
+    "checkpoint": [
+     "Say the Big O of looking up a key in a hash table, on average and in the worst case, and what \"on average\" depends on.",
+     "Explain why adding to the front of a list of n items costs O(n) but adding to the end costs O(1) on average.",
+     "Solve \"find two numbers that add up to a target\" with a hash table."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -987,6 +1754,20 @@
    {
     "id": "two-pointers-sliding-window",
     "title": "Two Pointers and Sliding Window",
+    "goal": "After this step you can use two pointers and a sliding window to solve list problems in a single pass.",
+    "topics": [
+     "Two pointers: two positions that move through a list, often from both ends of a sorted list",
+     "Finding a pair with a given sum in a sorted list in one pass",
+     "A fixed-size window: slide it one step and update the answer instead of starting again",
+     "A window that grows and shrinks to keep a rule true",
+     "Why one pass is O(n): each pointer only moves in one direction and never goes back, so there are at most about n moves in total (our own reasoning)",
+     "The smallest value in every window with a double-ended queue (deque)"
+    ],
+    "checkpoint": [
+     "For the sorted list [1, 3, 4, 6, 8, 11] and the target 14, find the pair with two pointers (3 and 11, found in 2 steps).",
+     "Find the best sum of 3 neighbours in [2, 1, 5, 1, 3, 2] with a sliding window (the answer is 9).",
+     "Explain why a sliding window is faster than adding up every window from scratch."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -1026,6 +1807,21 @@
    {
     "id": "sorting-binary-search",
     "title": "Sorting and Binary Search",
+    "goal": "After this step you can choose a sorting method, explain what makes a sort stable, and use binary search correctly, including on an answer range.",
+    "topics": [
+     "Sorting: a method that only compares items cannot beat O(n log n) on average (counting sort and radix sort do not compare, so they can)",
+     "Merge sort: O(n log n) in every case, stable, needs extra memory. Heapsort: O(n log n) in every case, works in place, not stable",
+     "Quicksort: O(n log n) on average but O(n squared) in the worst case, and the usual in-place version is not stable. Insertion sort: O(n) at best (when the list is already sorted), O(n squared) on average, stable",
+     "Stable sort: items with equal keys keep their original order",
+     "Binary search: halve the search area each time, but the list must be sorted first and must allow jumping to the middle (an array, not a linked list)",
+     "With repeated values, finding the first or the last match needs a small change",
+     "Binary search on the answer: searching a range of possible answers instead of a list"
+    ],
+    "checkpoint": [
+     "Say why binary search needs a sorted list.",
+     "Explain the difference between a stable and an unstable sort with a small example.",
+     "Say the most rounds binary search needs for 1,000,000 items (20 rounds, if each round looks at the middle item once)."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -1060,6 +1856,22 @@
    {
     "id": "linked-lists-stacks-queues",
     "title": "Linked Lists, Stacks and Queues",
+    "goal": "After this step you can build and use a linked list, a stack and a queue, and say what each one costs.",
+    "topics": [
+     "Linked list: nodes that each point to the next one",
+     "A linked list is fast to add at the front (O(1)) but slow to reach a position (O(n))",
+     "A cycle in a linked list (a node that points back to an earlier one) makes a loop run forever, so check for it",
+     "Stack: last in, first out (push and pop at one end); taking from an empty stack or queue is called underflow",
+     "Queue: first in, first out (add at the back, remove from the front, both O(1) when it keeps track of its back end or uses a deque)",
+     "Python's deque: fast at both ends, unlike removing from the front of a list (O(n))",
+     "A stack that also knows its smallest item in O(1)",
+     "Fast and slow pointers: one pointer moves two steps while another moves one, and they meet if there is a cycle"
+    ],
+    "checkpoint": [
+     "Push 1, 2, 3 and show that a stack gives them back as 3, 2, 1 while a queue gives 1, 2, 3.",
+     "Reverse a linked list.",
+     "Explain why a Python list is a poor queue and what to use instead."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -1097,8 +1909,71 @@
     }
    },
    {
+    "id": "recursion-backtracking",
+    "title": "Recursion and Backtracking",
+    "goal": "After this step you can write a recursive function and use backtracking to list all the ways to build an answer.",
+    "topics": [
+     "Recursion: a function that calls itself on a smaller problem, with a base case that stops it",
+     "Backtracking: build the answer one choice at a time and drop a choice as soon as it cannot lead to a solution",
+     "Checking early (pruning) can save a lot of work, but the worst case stays the same",
+     "If nothing is ever rejected, backtracking is just trying everything (brute force)",
+     "Total work is roughly the number of choices in the search tree times the work per choice"
+    ],
+    "checkpoint": [
+     "List every subset of [1, 2, 3] with recursion (there are 8).",
+     "Explain what pruning means and why it helps.",
+     "Write the base case before the recursive case for every recursive function you write."
+    ],
+    "time": "15 to 25 hours",
+    "from": 15,
+    "to": 25,
+    "unit": "hours",
+    "practice": [
+     {
+      "kind": "sheet",
+      "target": "neetcode-150:backtracking",
+      "label": "NeetCode 150: Backtracking"
+     },
+     {
+      "kind": "sheet",
+      "target": "blind-75:backtracking",
+      "label": "Blind 75: Backtracking"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-a2z:recursion",
+      "label": "Striver A2Z: Recursion"
+     },
+     {
+      "kind": "sheet",
+      "target": "striver-sde:recursion-and-backtracking",
+      "label": "Striver SDE: Recursion and backtracking"
+     }
+    ],
+    "project": {
+     "brief": "Write a program that places 8 queens on a chess board so that none attacks another, using backtracking, and count how many solutions it finds.",
+     "stack": "Python or Java"
+    }
+   },
+   {
     "id": "trees-bst",
     "title": "Trees and Binary Search Trees",
+    "goal": "After this step you can walk through a tree in four ways and use a binary search tree, and you know when it becomes slow.",
+    "topics": [
+     "Trees: a root, parents and children",
+     "Walking through a tree: pre-order, in-order, post-order (depth first) and level order (breadth first)",
+     "Depth first uses a stack or recursion; level order uses a queue",
+     "Binary search tree: every key in the left part of a node is smaller and every key in the right part is bigger, not only its direct children",
+     "A binary search tree searches in O(log n) on average (for example when keys arrive in random order) but O(n) in the worst case; walking it in-order gives the keys sorted",
+     "Inserting keys in sorted order turns the tree into a linked list",
+     "Balanced trees keep the height at O(log n)",
+     "Very deep recursion can hit a language's depth limit"
+    ],
+    "checkpoint": [
+     "Write the four walking orders for a small tree you draw yourself.",
+     "Explain why inserting 1, 2, 3, 4, 5 in that order into a binary search tree gives a tall tree like a linked list.",
+     "Check whether a tree is a valid binary search tree."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -1143,6 +2018,22 @@
    {
     "id": "heaps-tries",
     "title": "Heaps and Tries",
+    "goal": "After this step you can use a heap as a priority queue and a trie to store and search words.",
+    "topics": [
+     "Binary heap: a tree filled level by level from the left where no parent is larger than its children (a min-heap)",
+     "Finding the smallest is O(1); removing it is O(log n); adding is O(log n) in the worst case",
+     "Building a heap from a list is O(n); adding the items one by one is O(n log n)",
+     "A heap is not sorted, so searching for any value is still O(n)",
+     "Priority queue: serve the most important item first, and the heap is the usual way to build one",
+     "Python's heapq and Java's PriorityQueue",
+     "Trie: a tree where each step is one letter",
+     "Finding a word in a trie takes O(m) for a word of m letters, if each letter's link can be found in constant time, but its links can use a lot of memory"
+    ],
+    "checkpoint": [
+     "Explain why the smallest item of a min-heap is found in O(1) but a value in the middle takes O(n).",
+     "Use a heap to find the 3 largest numbers in a list.",
+     "Build a trie with insert and search for words."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -1185,42 +2076,23 @@
     }
    },
    {
-    "id": "recursion-backtracking",
-    "title": "Recursion and Backtracking",
-    "time": "15 to 25 hours",
-    "from": 15,
-    "to": 25,
-    "unit": "hours",
-    "practice": [
-     {
-      "kind": "sheet",
-      "target": "neetcode-150:backtracking",
-      "label": "NeetCode 150: Backtracking"
-     },
-     {
-      "kind": "sheet",
-      "target": "blind-75:backtracking",
-      "label": "Blind 75: Backtracking"
-     },
-     {
-      "kind": "sheet",
-      "target": "striver-a2z:recursion",
-      "label": "Striver A2Z: Recursion"
-     },
-     {
-      "kind": "sheet",
-      "target": "striver-sde:recursion-and-backtracking",
-      "label": "Striver SDE: Recursion and backtracking"
-     }
-    ],
-    "project": {
-     "brief": "Write a program that places 8 queens on a chess board so that none attacks another, using backtracking, and count how many solutions it finds.",
-     "stack": "Python or Java"
-    }
-   },
-   {
     "id": "graphs-traversal",
     "title": "Graphs: Walking Through a Network",
+    "goal": "After this step you can store a graph and walk through it with breadth-first and depth-first search.",
+    "topics": [
+     "Graphs: nodes (vertices) and the lines between them (edges)",
+     "Storing a graph: an adjacency list (for each node, the list of its neighbours) or an adjacency matrix (a table of yes or no for every pair of nodes)",
+     "Breadth-first search (BFS): layer by layer with a queue, and when edges have no costs it finds the fewest edges from the start to every node",
+     "Depth-first search (DFS): as deep as possible, then step back, with a stack or recursion",
+     "Both take O(V + E) with an adjacency list: the number of nodes plus the number of edges (with an adjacency matrix it is O(V squared))",
+     "Keep a record of visited nodes, or a cycle makes DFS run forever",
+     "Topological sort: ordering tasks so each one comes after the ones it needs, only possible for a directed graph with no cycle, in O(V + E)"
+    ],
+    "checkpoint": [
+     "In the graph A-B, A-C, B-D, C-D, D-E, say the fewest edges from A to E (3) and find it with BFS.",
+     "Explain why DFS needs a visited record.",
+     "Say in which cases a topological order cannot exist."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -1255,6 +2127,21 @@
    {
     "id": "graphs-shortest-paths-mst",
     "title": "Graphs: Shortest Paths and Spanning Trees",
+    "goal": "After this step you can find cheapest routes with Dijkstra, join groups with union-find, and build a minimum spanning tree with Kruskal.",
+    "topics": [
+     "Weighted graphs: each edge has a cost",
+     "Dijkstra's algorithm: the cheapest route from one start to every node, when no edge cost is negative",
+     "Dijkstra with a binary heap takes O((E + V) log V)",
+     "With a negative edge cost Dijkstra can give a wrong answer; Bellman-Ford handles negative costs but takes O(V times E)",
+     "Union-find (disjoint sets): quickly tell whether two items are in the same group; with both path compression and union by rank each step costs amortized O(alpha(n)), a number that grows so slowly that it stays tiny in practice",
+     "Minimum spanning tree: connect all nodes of an undirected graph with the smallest total cost (this is not the same as the shortest routes)",
+     "Kruskal's algorithm: take the cheapest edge that does not make a cycle, O(E log E) because of the sorting"
+    ],
+    "checkpoint": [
+     "Explain why Dijkstra needs non-negative edge costs.",
+     "Say what union-find does and why path compression and union by rank make it fast.",
+     "Explain why Kruskal sorts the edges first and skips an edge that makes a cycle."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -1284,6 +2171,20 @@
    {
     "id": "greedy-intervals",
     "title": "Greedy Methods and Intervals",
+    "goal": "After this step you can tell when a greedy method is correct, and solve interval problems such as scheduling the most meetings.",
+    "topics": [
+     "Greedy: pick the best-looking choice at each step and never change your mind",
+     "A greedy method is not always correct, so it needs a reason (a proof)",
+     "Fractional knapsack is solved exactly by greedy; 0/1 knapsack is not",
+     "Interval scheduling: to fit the most meetings, always pick the meeting that ends first among those that do not overlap the ones already chosen (O(n log n) with the sorting)",
+     "Other rules such as earliest start or shortest meeting can give a wrong answer",
+     "Merging overlapping intervals (this one sorts by start time, a different order)"
+    ],
+    "checkpoint": [
+     "For the meetings (1,4), (3,5), (0,6), (5,7), (3,9), (5,9), (6,10), (8,11), (8,12), (2,14), (12,16), pick the most meetings that do not overlap with \"earliest end first\" (4 meetings: (1,4), (5,7), (8,11), (12,16)).",
+     "Find a small example where \"pick the shortest meeting first\" gives a worse answer.",
+     "Explain in one sentence why a greedy method needs a reason and not only a hunch."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -1323,6 +2224,22 @@
    {
     "id": "dynamic-programming",
     "title": "Dynamic Programming",
+    "goal": "After this step you can spot a dynamic programming problem, write it with memoization or a table, and say its cost.",
+    "topics": [
+     "Dynamic programming: split a problem into smaller problems that repeat, and solve each only once",
+     "It needs two things: the best answer is built from best answers of smaller parts, and the small problems repeat",
+     "Merge sort and quicksort are not dynamic programming because their small problems do not repeat",
+     "Memoization: remember each answer so the same call is never computed twice (only for functions that always give the same answer for the same input)",
+     "Top down (with memoization) and bottom up (filling a table)",
+     "Example: Fibonacci takes O(n) time with memoization and can use O(1) space bottom up",
+     "0/1 knapsack: O(n times W) time, which grows with the capacity W, not only with the number of items",
+     "Longest increasing subsequence: O(n squared) with a simple table, O(n log n) with a binary-search method"
+    ],
+    "checkpoint": [
+     "Count the calls for Fibonacci of 30: about 2.7 million without memoization (2,692,537) and 59 with it (counting every call in one simple version).",
+     "Explain why 0/1 knapsack with 100 items and capacity 10,000 needs a table of about 1,000,000 cells (items times capacity).",
+     "Say the two properties a problem needs before dynamic programming works."
+    ],
     "time": "40 to 60 hours",
     "from": 40,
     "to": 60,
@@ -1362,6 +2279,20 @@
    {
     "id": "bit-manipulation-math",
     "title": "Bit Tricks and Maths",
+    "goal": "After this step you can use bit operations to solve small problems, for example checking whether a number is a power of two.",
+    "topics": [
+     "Bits: a number written with ones and zeros",
+     "AND, OR, XOR and NOT on bits, and shifting bits left or right",
+     "Most bit operations take a single step on most processors for fixed-size numbers (Python numbers can grow, and its NOT gives minus x minus 1)",
+     "Test for a power of two: x is greater than zero and (x AND (x minus 1)) is zero (in Java and C a plain \"not zero\" test also lets the most negative number through)",
+     "Why x AND (x minus 1) clears the lowest one bit",
+     "Basic number problems: remainder, greatest common divisor, prime numbers"
+    ],
+    "checkpoint": [
+     "Use the power-of-two test on 1024 (yes) and 12 (no) by hand, and say why x AND (x minus 1) removes the lowest one bit.",
+     "Write 13 in bits (1101) and say what 13 AND 12 gives (1100, which is 12).",
+     "Explain why XOR of a number with itself is zero."
+    ],
     "time": "10 to 20 hours",
     "from": 10,
     "to": 20,
@@ -1396,6 +2327,21 @@
    {
     "id": "interview-practice",
     "title": "Putting It Together: Interview Practice",
+    "goal": "After this step you can pick the right method for a new problem, explain your thinking aloud, and say the time and space cost of your answer.",
+    "topics": [
+     "Read the problem, then write a tiny example and its answer before you code",
+     "Match the problem to a method: hash table, two pointers, binary search, tree, graph, greedy or dynamic programming",
+     "Start with a simple answer, then improve it",
+     "Say the time and space cost of your answer in Big O",
+     "Test your code on the small example and on tricky inputs (empty, one item, repeated items)",
+     "Keep notes on the problems you struggled with and repeat them after a few days",
+     "Also say the extra memory your answer uses (space cost)"
+    ],
+    "checkpoint": [
+     "Solve a problem you have not seen, out loud, in 30 minutes, and state its Big O.",
+     "Name the method you chose and why it fits the problem.",
+     "Find a case where your answer fails and fix it."
+    ],
     "time": "40 to 80 hours",
     "from": 40,
     "to": 80,
@@ -1431,6 +2377,21 @@
    {
     "id": "java-language-basics",
     "title": "Java Language Basics",
+    "goal": "After this step you can write Java programs with classes, interfaces and inheritance, and explain the main ideas of object-oriented programming.",
+    "topics": [
+     "Language basics: variables, types, operators and control flow",
+     "Object-oriented ideas: objects, classes, inheritance and interfaces",
+     "Classes and objects: fields, methods and constructors",
+     "Interfaces and inheritance: sharing behaviour between classes",
+     "Numbers and strings",
+     "Packages: grouping classes",
+     "Annotations: notes you attach to code for tools to read"
+    ],
+    "checkpoint": [
+     "Write a class with fields, a constructor and two methods, and create two objects from it.",
+     "Explain in your own words the difference between a class and an interface.",
+     "Write two classes where one inherits from the other and one method is overridden."
+    ],
     "time": "40 to 60 hours",
     "from": 40,
     "to": 60,
@@ -1455,6 +2416,21 @@
    {
     "id": "java-collections-generics-exceptions",
     "title": "Collections, Generics and Exceptions",
+    "goal": "After this step you can choose the right collection, write code that works with many types, and handle errors with exceptions.",
+    "topics": [
+     "The collections framework: interfaces, implementations and algorithms",
+     "ArrayList: get and set take constant time, add takes constant time on average, most other operations are linear",
+     "HashMap: get and put take constant time on average, as long as the hash function spreads keys well; it is not safe to share between threads without care",
+     "Sets and maps, and why HashMap needs equals and hashCode to work",
+     "Streams: processing a collection step by step with small functions called lambdas",
+     "Generics: one class or method that works for many types, with bounds and wildcards",
+     "Exceptions: try, catch, finally and try-with-resources, and the difference between checked and unchecked exceptions"
+    ],
+    "checkpoint": [
+     "Count how often each word appears in a text with a HashMap.",
+     "Write a generic method that finds the biggest item in any list of numbers.",
+     "Explain what try-with-resources does and why it is useful."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -1474,6 +2450,21 @@
    {
     "id": "java-concurrency-basics",
     "title": "Concurrency Basics",
+    "goal": "After this step you can start threads, protect shared data with synchronization, and explain deadlock.",
+    "topics": [
+     "Processes and threads",
+     "Starting a thread and waiting for it to finish",
+     "Interference: two threads changing the same data at the same time",
+     "Synchronization: letting one thread at a time use shared data",
+     "Deadlock, starvation and livelock: ways threads can get stuck",
+     "Executors and thread pools: reusing threads instead of creating new ones",
+     "Concurrent collections"
+    ],
+    "checkpoint": [
+     "Write two threads that add to the same counter and show that the result can be wrong without synchronization.",
+     "Fix it with synchronization.",
+     "Explain how two threads can deadlock with two locks."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -1508,6 +2499,21 @@
    {
     "id": "build-tools-junit",
     "title": "Maven and JUnit",
+    "goal": "After this step you can create a Maven project, add libraries to it, build it and write automatic tests with JUnit.",
+    "topics": [
+     "What Maven does: builds a project from one file called pom.xml (install a JDK and Maven first)",
+     "The standard folder layout of a Maven project",
+     "Compiling, testing and packaging with Maven commands",
+     "Adding libraries as dependencies",
+     "JUnit: the platform and the Jupiter way of writing tests (the current JUnit needs Java 17 or later)",
+     "Writing a test: annotations and assertions, including checking that an error is thrown",
+     "Setup and cleanup methods"
+    ],
+    "checkpoint": [
+     "Create a Maven project, add one dependency and run its tests from the command line.",
+     "Write three JUnit tests for one class, including one that expects an error.",
+     "Explain what the pom.xml file is for."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -1521,6 +2527,21 @@
    {
     "id": "spring-core-boot",
     "title": "Spring Core and Spring Boot",
+    "goal": "After this step you can create a Spring Boot project, explain what dependency injection is, and run your app.",
+    "topics": [
+     "Inversion of control: the container creates your objects and hands them what they need",
+     "Dependency injection: a class lists what it needs and Spring supplies it",
+     "Beans: objects that the Spring container creates and manages",
+     "Spring Boot: stand-alone apps that you just run, with a server built in",
+     "Starters and auto-configuration: ready-made settings so you write less setup",
+     "Spring Initializr: a tool that generates a starter project",
+     "Production features: health checks, metrics and settings kept outside the code"
+    ],
+    "checkpoint": [
+     "Explain dependency injection to a friend in three sentences.",
+     "Generate a Spring Boot project (it needs Java 17 or later), run it and see it start in the console.",
+     "Say what auto-configuration does and why it helps."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -1534,6 +2555,21 @@
    {
     "id": "spring-rest-api",
     "title": "Building a REST API with Spring MVC",
+    "goal": "After this step you can build a REST API with Spring Boot that returns JSON and uses the right status codes.",
+    "topics": [
+     "Spring MVC: controllers receive web requests",
+     "@RestController, @GetMapping and @RequestMapping: which code answers which address",
+     "Reading input with @RequestParam",
+     "Creating, changing and deleting with @PostMapping, @PutMapping, @DeleteMapping, @PathVariable and @RequestBody",
+     "A record or class that becomes the JSON answer",
+     "Running the service as one executable JAR and testing it",
+     "HTTP methods and status codes: 200, 201, 204, 400 and 404"
+    ],
+    "checkpoint": [
+     "Create a route that returns a greeting as JSON and takes an optional name.",
+     "Add create, read, update and delete routes with correct status codes.",
+     "Test each route with curl or Postman."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -1553,6 +2589,21 @@
    {
     "id": "spring-data-jpa",
     "title": "Databases with Spring Data JPA",
+    "goal": "After this step you can save and read data from a database with Spring Data JPA and set up a database connection.",
+    "topics": [
+     "Settings for a database connection (spring.datasource) and an embedded test database",
+     "Connection pooling: reusing database connections",
+     "Entities: a Java class that becomes a table (@Entity, @Id, @GeneratedValue)",
+     "Repositories: ready-made save, find and delete methods",
+     "Query methods: write a method name such as findByLastName and Spring builds the query",
+     "Transactions: a group of changes that all happen or none happen",
+     "Keeping data after a restart: the small built-in test database lives in memory, so use a file-based or server database such as MySQL or PostgreSQL"
+    ],
+    "checkpoint": [
+     "Create an entity and a repository and save three records.",
+     "Write a query method that finds records by one field.",
+     "Explain what a transaction guarantees."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -1587,6 +2638,21 @@
    {
     "id": "spring-security",
     "title": "Securing the App with Spring Security",
+    "goal": "After this step you can add sign-in to a Spring Boot app, store passwords safely and explain what the main protections do.",
+    "topics": [
+     "Authentication: proving who you are",
+     "Authorization: deciding what each person may do",
+     "Form login and a login page",
+     "Passwords: store only a hash, a one-way fingerprint that cannot be turned back (for example BCrypt), never the password",
+     "A security filter chain: which addresses are public and which need a login",
+     "CSRF and security headers: protections Spring Security turns on for you",
+     "OAuth 2.0 login (for example \"Sign in with Google\") and tokens: Spring Security supports them, and you only need to know where they fit"
+    ],
+    "checkpoint": [
+     "Protect one route so that only a signed-in user can open it.",
+     "Explain why passwords are stored as a BCrypt hash and not as plain text.",
+     "Say what CSRF is in one sentence and what protects you."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -1606,6 +2672,21 @@
    {
     "id": "spring-testing-docker",
     "title": "Testing and Packaging with Docker",
+    "goal": "After this step you can write tests for a Spring Boot app and run it in a Docker container.",
+    "topics": [
+     "spring-boot-starter-test: JUnit, AssertJ and Hamcrest in one package",
+     "Testing a Spring Boot application: starting it in a test and calling your routes",
+     "Testcontainers: tests that start real services in containers (Docker must be installed and running)",
+     "A Dockerfile for a Spring Boot app",
+     "Running as a non-root user in a container",
+     "Layered JARs for faster image builds",
+     "Spring profiles: different settings for different places"
+    ],
+    "checkpoint": [
+     "Write a test that calls one route and checks the answer.",
+     "Build a Docker image of the app and run it.",
+     "Explain what a Spring profile is for."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -1625,6 +2706,22 @@
    {
     "id": "git-github",
     "title": "Git and GitHub",
+    "goal": "After this step you can save your work with Git, work on branches, and share code on GitHub.",
+    "topics": [
+     "Setting up Git and the basic commands: init, add, commit, clone, pull and push",
+     "Git keeps snapshots of your project, not just differences",
+     "Nearly every Git action happens on your own computer",
+     "The three states of a file: modified, staged and committed",
+     "Branches: working on a change without touching the main code",
+     "Remote repositories and GitHub (you need a free account)",
+     "Merging and fixing conflicts",
+     ".gitignore (files Git should skip) and pull requests (asking to merge your branch)"
+    ],
+    "checkpoint": [
+     "Create a repository, make three commits and read the history.",
+     "Create a branch, change a file and merge it back.",
+     "Push a project to GitHub."
+    ],
     "time": "15 to 25 hours",
     "from": 15,
     "to": 25,
@@ -1638,6 +2735,22 @@
    {
     "id": "linux-command-line",
     "title": "Linux and the Command Line",
+    "goal": "After this step you can move around a Linux system, work with files and permissions, and manage programs from the command line.",
+    "topics": [
+     "The command line and moving around the file system",
+     "Reading and searching text files",
+     "Users and file permissions",
+     "Processes: seeing what is running and stopping it",
+     "Installing software with a package manager",
+     "Simple shell scripts: running several commands from a file",
+     "Looking things up: the manual pages, and the logs where programs write what they do",
+     "Getting a Linux system to practise on: a virtual machine, or the Windows Subsystem for Linux on Windows"
+    ],
+    "checkpoint": [
+     "Create a folder, a file and a script, and make the script runnable.",
+     "Find a process and stop it.",
+     "Read the manual page of a command you have not used before."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -1657,6 +2770,22 @@
    {
     "id": "networking-for-devops",
     "title": "Networking for DevOps",
+    "goal": "After this step you can explain addresses, ports, DNS and HTTP, and the parts of a cloud network.",
+    "topics": [
+     "IP addresses, subnets (smaller networks inside a network) and private ranges",
+     "Ports and sockets: the numbered doors a program listens on",
+     "DNS: how a name becomes an address",
+     "HTTP and HTTPS",
+     "Load balancers, proxies and CDNs (spreading traffic over servers, hiding servers, and keeping copies of files near users)",
+     "A cloud network (a VPC): subnets, routing and gateways",
+     "Firewalls and security groups: rules about who may connect",
+     "Finding network problems with simple tools such as ping, curl and dig"
+    ],
+    "checkpoint": [
+     "Say which of 10.0.0.5 and 172.32.0.1 is a private address and why.",
+     "Explain what a subnet is and what a route does.",
+     "Follow a request from a browser to a server through DNS, a load balancer and an app."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -1696,6 +2825,21 @@
    {
     "id": "docker-containers",
     "title": "Docker and Containers",
+    "goal": "After this step you can build an image, run containers with ports, volumes and settings, and start several containers together with Compose.",
+    "topics": [
+     "What Docker is: a platform for building, shipping and running apps in containers (install Docker Desktop or Docker Engine first)",
+     "Images and containers",
+     "docker run: ports, volumes, environment settings and background mode",
+     "Building images with a Dockerfile and BuildKit",
+     "Docker Compose: several containers described in one file",
+     "Looking inside a running container: docker ps, logs and exec",
+     "Registries: storing images on a service such as Docker Hub"
+    ],
+    "checkpoint": [
+     "Run a container in the background with a port linked to your computer.",
+     "Write a Dockerfile for a small app and build it.",
+     "Start an app and its database together with Compose."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -1715,6 +2859,22 @@
    {
     "id": "ci-cd-github-actions",
     "title": "Automatic Checks with GitHub Actions",
+    "goal": "After this step you can write a workflow that builds and tests your code automatically on every push.",
+    "topics": [
+     "Continuous integration and delivery (CI/CD): building, testing and releasing automatically",
+     "Workflows: files in .github/workflows that describe the steps",
+     "Events: what starts a workflow",
+     "Jobs and steps, and running them on a runner",
+     "Reusing ready-made actions",
+     "Building and testing code in your language",
+     "Reading the results on the Actions tab",
+     "Secrets and limits: keep passwords out of workflow files, and check the free minutes on the pricing page"
+    ],
+    "checkpoint": [
+     "Write a workflow that runs your tests on every push.",
+     "Make a test fail on purpose and find it in the Actions tab.",
+     "Explain what an event, a job and a runner are."
+    ],
     "time": "20 to 30 hours",
     "from": 20,
     "to": 30,
@@ -1728,6 +2888,21 @@
    {
     "id": "cloud-aws-basics",
     "title": "Cloud Basics with AWS",
+    "goal": "After this step you can explain the main AWS services (IAM, EC2 and S3), start a server, store files and control who can do what.",
+    "topics": [
+     "IAM: who you are (authentication) and what you may do (authorization)",
+     "EC2: a rented computer in the cloud with machine images (AMIs), instance types, disks, key pairs and security groups",
+     "S3: storage in buckets that hold objects",
+     "How cloud services are billed: pay for what you use; the free offer for new accounts changes, so read the current pricing page",
+     "Regions: where in the world your service runs",
+     "Root user and other identities: do daily work with a separate user, and give each person or program only what it needs",
+     "Billing alerts: set a budget alert before you start anything"
+    ],
+    "checkpoint": [
+     "Say the difference between authentication and authorization.",
+     "Explain what a security group does for an EC2 server.",
+     "Say how you would avoid a surprise bill when you practise."
+    ],
     "time": "30 to 45 hours",
     "from": 30,
     "to": 45,
@@ -1741,6 +2916,22 @@
    {
     "id": "kubernetes-terraform",
     "title": "Kubernetes and Terraform",
+    "goal": "After this step you can explain what Kubernetes and Terraform are for and run a first example of each.",
+    "topics": [
+     "Why Kubernetes exists: running and managing many containers",
+     "What Kubernetes is not: not a platform that builds your code and not a bundled database",
+     "The Kubernetes basics tutorial: create a cluster (a practice cluster on your own computer), deploy an app, explore it, open it to the world, scale it and update it",
+     "The main objects: a Pod runs your containers, a Deployment keeps them running, a Service gives them one address",
+     "Infrastructure as code: describing servers and networks in files",
+     "Terraform: write the plan, check it and apply it",
+     "State: how Terraform remembers what it built",
+     "Cleaning up: terraform destroy removes what Terraform built"
+    ],
+    "checkpoint": [
+     "Explain in your own words why a team would use Kubernetes.",
+     "Deploy and scale a sample app in a practice cluster.",
+     "Say what the three steps write, plan and apply do in Terraform."
+    ],
     "time": "50 to 80 hours",
     "from": 50,
     "to": 80,
@@ -1754,6 +2945,21 @@
    {
     "id": "monitoring-reliability",
     "title": "Monitoring and Reliability",
+    "goal": "After this step you can collect metrics, draw a dashboard, and explain what monitoring, alerts and post-incident reviews are for.",
+    "topics": [
+     "Metrics: numbers that describe your system over time",
+     "Prometheus: an open-source monitoring and alerting toolkit",
+     "A pull model: Prometheus asks each service for its numbers over HTTP, so your app must serve a page of numbers (a library helps)",
+     "PromQL: the query language for asking Prometheus for numbers",
+     "Grafana: dashboards built on top of data sources such as Prometheus",
+     "Alerts: telling a person when something needs attention",
+     "Logs: treating what a program prints as a stream of events"
+    ],
+    "checkpoint": [
+     "Run Prometheus and Grafana and show one number on a dashboard.",
+     "Explain the difference between a metric and a log line.",
+     "Write what you would check first when a chart goes red."
+    ],
     "time": "25 to 40 hours",
     "from": 25,
     "to": 40,
@@ -1767,6 +2973,21 @@
    {
     "id": "devops-capstone",
     "title": "Capstone: Ship an App End to End",
+    "goal": "After this step you can take an app from code on GitHub to a running, tested and monitored service, and explain each part.",
+    "topics": [
+     "The twelve-factor app: twelve simple rules for apps that are easy to run and move",
+     "Codebase, dependencies and config kept in the right places",
+     "Backing services such as databases treated as attached resources",
+     "Build, release and run as separate stages",
+     "Processes, port binding, concurrency and disposability",
+     "Logs and admin tasks",
+     "Writing down how it works so someone else can run it"
+    ],
+    "checkpoint": [
+     "Name at least six of the twelve factors and say what each one asks of your app.",
+     "Show your pipeline from a code push to a running service.",
+     "Show a dashboard and say what you would check first if it went red."
+    ],
     "time": "40 to 70 hours",
     "from": 40,
     "to": 70,

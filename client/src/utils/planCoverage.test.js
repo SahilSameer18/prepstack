@@ -7,6 +7,36 @@ import {
 } from './planBuilder';
 import { coverageLists, formatPlanDate, formatPlanMinutes } from './planFormat';
 import { weekSummary } from './studyPlan';
+import { MemoryRouter } from 'react-router-dom';
+import PlanPreview from '../components/plan/PlanPreview';
+import PlanBuilderForm from '../components/plan/PlanBuilderForm';
+import StudyStart from '../components/plan/StudyStart';
+import choices from '../data/planChoices.json';
+
+describe('Phase 1 clear previews and roadmap tasks', () => {
+  it('explains an unsaveable preview and lets an existing user check saved progress', () => {
+    const builder = { valid:true, previewReady:true, options:choices, errors:{}, userId:null,
+      preview:{data:{coverage:{plannedMinutes:600,syllabusMinutes:600,leftOutCount:0},week1:{items:[]},deadline:'2027-01-01',finishDate:null,notices:[],pace:'standard',saveEligibility:{allowed:false,reason:'This plan exceeds the item limit.'}}} };
+    const markup = renderToStaticMarkup(createElement(MemoryRouter,null,createElement(PlanPreview,{builder})));
+    expect(markup).toContain('This plan exceeds the item limit.');
+    expect(markup).toContain('Sign in to check your saved progress');
+    expect(markup).not.toContain('Your material fits before');
+  });
+  it('removes the ineffective style choice from role plans and normalizes shared old settings', () => {
+    const settings = {...defaultSettings(),goalType:'role',style:'mixed'};
+    const markup = renderToStaticMarkup(createElement(PlanBuilderForm,{settings,options:choices,errors:{},onChange:()=>{},onGenerate:()=>{}}));
+    expect(markup).not.toContain('How do you like to study?');
+    expect(markup).toContain('Roadmap topics stay in order');
+    expect(planBody(settings).style).toBe('one-topic');
+    expect(planBody({...settings,goalType:'placements'}).style).toBe('mixed');
+  });
+  it('shows the milestone objective in task detail without adding controls to Today', () => {
+    const item = {id:'a',key:'a',type:'roadmap',ref:'roadmap:frontend',title:'Practise: DNS',objective:'Work through a small example from the linked material.'};
+    const markup = renderToStaticMarkup(createElement(MemoryRouter,null,createElement(StudyStart,{item,plan:{items:[item]},onBack:()=>{},onFinish:()=>{}})));
+    expect(markup).toContain(item.objective);
+    expect(markup).toContain('Complete this task');
+  });
+});
 
 describe('plan dates and times in plain words', () => {
   it('shows the weekday and date, with the year when asked', () => {

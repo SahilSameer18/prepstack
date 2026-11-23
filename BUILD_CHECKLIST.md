@@ -1,6 +1,6 @@
 # PrepStack build checklist
 
-The order of work, from now on. **Tick a box (`[x]`) when a feature is finished, tested, and the owner has the `git add` and commit commands.** The owner decides the order; an agent recommends and asks before changing it. Status and details: `PROJECT_STATUS.md`. Last updated 16 Nov 2026.
+The order of work, from now on. **Tick a box (`[x]`) when a feature is finished, tested, and the owner has the `git add` and commit commands.** The owner decides the order; an agent recommends and asks before changing it. Status and details: `PROJECT_STATUS.md`. Last updated 23 Nov 2026.
 
 Items marked **optional** are the owner's call: whether and when. Sections 1 to 8 are the committed order, apart from those. Sections 9 to 17 are later work from the existing plans: each starts only when the owner says so, and may be reordered.
 
@@ -32,7 +32,7 @@ Decided 16 Nov: when a waiting task is bigger than the day, Today shows the smal
 
 ## 2. Close the testing gap
 
-- [ ] 2.1 A random-walk test through the API: ticks, reviews, skips, moves, pause and resume, report imports, substitutes; no 500 answers and the plan rules hold after every step
+- [x] 2.1 A random-walk test through the API: ticks, reviews, skips, moves, pause and resume, report imports, substitutes; no 500 answers and the plan rules hold after every step. Implemented 23 Nov 2026 in the existing `plan-api.test.js`: 314 requests across four seeded personas, with assertions after each action. Caught and fixed completed split parts being skipped along with the unfinished remainder.
 
 ## 3. DSA pattern lessons (optional: the owner decides whether and when; `docs/plans/DSA_LESSONS_PLAN.md`)
 

@@ -42,7 +42,7 @@ function restorePartialRemainders(items, leftOut = []) {
     if (!parts.every((item) => item.doneAt && !item.result && !item.reviewLadder && !item.unscheduledMinutes)) continue;
     if (!parts.some((item) => item.part.of > parts.length)) continue;
     const first = parts[0];
-    const omitted = leftOut.find((item) => item.ref === first.ref && (item.link || null) === (first.link || null) && (!item.stepId || item.stepId === first.stepId));
+    const omitted = leftOut.find((item) => item.ref === first.ref && (item.link || null) === (first.link || null) && (!item.stepId || item.stepId === first.stepId) && (item.milestoneId || null) === (first.milestoneId || null));
     if (omitted?.plannedMinutes > 0) remainders.set(first.key, omitted.plannedMinutes);
   }
   return items.map((item) => remainders.has(item.key)
@@ -140,14 +140,15 @@ const carriedOver = (items, today) => items
     && ((it.source && it.source !== 'planner') || !['mock', 'behavioral'].includes(it.type)))
   .sort((a, b) => a.day.localeCompare(b.day) || (a.order ?? 0) - (b.order ?? 0));
 
-// Skip puts the item (all its parts) on the skipped list and warns when later topics build on it, in our dependency order.
+// Skip only unfinished parts. Completed work must remain completed even when
+// the learner decides not to finish the rest of a split exercise.
 const skipItem = (items, key, data) => {
   const at = byKey(items, key);
   if (at < 0) return { error: 'not-found', items };
   const item = items[at];
   if (item.doneAt) return { error: 'already-done', items };
   const id = baseId(item);
-  const next = items.map((it) => (baseId(it) === id ? { ...it, skipped: true } : it));
+  const next = items.map((it) => (baseId(it) === id && !it.doneAt ? { ...it, skipped: true } : it));
   let warning = null;
   const entry = item.type === 'dsa' ? data.planCatalog.sheets[item.sheet]?.[item.topicId] : null;
   if (entry) {
@@ -189,7 +190,7 @@ const moveItem = (stored, key, newDay) => {
 };
 
 // ---------- the calm Today list (decisions 7, 24, 27, 33) ----------
-// What the student has to do today, the time it needs, and the item the Start button opens (the smallest first). Nothing else.
+// Start uses the smallest task, except milestone roadmaps which keep lesson order.
 const todayView = (stored, today) => {
   const live = stored.items.filter((it) => !it.skipped);
   const open = live.filter((it) => !gen.isComplete(it));
@@ -203,6 +204,7 @@ const todayView = (stored, today) => {
   let date = today;
   const workRoom = Math.max(0, Math.floor(hours * 60) - sum(reviews));
   const chosen = new Set();
+  const orderedRole = stored.input.goalType === 'role' && stored.input.generationVersion >= 2;
   let room = workRoom;
   function take(items, limit = room) {
     for (const item of items) {
@@ -216,7 +218,15 @@ const todayView = (stored, today) => {
   // on the rest of the backlog. If only one can fit, alternate which gets
   // first choice so that a full schedule cannot starve overdue work.
   const currentTask = fresh.find((item) => item.plannedMinutes <= workRoom);
-  if (currentTask) {
+  if (orderedRole) {
+    // Do not fit a short practice task by jumping over its unfinished lesson.
+    for (const item of [...carried, ...fresh]) {
+      if (item.plannedMinutes > room) break;
+      chosen.add(item.key);
+      room -= item.plannedMinutes;
+    }
+  }
+  if (currentTask && !orderedRole) {
     const carryRoom = Math.min(Math.floor(workRoom / 2), workRoom - currentTask.plannedMinutes);
     take(carried, carryRoom);
     if (!chosen.size && dayNumber(today) % 2 === 0) {
@@ -224,12 +234,16 @@ const todayView = (stored, today) => {
       if (overdueTask) take([overdueTask]);
     }
   }
-  take(fresh);
-  take(carried);
-  // On a study day, waiting work larger than the whole day must not leave Today empty: offer the smallest piece and let it carry on tomorrow.
+  if (!orderedRole) {
+    take(fresh);
+    take(carried);
+  }
+  // Waiting work must not leave a study day empty. Roadmaps keep lesson order;
+  // other plans offer the smallest task, even if it needs another session.
   if (!chosen.size && !reviews.length && hours > 0) {
-    const smallest = [...carried, ...fresh].sort((a, b) => a.plannedMinutes - b.plannedMinutes)[0];
-    if (smallest) chosen.add(smallest.key);
+    const waiting = [...carried, ...fresh];
+    const candidate = (orderedRole ? waiting : waiting.sort((a, b) => a.plannedMinutes - b.plannedMinutes))[0];
+    if (candidate) chosen.add(candidate.key);
   }
   let list = [...carried, ...fresh].filter((item) => chosen.has(item.key)).concat(reviews);
   if (!list.length && !carried.length && !fresh.length && !dueReviews(live, today).length) {
@@ -237,7 +251,7 @@ const todayView = (stored, today) => {
     if (later) { date = later; list = open.filter((it) => it.day === later); }
   }
   const isToday = date === today;
-  const start = [...list].sort((a, b) => a.plannedMinutes - b.plannedMinutes)[0] || null;
+  const start = (orderedRole ? list : [...list].sort((a, b) => a.plannedMinutes - b.plannedMinutes))[0] || null;
   return { date, isToday, items: list, minutes: sum(list), startItem: start, onTrack: gen.onTrack(live, today) };
 };
 

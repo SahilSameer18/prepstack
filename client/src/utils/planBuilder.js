@@ -161,7 +161,7 @@ export function planFormErrors(settings, options, today = dateInIndia()) {
 export function planBody(settings) {
   const { goalType, weeks, weekdayHours, weekendHours, restDay, style, startDate, knownTopics, pace } = settings;
   const common = { goalType, weeks, weekdayHours, weekendHours, restDay, style, startDate, knownTopics, pace };
-  if (goalType === 'role') return { ...common, roadmapSlug: settings.roadmapSlug };
+  if (goalType === 'role') return { ...common, style: 'one-topic', roadmapSlug: settings.roadmapSlug };
   return { ...common, sheetSlug: settings.sheetSlug, subjects: settings.subjects };
 }
 

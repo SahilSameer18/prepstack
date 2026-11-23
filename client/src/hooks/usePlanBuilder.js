@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from './useAuth';
-import { createPlan, getPlan, getPlanOptions, previewPlan } from '../api/services/planService';
+import { createPlan, getPlan, getPlanOptions, previewPlan, previewPersonalPlan } from '../api/services/planService';
 import planChoices from '../data/planChoices.json';
 import { extractError } from '../utils/extractError';
 import {
@@ -43,7 +43,7 @@ export function usePlanBuilder() {
 
   const errors = useMemo(() => planFormErrors(settings, options, calendar?.today), [settings, options, calendar]);
   const valid = options !== null && Object.keys(errors).length === 0;
-  const previewKey = settingsKey + JSON.stringify(calendar || null);
+  const previewKey = settingsKey + JSON.stringify(calendar || null) + (userId || 'public');
   const previewReady = valid && preview?.key === previewKey && preview?.retry === retryCount && !!preview.data;
   const accountReady = !!userId && currentPlan?.owner === userId;
   const activePlan = accountReady ? currentPlan.plan : null;
@@ -53,7 +53,7 @@ export function usePlanBuilder() {
   const accountAllowsSave = !userId || (accountReady && !currentPlan.error);
   const replacementAllowed = !needsReplacement || replacePlanId === activePlan.id;
   const canGenerate = previewReady && !nothingToPlan && !saving && !checkingSession
-    && accountAllowsSave && replacementAllowed;
+    && preview.data.saveEligibility?.allowed !== false && accountAllowsSave && replacementAllowed;
 
   // Rapid edits may arrive before the URL navigation renders. Merge them without losing a field.
   useEffect(() => {
@@ -80,7 +80,7 @@ export function usePlanBuilder() {
 
   // Ignore replies for earlier settings. Aborting alone cannot guarantee response order.
   useEffect(() => {
-    if (!valid) return;
+    if (!valid || checkingSession || (userId && !accountReady)) return;
     const controller = new AbortController();
     const delay = Math.max(PREVIEW_DELAY_MS, MIN_PREVIEW_INTERVAL_MS - (Date.now() - lastPreviewAt.current));
     const timer = setTimeout(async () => {
@@ -88,7 +88,8 @@ export function usePlanBuilder() {
       try {
         const body = planBody(settings);
         if (calendar) body.calendar = { timeZone: calendar.timeZone, dayStartHour: calendar.dayStartHour };
-        const data = await previewPlan(body, controller.signal);
+        const requestPreview = userId ? previewPersonalPlan : previewPlan;
+        const data = await requestPreview(body, controller.signal);
         if (!controller.signal.aborted) setPreview({ key: previewKey, retry: retryCount, data });
       } catch (error) {
         if (!controller.signal.aborted) {
@@ -100,7 +101,7 @@ export function usePlanBuilder() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [settings, previewKey, calendar, valid, retryCount]);
+  }, [settings, previewKey, calendar, valid, retryCount, userId, accountReady, checkingSession]);
 
   // Check for an existing plan before saving or resuming a login request.
   useEffect(() => {
@@ -132,7 +133,7 @@ export function usePlanBuilder() {
 
   // A save always uses the settings whose preview is currently visible.
   const save = useCallback(async (replace = false) => {
-    if (!userId || !previewReady || saveInProgress.current) return;
+    if (!userId || !previewReady || preview.data.saveEligibility?.allowed === false || saveInProgress.current) return;
     saveInProgress.current = true;
     setSaving(true);
     setSaveError('');
@@ -147,7 +148,7 @@ export function usePlanBuilder() {
       saveInProgress.current = false;
       setSaving(false);
     }
-  }, [userId, previewReady, settings, calendar]);
+  }, [userId, previewReady, preview, settings, calendar]);
 
   // Only a matching, one-use intent from this browser tab can save automatically after login.
   const resumeToken = params.get('resume');

@@ -44,7 +44,8 @@ const toInput = (body, user) => {
     throw new AppError(422, `The start date must be from yesterday to ${PLAN_MAX_START_DAYS_AHEAD} days from today`);
   }
   return {
-    goalType: body.goalType, style: body.style, startDate: start, weeks: body.weeks,
+    goalType: body.goalType, style: body.goalType === 'role' ? 'one-topic' : body.style, startDate: start, weeks: body.weeks,
+    generationVersion: gen.GENERATION_VERSION,
     hoursByWeekday: weekdayHours(body), restDay: body.restDay,
     sheetSlug: body.sheetSlug, roadmapSlug: body.roadmapSlug,
     subjects: body.subjects, knownTopics: body.knownTopics, pace: body.pace,
@@ -93,6 +94,7 @@ const partLabels = (items) => {
 const presentItem = (it, labels) => ({
   id: it._id ? String(it._id) : null, key: it.key ?? null, originalKey: it.originalKey ?? null, type: it.type, ref: it.ref ?? null, link: it.link ?? null, title: it.title,
   plannedMinutes: it.plannedMinutes, day: it.day ?? null, plannedDay: it.plannedDay ?? it.day ?? null, stepId: it.stepId ?? null,
+  milestoneId: it.milestoneId ?? null, activity: it.activity ?? null, objective: it.objective ?? null,
   alternatives: alternativeResources(it.link), replacesKey: it.replacesKey ?? null,
   part: labels?.has(it.key) ? { n: labels.get(it.key).n, of: labels.get(it.key).of } : it.part ?? null,
   partialProgress: labels?.get(it.key)?.progress,
@@ -118,7 +120,25 @@ const presentView = (v, allItems) => {
 const toStored = (doc) => {
   const o = typeof doc.toObject === 'function' ? doc.toObject() : doc; // a plain object (a lean read) is already one
   return {
-    input: { goalType: o.goalType, style: o.style, startDate: o.startDate, weeks: o.weeks, hoursByWeekday: o.hoursByWeekday, restDay: o.restDay, sheetSlug: o.sheetSlug, roadmapSlug: o.roadmapSlug, subjects: o.subjects, pace: o.pace || 'standard', knownTopics: o.knownTopics, solvedLinks: o.solvedLinks, lighterDays: o.lighterDays, originReport: o.originReport, pausedDays: o.totalPausedDays || 0 },
+    input: {
+      generationVersion: o.generationVersion || 1,
+      roadmapSnapshot: o.roadmapSnapshot,
+      goalType: o.goalType,
+      style: o.style,
+      startDate: o.startDate,
+      weeks: o.weeks,
+      hoursByWeekday: o.hoursByWeekday,
+      restDay: o.restDay,
+      sheetSlug: o.sheetSlug,
+      roadmapSlug: o.roadmapSlug,
+      subjects: o.subjects,
+      pace: o.pace || 'standard',
+      knownTopics: o.knownTopics,
+      solvedLinks: o.solvedLinks,
+      lighterDays: o.lighterDays,
+      originReport: o.originReport,
+      pausedDays: o.totalPausedDays || 0,
+    },
     startDate: o.startDate, deadline: o.deadline, items: o.items, coverage: o.coverage, revision: o.updatedAt,
   };
 };
@@ -135,7 +155,22 @@ const previewPlan = async (req, res, next) => {
     const preview = await cached(['preview', PREVIEW_VERSION, digest], async () => gen.previewPlan(input, getPlanData()), {
       ttlSeconds: 600, budgetName: 'preview', writeBudgetPerMinute: 200, maxBytes: 64 * 1024,
     });
-    return sendSuccess(res, 200, 'Preview made', preview);
+    return sendSuccess(res, 200, 'Preview made', { ...preview, usesSavedProgress: false });
+  } catch (error) {
+    return next(asAppError(error));
+  }
+};
+
+// Deliberately uncached: this preview uses only the authenticated owner's progress
+// and calendar, exactly as createPlan does. The public endpoint stays anonymous.
+const previewPersonalPlan = async (req, res, next) => {
+  res.set('Cache-Control', 'private, no-store');
+  try {
+    const data = getPlanData();
+    const input = toInput(req.body, req.user);
+    input.solvedLinks = await solvedLinksFor(req.user._id, input, data);
+    const preview = gen.previewPlan(input, data);
+    return sendSuccess(res, 200, 'Personal preview made', { ...preview, usesSavedProgress: true });
   } catch (error) {
     return next(asAppError(error));
   }
@@ -181,9 +216,8 @@ const createPlan = async (req, res, next) => {
     } catch (error) {
       return next(asAppError(error));
     }
-    if (plan.items.length > PLAN_MAX_ITEMS) return next(new AppError(422, `This plan would have ${plan.items.length} items and the most is ${PLAN_MAX_ITEMS}. Choose fewer weeks, fewer subjects or a smaller sheet.`));
-    if (!plan.coverage.syllabusItems) return next(new AppError(422, 'There is nothing to plan: every problem on this sheet is already solved or marked as known.'));
-    if (!plan.coverage.plannedItems) return next(new AppError(422, 'No task fits these days and hours. Add study time or weeks, then try again.')); // an empty plan is never saved
+    const eligibility = gen.saveEligibility(plan);
+    if (!eligibility.allowed) return next(new AppError(422, eligibility.reason));
 
     let archived = null;
     if (existing) {
@@ -197,6 +231,7 @@ const createPlan = async (req, res, next) => {
     try {
       doc = await Plan.create({
         user: req.user._id, goalType: input.goalType, style: input.style, title: req.body.title || `${GOAL_TITLES[input.goalType]}, ${input.weeks} weeks`, targetRole: req.body.targetRole || '',
+        generationVersion: plan.input.generationVersion, roadmapSnapshot: plan.input.roadmapSnapshot,
         sheetSlug: input.sheetSlug || null, roadmapSlug: input.roadmapSlug || null, subjects: plan.input.subjects, pace: plan.input.pace, knownTopics: input.knownTopics, solvedLinks: input.solvedLinks,
         weeks: input.weeks, startDate: input.startDate, deadline: plan.deadline, hoursByWeekday: input.hoursByWeekday, restDay: input.restDay, lighterDays: [],
         coverage: plan.coverage, notices: plan.notices, items: plan.items,
@@ -368,6 +403,9 @@ const makeChange = async (req) => {
     throw asAppError(error);
   }
   if (result.error === 'finished') throw new AppError(409, 'This plan is finished. Start a new plan instead.');
+  if (result.plan.items.length > PLAN_MAX_ITEMS) {
+    throw new AppError(422, gen.saveEligibility(result.plan).reason);
+  }
   return { doc, result };
 };
 const summary = (result) => ({ diff: result.diff, plannedMinutes: result.plan.coverage.plannedMinutes, leftOutCount: result.plan.coverage.leftOut.length, byGroup: result.plan.coverage.byGroup, finishDate: result.plan.finishDate });
@@ -921,6 +959,7 @@ module.exports = {
   withTransaction,
   getPlanOptions,
   previewPlan,
+  previewPersonalPlan,
   getPlan,
   createPlan,
   deletePlan,

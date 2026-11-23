@@ -25,6 +25,9 @@ const itemSchema = new mongoose.Schema({
   topicTitle: { type: String, default: null },
   subject: { type: String, default: null },
   stepId: { type: String, default: null },
+  milestoneId: { type: String, default: null, maxlength: 120 },
+  activity: { type: String, enum: ['learn', 'practice', 'checkpoint', 'project', null], default: null },
+  objective: { type: String, default: null, maxlength: 2000 },
   difficulty: { type: String, default: null },
   unitId: { type: String, default: null },
   replacesKey: { type: String, default: null },
@@ -87,6 +90,10 @@ const planSchema = new mongoose.Schema(
     },
     totalPausedDays: { type: Number, default: 0 },
     originReport: { type: String, default: null }, // report-only plans refit their own tasks on rebuild
+    // Missing/old records use the original generator. New saves set version 2
+    // explicitly and retain their roadmap so later edits cannot change task identities.
+    generationVersion: { type: Number, enum: [1, 2], default: 1 },
+    roadmapSnapshot: { type: mongoose.Schema.Types.Mixed, default: null },
     sheetSlug: { type: String, default: null },
     roadmapSlug: { type: String, default: null },
     subjects: { type: [String], default: [] },

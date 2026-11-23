@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   getPlanOptions,
   previewPlan,
+  previewPersonalPlan,
   getPlan,
   createPlan,
   deletePlan,
@@ -51,9 +52,10 @@ const {
   lifecycleApplySchema,
 } = require('./plan.validators');
 
-// The one public route: the form's preview (numbers and week 1 only, no database write).
+// Public choices and anonymous previews never read account progress.
 router.get('/options', getPlanOptions);
 router.post('/preview', planPreviewLimiter, validate(previewPlanSchema), previewPlan);
+router.post('/preview/personal', authMiddleware, planPreviewLimiter, validate(previewPlanSchema), previewPersonalPlan);
 
 // Everything else needs login.
 router.get('/', authMiddleware, getPlan);

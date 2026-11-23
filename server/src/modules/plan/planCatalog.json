@@ -4,9 +4,9 @@
   "two-pointers-sliding-window",
   "sorting-binary-search",
   "linked-lists-stacks-queues",
+  "recursion-backtracking",
   "trees-bst",
   "heaps-tries",
-  "recursion-backtracking",
   "graphs-traversal",
   "graphs-shortest-paths-mst",
   "greedy-intervals",
@@ -48,22 +48,22 @@
    },
    "trees": {
     "step": "trees-bst",
-    "order": 5,
+    "order": 6,
     "core": true
    },
    "heap-priority-queue": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "backtracking": {
     "step": "recursion-backtracking",
-    "order": 7,
+    "order": 5,
     "core": true
    },
    "trie": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "graph": {
@@ -135,22 +135,22 @@
    },
    "trees": {
     "step": "trees-bst",
-    "order": 5,
+    "order": 6,
     "core": true
    },
    "heap-priority-queue": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "backtracking": {
     "step": "recursion-backtracking",
-    "order": 7,
+    "order": 5,
     "core": true
    },
    "trie": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "graph": {
@@ -217,7 +217,7 @@
    },
    "recursion-and-backtracking": {
     "step": "recursion-backtracking",
-    "order": 7,
+    "order": 5,
     "core": true
    },
    "linked-list": {
@@ -237,17 +237,17 @@
    },
    "heaps": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "binary-trees": {
     "step": "trees-bst",
-    "order": 5,
+    "order": 6,
     "core": true
    },
    "binary-search-trees": {
     "step": "trees-bst",
-    "order": 5,
+    "order": 6,
     "core": true
    },
    "graphs": {
@@ -262,7 +262,7 @@
    },
    "tries": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "strings": {
@@ -314,7 +314,7 @@
    },
    "recursion": {
     "step": "recursion-backtracking",
-    "order": 7,
+    "order": 5,
     "core": true
    },
    "linked-list": {
@@ -344,17 +344,17 @@
    },
    "binary-trees": {
     "step": "trees-bst",
-    "order": 5,
+    "order": 6,
     "core": true
    },
    "binary-search-trees": {
     "step": "trees-bst",
-    "order": 5,
+    "order": 6,
     "core": true
    },
    "heaps": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "graph": {
@@ -369,7 +369,7 @@
    },
    "tries": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "strings-advanced-algo": {
@@ -416,12 +416,12 @@
    },
    "binary-tree": {
     "step": "trees-bst",
-    "order": 5,
+    "order": 6,
     "core": true
    },
    "binary-search-tree": {
     "step": "trees-bst",
-    "order": 5,
+    "order": 6,
     "core": true
    },
    "greedy": {
@@ -431,7 +431,7 @@
    },
    "backtracking": {
     "step": "recursion-backtracking",
-    "order": 7,
+    "order": 5,
     "core": true
    },
    "dynamic-programming": {
@@ -441,7 +441,7 @@
    },
    "heap": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "graph": {
@@ -451,7 +451,7 @@
    },
    "trie": {
     "step": "heaps-tries",
-    "order": 6,
+    "order": 7,
     "core": true
    },
    "bit-manipulation": {

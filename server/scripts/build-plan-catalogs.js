@@ -84,6 +84,9 @@ const buildRoadmapCatalog = async () => {
     steps: r.steps.map((s) => ({
       id: s.id,
       title: s.title,
+      goal: s.goal,
+      topics: s.topics,
+      checkpoint: s.checkpoint,
       time: s.time,
       ...parseTime(s.time),
       practice: (s.practice || []).map(({ kind, target, label }) => ({ kind, target, label })),

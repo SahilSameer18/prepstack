@@ -230,7 +230,7 @@ export default function PlanBuilderForm({
               options={REST_DAY_CHOICES}
             />
           </Field>
-          <Field
+          {settings.goalType !== 'role' && <Field
             name="style"
             label="How do you like to study?"
             error={errors.style}
@@ -242,7 +242,10 @@ export default function PlanBuilderForm({
               onValueChange={(value) => onChange({ style: value })}
               options={STYLE_CHOICES}
             />
-          </Field>
+          </Field>}
+          {settings.goalType === 'role' && <p className="text-sm text-muted">
+            Roadmap topics stay in order, with practice alongside learning.
+          </p>}
           <Field
             name="pace"
             label="How fast do you solve problems?"
