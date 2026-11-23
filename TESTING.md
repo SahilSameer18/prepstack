@@ -1,3 +1,40 @@
+## Overall replay and fresh-scenario audit — 23 Nov 2026
+
+**DebugLab documentation revision, 23 Nov 2026:** documentation-only review of the supplied audit and current parser, ownership/deletion and pipeline call sites. Checked Markdown structure, example arithmetic and diff whitespace. No runner/browser security probes or application suites were rerun for this plan edit; historical audit experiments remain attributed rather than claimed as new verification.
+
+
+Application code was not changed in this audit. Every earlier requested set was rerun against the repaired workspace, followed by separate fresh inputs and interaction checks. Three additional issues remain open; the earlier four repairs still pass their regressions.
+
+| Earlier set rerun | Actual result |
+|---|---|
+| 5,000 scheduling scenarios, seed 20261125 | Zero invariant violations; 3,630 fresh plans, 1,370 changes; 1,360 applied, 10 expected refusals. |
+| 378 learning changes | All 378 assertions/cases in the named learning matrix passed. |
+| 3,000 scheduling scenarios, seed 20261128 | Zero invariant violations; 2,216 fresh plans, 784 changes; 778 applied, 6 expected refusals. |
+| 163 targeted interactions | 163/163 passed. Previously failing calibration, skip/re-offer and hours-cut cases remain fixed; an impossible rehearsal is correctly refused without saving. |
+| 37-request API replay | Passed its assertions: distinct attempt identity, moving the new task returns 200, application estimates include the factor, reduced-hours learning parts fit and preserve minutes. |
+
+| Fresh coverage | Actual result |
+|---|---|
+| 10,000 additional scenario inputs | Generated from seeds 20261129/20261130 after excluding full scenario-signature matches with the two earlier sets and duplicates within the new set. All five sheets, nine roadmaps and three goals are represented. Zero existing invariant violations. 7,309 fresh plans; 2,691 changes: 2,665 applied, 25 expected refusals and 1 empty starting plan. |
+| 482 fresh interaction cases | 378 passed, 104 failed; the failures represent three issues, not 104 distinct defects. |
+| Workload/calendar combinations | 252/336 passed. All 84 failures were feasible temporary lighter-day cases; permanent half-hour, weekend-only and last-day-only controls passed. Synthetic practice isolates capacity behavior across the 14 curricula; the real API confirms a reachable four-week-plan example. |
+| Locked split-part ordering | 0/14 passed. Learning parts are renumbered out of chronological order after locking a later part and rebuilding. |
+| Calendar boundary round-trips | 60/60 passed across five runtime timezones, two study-day cutoffs and six leap/year-end/DST-season dates. These are runtime consistency checks, not an independent validation of future timezone law. |
+| Calibrated pause/resume | 60/60 passed across five break lengths, four factors and three timezones. Minutes, identities and captured pause-day counts held. |
+| Activity-type evidence | 6/12 passed. Six controls using only the relevant field passed; six mixed-field inputs produced the wrong independent/help classification. |
+| Fresh mixed real-API journeys | A different seed (20261130) passed 295 planner requests across placement, big-tech, frontend and backend learners, including two due-review flows and two substitutions, plus skip/unskip, moves, undo, custom tasks, freeze/resume, report import and deadline rebuild. A loader changed only the test's seed in memory; tracked tests/application files were untouched. |
+| Focused API confirmation | The final 17-request run reproduced all three findings in a four-week A2Z plan. The first two were also checked in earlier two-week/four-week probe runs. Rejected preview state and existing completion history stayed unchanged; split-work minutes and keys were preserved. |
+
+New open findings:
+
+1. **Temporary lighter schedules can falsely reject feasible practice.** In a four-week plan with two weeks left, a 56-minute application activity is rejected when those remaining days are temporarily set to 0.5 hours. The same daily capacity is accepted as a permanent-hours change. There is enough room to split the activity across the remaining days. fitTasks calculates its whole-task threshold from the underlying weekday pattern rather than the actual lighter-day capacities in the remaining window.
+2. **Locking a later learning part scrambles displayed part numbers on rebuild.** Through the real API, chronological rows became Part 2, Part 3, Part 1 after the last part was moved/locked and the plan rebuilt. The locked day, total minutes, unique keys and prior completion stayed intact. Pending-part renumbering treats all preserved parts as a completed prefix, even when a preserved part is locked in the future.
+3. **An unrelated quiz/result field can override the actual activity outcome.** The accepted PATCH body done=true, result=solution, quizScore=5 stores the DSA result as solution but saves independent learning evidence. Pure checks show the same cross-type problem for failed notes quizzes and assisted roadmap work. Learning classification should use the activity's relevant outcome field, or the request should reject incompatible field combinations. This is evidence consistency, not a verified-grading/security claim.
+
+Overall interpretation: 18,000 scheduling executions passed the existing invariants, while deeper learning/recovery/input combinations still expose gaps. Do not turn a combined pass count into a learning-accuracy percentage. Fresh scheduling outputs also retain explicit capacity cuts: 4,063 sheet plans and 1,829 role plans cut material; 919 sheet-cut cases omit a DSA topic group and 857 omit a selected notes subject. These are reported capacity outcomes, not hidden full-syllabus promises.
+
+Artifacts: ignored .tmp/overall-repeat-*.log, .tmp/overall-fresh-sweep.cjs/.json/.log, .tmp/overall-fresh-interactions.cjs/.json/.log, .tmp/overall-fresh-journeys.log and .tmp/overall-fresh-api.cjs/.json with overall-fresh-api-four-week.log. API fixtures used disposable in-memory data and were stopped. No production environment file, database, Redis, live seed, browser UI, full client/build/lint or unrelated full-server rerun was used/claimed in this scenario-only audit.
+
 ## Four learning-interaction repairs — 23 Nov 2026
 
 All four findings from the adversarial audit below are repaired. Verification ran after the application changes; no production database, environment file or live seed was used.

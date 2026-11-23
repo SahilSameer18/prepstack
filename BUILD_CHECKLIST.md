@@ -151,18 +151,16 @@ A dedicated 1–2 week interview scheduler was dropped on 15 Nov. The recovery f
 - [ ] 13.5 Step 4: tests (about 1 day)
 - [ ] 13.6 Step 5: release
 
-## 14. DebugLab (`docs/plans/DEBUGLAB_PLAN.md`; three tiers, demand test first)
+## 14. DebugLab (`docs/plans/DEBUGLAB_PLAN.md`; v3)
 
-- [ ] 14.1 Phase 0: prerequisites (the earlier fixes and the analyzer finished, a test runner, CI, the `deleteUserData` helper)
-- [ ] 14.2 Phase 1: browser spike (1 to 2 days)
-- [ ] 14.3 Phase 1.5: Wave 0 demand test (4 to 7 days): the spike, one warm-up set, one incident, a tiny "progress-lite" backend
-- [ ] 14.4 Decision point: continue only if the demand test justifies it
-- [ ] 14.5 Phase 2: engine package (3 to 4 days)
-- [ ] 14.6 Phase 3: backend (2 to 3 days)
-- [ ] 14.7 Phase 4: frontend (6 to 8 days)
-- [ ] 14.8 Phase 5: MVP content (6 to 8 days beyond Wave 0)
-- [ ] 14.9 Phase 6: polish and release (2 to 3 days)
-- [ ] 14.10 Wave 2 and Wave 3 incidents, only if the numbers justify them
+**Owner priority, 23 Nov 2026: next implementation after the remaining My Plan fixes are completed and verified.** Section numbering does not place this behind the other later-work sections.
+
+- [ ] 14.1 Phase 0: review contracts, current ownership/deletion conventions, fixture APIs, byte budgets and attempt records
+- [ ] 14.2 Phase 1: deployed separate-site isolation spike across Chrome, Firefox and Safari; blocks further work if unsafe
+- [ ] 14.3 Phase 2: one complete vertical slice with safe execution, private attempts, retry-safe results and usable UI; re-estimate remaining work
+- [ ] 14.4 Phase 3: pilot content and QA: three warm-ups, one Repo, one Incident and an unfamiliar follow-up
+- [ ] 14.5 Phase 4: observed pilot with JavaScript-comfortable students and professionals, after separate approval to recruit/collect data
+- [ ] 14.6 Phase 5: owner decision on MVP expansion, drafts, catalogue and PrepStack integration based on evidence
 
 ## 15. Growth (`docs/research/GROWTH_IDEAS.md`)
 
