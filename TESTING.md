@@ -1,3 +1,52 @@
+## Four learning-interaction repairs — 23 Nov 2026
+
+All four findings from the adversarial audit below are repaired. Verification ran after the application changes; no production database, environment file or live seed was used.
+
+| Check | Observed result |
+|---|---|
+| Full server | 1,183 tests, 225 suites; zero failures; 230.8 seconds. |
+| Full client | 218 tests across 17 files; zero failures. |
+| Full planner browser run | 25/25 passed, including a new phone-size skip/re-add/move/complete regression that preserves skipped history. |
+| Repeat scheduling sweep | 3,000 cases, seed 20261128; 2,216 fresh plans and 784 changes, with 778 applied and 6 expected refusals; zero invariant violations. |
+| Adversarial learning matrix | 163/163 passed, versus 105/163 before repairs. The impossible rehearsal case now succeeds by asserting a clear refusal and unchanged saved state, rather than accepting a split interview. |
+| Real API replay | 37 planner requests; the new task moves with 200 and has a distinct key, the calibrated Easy estimate is 46 minutes, and the slower-pace A2Z activity is refitted within half-hour days without losing its 56 minutes. |
+| Additional permanent coverage | 60 sheet/pace/calibration combinations; repeated re-offers; split-minute conservation and chronological part labels; completed/locked protection; report-only and lighter-day refitting; deadline refusal; dated-mock capacity. The pre-existing 378-case learning matrix also passed in the full suite. |
+| Mutations | Four in-memory mutations caught: disable episode uniqueness, ignore the effort multiplier, skip learning reflow, allow rehearsal splitting. No tracked source was overwritten for mutations. |
+| Build/lint/SEO | Production Vite build, prerender, SEO and ESLint passed. 101 pages, 91 indexable URLs, zero SEO warnings. The existing large-chunk build advisory remains. |
+
+Implementation scope:
+
+- Learning episode refs/keys are chosen from existing plan state, so previews remain deterministic and stale/concurrent apply protection still works. Older skipped rows remain intact; new episodes do not reuse their identities. Skipped work no longer consumes new scheduling room.
+- The existing recovery fitter and study-hours lookup moved to planTaskSchedule.js. Rebuild/hour/lighter changes and report-plan changes use it to refit unfinished unlocked learning work before placing other material. Completed/locked/personal commitments remain protected. Extra split rows get unique keys and pending learning parts retain readable chronological labels.
+- Application-check minutes use the same difficulty, pace and effort multiplier as ordinary DSA work and repairs. New learning previews return their actual final scheduled rows, including any fitting changes.
+- Rehearsals are atomic. If no uninterrupted slot exists, preview/resume refuses with an actionable message and leaves the saved plan unchanged. Capacity checks also prevent pending practice and dated/personal commitments from silently overfilling a day; existing dated mocks are reserved during new-practice placement.
+
+Reproductions: ignored .tmp/four-fixes-scenarios.cjs and its JSON result, .tmp/four-fixes-api.cjs, .tmp/four-fixes-fuzz.log and .tmp/four-fixes-*.log. The permanent regressions are in server/test/plan-learning.test.js, server/test/plan-api.test.js and client/e2e/study-plan.spec.js. Test ports are 3100/5175. No dependency, model migration or content seed is needed. Results establish the tested rules, not universal learning effectiveness or optimal packing for every possible input.
+
+## Follow-up adversarial scenario audit — 23 Nov 2026
+
+Historical result before repairs: four defects were found after the Phase 2 close-out. Application code was not changed during this recheck. The earlier passing suites did not cover these interaction sequences.
+
+| New check | Result |
+|---|---|
+| Fresh scheduling sweep, seed 20261128 | 3,000 scenarios: 2,216 fresh plans, 784 changes; 778 applied and 6 intentionally refused; zero existing invariant violations. |
+| Targeted interaction matrix | 163 cases: 105 passed, 58 failed. Failures represent four issues, not 58 independent bugs. |
+| Application estimates after calibration | 15/60 passed. All 45 non-default-factor cases failed across five sheets and three paces; the 15 baseline-factor controls passed. |
+| Skip optional work and accept its re-offer | 3/9 passed. All six foundation/rehearsal cases reused retained task keys. Three repair re-offers used distinct episode identities and passed. |
+| Reduce hours after adding practice | 0/7 passed: six repair/application tasks exceeded the new daily time; one rehearsal subsequently split during resume. |
+| Ordinary pause without changing hours | 15/15 rehearsal cases passed, across five break lengths and three weekend capacities. |
+| Evidence/calibration controls | 72/72 passed: three content types, eight observation counts and three effort responses; bounds and consumed-evidence guards held. |
+| Disposable real API reproductions | 37 planner requests, three independent accounts in the in-memory harness, plus account-creation setup. Confirmed duplicate identity/wrong-target refusal, missing application-time multiplier, and oversized learning work after a confirmed hours change. |
+
+Open findings, in priority order:
+
+1. **High: skip/re-add can create duplicate learning keys.** Through the API, a skipped foundation task and its replacement were saved with the same key. Moving the new, non-skipped task returned 422, "Skipped items cannot be moved", because the key-based operation found the old occurrence. Pure scenarios reproduce the collision for rehearsals too. Deterministic offer hashing in planLearning.js needs episode-safe identity or reuse of the original skipped task.
+2. **High: reduced hours do not refit pending system-added learning work.** A real A2Z slower-pace application task remained 56 minutes after previewing and applying a reduction to 30 available minutes daily. planAdjust.js treats learning-source custom tasks as preserved personal work. A safe preview must reflow eligible learning work or explicitly refuse an impossible capacity change while protecting completed/locked work.
+3. **Medium: application-check estimates ignore the confirmed DSA effort factor.** Through the API, an ordinary Easy problem check was offered at 40 minutes after a confirmed 1.15 adjustment; the matching estimate is round(40 * 1.15) = 46. The application offer path uses only difficulty and pace; original tasks and repair work already apply the additional factor.
+4. **Medium: rehearsal atomicity is lost after an hours cut and resume.** A valid 30-minute rehearsal, followed by half-hour study days and a pause/resume, became 25 minutes on one day and 5 on the next. The initial learning preview enforces an uninterrupted slot; generic resume refitting does not retain that restriction when no regular day has enough planned room.
+
+Reproduction scripts and machine-readable results are ignored artifacts under .tmp/scenario-recheck*. The new scripts collect failures without changing tracked source files or using production data. The API harness was stopped and the seeded sweep exited successfully. No browser, client suite, production build or lint rerun is claimed for this read-only scenario audit. Existing earlier checks below remain historical results, not evidence that the newly tested paths passed. Do not use the combined pass count as a learning-accuracy percentage.
+
 ## Learning audit Phase 2 verification — 23 Nov 2026
 
 The optional checks, practice/rehearsal, review budgets and confirmed estimate feedback are implemented. These results describe software rules and self-reported practice, not a measured learning-accuracy or interview-readiness percentage.

@@ -89,7 +89,7 @@ function recommendations(plan, data, solvedLinks = []) {
     const problem = topic?.problems.find((entry) => !seen.has(problemIdentity(entry.link)));
     if (problem) offers.push({ id: `transfer:${problemIdentity(problem.link)}`, kind: 'transfer', topicId: topic.id,
       title: `Application check: ${problem.title}`, link: problem.link,
-      minutes: gen.problemMinutes(problem.difficulty, plan.pace),
+      minutes: Math.round(gen.problemMinutes(problem.difficulty, plan.pace) * (plan.estimateFactors?.dsa || 1)),
       objective: 'Before opening the solution, explain an approach, implement it independently, test edge cases and explain time and space cost. Record whether you had seen the question before. This is a self-check, not an automatically graded assessment.' });
   }
   const ready = plan.items.filter((item) => item.doneAt && !item.unscheduledMinutes
@@ -138,13 +138,21 @@ function previewLearning(stored, data, day, offer) {
   } else {
     const first = day > stored.startDate ? day : stored.startDate;
     let left = offer.minutes;
-    const key = `learning:${crypto.createHash('sha256').update(offer.id).digest('hex').slice(0, 20)}`;
+    const prefix = `learning:${crypto.createHash('sha256').update(offer.id).digest('hex').slice(0, 20)}`;
+    // A skipped attempt stays in history. New episodes need distinct identities;
+    // counting stored rounds keeps preview and apply deterministic.
+    let episode = 1;
+    let key = `${prefix}:round-${episode}`;
+    while (stored.items.some(item => item.ref === key || item.key.startsWith(key + ':'))) {
+      episode += 1;
+      key = `${prefix}:round-${episode}`;
+    }
     for (let cursor = gen.dayNumber(first); cursor <= gen.dayNumber(stored.deadline) && left; cursor += 1) {
       const date = gen.ymdOf(cursor);
       // New practice uses spare fresh room. Rebuilding reserves these minutes
       // before placing ordinary content, and keeps all completed/locked work.
-      const protectedMinutes = stored.items.filter((item) => item.day === date
-        && (item.doneAt || item.locked || item.source !== 'planner')).reduce((total, item) => total + item.plannedMinutes, 0);
+      const protectedMinutes = stored.items.filter((item) => !item.skipped && item.day === date
+        && (item.doneAt || item.locked || item.source !== 'planner' || item.type === 'mock' || item.type === 'behavioral')).reduce((total, item) => total + item.plannedMinutes, 0);
       const budget = gen.dayBudget(adj.hoursOn(input, date));
       const reviews = adj.dueReviews(stored.items, date).reduce((sum, item) => sum + item.plannedMinutes, 0);
       const room = Math.max(0, Math.min(budget.fresh, budget.planned - reviews) - protectedMinutes);
@@ -165,7 +173,9 @@ function previewLearning(stored, data, day, offer) {
   if (result.plan.coverage.importOverloads?.length) throw new gen.PlanInputError(['This practice would overload the report plan. Add study time or extend the deadline first.']);
   if (result.plan.items.length > PLAN_MAX_ITEMS) throw new gen.PlanInputError(['This change exceeds the plan item limit. Choose a smaller plan first.']);
   const checksum = crypto.createHash('sha256').update(JSON.stringify({ revision: stored.revision, day, offer, items: result.plan.items, input })).digest('hex').slice(0, 32);
-  return { ...result, tasks, checksum, offer };
+  const newRefs = new Set(tasks.map(task => task.ref));
+  const scheduledTasks = result.plan.items.filter(item => newRefs.has(item.ref));
+  return { ...result, tasks: scheduledTasks, checksum, offer };
 }
 
 module.exports = { MAX_ATTEMPTS, attemptLog, startingChecks, recommendations, previewLearning };

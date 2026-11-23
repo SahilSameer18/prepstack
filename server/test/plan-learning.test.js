@@ -11,8 +11,128 @@ const input = { goalType: 'placements', style: 'one-topic', startDate: day, week
   hoursByWeekday: [1, 1, 1, 1, 1, 0, 2], restDay: 5, sheetSlug: 'blind-75', subjects: ['os'], pace: 'standard' };
 const event = (key, outcome = 'help', extra = {}) => ({ key, topic: 'arrays-hashing', type: 'dsa',
   kind: 'task', complete: true, day, at: new Date(`${day}T08:00:00Z`), outcome, ...extra });
+const recovery = require('../src/modules/plan/planRecovery');
+
+function finishExercise(plan, item) {
+  for (const part of plan.items.filter(entry => gen.baseId(entry) === gen.baseId(item))) {
+    const marked = adj.markDone(plan.items, part.key, { doneAt: new Date(day + 'T08:00:00Z'), doneDay: day, result: 'alone' });
+    assert.ok(!marked.error, marked.error);
+    plan.items = marked.items;
+  }
+}
 
 describe('optional learning evidence and practice', () => {
+  it('keeps skipped episodes intact while repeated foundation and rehearsal re-offers get unique keys', () => {
+    for (const kind of ['foundation', 'rehearsal']) {
+      let plan = gen.generatePlan(input, data);
+      plan.startingChecks = [{ id: 'foundation', outcome: 'help' }];
+      if (kind === 'rehearsal') {
+        const exercises = [...new Map(plan.items.filter(item => item.type === 'dsa').map(item => [gen.baseId(item), item])).values()].slice(0, 2);
+        exercises.forEach(item => finishExercise(plan, item));
+      }
+      for (let round = 0; round < 3; round += 1) {
+        const offer = learning.recommendations({ ...plan.input, ...plan }, data).find(entry => entry.kind === kind);
+        assert.ok(offer);
+        const before = structuredClone(plan);
+        const preview = learning.previewLearning(plan, data, day, offer);
+        assert.deepEqual(plan, before, 'preview is read-only');
+        assert.equal(new Set(preview.plan.items.map(item => item.key)).size, preview.plan.items.length);
+        for (const old of plan.items.filter(item => item.skipped || item.doneAt)) {
+          assert.deepEqual(preview.plan.items.find(item => item.key === old.key), old);
+        }
+        for (const task of preview.tasks) assert.deepEqual(preview.plan.items.find(item => item.key === task.key), task);
+        const skipped = adj.skipItem(preview.plan.items, preview.tasks[0].key, data);
+        plan = { ...preview.plan, items: skipped.items, startingChecks: plan.startingChecks };
+      }
+    }
+  });
+
+  it('applies every saved DSA effort factor to application-check estimates on all sheets and paces', () => {
+    for (const sheetSlug of Object.keys(data.sheets)) {
+      for (const pace of Object.keys(gen.PACES)) {
+        for (const factor of [0.5, 1, 1.15, 2]) {
+          const plan = gen.generatePlan({ ...input, sheetSlug, pace, restDay: null,
+            hoursByWeekday: Array(7).fill(1), subjects: [], estimateFactors: { dsa: factor } }, data);
+          const links = new Set(plan.items.map(item => item.link));
+          const source = plan.items.find(item => item.type === 'dsa' && data.sheets[sheetSlug].topics.find(topic => topic.id === item.topicId)?.problems.some(problem => !links.has(problem.link)));
+          assert.ok(source);
+          finishExercise(plan, source);
+          const offer = learning.recommendations({ ...plan.input, ...plan }, data).find(entry => entry.kind === 'transfer');
+          assert.ok(offer);
+          const problem = data.sheets[sheetSlug].topics.flatMap(topic => topic.problems).find(entry => entry.link === offer.link);
+          assert.equal(offer.minutes, Math.round(gen.problemMinutes(problem.difficulty, pace) * factor));
+        }
+      }
+    }
+  });
+
+  it('refits learning work after hours cuts without losing minutes, completed parts or preview identity', () => {
+    for (const kind of ['repair', 'transfer']) {
+      for (const minutes of [40, 70, 120]) {
+        const original = gen.generatePlan({ ...input, hoursByWeekday: Array(7).fill(3), restDay: null }, data);
+        const added = learning.previewLearning(original, data, day, { id: kind, kind, title: 'Practice', minutes });
+        const before = structuredClone(added.plan);
+        const change = { type: 'hours', hoursByWeekday: Array(7).fill(0.5), restDay: null };
+        const changed = adj.previewChange(added.plan, data, day, change);
+        assert.deepEqual(added.plan, before);
+        assert.equal(changed.diff.checksum, adj.previewChange(added.plan, data, day, change).diff.checksum);
+        const pending = changed.plan.items.filter(item => item.learningKind === kind);
+        assert.equal(pending.reduce((total, item) => total + item.plannedMinutes, 0), minutes);
+        assert.equal(new Set(changed.plan.items.map(item => item.key)).size, changed.plan.items.length);
+        assert.deepEqual(pending.map(item => item.part.n), pending.map((_, index) => index + 1));
+        for (const task of pending) {
+          const used = changed.plan.items.filter(item => item.day === task.day && !item.skipped).reduce((total, item) => total + item.plannedMinutes, 0);
+          assert.ok(used <= gen.dayBudget(0.5).planned);
+        }
+        pending[0].doneAt = new Date();
+        const done = structuredClone(pending[0]);
+        const rebuilt = adj.previewChange(changed.plan, data, day, { type: 'rebuild' });
+        assert.deepEqual(rebuilt.plan.items.find(item => item.key === done.key), done);
+        assert.equal(rebuilt.plan.items.filter(item => item.learningKind === kind).reduce((total, item) => total + item.plannedMinutes, 0), minutes);
+      }
+    }
+  });
+
+  it('refuses an impossible rehearsal or locked-practice change without changing the saved plan', () => {
+    const original = gen.generatePlan({ ...input, hoursByWeekday: Array(7).fill(3), restDay: null }, data);
+    const added = learning.previewLearning(original, data, day, { id: 'rehearsal', kind: 'rehearsal', title: 'Rehearsal', minutes: 30 });
+    const before = structuredClone(added.plan);
+    const change = { type: 'hours', hoursByWeekday: Array(7).fill(0.5), restDay: null };
+    assert.throws(() => adj.previewChange(added.plan, data, day, change), /uninterrupted slot/);
+    assert.deepEqual(added.plan, before);
+    const paused = { ...added.plan.input, ...added.plan, hoursByWeekday: Array(7).fill(0.5), pausedAtDay: day,
+      pauseCalendar: { timeZone: 'Asia/Kolkata', dayStartHour: 0 } };
+    assert.throws(() => recovery.resumePlan(paused, {}, new Date('2026-11-24T08:00:00Z'), true), /uninterrupted rehearsal/);
+    added.plan.items.find(item => item.learningKind).locked = true;
+    assert.throws(() => adj.previewChange(added.plan, data, day, change), /Locked practice/);
+  });
+
+  it('refits learning work inside report plans and lighter days without dropping a remainder', () => {
+    const item = { key: 'practice', ref: 'learning:example', source: 'learning', learningKind: 'repair',
+      type: 'custom', title: 'Practice', day, plannedDay: day, plannedMinutes: 70 };
+    const stored = { input: { ...input, originReport: 'report', restDay: null }, startDate: day,
+      deadline: '2026-12-20', items: [item, { key: 'report', type: 'custom', source: 'analyzer:report', title: 'Report task', ref: null, day, plannedMinutes: 20 }], coverage: {} };
+    const hours = adj.previewChange(stored, data, day, { type: 'hours', hoursByWeekday: Array(7).fill(0.5), restDay: null });
+    assert.equal(hours.plan.items.filter(task => task.learningKind).reduce((sum, task) => sum + task.plannedMinutes, 0), 70);
+    assert.deepEqual(hours.plan.coverage.importOverloads, []);
+    const lighter = adj.previewChange(stored, data, day, { type: 'lighter', lighterDays: [{ from: day, to: '2026-11-26', hours: 0 }] });
+    assert.ok(lighter.plan.items.filter(task => !task.doneAt && !task.skipped).every(task => task.day > '2026-11-26'));
+    const tooLate = { ...stored, deadline: day, input: { ...stored.input, hoursByWeekday: Array(7).fill(0.5) } };
+    assert.throws(() => adj.previewChange(tooLate, data, day, { type: 'rebuild' }), /Optional practice does not fit/);
+    assert.equal(stored.items[0].plannedMinutes, 70);
+  });
+
+  it('keeps dated mocks inside the budget when practice is added during a later week', () => {
+    const request = { ...input, startDate: '2026-11-02', weeks: 12, hoursByWeekday: Array(7).fill(3), restDay: null };
+    const original = gen.generatePlan(request, data);
+    const saturday = '2026-11-28';
+    assert.ok(original.items.some(item => item.day === saturday && item.type === 'mock'));
+    const preview = learning.previewLearning(original, data, saturday, { id: 'long-repair', kind: 'repair', title: 'Repair', minutes: 120 });
+    for (const date of new Set(preview.tasks.map(task => task.day))) {
+      assert.ok(preview.plan.items.filter(item => item.day === date && !item.skipped).reduce((total, item) => total + item.plannedMinutes, 0) <= gen.dayBudget(3).planned);
+    }
+    assert.equal(preview.tasks.reduce((sum, task) => sum + task.plannedMinutes, 0), 120);
+  });
   it('does not call one difficult attempt a weak topic, and stops offering repair after two independent successes', () => {
     const plan = gen.generatePlan(input, data);
     const item = plan.items.find((entry) => entry.type === 'dsa');

@@ -8,6 +8,7 @@
 // A stored plan is { input, startDate, deadline, items }, where input is the generator's input.
 const crypto = require('crypto');
 const gen = require('./planGenerator');
+const { hoursOn, refitLearning, assertLearningCapacity } = require('./planTaskSchedule');
 const { previewReportChange } = require('./planReport');
 
 const { dayNumber, ymdOf, baseId, dayBudget } = gen;
@@ -51,13 +52,6 @@ function restorePartialRemainders(items, leftOut = []) {
 }
 
 // ---------- hours of a day, and the room for reviews (15 percent: 85 percent planned minus 70 percent for new items) ----------
-const hoursOn = (input, ymd) => {
-  const n = dayNumber(ymd);
-  const wd = gen.weekdayOf(n);
-  if (wd === (input.restDay ?? null)) return 0;
-  const light = (input.lighterDays || []).find((r) => n >= dayNumber(r.from) && n <= dayNumber(r.to));
-  return light ? light.hours : input.hoursByWeekday[wd];
-};
 const reviewMinutes = (item) => item.type === 'notes' ? 5 : REVIEW_MINUTES;
 const reviewRoom = (hours) => { const b = dayBudget(hours); return hours > 0 ? Math.max(5, b.planned - b.fresh) : 0; };
 
@@ -303,7 +297,7 @@ const previewChange = (stored, data, todayYmd, change) => {
   const originalItems = restorePartialRemainders(stored.items, stored.coverage?.leftOut);
   const groups = new Map();
   for (const it of originalItems) if (isPlannedContent(it)) { const id = baseId(it); if (!groups.has(id)) groups.set(id, []); groups.get(id).push(it); }
-  const kept = [];
+  let kept = [];
   const exclude = new Set();
   const remaining = new Map();
   const partOffset = new Map(); // what is left of a part-done item is numbered after its existing parts
@@ -325,8 +319,9 @@ const previewChange = (stored, data, todayYmd, change) => {
       partOffset.set(id, Math.max(...parts.map((p) => p.part?.n ?? 0)));
     }
   }
+  kept = refitLearning(kept, input, today, requestedDeadline);
   const keptMinutes = new Map();
-  for (const it of kept) if (dayNumber(it.day) >= t) keptMinutes.set(dayNumber(it.day), (keptMinutes.get(dayNumber(it.day)) || 0) + it.plannedMinutes);
+  for (const it of kept) if (!it.skipped && dayNumber(it.day) >= t) keptMinutes.set(dayNumber(it.day), (keptMinutes.get(dayNumber(it.day)) || 0) + it.plannedMinutes);
   const behavioralDone = new Set(stored.items.filter((it) => it.type === 'behavioral' && it.doneAt).map((it) => Number(it.ref.split(':')[1])));
   const backlogMinutes = sum(dueReviews(stored.items, today));
 
@@ -341,9 +336,10 @@ const previewChange = (stored, data, todayYmd, change) => {
     marked.add(id);
   }
   const items = [...kept, ...generated.items].sort((a, b) => a.day.localeCompare(b.day));
+  assertLearningCapacity(items, input);
 
-  const before = stored.items.filter((it) => isPlannedContent(it) && !it.doneAt && !it.skipped);
-  const after = items.filter((it) => isPlannedContent(it) && !it.doneAt && !it.skipped);
+  const before = stored.items.filter((it) => (isPlannedContent(it) || it.source === 'learning') && !it.doneAt && !it.skipped);
+  const after = items.filter((it) => (isPlannedContent(it) || it.source === 'learning') && !it.doneAt && !it.skipped);
   const finishBefore = lastDay(before) || null;
   const finishAfter = lastDay(after) || null;
   const oldDays = firstDayById(before);

@@ -6,6 +6,8 @@ Items marked **optional** are the owner's call: whether and when. Sections 1 to 
 
 ## Done
 
+- [x] Learning-interaction repairs (23 Nov 2026): unique re-offer identities, reduced-hours practice refitting, consistent calibrated application estimates and uninterrupted rehearsal recovery. Full server/client/browser checks and the previously failing scenario matrix passed; details in TESTING.md.
+
 - [x] Learning audit Phases 1 and 2 (23 Nov 2026): actionable roadmap milestones, shared save eligibility, optional starting checks, targeted practice, minute-aware recall/quiz recovery, goal-appropriate rehearsal and previewed effort calibration. Tested with all five sheets/nine roadmaps, private API journeys, browser flows and mutations; exact counts and limits are in TESTING.md.
 
 - [x] Backend modules (19 Nov, branch module) — all ten features grouped under modules, common code in shared, architecture guard and mutation checks passed, empty old folders removed, docs updated. Server 1,112 and client 135 tests, build, lint, SEO and the local startup/API smoke checks passed.

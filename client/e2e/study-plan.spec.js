@@ -263,6 +263,35 @@ test('Learning phase 2: practical role work records assistance without declaring
   expect(result.offers.some((offer) => offer.kind === 'repair')).toBe(false);
 });
 
+test('Learning recovery: re-added practice moves and completes without changing skipped history', async ({ page }) => {
+  await createPlan(page);
+  expect((await page.request.post(API + '/api/plan/learning/check', { data: { id: 'foundation', outcome: 'help' } })).ok()).toBe(true);
+  async function addPractice() {
+    const preview = await page.request.post(API + '/api/plan/learning/preview', { data: { offerId: 'foundation' } });
+    expect(preview.ok()).toBe(true);
+    const { checksum } = (await preview.json()).data;
+    expect((await page.request.post(API + '/api/plan/learning/apply', { data: { offerId: 'foundation', checksum } })).ok()).toBe(true);
+    return (await savedPlan(page)).items.find(item => item.learningKind === 'foundation' && !item.skipped);
+  }
+  const previous = await addPractice();
+  expect((await page.request.post(API + `/api/plan/items/${previous.id}/skip`, { data: {} })).ok()).toBe(true);
+  const fresh = await addPractice();
+  expect(fresh.key).not.toBe(previous.key);
+  const nextDay = new Date(fresh.day + 'T12:00:00Z');
+  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+  expect((await page.request.patch(API + `/api/plan/items/${fresh.id}`, { data: { day: nextDay.toISOString().slice(0, 10) } })).ok()).toBe(true);
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto(`/my-plan/study?tab=plan&item=${fresh.id}`);
+  await page.getByRole('button', { name: 'New to me', exact: true }).click();
+  await page.getByRole('button', { name: 'Save practice assessment', exact: true }).click();
+  await expect(page.getByRole('region', { name: 'Study task' })).toHaveCount(0);
+  const saved = await savedPlan(page);
+  expect(saved.items.find(item => item.id === previous.id).skipped).toBe(true);
+  expect(saved.items.find(item => item.id === fresh.id).doneAt).toBeTruthy();
+  expect(new Set(saved.items.map(item => item.key)).size).toBe(saved.items.length);
+  await assertFits(page);
+});
+
 test('the schedule comes before settings and adjustments on a phone', async ({ page }) => {
   await createPlan(page);
   await page.setViewportSize({ width: 375, height: 812 });

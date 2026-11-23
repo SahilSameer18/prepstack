@@ -1,4 +1,5 @@
 const crypto = require('node:crypto');
+const { refitLearning, assertLearningCapacity } = require('./planTaskSchedule');
 const { dayNumber, ymdOf, weekdayOf, dayBudget, notesMinutes, PlanInputError } = require('./planGenerator');
 
 // A report's DSA ref describes a topic, not a solved problem. Keep it as a task
@@ -123,9 +124,10 @@ function previewReportChange(stored, input, today) {
   }
   const movable = stored.items.filter((item) => item.source.startsWith('analyzer:') && !item.doneAt && !item.skipped && !item.locked);
   const keys = new Set(movable.map((item) => item.key));
-  const kept = stored.items.filter((item) => !keys.has(item.key));
+  const kept = refitLearning(stored.items.filter((item) => !keys.has(item.key)), input, today, stored.deadline);
   const fitted = movable.length ? fitReportItems(movable, kept, input, today, stored.deadline) : { items: [], overloads: [] };
   const items = [...kept, ...fitted.items].sort((a, b) => a.day.localeCompare(b.day));
+  assertLearningCapacity(items, input);
   const finishBefore = movable.map((item) => item.day).sort().at(-1) || null;
   const finishAfter = fitted.items.map((item) => item.day).sort().at(-1) || null;
   const finishChangeDays = finishBefore && finishAfter ? dayNumber(finishAfter) - dayNumber(finishBefore) : 0;
@@ -140,7 +142,8 @@ function previewReportChange(stored, input, today) {
     diff: {
       finishBefore, finishAfter, finishChangeDays,
       finishText: finishChangeDays === 0 ? 'stays the same' : `${Math.abs(finishChangeDays)} days ${finishChangeDays < 0 ? 'earlier' : 'later'}`,
-      movedItems: fitted.items.filter((item) => movable.find((old) => old.key === item.key).day !== item.day).length,
+      movedItems: fitted.items.filter((item) => movable.find((old) => old.key === item.key).day !== item.day).length
+        + kept.filter((item) => item.source === 'learning' && stored.items.some((old) => old.key === item.key && old.day !== item.day)).length,
       newlyLeftOut: 0, nowScheduled: 0, doneProtected: kept.filter((item) => item.doneAt).length,
       lockedKept: kept.filter((item) => item.locked).length, reviewBacklogMinutes: 0, checksum,
     },
