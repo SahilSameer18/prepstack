@@ -64,7 +64,7 @@ function resumePlan(plan, user, now, extendDeadline, solved = new Set()) {
   const { fitted, refitted, movedLocked } = result;
   const finalTaskDay = fitted.at(-1)?.day || today;
   const deadline = finalTaskDay > shiftedDeadline ? finalTaskDay : shiftedDeadline;
-  const items = [...fixed, ...fitted].sort((a, b) => a.day.localeCompare(b.day));
+  const items = [...result.fixed, ...fitted].sort((a, b) => a.day.localeCompare(b.day));
   const extraDays = dayNumber(deadline) - dayNumber(shiftedDeadline);
   const weeks = Math.max(1, Math.ceil((dayNumber(deadline) - dayNumber(plan.startDate) + 1 - totalPausedDays) / 7));
   return {

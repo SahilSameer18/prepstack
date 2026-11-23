@@ -12,6 +12,7 @@ const input = { goalType: 'placements', style: 'one-topic', startDate: day, week
 const event = (key, outcome = 'help', extra = {}) => ({ key, topic: 'arrays-hashing', type: 'dsa',
   kind: 'task', complete: true, day, at: new Date(`${day}T08:00:00Z`), outcome, ...extra });
 const recovery = require('../src/modules/plan/planRecovery');
+const { fitTasks, refitLearning } = require('../src/modules/plan/planTaskSchedule');
 
 function finishExercise(plan, item) {
   for (const part of plan.items.filter(entry => gen.baseId(entry) === gen.baseId(item))) {
@@ -22,6 +23,196 @@ function finishExercise(plan, item) {
 }
 
 describe('optional learning evidence and practice', () => {
+  it('checks earlier remaining days before refusing future practice, without moving protected work', () => {
+    const calendar = { hoursByWeekday: Array(7).fill(3), restDay: null,
+      lighterDays: [{ from: '2026-11-24', to: '2026-11-24', hours: 0.5 }] };
+    for (const kind of ['repair', 'transfer', 'rehearsal']) {
+      const practice = { key: 'later', ref: 'learning:later', type: 'custom', source: 'learning',
+        learningKind: kind, day: '2026-11-24', plannedMinutes: 56 };
+      const locked = { key: 'personal', type: 'custom', source: 'user', locked: true, day, plannedMinutes: 10 };
+      const history = { key: 'history', type: 'custom', source: 'learning', learningKind: 'repair',
+        day: '2026-11-22', plannedMinutes: 20, doneAt: new Date(day + 'T07:00:00Z') };
+      const items = [history, locked, practice];
+      const before = structuredClone(items);
+      const result = refitLearning(items, calendar, day, '2026-11-24');
+      assert.deepEqual(items, before);
+      assert.deepEqual(result.find(item => item.key === history.key), history);
+      assert.deepEqual(result.find(item => item.key === locked.key), locked);
+      assert.equal(result.find(item => item.key === practice.key).day, day);
+      assert.equal(result.filter(item => item.ref === practice.ref).reduce((sum, item) => sum + item.plannedMinutes, 0), 56);
+      if (kind === 'rehearsal') assert.equal(result.filter(item => item.ref === practice.ref).length, 1);
+
+      const impossible = [history, { ...locked, plannedMinutes: 120 }, practice];
+      const protectedState = structuredClone(impossible);
+      assert.throws(() => refitLearning(impossible, calendar, day, '2026-11-24'), /before the deadline/);
+      assert.deepEqual(impossible, protectedState, 'refusal must leave protected and pending work unchanged');
+    }
+  });
+
+  it('uses earlier short slots across pending practice parts instead of falsely refusing the total', () => {
+    const tasks = [40, 30].map((minutes, index) => ({ key: `practice:${index}`, ref: 'learning:short-slots',
+      type: 'custom', source: 'learning', learningKind: 'repair', day, plannedMinutes: minutes }));
+    const calendar = { hoursByWeekday: [1, 1, 0, 0, 0, 0, 0], restDay: null,
+      lighterDays: [{ from: day, to: day, hours: 0.5 }] };
+    const before = structuredClone(tasks);
+    const result = fitTasks(tasks, [], calendar, day, '2026-11-24');
+    assert.ok(result);
+    assert.deepEqual(tasks, before);
+    assert.equal(result.fitted.reduce((sum, item) => sum + item.plannedMinutes, 0), 70);
+    assert.equal(result.fitted[0].day, day, 'use the short slot before moving forward');
+    assert.deepEqual(result.fitted.map(item => item.part.n), [1, 2, 3]);
+    assert.equal(new Set(result.fitted.map(item => item.key)).size, result.fitted.length);
+  });
+
+  it('fits 84 temporary lighter-day combinations across every sheet and roadmap', () => {
+    const curricula = [
+      ...Object.keys(data.sheets).map(sheetSlug => ({ goalType: 'placements', sheetSlug })),
+      ...data.roadmapCatalog.map(roadmap => ({ goalType: 'role', roadmapSlug: roadmap.slug })),
+    ];
+    for (const curriculum of curricula) {
+      for (const kind of ['repair', 'transfer']) {
+        for (const minutes of [40, 70, 120]) {
+          const original = gen.generatePlan({ ...input, ...curriculum, weeks: 2,
+            hoursByWeekday: Array(7).fill(3), restDay: null }, data);
+          const added = learning.previewLearning(original, data, day, { id: kind, kind, title: 'Practice', minutes });
+          const before = structuredClone(added.plan);
+          const change = { type: 'lighter', lighterDays: [{ from: day, to: original.deadline, hours: 0.5 }] };
+          const changed = adj.previewChange(added.plan, data, day, change);
+          assert.deepEqual(added.plan, before, 'preview must leave saved work untouched');
+          const practice = changed.plan.items.filter(item => item.learningKind === kind);
+          assert.equal(practice.reduce((total, item) => total + item.plannedMinutes, 0), minutes);
+          assert.equal(new Set(changed.plan.items.map(item => item.key)).size, changed.plan.items.length);
+          for (const item of practice) {
+            const used = changed.plan.items.filter(other => other.day === item.day && !other.skipped)
+              .reduce((total, other) => total + other.plannedMinutes, 0);
+            assert.ok(used <= gen.dayBudget(adj.hoursOn(changed.plan.input, item.day)).planned);
+          }
+        }
+      }
+    }
+  });
+
+  it('matches remaining capacity in 288 fresh calendar, split and protected-progress combinations', () => {
+    const patterns = [Array(7).fill(0.5), [0, 1, 0.5, 0, 2, 0, 1], Array(7).fill(2)];
+    let cases = 0;
+    for (const days of [1, 3, 7, 14]) {
+      for (const hours of patterns) {
+        for (const minutes of [10, 21, 40, 70, 120, 300]) {
+          for (const count of [1, 2]) {
+            for (const protect of [false, true]) {
+              const deadline = gen.ymdOf(gen.dayNumber(day) + days - 1);
+              const calendar = { hoursByWeekday: hours, restDay: 6,
+                lighterDays: [{ from: day, to: gen.ymdOf(gen.dayNumber(day) + Math.min(2, days - 1)), hours: 0.5 }] };
+              const fixed = [{ key: 'history', ref: 'learning:capacity', type: 'custom', source: 'learning',
+                learningKind: 'repair', day: '2026-11-22', plannedMinutes: 5,
+                part: { n: 1, of: 4 }, doneAt: new Date(day + 'T07:00:00Z') }];
+              if (protect) fixed.push({ key: 'locked', ref: 'learning:capacity', type: 'custom', source: 'learning',
+                learningKind: 'repair', day, plannedMinutes: 8, part: { n: 4, of: 4 }, locked: true });
+              const tasks = Array.from({ length: count }, (_, index) => ({ key: `capacity:${index}`,
+                ref: 'learning:capacity', type: 'custom', source: 'learning', learningKind: 'repair', day,
+                plannedMinutes: count === 1 ? minutes : index === 0 ? Math.ceil(minutes / 2) : Math.floor(minutes / 2) }));
+              const before = structuredClone({ tasks, fixed, calendar });
+              // Independent arithmetic oracle: splittable parts can use every
+              // remaining fresh minute after protected commitments are reserved.
+              let capacity = 0;
+              for (let n = gen.dayNumber(day); n <= gen.dayNumber(deadline); n += 1) {
+                const date = gen.ymdOf(n);
+                const used = fixed.filter(item => item.day === date).reduce((sum, item) => sum + item.plannedMinutes, 0);
+                capacity += Math.max(0, gen.dayBudget(adj.hoursOn(calendar, date)).fresh - used);
+              }
+              const result = fitTasks(tasks, fixed, calendar, day, deadline, { budget: 'fresh' });
+              assert.deepEqual({ tasks, fixed, calendar }, before);
+              assert.equal(!!result, minutes <= capacity, JSON.stringify({ days, hours, minutes, count, protect, capacity }));
+              if (result) {
+                assert.equal(result.fitted.reduce((sum, item) => sum + item.plannedMinutes, 0), minutes);
+                assert.deepEqual(result.fixed.find(item => item.key === 'history'), fixed[0]);
+                const all = [...result.fixed, ...result.fitted];
+                assert.equal(new Set(all.map(item => item.key)).size, all.length);
+                const pending = all.filter(item => !item.doneAt).sort((a, b) => a.day.localeCompare(b.day) || a.part.n - b.part.n);
+                assert.deepEqual(pending.map(item => item.part.n), pending.map((_, index) => index + 2));
+                if (protect) {
+                  const locked = result.fixed.find(item => item.key === 'locked');
+                  assert.equal(locked.day, day);
+                  assert.equal(locked.plannedMinutes, 8);
+                  assert.equal(locked.locked, true);
+                }
+                for (const item of result.fitted) {
+                  const used = all.filter(other => other.day === item.day).reduce((sum, other) => sum + other.plannedMinutes, 0);
+                  assert.ok(used <= gen.dayBudget(adj.hoursOn(calendar, item.day)).fresh);
+                }
+              }
+              cases += 1;
+            }
+          }
+        }
+      }
+    }
+    assert.equal(cases, 288);
+  });
+
+  it('keeps locked learning parts in chronological order across all 14 curricula', () => {
+    const curricula = [
+      ...Object.keys(data.sheets).map(sheetSlug => ({ goalType: 'placements', sheetSlug })),
+      ...data.roadmapCatalog.map(roadmap => ({ goalType: 'role', roadmapSlug: roadmap.slug })),
+    ];
+    for (const curriculum of curricula) {
+      const original = gen.generatePlan({ ...input, ...curriculum, weeks: 2,
+        hoursByWeekday: Array(7).fill(0.5), restDay: null }, data);
+      const added = learning.previewLearning(original, data, day,
+        { id: 'split', kind: 'repair', title: 'Practice', minutes: 56 });
+      const parts = added.plan.items.filter(item => item.learningKind === 'repair');
+      assert.equal(parts.length, 3);
+      const last = parts.at(-1);
+      const moved = adj.moveItem(added.plan, last.key, gen.ymdOf(gen.dayNumber(last.day) + 1));
+      assert.ok(!moved.error, moved.error);
+      const stored = { ...added.plan, items: moved.items };
+      // Completed history and the locked date/identity must survive a rebuild.
+      stored.items.find(item => item.key === parts[0].key).doneAt = new Date(day + 'T08:00:00Z');
+      const before = structuredClone(stored);
+      const rebuilt = adj.previewChange(stored, data, day, { type: 'rebuild' });
+      assert.deepEqual(stored, before);
+      for (const item of before.items.filter(item => item.doneAt || item.locked)) {
+        assert.deepEqual(rebuilt.plan.items.find(other => other.key === item.key), item);
+      }
+      const sequence = rebuilt.plan.items.filter(item => item.learningKind === 'repair');
+      assert.deepEqual(sequence.map(item => item.part.n), [1, 2, 3]);
+      assert.equal(sequence.reduce((sum, item) => sum + item.plannedMinutes, 0), 56);
+    }
+  });
+
+  it('classifies task, practice and review evidence by the relevant activity fields', () => {
+    const cases = [
+      { type: 'dsa', response: { result: 'hints' }, outcome: 'help' },
+      { type: 'dsa', response: { result: 'solution' }, outcome: 'help' },
+      { type: 'notes', response: { quizScore: 0 }, outcome: 'help' },
+      { type: 'notes', response: { quizScore: 3 }, outcome: 'help' },
+      { type: 'roadmap', response: { result: 'hints' }, outcome: 'help' },
+      { type: 'roadmap', response: { result: 'solution' }, outcome: 'help' },
+      { type: 'dsa', response: { result: 'alone' }, outcome: 'independent' },
+      { type: 'notes', response: { quizScore: 4 }, outcome: 'independent' },
+      { type: 'roadmap', response: { result: 'alone' }, outcome: 'independent' },
+      { type: 'notes', response: {}, outcome: 'completed' },
+      { type: 'dsa', response: {}, outcome: 'completed' },
+      { type: 'roadmap', response: {}, outcome: 'completed' },
+    ];
+    for (const { type, response, outcome } of cases) {
+      const item = { key: 'evidence', ref: type + ':example', type, doneAt: new Date() };
+      const plan = { items: [item], learningAttempts: [] };
+      for (const unrelated of [undefined, 0, 5]) {
+        const extra = unrelated === undefined ? {} : type === 'notes'
+          ? { result: unrelated ? 'alone' : 'solution' } : { quizScore: unrelated };
+        const logged = learning.attemptLog(plan, item, { ...response, ...extra }, day, new Date());
+        assert.equal(logged.at(-1).outcome, outcome, JSON.stringify({ type, response, extra }));
+      }
+      for (const passed of [false, true]) {
+        const logged = learning.attemptLog(plan, item, { ...response, passed }, day, new Date(), 'review');
+        assert.equal(logged.at(-1).outcome, passed ? 'independent' : 'help');
+      }
+      const practice = learning.attemptLog(plan, item, { result: 'hints', quizScore: 5 }, day, new Date(), 'practice');
+      assert.equal(practice.at(-1).outcome, 'help');
+    }
+  });
+
   it('keeps skipped episodes intact while repeated foundation and rehearsal re-offers get unique keys', () => {
     for (const kind of ['foundation', 'rehearsal']) {
       let plan = gen.generatePlan(input, data);

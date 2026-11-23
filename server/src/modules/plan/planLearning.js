@@ -16,14 +16,24 @@ function topicOf(item) {
 }
 const plain = (value) => value?.toObject ? value.toObject() : value;
 
+// Only the evidence for this activity counts. A stray quiz score must not turn
+// an assisted solve into independent work, or override a reported practice result.
+function activityOutcome(item, response, kind) {
+  if (kind === 'review') return response.passed ? 'independent' : 'help';
+  if (item.type === 'notes' && kind !== 'practice') {
+    if (response.quizScore == null) return 'completed';
+    return response.quizScore >= 4 ? 'independent' : 'help';
+  }
+  if (response.result === 'alone') return 'independent';
+  return response.result ? 'help' : 'completed';
+}
+
 function attemptLog(plan, item, response, day, now, kind = 'task') {
   const parts = plan.items.filter((part) => gen.baseId(part) === gen.baseId(item));
   const complete = parts.every((part) => part.doneAt && !part.unscheduledMinutes);
   const event = {
     key: gen.baseId(item), topic: topicOf(item), type: item.type, kind, day, at: now,
-    outcome: kind === 'review' ? (response.passed ? 'independent' : 'help')
-      : response.result === 'alone' || response.quizScore >= 4 ? 'independent'
-        : response.result || response.quizScore !== undefined ? 'help' : 'completed',
+    outcome: activityOutcome(item, response, kind),
     effort: response.effort || null, complete,
     familiar: response.familiar ?? null,
     independent: response.independent ?? null, explained: response.explained ?? null, tested: response.tested ?? null,

@@ -6,6 +6,8 @@ Items marked **optional** are the owner's call: whether and when. Sections 1 to 
 
 ## Done
 
+- [x] Remaining My Plan audit repairs (23 Nov 2026): actual remaining-day capacity, chronological pending split labels and activity-specific learning evidence. All 104 failing cases pass; permanent regressions, earlier/fresh scenarios and full checks are recorded in TESTING.md. DebugLab is next.
+
 - [x] Learning-interaction repairs (23 Nov 2026): unique re-offer identities, reduced-hours practice refitting, consistent calibrated application estimates and uninterrupted rehearsal recovery. Full server/client/browser checks and the previously failing scenario matrix passed; details in TESTING.md.
 
 - [x] Learning audit Phases 1 and 2 (23 Nov 2026): actionable roadmap milestones, shared save eligibility, optional starting checks, targeted practice, minute-aware recall/quiz recovery, goal-appropriate rehearsal and previewed effort calibration. Tested with all five sheets/nine roadmaps, private API journeys, browser flows and mutations; exact counts and limits are in TESTING.md.

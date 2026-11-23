@@ -629,7 +629,8 @@ const updateItem = async (req, res, next) => {
             return next(new AppError(422, errorMessages[markRes.error] || markRes.error));
           }
           applyItemsUpdate(doc, markRes.items);
-          doc.learningAttempts = learning.attemptLog(doc, item, body, today(req), planClock.now());
+          // Match the normalized solve result, including the default for a DSA tick.
+          doc.learningAttempts = learning.attemptLog(doc, item, { ...body, result: info.result }, today(req), planClock.now());
           if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt && !p.unscheduledMinutes)) { // the sheet is ticked when the last part is done
             dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true, studyDay: today(req) };
             if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);

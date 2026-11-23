@@ -1,4 +1,37 @@
-## Overall replay and fresh-scenario audit — 23 Nov 2026
+## Remaining My Plan audit repairs — 23 Nov 2026
+
+The three findings in the historical audit below are repaired. The initial reproduction reran the unchanged 482-case matrix: 84 temporary-capacity failures, 14 locked-part ordering failures and six mixed-field evidence failures. The final replay passed all 482 cases, including all 104 previously failing cases.
+
+| Check | Observed result |
+|---|---|
+| Full server | 1,190 tests, 225 suites; zero failures/skips/cancellations; 192.0 seconds. |
+| Full client | 218 tests across 17 files; all passed. |
+| Lint/build/SEO | ESLint, production build and prerender passed; 101 pages, 91 indexable URLs, zero SEO warnings. Existing large-chunk advisory remains. |
+| Original 5,000 scheduling inputs | Seed 20261125; zero invariant violations; 3,630 fresh/1,370 changes, including 1,360 applied and 10 expected refusals. |
+| Original 3,000 scheduling inputs | Seed 20261128; zero invariant violations; 2,216 fresh/784 changes, including 778 applied and six expected refusals. |
+| Previous additional 10,000 inputs | Original seeds 20261129/20261130 with earlier signatures excluded; zero invariant violations. |
+| New 5,000 scheduling inputs | Seeds 20261201/20261202; excluded signatures from both original sets and both earlier additional seed pools, and deduplicated the new set; zero invariant violations. All five sheets, nine roadmaps and three goals represented. |
+| 378 learning changes | Existing named matrix passed in the final full server and targeted learning runs. |
+| 163 earlier interactions | All passed after final fitting changes; impossible rehearsals still refuse without saving. |
+| 482-case replay | 336 workload/calendar, 14 locked-order, 60 calendar-boundary, 60 pause/resume and 12 evidence cases passed. |
+| New permanent capacity combinations | 288 combinations of remaining windows, uneven/rest/lighter calendars, one/two pending parts and protected work; matched a remaining-minute capacity oracle. All passed. |
+| Additional permanent edge cases | Earlier short slots across several parts; future practice refitted into earlier remaining room; impossible deadlines and uninterrupted rehearsals; immutable completed rows, locked dates and identities. All passed. |
+| Final planner API suite | 67 tests across 12 suites passed after the final fitting change; includes mixed-field validation, normalized DSA defaults and saved-progress checks. |
+| Earlier real API replay | 37 requests passed; episode identity, calibrated estimates, reduced hours and preserved progress remain green. |
+| Focused three-gap API replay | 17 requests; temporary lighter preview now 200, labels chronological, minutes/keys/completions preserved and mixed DSA evidence correctly classified as help. |
+| Earlier mixed API journeys | Seed 20261130: 295 requests across four learners passed, including two review flows and two substitutions. |
+| New mixed API journeys | Seed 20261201: 295 requests across four learners passed, including two review flows and two substitutions. |
+| Mutations | Four deliberate in-memory regressions were caught: ignore temporary room, count locked future parts as history, mix outcome fields, and waste earlier short slots. No tracked file was overwritten for mutations. |
+
+Implementation is localized to planTaskSchedule.js, planRecovery.js, planLearning.js and the DSA completion call in plan.controller.js. Tests were added to existing plan-learning.test.js and plan-api.test.js. No dependency, migration or content seed is required. The result route already rejects mixed result/quiz fields; PATCH accepts them, so classification ignores irrelevant fields. Tests cover both boundaries, default DSA ticks and notes/roadmap outcomes.
+
+Two additional false refusals were found while expanding capacity checks: keeping parts whole could waste an earlier short slot, and retaining original future dates could overlook usable earlier days. Ordinary practice may split; the fitter prefers original dates then tries the remaining calendar before refusing. Locked dates stay reserved. Rehearsals never split.
+
+Initial check failures and resolution: the sandbox blocked esbuild's config-directory access; the approved client rerun outside it passed. A new API test incorrectly expected the result route to accept mixed fields and to rewrite a completed item; those expectations were corrected to the existing 422 contracts and a separate unfinished exercise. The targeted rerun and final full server run passed. An initial same-day split assertion exposed fragment-order relabelling; placement order now resolves same-day ties and its regression passes. A mutation runner launched from the server directory could not resolve its root-relative paths; rerunning from the repository root caught all four mutations.
+
+Logs and disposable scripts are ignored under .tmp/three-gaps-*.log and .tmp/three-gaps-*.cjs; existing ignored audit scripts were reused. No production environment/database/Redis, live seed, deployment, real AI/email/Google call, physical-device test or new browser UI run was used or claimed. Client code and Today were unchanged. Counts describe tested scheduling/evidence rules, not a universal learning-accuracy percentage or proof of globally optimal packing.
+
+## Historical audit before the repairs above — 23 Nov 2026
 
 **DebugLab documentation revision, 23 Nov 2026:** documentation-only review of the supplied audit and current parser, ownership/deletion and pipeline call sites. Checked Markdown structure, example arithmetic and diff whitespace. No runner/browser security probes or application suites were rerun for this plan edit; historical audit experiments remain attributed rather than claimed as new verification.
 

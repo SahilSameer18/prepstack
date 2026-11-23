@@ -29,7 +29,7 @@ Most people do not fail interview preparation for lack of material. They fail be
 
 **Free.** Reading (sheets, notes, roadmaps, the plan preview) needs no account; saving a plan and progress needs a login.
 
-**Status:** live at [prepstack-ss.vercel.app](https://prepstack-ss.vercel.app) and in active development. Current focus: a study of My plan with students and a benchmark for the Role Analyzer (see [Roadmap](#deployment-notes-and-roadmap)).
+**Status:** live at [prepstack-ss.vercel.app](https://prepstack-ss.vercel.app) and in active development. Current work: My Plan reliability and scenario verification; DebugLab is the next implementation priority. Workspace verification does not mean these changes are deployed. Student validation and the Role Analyzer benchmark remain separate work (see [Roadmap](#deployment-notes-and-roadmap)).
 
 ## Product Tour
 
@@ -86,6 +86,7 @@ The planner is free to preview and needs a login to save. You pick a goal (big-t
 - **Review ladder.** Finishing a problem schedules reviews at fixed gaps that depend on how you solved it (alone, with hints, or with the solution). Today shows due reviews within its review allowance. The Reviews tab shows the full due list.
 - **Sheet sync.** Ticking a problem in the plan ticks it on its DSA sheet, and a problem already solved on a sheet shows as done in the plan. A problem split over several days is solved on the sheet only when its last part is done.
 - **Safe changes.** Rebuild from today (optionally with a later deadline), new hours and lighter days always show a preview with a diff first. Nothing is saved until you confirm, and a stale preview is refused.
+- **Optional learning practice.** Practice uses actual remaining-day hours, including temporary lighter days and protected commitments. Pending parts stay in order; completed history and locked dates survive rebuilding. Rehearsals require one uninterrupted slot. Learning evidence follows the activity: DSA solve result, notes quiz score or reported practice outcome; it is self-reported, not a readiness score.
 - **Life happens.** A study calendar (your timezone and the hour the day starts, for night owls), pause and resume (the whole calendar and all review dates move forward together), review catch-up that spreads overdue reviews over several days, one paused main plan next to a short interview sprint, and a substitute for a problem whose link is dead or paywalled (the original stays unsolved).
 - **From the Role Analyzer.** A report's study plan can be merged into the plan, or replace it, after a preview. History of replaced and finished plans is read-only.
 - **Privacy.** Plans belong to the account and are deleted with it.

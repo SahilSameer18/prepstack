@@ -4,7 +4,7 @@ const t = require('./helpers/setup');
 const { describe, it, before, after, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const { planClock } = require('../src/shared/calendar/clock');
-const { todayIst, dayNumber, ymdOf } = require('../src/modules/plan/planGenerator');
+const { todayIst, dayNumber, ymdOf, baseId } = require('../src/modules/plan/planGenerator');
 
 let Plan, Progress;
 before(async () => {
@@ -25,6 +25,46 @@ const personalPreview = (acct, body) => t.api.post('/api/plan/preview/personal',
 describe('Phase 2 optional learning, ownership and confirmed scheduling', () => {
   const learningRead = (acct) => t.api.get('/api/plan/learning', { cookies: acct.cookies });
   const learningPost = (acct, action, body) => t.api.post('/api/plan/learning/' + action, { cookies: acct.cookies, body });
+
+  it('keeps DSA, notes and roadmap evidence consistent through PATCH and result routes', async () => {
+    for (const type of ['dsa', 'notes', 'roadmap', 'default-dsa']) {
+      const acct = await t.register();
+      const body = type === 'roadmap' ? form({ goalType: 'role', roadmapSlug: 'frontend', sheetSlug: undefined, subjects: [] }) : form();
+      const created = await create(acct, body);
+      assert.equal(created.status, 201, JSON.stringify(created.body));
+      const items = created.body.data.plan.items;
+      const source = items.find(item => item.type === (type === 'default-dsa' ? 'dsa' : type));
+      assert.ok(source, type);
+      const response = type === 'notes' ? { quizScore: 0, result: 'alone' }
+        : type === 'default-dsa' ? { quizScore: 5 } : { result: 'solution', quizScore: 5 };
+      for (const part of items.filter(item => baseId(item) === baseId(source))) {
+        const reply = await t.api.patch(`/api/plan/items/${part.id}`, { cookies: acct.cookies, body: { done: true, ...response } });
+        assert.equal(reply.status, 200, JSON.stringify(reply.body));
+      }
+      const completed = await Plan.findOne({ user: acct.id }).lean();
+      assert.equal(completed.learningAttempts.at(-1).outcome, type === 'default-dsa' ? 'independent' : 'help');
+      assert.equal(completed.learningAttempts.at(-1).complete, true);
+
+      const result = type === 'notes' ? { quizScore: 5, result: 'solution' } : { result: 'alone', quizScore: 0 };
+      const last = items.filter(item => baseId(item) === baseId(source)).at(-1);
+      // Unlike PATCH, the result route rejects mixed fields at validation.
+      const rejected = await t.api.post(`/api/plan/items/${last.id}/result`, { cookies: acct.cookies, body: result });
+      assert.equal(rejected.status, 422);
+      assert.deepEqual(await Plan.findOne({ user: acct.id }).lean(), completed);
+      const relevant = type === 'notes' ? { quizScore: 5 } : { result: 'alone' };
+      const next = completed.items.find(item => item.type === source.type && !item.doneAt && !item.skipped);
+      assert.ok(next);
+      for (const part of completed.items.filter(item => baseId(item) === baseId(next))) {
+        const reply = await t.api.post(`/api/plan/items/${part._id}/result`, { cookies: acct.cookies, body: relevant });
+        assert.equal(reply.status, 200, JSON.stringify(reply.body));
+      }
+      const saved = await Plan.findOne({ user: acct.id }).lean();
+      assert.equal(saved.learningAttempts.at(-1).outcome, 'independent');
+      for (const done of completed.items.filter(item => item.doneAt)) {
+        assert.deepEqual(saved.items.find(item => item.key === done.key).doneAt, done.doneAt);
+      }
+    }
+  });
 
   it('can move a re-added foundation task without touching its skipped predecessor', async () => {
     const acct = await t.register();
@@ -50,7 +90,8 @@ describe('Phase 2 optional learning, ownership and confirmed scheduling', () => 
     assert.equal(new Set(saved.items.map(item => item.key)).size, saved.items.length);
   });
 
-  it('reflows an A2Z application check when daily hours shrink, preserving its minutes and completed work', async () => {
+  it('fits temporary lighter days, preserves locked split order and records the actual DSA outcome', async () => {
+    planClock.now = () => new Date('2026-11-09T08:00:00Z');
     const acct = await t.register();
     const created = await create(acct, form({ goalType: 'placements', sheetSlug: 'striver-a2z', pace: 'slower', weeks: 4, weekdayHours: 3, weekendHours: 3, restDay: null, subjects: [] }));
     assert.equal(created.status, 201);
@@ -58,16 +99,26 @@ describe('Phase 2 optional learning, ownership and confirmed scheduling', () => 
     for (const part of created.body.data.plan.items.filter(item => item.link === first.link)) {
       assert.equal((await t.api.post(`/api/plan/items/${part.id}/result`, { cookies: acct.cookies, body: { result: 'alone' } })).status, 200);
     }
+    planClock.now = () => new Date('2026-11-23T08:00:00Z');
     const offer = (await learningRead(acct)).body.data.offers.find(item => item.kind === 'transfer');
     assert.ok(offer);
     const preview = await learningPost(acct, 'preview', { offerId: offer.id });
     assert.equal(preview.status, 200);
     assert.equal((await learningPost(acct, 'apply', { offerId: offer.id, checksum: preview.body.data.checksum })).status, 200);
     const before = await Plan.findOne({ user: acct.id }).lean();
+    const lighter = { type: 'lighter', lighterDays: [{ from: '2026-11-23', to: before.deadline, hours: 0.5 }] };
+    const temporary = await t.api.post('/api/plan/changes/preview', { cookies: acct.cookies, body: lighter });
+    assert.equal(temporary.status, 200, JSON.stringify(temporary.body));
+    assert.deepEqual(await Plan.findOne({ user: acct.id }).lean(), before, 'preview must not write');
+    const applied = await t.api.post('/api/plan/changes/apply', {
+      cookies: acct.cookies, body: { ...lighter, checksum: temporary.body.data.diff.checksum },
+    });
+    assert.equal(applied.status, 200, JSON.stringify(applied.body));
     const hours = { type: 'hours', weekdayHours: 0.5, weekendHours: 0.5, restDay: null };
+    const beforeHours = await Plan.findOne({ user: acct.id }).lean();
     const changed = await t.api.post('/api/plan/changes/preview', { cookies: acct.cookies, body: hours });
     assert.equal(changed.status, 200, JSON.stringify(changed.body));
-    assert.deepEqual(await Plan.findOne({ user: acct.id }).lean(), before);
+    assert.deepEqual(await Plan.findOne({ user: acct.id }).lean(), beforeHours);
     assert.equal((await t.api.post('/api/plan/changes/apply', { cookies: acct.cookies, body: { ...hours, checksum: changed.body.data.diff.checksum } })).status, 200);
     const after = await Plan.findOne({ user: acct.id }).lean();
     const practice = after.items.filter(item => item.learningKind === 'transfer');
@@ -75,6 +126,36 @@ describe('Phase 2 optional learning, ownership and confirmed scheduling', () => 
     assert.ok(practice.every(item => item.plannedMinutes <= 30));
     assert.equal(new Set(after.items.map(item => item.key)).size, after.items.length);
     for (const done of before.items.filter(item => item.doneAt)) assert.deepEqual(after.items.find(item => item.key === done.key), done);
+
+    const last = practice.at(-1);
+    const lockedDay = ymdOf(dayNumber(last.day) + 1);
+    const moved = await t.api.patch(`/api/plan/items/${last._id}`, { cookies: acct.cookies, body: { day: lockedDay } });
+    assert.equal(moved.status, 200, JSON.stringify(moved.body));
+    const locked = await Plan.findOne({ user: acct.id }).lean();
+    const rebuilt = await t.api.post('/api/plan/changes/preview', { cookies: acct.cookies, body: { type: 'rebuild' } });
+    assert.equal(rebuilt.status, 200, JSON.stringify(rebuilt.body));
+    assert.equal((await t.api.post('/api/plan/changes/apply', { cookies: acct.cookies,
+      body: { type: 'rebuild', checksum: rebuilt.body.data.diff.checksum } })).status, 200);
+    const saved = (await getPlan(acct)).body.data.plan;
+    const sequence = saved.items.filter(item => item.learningKind === 'transfer');
+    assert.deepEqual(sequence.map(item => item.part.n), sequence.map((_, index) => index + 1));
+    assert.equal(sequence.reduce((sum, item) => sum + item.plannedMinutes, 0), offer.minutes);
+    const stored = await Plan.findOne({ user: acct.id }).lean();
+    for (const protectedItem of locked.items.filter(item => item.doneAt || item.locked)) {
+      assert.deepEqual(stored.items.find(item => item.key === protectedItem.key), protectedItem);
+    }
+
+    // Quiz data accepted by the shared PATCH must not override a DSA solve.
+    const next = saved.items.find(item => item.type === 'dsa' && !item.doneAt && !item.skipped);
+    assert.ok(next);
+    for (const part of saved.items.filter(item => item.ref === next.ref)) {
+      const finished = await t.api.patch(`/api/plan/items/${part.id}`, { cookies: acct.cookies,
+        body: { done: true, result: 'solution', quizScore: 5 } });
+      assert.equal(finished.status, 200, JSON.stringify(finished.body));
+    }
+    const evidence = (await Plan.findOne({ user: acct.id }).lean()).learningAttempts.at(-1);
+    assert.equal(evidence.type, 'dsa');
+    assert.equal(evidence.outcome, 'help');
   });
 
   it('keeps starting checks optional and correctable without touching progress, and isolates accounts', async () => {
