@@ -1,3 +1,4 @@
+import StudyLearning from './StudyLearning';
 import { Link } from "react-router-dom";
 import { CaretDown, DotsThree } from "@phosphor-icons/react";
 import PlanChecklist from "../analyzer/PlanChecklist";
@@ -42,6 +43,9 @@ export default function StudySchedule({
   const days = studyChecklistDays(plan.items.filter((item) => !item.skipped));
   const weeks = studyWeeks(days, plan.startDate);
   const currentDay = model.data.calendar?.today || dateInIndia();
+  // Confirmed effort feedback changes the estimate as well as the chosen pace.
+  const effortFactor = plan.estimateFactors?.dsa || 1;
+  const mediumMinutes = Math.round(paceMinutes(plan.pace) * effortFactor);
   const overdue = plan.items.filter((item) => !item.doneAt && !item.solvedOnSheet && !item.skipped && item.day < currentDay);
   const pull = !readOnly && pullForwardItem(plan, today, currentDay);
   const round = revisionRoundItems(plan.items);
@@ -65,7 +69,10 @@ export default function StudySchedule({
         <p className="font-code text-sm leading-relaxed text-muted">
           {progress.done} of {progress.total} tasks complete · {formatPlanMinutes(progress.minutes)} completed ·{" "}
           {formatPlanDate(plan.startDate, true)} to {formatPlanDate(plan.deadline, true)}
-          {!plan.fromReport && <> · {(PACES[plan.pace] || PACES.standard).label} pace (a Medium problem takes about {paceMinutes(plan.pace)} min)</>}
+          {!plan.fromReport && <>
+            {' '}· {(PACES[plan.pace] || PACES.standard).label} pace (a Medium problem takes about {mediumMinutes} min)
+            {effortFactor !== 1 && ' after your effort adjustment'}
+          </>}
         </p>
         {today?.onTrack?.text && <p className="font-medium text-fg">{today.onTrack.text}</p>}
         {!readOnly && overdue.length > 0 && (
@@ -198,6 +205,7 @@ export default function StudySchedule({
       <section aria-label="Plan settings" className="space-y-6">
         <h3 className="font-display text-xl font-bold text-fg">Adjust your plan</h3>
         {recoveryControls}
+        {!readOnly && <StudyLearning plan={plan} model={model} onStart={onStart} />}
         <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
           {!readOnly && (
             <Group label="Adjust">

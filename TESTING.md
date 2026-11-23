@@ -1,3 +1,25 @@
+## Learning audit Phase 2 verification — 23 Nov 2026
+
+The optional checks, practice/rehearsal, review budgets and confirmed estimate feedback are implemented. These results describe software rules and self-reported practice, not a measured learning-accuracy or interview-readiness percentage.
+
+| Check | Observed result |
+|---|---|
+| Full server regression | 1,174 tests, 225 suites, zero failures; 611.5 seconds. This run preceded the final roadmap-topic isolation refinement and its additional test. |
+| Final learning gate | 15 tests passed after that refinement: 12 learning-policy tests plus 3 real API journeys. An additional targeted calibration/GET assertion passed after exposing saved estimate factors to the Plan summary. The API journeys include two different active owners, no-login refusal, correctable/skippable baselines, unchanged completion/review dates, stale/duplicate/concurrent consent, separate practice credit and confirmed calibration. |
+| Learning change matrix | 378 changes across all five sheets and nine roadmaps, 0.5/1/3-hour profiles, 4/12/26-week horizons, uneven calendars and repair/application/rehearsal activities. No budget, deadline, rest-day, identity or protected-completion assertion failed. |
+| Fresh seeded sweep | 5,000 scenarios, seed 20261125: 3,630 fresh plans and 1,370 changes; 1,360 changes applied and 10 intentionally refused; zero invariant violations. |
+| Client regression | 218 tests in 17 files passed on the final application source, including a new source-step/material-link regression. |
+| Browser regression | Final complete run: 23/23 passed. Additional role-work outcome flow: 1/1 passed. Includes private preview, Today, task/quiz/review, report import, history, freeze/resume, extension, substitution, phone layout, keyboard cancel/focus, stale writes and optional learning controls. |
+| Mutations | Four in-memory mutations caught by assertions: premature struggle inference, insufficient calibration evidence, shared original/repair identity, and splitting an interview across days. Tracked sources were never overwritten for mutations. |
+| Build/lint/SEO | Production Vite build and ESLint passed; prerender 101 pages and SEO 91 indexable URLs, zero SEO warnings. Vite still emits the existing large-chunk advisory. |
+| Visual review | Desktop and 375 px phone checks, light/dark task detail, meaningful disabled/selected controls, no horizontal overflow. Theme capture waits for the actual transition to finish before inspecting the settled page; the final transition-aware browser rerun passed 1/1. |
+
+Commands actually used: server npm test; Node test runner on plan-api.test.js and plan-learning.test.js with a learning-only name filter; node scripts/plan-fuzz.js 5000 20261125; client Vitest with --configLoader runner; Vite build with --configLoader runner followed by prerender.mjs and seo-check.mjs; ESLint; Playwright study-plan.spec.js on a disposable fixture at 3100 and Vite at 5175. Local ignored runner configs supplied those test ports, unique artifact directories and the installed Chrome executable. No production environment file, database, Redis or live seed was used. Owned test servers were stopped; ports 3100 and 5175 were verified free.
+
+Corrections and reruns: the first focused run found a Mongoose attempt-entry schema casting error, corrected before the full server pass. Browser testing exposed focus loss after cancelling the asynchronously opened preview; the initiating button is now explicitly restored after modal cleanup. An early full browser run finished 20/23 with that focus failure, an existing quiz timeout during source/build activity and a misencoded middle-dot test locator. The locator/text encoding was corrected and a stable full rerun passed 23/23, including the quiz retry. One separate runner attempt could not launch Chrome because its environment did not resolve the installed executable; it reached no application assertions and was rerun with the explicit executable path. A dark screenshot initially captured the active theme snapshot; a transition-aware capture verifies the settled page instead. These failed attempts are not counted as successful checks.
+
+Coverage limits: no online judge or AI grade, universal mastery claim, deployment, live-device performance measurement or measured student learning outcome. Existing 600-item storage and fixed-deadline capacity limits remain explicit. The seeded sweep still reports honest omissions under insufficient time: 1,952 sheet plans cut material, with 458 missing a DSA topic group and 422 missing a selected notes subject; 968 role plans cut material. These are reported capacity outcomes, not hidden full-syllabus promises. Existing old plans are not silently converted to a new curriculum. Relative effort changes are bounded planning assumptions, not calibrated elapsed-time measurements.
+
 What exists today (updated 2026-11-23)
 
 ## Learning audit Phase 1 verification — 23 Nov 2026

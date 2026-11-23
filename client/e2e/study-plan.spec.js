@@ -154,6 +154,115 @@ async function savedPlan(page) {
   return (await response.json()).data.plan;
 }
 
+test('Learning phase 2: optional check, confirmed practice and self-report on desktop and phone', async ({ page }) => {
+  const { plan } = await createPlan(page);
+  await page.goto('/my-plan/study?tab=plan');
+  const learning = page.getByRole('region', { name: 'Learning checks', exact: true });
+  await learning.getByText('Optional starting check', { exact: true }).click();
+  await learning.getByRole('button', { name: 'I would like practice', exact: true }).click();
+  await expect(learning.getByText('Practise the foundations', { exact: false })).toBeVisible();
+  const before = await savedPlan(page);
+  expect(before.items).toEqual(plan.items);
+  await learning.getByRole('button', { name: 'Preview schedule change', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Review learning change' });
+  await expect(dialog).toContainText('completed parts are protected');
+  expect((await savedPlan(page)).items).toEqual(before.items);
+  await assertFits(page);
+  await dialog.getByRole('button', { name: 'Apply learning change', exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+  const applied = await savedPlan(page);
+  const practice = applied.items.find((item) => item.learningKind === 'foundation');
+  expect(practice).toBeTruthy();
+  await page.goto(`/my-plan/study?tab=plan&item=${practice.id}`);
+  const task = page.getByRole('region', { name: 'Study task' });
+  const save = task.getByRole('button', { name: 'Save practice assessment' });
+  await expect(save).toBeDisabled();
+  await task.getByRole('button', { name: 'Seen before', exact: true }).click();
+  await task.getByLabel('I implemented or demonstrated it independently').check();
+  await task.getByLabel('I explained my approach and trade-offs').check();
+  await task.getByLabel('I checked ordinary inputs and edge cases').check();
+  await task.getByRole('button', { name: 'About right', exact: true }).click();
+  await assertFits(page);
+  await page.screenshot({ path: '../.tmp/phase2-learning-desktop.png', fullPage: true });
+  await page.setViewportSize({ width: 375, height: 812 });
+  await assertFits(page);
+  await page.screenshot({ path: '../.tmp/phase2-learning-phone.png', fullPage: true });
+  // Wait for the actual theme transition, not an arbitrary delay that can
+  // capture its viewport-sized snapshot stretched by a full-page screenshot.
+  await page.evaluate(() => {
+    const start = document.startViewTransition?.bind(document);
+    if (!start) return;
+    document.startViewTransition = (update) => {
+      const transition = start(update);
+      window.__testThemeFinished = transition.finished;
+      return transition;
+    };
+  });
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click();
+  await page.evaluate(() => window.__testThemeFinished);
+  await assertFits(page);
+  await page.screenshot({ path: '../.tmp/phase2-learning-phone-dark.png', fullPage: true });
+  await save.click();
+  await expect(task).toHaveCount(0);
+  expect((await savedPlan(page)).items.find((item) => item.id === practice.id).doneAt).toBeTruthy();
+  await page.goto('/my-plan/study?tab=today');
+  await expect(page.getByRole('region', { name: 'Today', exact: true }).getByRole('button')).toHaveCount(1);
+});
+
+test('Learning phase 2: optional quiz leaves completion and review dates unchanged', async ({ page }) => {
+  const { plan } = await createPlan(page);
+  await page.goto('/my-plan/study?tab=plan');
+  const learning = page.getByRole('region', { name: 'Learning checks', exact: true });
+  await learning.getByText('Optional starting check', { exact: true }).click();
+  await learning.getByRole('button', { name: 'Try a section quiz without changing progress' }).click();
+  const save = page.getByRole('button', { name: 'Finish starting quiz' });
+  await expect(save).toBeDisabled();
+  const note = plan.items.find((item) => item.type === 'notes');
+  const response = await page.request.get(API + '/api/notes/os');
+  const section = (await response.json()).data.sections.find((item) => item.id === note.ref.split(':')[2]);
+  for (const question of section.quiz) {
+    await page.getByRole('button', { name: question.options[question.answer], exact: false }).click();
+  }
+  await save.click();
+  await expect(page.getByRole('region', { name: 'Study task' })).toHaveCount(0);
+  expect((await savedPlan(page)).items).toEqual(plan.items);
+});
+
+test('Learning phase 2: keyboard cancel and a stale preview preserve the saved plan', async ({ page }) => {
+  await createPlan(page);
+  await page.goto('/my-plan/study?tab=plan');
+  const learning = page.getByRole('region', { name: 'Learning checks', exact: true });
+  await learning.getByText('Optional starting check', { exact: true }).click();
+  await learning.getByRole('button', { name: 'I would like practice', exact: true }).click();
+  const previewButton = learning.getByRole('button', { name: 'Preview schedule change' });
+  await previewButton.click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByRole('dialog').getByRole('button', { name: 'Cancel', exact: true })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(previewButton).toBeFocused();
+  await previewButton.click();
+  await page.request.post(API + '/api/plan/learning/check', { data: { id: 'foundation', outcome: 'independent' } });
+  const before = await savedPlan(page);
+  await page.getByRole('button', { name: 'Apply learning change' }).click();
+  await expect(page.getByRole('dialog').getByRole('alert')).toContainText(/no longer available|changed/);
+  expect((await savedPlan(page)).items).toEqual(before.items);
+});
+
+test('Learning phase 2: practical role work records assistance without declaring a weak topic after one task', async ({ page }) => {
+  const { plan } = await createPlan(page, { goalType: 'role', roadmapSlug: 'frontend', weeks: 12, weekdayHours: 1, weekendHours: 3 });
+  const practice = plan.items.find((item) => item.type === 'roadmap' && item.activity === 'practice' && !item.part);
+  expect(practice).toBeTruthy();
+  await page.goto(`/my-plan/study?tab=plan&item=${practice.id}`);
+  await page.getByRole('button', { name: 'Completed with help', exact: true }).click();
+  await expect(page.getByRole('region', { name: 'Study task' })).toHaveCount(0);
+  expect((await savedPlan(page)).items.find((item) => item.id === practice.id).doneAt).toBeTruthy();
+  const learning = await page.request.get(API + '/api/plan/learning');
+  const result = (await learning.json()).data;
+  expect(result.attempts).toBe(1);
+  expect(result.offers.some((offer) => offer.kind === 'repair')).toBe(false);
+});
+
 test('the schedule comes before settings and adjustments on a phone', async ({ page }) => {
   await createPlan(page);
   await page.setViewportSize({ width: 375, height: 812 });

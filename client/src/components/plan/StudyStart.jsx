@@ -19,12 +19,19 @@ export default function StudyStart({
   onBack,
   onFinish,
 }) {
+  const [effort, setEffort] = useState('');
+  const [familiar, setFamiliar] = useState(null);
+  const [rubric, setRubric] = useState({ independent: false, explained: false, tested: false });
   const [quiz, setQuiz] = useState(null);
   const [quizError, setQuizError] = useState("");
   const [score, setScore] = useState(null);
   const [retry, setRetry] = useState(0);
   const material = studyMaterial(item);
+  const check = mode === "check";
   const practice = mode === "practice";
+  function finish(payload) {
+    onFinish({ ...payload, ...(effort ? { effort } : {}) });
+  }
   const review = mode === "review";
   const openParts = plan.items.filter(
     (part) =>
@@ -34,8 +41,8 @@ export default function StudyStart({
       !isPlanItemDone(part),
   );
   const needsQuiz =
-    item.type === "notes" && (review || practice || openParts.length <= 1);
-  const finished = isPlanItemDone(item) && !review && !practice;
+    item.type === "notes" && (review || practice || check || openParts.length <= 1);
+  const finished = isPlanItemDone(item) && !review && !practice && !check;
   const problems = item.type === "mock" ? mockProblems(plan.items) : [];
 
   // Load the existing section quiz, not a generated or manually entered score.
@@ -84,7 +91,7 @@ export default function StudyStart({
         {item.title}
         {item.part && ` (part ${item.part.n} of ${item.part.of})`}
       </h2>
-      {practice && (
+      {(practice || check) && (
         <p className="text-sm text-muted">
           Practice only. Your saved completions and review dates will not
           change.
@@ -159,6 +166,12 @@ export default function StudyStart({
           )}
         </div>
       )}
+      {item.learningKind && !practice && (
+        <PracticeRubric busy={busy || finished} familiar={familiar} onFamiliar={setFamiliar} rubric={rubric} onRubric={setRubric} />
+      )}
+      {!finished && !practice && !check && (
+        <EffortFeedback busy={busy} value={effort} onChange={setEffort} />
+      )}
       {error && (
         <p role="alert" className="text-sm text-bad">
           {error}
@@ -168,7 +181,9 @@ export default function StudyStart({
         <p className="text-sm text-muted">This item is already complete.</p>
       ) : (
         <div className="flex flex-wrap gap-3">
-          {practice ? (
+          {item.learningKind && !practice ? (
+            <button type="button" disabled={busy || familiar === null} onClick={() => finish({ ...rubric, familiar })} className="amber-specular-button min-h-[44px] rounded-xl px-5 py-3 text-on-brand disabled:opacity-50">Save practice assessment</button>
+          ) : practice ? (
             <button
               type="button"
               onClick={() => onFinish({})}
@@ -181,7 +196,7 @@ export default function StudyStart({
               type="button"
               disabled={busy || score === null}
               onClick={() =>
-                onFinish(review ? { passed: score >= 4 } : { quizScore: score })
+                finish(review ? { passed: score >= 4 } : { quizScore: score })
               }
               className="amber-specular-button min-h-[44px] rounded-xl px-5 py-3 text-on-brand disabled:opacity-50"
             >
@@ -189,14 +204,14 @@ export default function StudyStart({
                 ? "Saving…"
                 : review
                   ? "Save quiz review"
-                  : "Save quiz result"}
+                  : check ? "Finish starting quiz" : "Save quiz result"}
             </button>
           ) : review ? (
             <>
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => onFinish({ passed: true })}
+                onClick={() => finish({ passed: true })}
                 className="amber-specular-button min-h-[44px] rounded-xl px-5 py-3 text-on-brand"
               >
                 Remembered
@@ -204,7 +219,7 @@ export default function StudyStart({
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => onFinish({ passed: false })}
+                onClick={() => finish({ passed: false })}
                 className="min-h-[44px] rounded-xl border border-ink/[0.2] px-5 py-3 text-fg"
               >
                 Needs practice
@@ -220,9 +235,19 @@ export default function StudyStart({
                 key={result}
                 type="button"
                 disabled={busy}
-                onClick={() => onFinish({ result })}
+                onClick={() => finish({ result })}
                 className="min-h-[44px] rounded-xl border border-ink/[0.2] px-5 py-3 text-fg hover:border-brand"
               >
+                {label}
+              </button>
+            ))
+          ) : item.type === 'roadmap' && ['practice', 'checkpoint', 'project'].includes(item.activity) ? (
+            // Practical role work needs an outcome too; a completion tick alone
+            // cannot tell the follow-up policy whether help was needed.
+            [['alone', 'Completed independently'], ['hints', 'Completed with help']].map(([result, label]) => (
+              <button type="button" key={result} disabled={busy}
+                onClick={() => finish({ done: true, result })}
+                className="min-h-[44px] rounded-xl border border-ink/[0.2] px-5 py-3 text-fg hover:border-brand">
                 {label}
               </button>
             ))
@@ -230,7 +255,7 @@ export default function StudyStart({
             <button
               type="button"
               disabled={busy || (item.type === "mock" && problems.length < 2)}
-              onClick={() => onFinish({ done: true })}
+              onClick={() => finish({ done: true })}
               className="amber-specular-button min-h-[44px] rounded-xl px-5 py-3 text-on-brand disabled:opacity-50"
             >
               Complete this {item.part ? "part" : "task"}
@@ -239,5 +264,50 @@ export default function StudyStart({
         </div>
       )}
     </section>
+  );
+}
+
+const EVIDENCE_BUTTON = 'min-h-[44px] rounded-xl border border-ink/[0.2] px-4 text-sm text-fg aria-pressed:border-brand aria-pressed:text-brand';
+const RUBRIC_LABELS = {
+  independent: 'I implemented or demonstrated it independently',
+  explained: 'I explained my approach and trade-offs',
+  tested: 'I checked ordinary inputs and edge cases',
+};
+
+// A learner can honestly save an unsuccessful attempt. Checked boxes describe
+// the attempt; they are not a required claim of success or an automatic grade.
+function PracticeRubric({ busy, familiar, onFamiliar, rubric, onRubric }) {
+  return (
+    <fieldset disabled={busy} className="space-y-3 text-sm text-fg-3">
+      <legend className="mb-3 font-semibold text-fg">Record your own assessment</legend>
+      <p>This is self-reported practice. It does not mark the original sheet problem solved.</p>
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Question familiarity">
+        <button type="button" aria-pressed={familiar === false} className={EVIDENCE_BUTTON} onClick={() => onFamiliar(false)}>New to me</button>
+        <button type="button" aria-pressed={familiar === true} className={EVIDENCE_BUTTON} onClick={() => onFamiliar(true)}>Seen before</button>
+      </div>
+      {Object.entries(RUBRIC_LABELS).map(([key, label]) => (
+        <label key={key} className="flex min-h-[44px] items-center gap-3">
+          <input type="checkbox" className="h-4 w-4 shrink-0 accent-brand" checked={rubric[key]} onChange={(event) => onRubric({ ...rubric, [key]: event.target.checked })} />
+          {label}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
+function EffortFeedback({ busy, value, onChange }) {
+  const choices = [['less', 'Less effort'], ['about', 'About right'], ['more', 'More effort']];
+  return (
+    <fieldset disabled={busy} className="space-y-3">
+      <legend className="text-sm text-muted">Compared with the estimate, study effort felt: (optional)</legend>
+      <div className="flex flex-wrap gap-2">
+        {choices.map(([choice, label]) => (
+          <button type="button" key={choice} aria-pressed={value === choice}
+            onClick={() => onChange(value === choice ? '' : choice)} className={EVIDENCE_BUTTON}>
+            {label}
+          </button>
+        ))}
+      </div>
+    </fieldset>
   );
 }

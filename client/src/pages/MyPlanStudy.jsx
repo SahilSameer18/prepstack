@@ -19,6 +19,8 @@ import {
   StudyTaskDialog,
 } from "../components/plan/StudyDialogs";
 import {
+  saveStartingCheck,
+  finishLearningPractice,
   deleteCurrentPlan,
   deletePlanHistory,
   recordPlanResult,
@@ -117,7 +119,9 @@ export default function MyPlanStudy({ embedded = false, planModel }) {
       return;
     }
     const result = await model.runAction(() => {
-      if (mode === "review") return reviewPlanItem(selected.id, payload.passed);
+      if (mode === "check") return saveStartingCheck({ id: 'notes', itemId: selected.id, quizScore: payload.quizScore });
+      if (selected.learningKind) return finishLearningPractice(selected.id, payload);
+      if (mode === "review") return reviewPlanItem(selected.id, payload.passed, payload.effort);
       if (payload.done) return updatePlanItem(selected.id, payload);
       return recordPlanResult(selected.id, payload);
     });

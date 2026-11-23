@@ -2,7 +2,7 @@
 
 Date: 23 November 2026. Application snapshot: `4d93596`.
 
-Status: the owner approved Phase 1 on 23 Nov 2026; it is now implemented (close-out below). Phase 2 remains proposed. Sections 3–6 preserve the pre-change research and output evidence at `4d93596`, not a description of the current implementation. Placement students and working professionals receive equal priority, as requested by the owner.
+Status: the owner approved Phase 1 on 23 Nov 2026; it is now implemented (close-out below). Phase 2 was subsequently approved and implemented; the new close-out is below. Sections 3–6 preserve the pre-change research and output evidence at `4d93596`, not a description of the current implementation. Placement students and working professionals receive equal priority, as requested by the owner.
 
 ## 1. Recommendation
 
@@ -147,7 +147,7 @@ Keep Today to its existing items/time/one Start. Put explanations and choices in
 4. Discuss optional low-friction effort feedback and minimal attempt events. Use measured outcomes to adjust estimates within safe limits and through existing previews; do not infer time from elapsed time between page open and completion.
 5. Evaluate on held-out tasks and real sessions when available. This is a later measurement step, not a reason to delay the offline fixes above. Keep target scope and omissions explicit, especially when selected material greatly exceeds the budget.
 
-Phase 1 was subsequently approved by the owner and implemented; see section 11. Phase 2 data collection, onboarding and review-policy changes remain proposals for the owner's decision.
+Phase 1 was subsequently approved by the owner and implemented; see section 11. The owner subsequently approved Phase 2; the implemented scope and its evidence limits are recorded below.
 
 The existing depth-level and DSA-lesson proposals should be reconciled with this work, not duplicated in another content system. For unfamiliar assessment, record whether the learner has seen the question before; an exercise absent from their saved sheet progress is not guaranteed to be unfamiliar. An initial assessment can use a clear manual rubric rather than require building an online judge or trusting an AI grade. Proposed outcomes include explaining the approach, implementing independently, checking edge cases and identifying the relevant complexity.
 
@@ -220,3 +220,15 @@ The repeated matrix still contains 1,512 inputs, with 972 role outputs. With exp
 Storage remains bounded at 600 rows. Twelve outputs in the new matrix exceed that limit, versus eight before the change. The four additional cases are long DSA-roadmap plans whose more detailed tasks need more records. They are now explicitly blocked before save, rather than offered as saveable. Supporting larger plans without losing detail requires a separate storage/performance decision; no limit was silently raised and no curriculum was silently dropped to evade it. Low coverage in tight budgets remains honest, and some packing gaps increase when lesson order is protected.
 
 Verified: full server 1,160 tests, client 217, build/lint/SEO, 5,000 seeded scenarios, 314 mixed API requests, follow-up matrix and four in-memory mutations. Browser results and the initial timeout/rerun details are in `TESTING.md`. No deployment or new Phase 2 assessment/data-collection system was performed.
+
+## 12. Phase 2 follow-up — 23 Nov 2026
+
+The owner approved the entire follow-up. The delivered implementation retains deterministic scheduling and the existing review ladder. It adds optional, correctable foundation/role checks and a separate existing-section quiz baseline; repeated-struggle repair suggestions; minute-aware recall/quiz recovery; candidate unfamiliar DSA checks and role application variants; goal-appropriate rehearsal on an available day; and optional relative-effort feedback with confirmed, bounded estimate changes.
+
+These are operational learning supports, not an automatic assessment service. The foundation exercise and rubric are original prompts. A DSA candidate being absent from owned saved progress does not prove unfamiliarity, so the learner records prior exposure. Role application deliberately changes a requirement of completed work and is explicitly self-reported. Familiarity, independent implementation/demonstration, explanation and tests are recorded separately. Rehearsal cannot be split over study days. Further practice receives separate identity and minutes and cannot grant sheet-solve credit to its source.
+
+Two difficult completed observations/reviews among the latest four can suggest repair; one difficulty does not label a topic weak. Two most-recent independent successes suppress the suggestion. Five distinct completed activities with relative effort can suggest estimate changes; no mandatory timer or elapsed-page-time inference is added. Multipliers and thresholds are bounded product assumptions, not a newly validated learning model. Fixed report times, already-completed work and partially completed remaining minutes are protected.
+
+Plan changes are private previews with explicit dates, minute allocations, moves and newly omitted activities. The learner confirms the trade-off. Stale, concurrent, over-limit, expired or impossible requests are refused. The original 600-row cap remains. Today has no new controls, and deleting the plan/account removes embedded attempts. Existing records need no migration or live seed.
+
+Scenario/API/browser evidence is reported in TESTING.md. This phase does not establish a universal learning-accuracy percentage, measured time-to-learn improvements or verified interview readiness. Deployment and real learning-effectiveness measurement are not represented as completed by local tests.

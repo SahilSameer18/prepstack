@@ -72,6 +72,14 @@ router.post('/changes/apply', authMiddleware, planChangeLimiter, validate(applyC
 router.post('/reports/:reportId/preview', authMiddleware, planChangeLimiter, validate(reportImportSchema), previewReportImport);
 router.post('/reports/:reportId/apply', authMiddleware, planChangeLimiter, validate(applyReportImportSchema), applyReportImport);
 
+// Optional learning checks and previewed practice use only the active owner's plan.
+const learningController = require('./planLearning.controller');
+router.get('/learning', authMiddleware, learningController.getLearning);
+router.post('/learning/check', authMiddleware, planTickLimiter, validate(learningController.checkSchema), learningController.saveCheck);
+router.post('/learning/preview', authMiddleware, planChangeLimiter, validate(learningController.choiceSchema), learningController.previewLearning);
+router.post('/learning/apply', authMiddleware, planChangeLimiter, validate(learningController.applySchema), learningController.applyLearning);
+router.post('/items/:id/practice', authMiddleware, planTickLimiter, validate(learningController.practiceSchema), learningController.finishPractice);
+
 // Weekly review
 router.get('/review', authMiddleware, validate(weeklyReviewQuerySchema, 'query'), getWeeklyReview);
 

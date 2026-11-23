@@ -58,7 +58,8 @@ const hoursOn = (input, ymd) => {
   const light = (input.lighterDays || []).find((r) => n >= dayNumber(r.from) && n <= dayNumber(r.to));
   return light ? light.hours : input.hoursByWeekday[wd];
 };
-const reviewRoom = (hours) => { const b = dayBudget(hours); return b.planned - b.fresh; };
+const reviewMinutes = (item) => item.type === 'notes' ? 5 : REVIEW_MINUTES;
+const reviewRoom = (hours) => { const b = dayBudget(hours); return hours > 0 ? Math.max(5, b.planned - b.fresh) : 0; };
 
 // ---------- the review ladder ----------
 // Ticking an item records how it went. A split item starts its ladder only when its last part is ticked.
@@ -107,7 +108,7 @@ const recordReview = (items, key, passed, day) => {
 };
 
 const reviewView = (it, day) => ({
-  type: 'review', ref: it.ref, link: it.link || null, title: `Review: ${it.title}`, plannedMinutes: REVIEW_MINUTES, originalKey: it.key,
+  type: 'review', ref: it.ref, link: it.link || null, title: `Review: ${it.title}`, plannedMinutes: reviewMinutes(it), reviewMode: it.type === 'notes' ? 'quiz' : 'recall', originalKey: it.key,
   dueDay: it.nextReviewDay, overdueDays: dayNumber(day) - dayNumber(it.nextReviewDay), failed: it.reviewNeedsPractice ?? (!!it.lastFailedDay && it.reviewStage === 0 && it.reviewBaseDay === it.lastFailedDay), starred: !!it.starred,
 });
 // Everything due on or before a day: failed first, then starred, then the oldest (decision 22).
@@ -366,6 +367,6 @@ const previewChange = (stored, data, todayYmd, change) => {
 };
 
 module.exports = {
-  LADDERS, REVIEW_MINUTES, MAX_MOVE_DAYS, hoursOn, reviewRoom, markDone, recordReview, dueReviews, reviewsForDay, reviewBacklog, revisionList,
+  LADDERS, REVIEW_MINUTES, reviewMinutes, MAX_MOVE_DAYS, hoursOn, reviewRoom, markDone, recordReview, dueReviews, reviewsForDay, reviewBacklog, revisionList,
   carriedOver, skipItem, unskipItem, moveItem, todayView, previewChange, itemsChecksum, restorePartialRemainders,
 };

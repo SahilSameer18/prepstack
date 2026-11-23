@@ -54,7 +54,7 @@ const PrivacyPolicy = () => {
                 <Database className="text-brand" /> Practice & Learning Progress
               </div>
               <p className="text-sm text-muted">
-                We store which DSA problems you have marked as solved on each sheet, the notes you write on those problems (pattern, complexity and your own text), the AI project ideas generated for you (title, description, features, tech stack, difficulty, time estimate and the domain you chose), and your Role Analyzer reports (the job description you pasted and the report: score, skill gaps, questions and study plan, including short quotes from your resume), so your progress is available on all your devices.
+                We store which DSA problems you have marked as solved on each sheet, the notes you write on those problems (pattern, complexity and your own text), the AI project ideas generated for you (title, description, features, tech stack, difficulty, time estimate and the domain you chose), and your Role Analyzer reports (the job description you pasted and the report: score, skill gaps, questions and study plan, including short quotes from your resume), so your progress is available on all your devices. My Plan also stores your optional starting-check answers, exercise familiarity, practice results and relative effort feedback. Each plan keeps up to 200 recent learning attempts to suggest optional practice and preview estimate changes. We do not infer time spent from an open page. These records are deleted with the plan or your account.
               </p>
             </div>
             <div className="rounded-xl border border-ink/[0.1] bg-ink/[0.02] p-5 space-y-2 sm:col-span-2">

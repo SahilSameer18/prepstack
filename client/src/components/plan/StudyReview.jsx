@@ -31,7 +31,7 @@ export function StudyItemList({
             <div className="min-w-0">
               <p className="break-words text-fg">{item.title}</p>
               {review && (
-                <p className="mt-1 text-muted">Due {item.nextReviewDay}</p>
+                <p className="mt-1 text-muted">Due {item.nextReviewDay} · {item.type === 'notes' ? '5 min quiz' : '3 min recall'}</p>
               )}
               {material && (
                 <a

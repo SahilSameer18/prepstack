@@ -24,12 +24,13 @@ export function resolveStudyItem(plan, entry) {
 
 // Real problem links open the coding site; other materials use existing PrepStack routes.
 export function studyMaterial(item) {
-  if (item.type === "dsa" && item.link)
-    return { path: item.link, label: "Open coding problem" };
-  const target = refLink(item.ref, { [item.ref]: item.title });
+  if ((item.type === "dsa" || item.learningKind) && item.link)
+    return { path: item.link, label: item.learningKind ? "Open practice reference" : "Open coding problem" };
+  const reference = item.materialRef || item.ref;
+  const target = refLink(reference, { [reference]: item.title });
   if (
     target &&
-    item.type === "roadmap" &&
+    (item.type === "roadmap" || item.learningKind) &&
     item.stepId &&
     !target.path.includes("#")
   ) {

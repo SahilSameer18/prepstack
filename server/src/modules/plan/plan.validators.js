@@ -174,6 +174,7 @@ const applyChangeSchema = z
 // Phase 4: items and review validators
 const updateItemSchema = z
   .object({
+    effort: z.enum(['less', 'about', 'more']).optional(),
     done: z.boolean({ error: "done must be true or false" }).optional(),
     result: z
       .enum(["alone", "hints", "solution"], {
@@ -226,6 +227,7 @@ const addItemSchema = z.object({
 
 const recordResultSchema = z
   .object({
+    effort: z.enum(['less', 'about', 'more']).optional(),
     result: z
       .enum(["alone", "hints", "solution"], {
         error: "result must be alone, hints or solution",
@@ -249,6 +251,7 @@ const recordResultSchema = z
   );
 
 const recordReviewSchema = z.object({
+  effort: z.enum(['less', 'about', 'more']).optional(),
   passed: z.boolean({ error: "passed must be true or false" }),
 });
 

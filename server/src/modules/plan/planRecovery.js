@@ -1,6 +1,6 @@
 const { createHash } = require('node:crypto');
 const { baseId, dayBudget, dayNumber, PlanInputError } = require('./planGenerator');
-const { hoursOn, reviewRoom, REVIEW_MINUTES } = require('./planAdjust');
+const { hoursOn, reviewRoom, reviewMinutes } = require('./planAdjust');
 const { calendarSettings, studyDay, addStudyDays } = require('../../shared/calendar/studyCalendar');
 const { problemIdentity } = require('../sheets/problemIdentity');
 const { PLAN_MAX_ITEMS, PLAN_MAX_WEEKS } = require('../../shared/config/limits');
@@ -157,8 +157,8 @@ function recoverReviews(plan, user, now, days) {
   for (let offset = 0; offset < days; offset += 1) {
     const day = addStudyDays(today, offset);
     if (day > plan.deadline) break;
-    const future = plan.items.filter((item) => !item.skipped && item.nextReviewDay === day && item.nextReviewDay > today).length;
-    const room = Math.max(0, Math.floor(reviewRoom(hoursOn(input, day)) / REVIEW_MINUTES) - future);
+    const future = plan.items.filter((item) => !item.skipped && item.nextReviewDay === day && item.nextReviewDay > today).reduce((sum, item) => sum + reviewMinutes(item), 0);
+    const room = Math.max(0, reviewRoom(hoursOn(input, day)) - future);
     slots.push({ day, room });
   }
   const changes = new Map();
@@ -166,9 +166,9 @@ function recoverReviews(plan, user, now, days) {
     const alreadyReviewed = item.lastReviewDay === today || (item.lastReviewAt && studyDay(new Date(item.lastReviewAt), settings) === today);
     const guardedDay = item.reviewWindowEndsAt && new Date(item.reviewWindowEndsAt) > now
       ? studyDay(new Date(item.reviewWindowEndsAt), settings) : today;
-    const slot = slots.find((entry) => entry.room > 0 && entry.day >= guardedDay && (!alreadyReviewed || entry.day > today));
+    const slot = slots.find((entry) => entry.room >= reviewMinutes(item) && entry.day >= guardedDay && (!alreadyReviewed || entry.day > today));
     if (!slot) throw new PlanInputError(['The reviews do not fit this window. Choose more days, extend the deadline or increase your study hours.']);
-    slot.room -= 1;
+    slot.room -= reviewMinutes(item);
     const shift = dayNumber(slot.day) - dayNumber(item.nextReviewDay);
     changes.set(item.key, {
       ...item, nextReviewDay: slot.day,

@@ -40,9 +40,10 @@ function fitReportItems(tasks, kept, input, startDate, deadline, preserveDays = 
     const hours = hoursOn(input, day);
     if (!hours || kept.some((item) => item.day === day && item.type === 'mock')) continue;
     const budget = dayBudget(hours);
-    const due = kept.filter((item) => !item.skipped && item.nextReviewDay && item.nextReviewDay <= day).length;
-    // Reviews are three-minute recalls, capped at the existing 15% review share.
-    const cap = budget.planned - Math.min(budget.planned - budget.fresh, due * 3);
+    const due = kept.filter((item) => !item.skipped && item.nextReviewDay && item.nextReviewDay <= day)
+      .reduce((sum, item) => sum + (item.type === 'notes' ? 5 : 3), 0);
+    // Reserve recall/quiz minutes within the review share; short study days can fit one quiz.
+    const cap = budget.planned - Math.min(Math.max(5, budget.planned - budget.fresh), due);
     const used = kept.filter((item) => !item.skipped && item.day === day)
       .reduce((sum, item) => sum + item.plannedMinutes, 0);
     days.push({ day, cap, used });

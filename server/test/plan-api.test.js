@@ -22,6 +22,90 @@ const create = (acct, body) => t.api.post('/api/plan', { cookies: acct.cookies, 
 const getPlan = (acct) => t.api.get('/api/plan', { cookies: acct.cookies });
 const personalPreview = (acct, body) => t.api.post('/api/plan/preview/personal', { cookies: acct.cookies, body });
 
+describe('Phase 2 optional learning, ownership and confirmed scheduling', () => {
+  const learningRead = (acct) => t.api.get('/api/plan/learning', { cookies: acct.cookies });
+  const learningPost = (acct, action, body) => t.api.post('/api/plan/learning/' + action, { cookies: acct.cookies, body });
+
+  it('keeps starting checks optional and correctable without touching progress, and isolates accounts', async () => {
+    const acct = await t.register();
+    const other = await t.register();
+    await create(acct, form({ weeks: 4, subjects: [] }));
+    const before = await Plan.findOne({ user: acct.id }).lean();
+    assert.equal((await t.api.get('/api/plan/learning')).status, 401);
+    assert.equal((await learningRead(other)).status, 404);
+    await create(other, form({ weeks: 4, subjects: [] }));
+    const read = await learningRead(acct);
+    assert.equal(read.status, 200);
+    assert.match(read.headers['cache-control'], /private.*no-store/);
+    assert.equal((await learningPost(acct, 'check', { id: 'foundation', outcome: 'help' })).status, 200);
+    assert.ok((await learningRead(acct)).body.data.offers.some((offer) => offer.kind === 'foundation'));
+    assert.equal((await learningRead(other)).body.data.results.length, 0);
+    assert.ok(!(await learningRead(other)).body.data.offers.some((offer) => offer.kind === 'foundation'));
+    assert.equal((await learningPost(acct, 'check', { id: 'foundation', outcome: 'independent' })).status, 200);
+    assert.ok(!(await learningRead(acct)).body.data.offers.some((offer) => offer.kind === 'foundation'));
+    assert.equal((await learningPost(acct, 'check', { id: 'foundation', outcome: 'skipped' })).status, 200);
+    const after = await Plan.findOne({ user: acct.id }).lean();
+    assert.deepEqual(after.items, before.items);
+    assert.equal(after.startingChecks.length, 1);
+    assert.equal((await learningPost(acct, 'check', { id: 'role', outcome: 'help' })).status, 422);
+    assert.equal((await learningPost(acct, 'check', { id: 'foundation', outcome: 'expert' })).status, 422);
+  });
+
+  it('previews without writes, rejects stale/double/concurrent applies and saves practice separately from sheet solves', async () => {
+    const acct = await t.register();
+    const other = await t.register();
+    await create(acct, form({ weeks: 4, subjects: [] }));
+    await create(other, form({ weeks: 4, subjects: [] }));
+    await learningPost(acct, 'check', { id: 'foundation', outcome: 'help' });
+    const before = await Plan.findOne({ user: acct.id }).lean();
+    const preview = await learningPost(acct, 'preview', { offerId: 'foundation' });
+    assert.equal(preview.status, 200, JSON.stringify(preview.body));
+    assert.deepEqual(await Plan.findOne({ user: acct.id }).lean(), before);
+    await learningPost(acct, 'check', { id: 'foundation', outcome: 'help' });
+    const stale = { offerId: 'foundation', checksum: preview.body.data.checksum };
+    assert.equal((await learningPost(acct, 'apply', stale)).status, 409);
+    const fresh = (await learningPost(acct, 'preview', { offerId: 'foundation' })).body.data;
+    const payload = { offerId: 'foundation', checksum: fresh.checksum };
+    assert.equal((await learningPost(other, 'apply', payload)).status, 409);
+    const replies = await Promise.all([learningPost(acct, 'apply', payload), learningPost(acct, 'apply', payload)]);
+    assert.deepEqual(replies.map((reply) => reply.status).sort(), [200, 409]);
+    const saved = await Plan.findOne({ user: acct.id }).lean();
+    const practice = saved.items.find((item) => item.learningKind === 'foundation');
+    assert.ok(practice);
+    const rubric = { familiar: false, independent: true, explained: true, tested: true, effort: 'about' };
+    const finish = (user, body) => t.api.post(`/api/plan/items/${practice._id}/practice`, { cookies: user.cookies, body });
+    assert.equal((await finish(other, rubric)).status, 404);
+    assert.equal((await finish(acct, { independent: true })).status, 422);
+    assert.equal((await finish(acct, rubric)).status, 200);
+    assert.equal((await finish(acct, rubric)).status, 422);
+    assert.equal(await Progress.countDocuments({ user: acct.id }), 0);
+    assert.ok(!(await learningRead(acct)).body.data.offers.some((offer) => offer.kind === 'foundation'));
+  });
+
+  it('records effort on ordinary completion and offers calibration only through a preview', async () => {
+    const acct = await t.register();
+    const made = await create(acct, form({ weeks: 12, subjects: [] }));
+    const problems = made.body.data.plan.items.filter((item) => item.type === 'dsa' && !item.part).slice(0, 5);
+    assert.equal(problems.length, 5);
+    for (const item of problems) {
+      const reply = await t.api.post(`/api/plan/items/${item.id}/result`, { cookies: acct.cookies, body: { result: 'alone', effort: 'more' } });
+      assert.equal(reply.status, 200, JSON.stringify(reply.body));
+    }
+    const offers = (await learningRead(acct)).body.data.offers;
+    assert.ok(offers.some((offer) => offer.id === 'estimate:dsa'));
+    const before = await Plan.findOne({ user: acct.id }).lean();
+    const preview = await learningPost(acct, 'preview', { offerId: 'estimate:dsa' });
+    assert.equal(preview.status, 200, JSON.stringify(preview.body));
+    const reply = await learningPost(acct, 'apply', { offerId: 'estimate:dsa', checksum: preview.body.data.checksum });
+    assert.equal(reply.status, 200, JSON.stringify(reply.body));
+    const after = await Plan.findOne({ user: acct.id }).lean();
+    assert.equal(after.estimateFactors.dsa, 1.15);
+    assert.equal((await getPlan(acct)).body.data.plan.estimateFactors.dsa, 1.15);
+    for (const item of before.items.filter((entry) => entry.doneAt)) assert.deepEqual(after.items.find((entry) => entry.key === item.key), item);
+    assert.ok(!(await learningRead(acct)).body.data.offers.some((offer) => offer.kind === 'estimate'));
+  });
+});
+
 describe('Phase 1 preview/save agreement and saved curricula', () => {
   it('limits personal previews per account while keeping students on the same network separate', async () => {
     const acct = await t.register();

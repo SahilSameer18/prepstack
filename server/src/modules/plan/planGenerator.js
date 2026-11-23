@@ -464,7 +464,11 @@ const generatePlan = (input, data, context = {}) => {
     const notes = subjects.flatMap((s) => data.notes[s].map((section) => notesUnit(s, section)));
     units = sequenceItems(dsa.units, notes, input.style);
   }
-  const allContent = input.goalType === 'role' ? units.flatMap((u) => u.items.map((it) => ({ ...it, unitId: u.unitId }))) : units;
+  const rawContent = input.goalType === 'role' ? units.flatMap((u) => u.items.map((it) => ({ ...it, unitId: u.unitId }))) : units;
+  // Only an explicitly previewed calibration changes future estimates. Partial
+  // work uses its saved remaining minutes below, so progress is never rescaled.
+  const allContent = rawContent.map((item) => ({ ...item,
+    plannedMinutes: Math.max(1, Math.round(item.plannedMinutes * (input.estimateFactors?.[item.type] || 1))) }));
   // a rebuild leaves out what is done, skipped, locked or added by the student, and plans only what is left of a part-done item
   const exclude = context.exclude || new Set();
   const remaining = context.remaining || new Map();
@@ -552,6 +556,7 @@ const generatePlan = (input, data, context = {}) => {
 
   return {
     input: {
+      estimateFactors: input.estimateFactors || {},
       generationVersion: input.generationVersion ?? GENERATION_VERSION,
       roadmapSnapshot: input.goalType === 'role' && (input.generationVersion ?? GENERATION_VERSION) >= 2
         ? structuredClone(input.roadmapSnapshot || data.roadmapCatalog.find((r) => r.slug === input.roadmapSlug)) : null,

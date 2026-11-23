@@ -1,5 +1,13 @@
 # Handoff: how to continue PrepStack with a different AI agent
 
+## Learning audit Phase 2 handoff, 23 Nov 2026
+
+- New owner-only routes: `GET /api/plan/learning`, `POST /learning/check`, `POST /learning/preview`, `POST /learning/apply`, and `POST /items/:id/practice` under `/api/plan`. They return private/no-store responses. Checks are optional and separate from item completion. Schedule writes recompute the owned suggestion and verify checksum, current study day/progress and plan revision; stale/concurrent writes return 409.
+- `planLearning.js` contains bounded self-report policies and pure schedule previews; `planLearning.controller.js` validates and saves them. Model additions are optional defaults, so no live migration or seed is needed. Learning tasks use distinct refs plus `materialRef` for opening their original material. Never merge their identity or sheet credit with the original exercise.
+- Existing completion/result/review writes collect at most 200 recent attempt observations. Relative effort is optional. Calibration is per content type, bounded to 0.5–2 and previewed; completed/partial minutes and fixed report-only estimates are protected. Canonical owned sheet solves are included when selecting application questions.
+- Plan settings contain `StudyLearning`; Today stays unchanged. Task detail contains optional effort and a manual practice rubric. A starting section quiz records its baseline without completing its source item or changing a review ladder. Results are self-reported, not a readiness score or automatically verified correctness.
+- DSA recall is three minutes, notes quizzes five. Half-hour study days can fit one quiz; recovery now counts minutes rather than uniform review slots. Rehearsals need a single free slot. Test evidence and limitations are in TESTING.md; the policy details are in MY_PLAN_PLAN.md.
+
 ## Learning audit Phase 1 handoff, 23 Nov 2026
 
 - Public `POST /api/plan/preview` remains anonymous and cached. New private `POST /api/plan/preview/personal` has the same form schema, requires auth, reads owned progress/account calendar, sets `Cache-Control: private, no-store` and bypasses the shared response cache. Both return `saveEligibility { allowed, reason, itemCount, itemLimit }` and `usesSavedProgress`. Create checks the same eligibility again against current state. Invalid inputs still return 422; a valid but unsaveable preview returns 200 with `allowed: false` so its explanation remains visible. Preview quota: IP for anonymous requests, account for private requests.

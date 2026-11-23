@@ -14,9 +14,15 @@ import SelectField from '../ui/SelectField';
 import ReportPlanImport from '../plan/ReportPlanImport';
 import StudyToday from '../plan/StudyToday';
 import StudyRecovery from '../plan/StudyRecovery';
-import { pullForwardItem, revisionRoundItems, resolveStudyItem, studyProgress, studyChecklistDays, studyWeeks } from '../../utils/studyPlan';
+import { pullForwardItem, revisionRoundItems, resolveStudyItem, studyProgress, studyChecklistDays, studyWeeks, studyMaterial } from '../../utils/studyPlan';
 
 describe('Daily study screens', () => {
+  it('opens learning practice at its source roadmap step without sharing the original task identity', () => {
+    const task = { type: 'custom', learningKind: 'repair', ref: 'learning:separate-id',
+      materialRef: 'roadmap:frontend', stepId: 'react-basics', title: 'Practise React' };
+    expect(studyMaterial(task).path).toBe('/roadmaps/frontend#react-basics');
+    expect(studyMaterial({ ...task, materialRef: 'notes:os:os-processes', stepId: null }).path).toBe('/notes/os/os-processes');
+  });
   it('offers a paused main plan alongside the active sprint without a second pause action', () => {
     const data = {
       plan: { items: [] }, finished: false,

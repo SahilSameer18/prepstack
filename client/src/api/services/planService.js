@@ -1,5 +1,31 @@
 import api from "../axios";
 
+// Learning evidence and schedule previews are private to the active plan.
+export async function getPlanLearning(signal) {
+  const response = await api.get('/api/plan/learning', { signal });
+  return response.data.data;
+}
+
+export async function saveStartingCheck(body) {
+  const response = await api.post('/api/plan/learning/check', body);
+  return response.data.data;
+}
+
+export async function previewLearningChange(offerId) {
+  const response = await api.post('/api/plan/learning/preview', { offerId });
+  return response.data.data;
+}
+
+export async function applyLearningChange(offerId, checksum) {
+  const response = await api.post('/api/plan/learning/apply', { offerId, checksum });
+  return response.data.data;
+}
+
+export async function finishLearningPractice(id, body) {
+  const response = await api.post(`/api/plan/items/${encodeURIComponent(id)}/practice`, body);
+  return response.data.data;
+}
+
 // Preview lifecycle changes against the latest owned plans before confirmation.
 export async function previewPlanRecovery(body) {
   const response = await api.post('/api/plan/lifecycle/preview', body);
@@ -80,8 +106,8 @@ export async function recordPlanResult(id, result) {
 }
 
 // Reviews use a separate endpoint and never re-tick the original problem.
-export async function reviewPlanItem(id, passed) {
-  const response = await api.post(itemPath(id) + "/review", { passed });
+export async function reviewPlanItem(id, passed, effort) {
+  const response = await api.post(itemPath(id) + "/review", { passed, effort });
   return response.data.data;
 }
 

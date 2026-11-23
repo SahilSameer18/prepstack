@@ -13,6 +13,7 @@ const AppError = require('../../shared/http/AppError');
 const { sendSuccess } = require('../../shared/http/responseFormatter');
 const gen = require('./planGenerator');
 const adj = require('./planAdjust');
+const learning = require('./planLearning');
 const { getPlanData, getPlanChoices } = require('./planData');
 const { planClock } = require('../../shared/calendar/clock');
 const { PLAN_MAX_ITEMS, PLAN_MAX_FINISHED, PLAN_MAX_START_DAYS_AHEAD } = require('../../shared/config/limits');
@@ -95,6 +96,7 @@ const presentItem = (it, labels) => ({
   id: it._id ? String(it._id) : null, key: it.key ?? null, originalKey: it.originalKey ?? null, type: it.type, ref: it.ref ?? null, link: it.link ?? null, title: it.title,
   plannedMinutes: it.plannedMinutes, day: it.day ?? null, plannedDay: it.plannedDay ?? it.day ?? null, stepId: it.stepId ?? null,
   milestoneId: it.milestoneId ?? null, activity: it.activity ?? null, objective: it.objective ?? null,
+  learningKind: it.learningKind ?? null, relatedKey: it.relatedKey ?? null, materialRef: it.materialRef ?? null,
   alternatives: alternativeResources(it.link), replacesKey: it.replacesKey ?? null,
   part: labels?.has(it.key) ? { n: labels.get(it.key).n, of: labels.get(it.key).of } : it.part ?? null,
   partialProgress: labels?.get(it.key)?.progress,
@@ -108,6 +110,7 @@ const presentPlan = (doc) => {
   return {
     id: String(doc._id), goalType: doc.goalType, style: doc.style, title: doc.title, targetRole: doc.targetRole, status: doc.status, sheetSlug: doc.sheetSlug, roadmapSlug: doc.roadmapSlug,
     subjects: doc.subjects, pace: doc.pace || 'standard', fromReport: !!doc.originReport, knownTopics: doc.knownTopics, weeks: doc.weeks, startDate: doc.startDate, deadline: doc.deadline, hoursByWeekday: doc.hoursByWeekday, restDay: doc.restDay,
+    estimateFactors: { dsa: doc.estimateFactors?.dsa || 1, notes: doc.estimateFactors?.notes || 1, roadmap: doc.estimateFactors?.roadmap || 1 },
     lighterDays: doc.lighterDays, coverage: doc.coverage, notices: doc.notices, createdAt: doc.createdAt, updatedAt: doc.updatedAt, items: doc.items.map((it) => presentItem(it, labels)),
   };
 };
@@ -121,6 +124,7 @@ const toStored = (doc) => {
   const o = typeof doc.toObject === 'function' ? doc.toObject() : doc; // a plain object (a lean read) is already one
   return {
     input: {
+      estimateFactors: o.estimateFactors || {},
       generationVersion: o.generationVersion || 1,
       roadmapSnapshot: o.roadmapSnapshot,
       goalType: o.goalType,
@@ -625,6 +629,7 @@ const updateItem = async (req, res, next) => {
             return next(new AppError(422, errorMessages[markRes.error] || markRes.error));
           }
           applyItemsUpdate(doc, markRes.items);
+          doc.learningAttempts = learning.attemptLog(doc, item, body, today(req), planClock.now());
           if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt && !p.unscheduledMinutes)) { // the sheet is ticked when the last part is done
             dsaSync = { sheet: item.sheet || doc.sheetSlug, link: item.link, isDone: true, studyDay: today(req) };
             if (!doc.solvedLinks.includes(item.link)) doc.solvedLinks.push(item.link);
@@ -731,6 +736,7 @@ const recordResult = async (req, res, next) => {
       return next(new AppError(422, errorMessages[markRes.error] || markRes.error));
     }
     applyItemsUpdate(doc, markRes.items);
+    doc.learningAttempts = learning.attemptLog(doc, item, req.body, today(req), planClock.now());
 
     let dsaSync = null;
     if (item.type === 'dsa' && item.link && partsOf(doc, item).every((p) => p.doneAt && !p.unscheduledMinutes)) {
@@ -770,9 +776,9 @@ const recordReview = async (req, res, next) => {
     reviewed.reviewNeedsPractice = !req.body.passed;
     // Two simultaneous replies must not advance the same overdue ladder twice.
     const saved = await Plan.findOneAndUpdate(
-      { _id: doc._id, user: req.user._id, status: 'active', updatedAt: doc.updatedAt,
+      { _id: doc._id, user: req.user._id, status: 'active', updatedAt: doc.updatedAt, __v: doc.__v,
         items: { $elemMatch: { _id: item._id, reviewStage: item.reviewStage, nextReviewDay: item.nextReviewDay, lastReviewDay: { $ne: today(req) } } } },
-      { $set: { items: reviewRes.items } }, { returnDocument: 'after', runValidators: true }
+      { $set: { items: reviewRes.items, learningAttempts: learning.attemptLog(doc, item, req.body, today(req), now, 'review') }, $inc: { __v: 1 } }, { returnDocument: 'after', runValidators: true }
     );
     if (!saved) throw new AppError(409, 'The plan changed. Refresh it before reviewing again.');
     const updated = findItemInPlan(saved, req.params.id);
@@ -955,7 +961,7 @@ const substituteItem = async (req, res, next) => {
 };
 
 module.exports = {
-  presentPlan,
+  presentPlan, toStored, findActivePlan, solvedLinksFor,
   withTransaction,
   getPlanOptions,
   previewPlan,

@@ -28,6 +28,9 @@ const itemSchema = new mongoose.Schema({
   milestoneId: { type: String, default: null, maxlength: 120 },
   activity: { type: String, enum: ['learn', 'practice', 'checkpoint', 'project', null], default: null },
   objective: { type: String, default: null, maxlength: 2000 },
+  learningKind: { type: String, enum: ['foundation', 'repair', 'transfer', 'rehearsal', null], default: null },
+  relatedKey: { type: String, maxlength: 700, default: null },
+  materialRef: { type: String, maxlength: 300, default: null },
   difficulty: { type: String, default: null },
   unitId: { type: String, default: null },
   replacesKey: { type: String, default: null },
@@ -102,6 +105,30 @@ const planSchema = new mongoose.Schema(
       enum: ["faster", "standard", "slower"],
       default: "standard",
     }, // multiplies the minutes of DSA problems
+    // Bounded optional self-reports stay with the plan and its account deletion.
+    startingChecks: { type: [{ _id: false, id: String, outcome: String, quizScore: Number, ref: String, at: Date }], default: [] },
+    learningAttempts: {
+      type: [{
+        _id: false,
+        key: String,
+        topic: String,
+        type: { type: String }, // Wrapping this field keeps Mongoose from treating the whole entry as a string.
+        kind: String,
+        day: String,
+        at: Date,
+        outcome: String,
+        effort: String,
+        complete: Boolean,
+        familiar: Boolean,
+        independent: Boolean,
+        explained: Boolean,
+        tested: Boolean,
+      }],
+      default: [],
+      validate: (entries) => entries.length <= 200,
+    },
+    estimateFactors: { type: { dsa: { type: Number, min: 0.5, max: 2 }, notes: { type: Number, min: 0.5, max: 2 }, roadmap: { type: Number, min: 0.5, max: 2 } }, default: () => ({}), _id: false },
+    estimateUpdatedAt: { type: { dsa: Date, notes: Date, roadmap: Date }, default: () => ({}), _id: false },
     knownTopics: { type: [String], default: [] },
     solvedLinks: { type: [String], default: [] }, // solved when the plan was made or last rebuilt, so a rebuild does not bring them back
     weeks: { type: Number, required: true, min: 1, max: 52 },
